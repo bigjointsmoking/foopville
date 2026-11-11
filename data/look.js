@@ -73,6 +73,10 @@ FUP.look = {
     bankPixels: 3,       // the dark bank where land meets the top of water
     ditherStrength: 0.10, // how much grass shades mix at their borders (0 = hard bands)
     cobble: { w: 6, h: 4 },   // stone size in map pixels (1 map pixel = 2 screen pixels)
+    // Raised ground (v0.65): tree walls stand on a plateau with a cliff face on its south side.
+    // height = squares tall the face is (trees on the edge stand on top of it), lip = grass overhang in map pixels,
+    // band = rock layer thickness in map pixels, shade = how far the shadow at the foot reaches (squares)
+    cliff: { height: 0.75, lip: 2, band: 4, block: 6, shade: 0.45 },
     bridge: { plank: 'w3', plankLight: 'w4', gap: 'w1', rail: 'k1', nail: 's2', planks: 4 },
   },
 
@@ -167,14 +171,14 @@ FUP.look = {
       grass: ['g2', 'g3', 'g3', 'g4'], grassTuft: 'g5', flowers: ['k4', 'y2', 'p2', 'b4'],
       dirt: ['s1', 's2', 's3'], dirtEdge: 'k2', pebble: 's3',            // cobbles
       water: ['b1', 'b2', 'b3'], shore: 'w3', sparkle: 'b4',
-      pathStyle: 'cobble', floor: 'g1', foam: 'b4', bank: 'k0',
+      pathStyle: 'cobble', floor: 'g1', foam: 'b4', bank: 'k0', cliff: ['w1', 'w2', 'w3', 's2'],
       detail: { tuft: 0.9, flower: 0.28, pebble: 0.08, leaf: 0 },
     },
     forestEdge: {
       grass: ['g3', 'g3', 'g4', 'g4'], grassTuft: 'g5', flowers: ['k4', 'y2', 'p2', 'b4'],
       dirt: ['w3', 'w4', 'w5'], dirtEdge: 'w2', pebble: 's3',
       water: ['b1', 'b2', 'b3'], shore: 'w3', sparkle: 'b4',
-      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0',
+      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0', cliff: ['w1', 'w2', 'w3', 's2'],
       detail: { tuft: 0.95, flower: 0.3, pebble: 0.06, leaf: 0 },
       light: { color: 'y2', alpha: 0.03, blend: 'ADD' },
     },
@@ -182,7 +186,7 @@ FUP.look = {
       grass: ['g3', 'g3', 'g4', 'g4'], grassTuft: 'g5', flowers: ['k4', 'y2', 'b4'],
       dirt: ['w3', 'w4', 'w5'], dirtEdge: 'w2', pebble: 's3',
       water: ['b1', 'b2', 'b3'], shore: 'y1', sparkle: 'b4',
-      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0',
+      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0', cliff: ['w2', 'w3', 'w4', 's3'],
       detail: { tuft: 0.8, flower: 0.18, pebble: 0.07, leaf: 0 },
       sand: 'y1',
     },
@@ -190,7 +194,7 @@ FUP.look = {
       grass: ['g2', 'g3', 'g3', 'w4'], grassTuft: 'y1', flowers: ['x', 'y1'],
       dirt: ['w1', 'w2', 'w3'], dirtEdge: 'k1', pebble: 's2',
       water: ['b1', 'b2', 'b3'], shore: 'w2', sparkle: 'b4',
-      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0',
+      pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0', cliff: ['w1', 'w2', 'x', 's2'],
       detail: { tuft: 0.4, flower: 0.03, pebble: 0.08, leaf: 0.35 },
       light: { color: 'w5', alpha: 0.30, blend: 'MULTIPLY' },
     },
@@ -198,7 +202,7 @@ FUP.look = {
       grass: ['g1', 'g1', 'g2', 'g2'], grassTuft: 't', flowers: ['b4', 'p2'],   // glowy bits
       dirt: ['w1', 'k2', 'w2'], dirtEdge: 'k0', pebble: 'k3',
       water: ['b1', 'b1', 'b2'], shore: 'k2', sparkle: 't',
-      pathStyle: 'dirt', floor: 'k0', foam: 't', bank: 'k0',
+      pathStyle: 'dirt', floor: 'k0', foam: 't', bank: 'k0', cliff: ['k0', 'k1', 'k2', 's1'],
       detail: { tuft: 0.35, flower: 0.08, pebble: 0.04, leaf: 0.1 },
       light: { color: 'b3', alpha: 0.55, blend: 'MULTIPLY' },
     },

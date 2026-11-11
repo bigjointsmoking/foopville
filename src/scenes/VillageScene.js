@@ -84,7 +84,9 @@ class VillageScene extends Phaser.Scene {
       for (let tx = 0; tx < M.width(); tx++) {
         const ch = M.tileAt(tx, ty), x = tx * T, y = ty * T, n = noise(tx, ty);
         if (ch === '#') {
-          const ox = (noise(tx, ty, 3) - 0.5) * 12, oy = (noise(tx, ty, 4) - 0.5) * 8;
+          // Trees on a plateau's front edge stand on top of the cliff face (data/look.js map.cliff)
+          const lift = d.ground.cliff && M.tileAt(tx, ty + 1) !== '#' && ty + 1 < M.height() ? FUP.look.map.cliff.height * T : 0;
+          const ox = (noise(tx, ty, 3) - 0.5) * 12, oy = (noise(tx, ty, 4) - 0.5) * 8 - lift - (lift ? 4 : 0);
           const tree = ui.sprite(this, x + T / 2 + ox, y + T + oy, noise(tx, ty, 5) < 0.5 ? 'tree_pine' : 'tree_round', '🌲', 40);
           tree.setOrigin(0.5, 0.92).setDepth(y + T + oy);
         } else if (ch === '~') {

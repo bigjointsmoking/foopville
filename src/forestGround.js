@@ -73,12 +73,14 @@ FUP.forestGround = {
     const tuft = C('grassTuft'), dirtEdge = C('dirtEdge'), pebble = C('pebble'), shore = C('shore') || dirtEdge;
     const sparkle = C('sparkle') || tuft, foam = C('foam') || sparkle, bank = C('bank') || this.rgb(FUP.look.hex('k0'));
     const floor = C('floor') || grass[0];
+    const cliff = C('cliff');   // [dark, mid, light, stone]: the raised plateau's cliff face (v0.65), or none
+    const CF = M.cliff, faceH = Math.round(CF.height * S), faceT = CF.height;
     const cobble = G.pathStyle === 'cobble', CW = M.cobble.w, CH = M.cobble.h;
     const lip = M.lipPixels / S, bankH = M.bankPixels / S, reach = M.shadowReach, dith = M.ditherStrength;
 
     const tex = scene.textures.createCanvas(KEY, W, H);
     const ctx = tex.getContext(), img = ctx.createImageData(W, H), out = img.data;
-    const kind = new Uint8Array(W * H);   // 0 grass, 1 path, 2 water/shore, 3 tree floor
+    const kind = new Uint8Array(W * H);   // 0 grass, 1 path, 2 water/shore, 3 tree floor, 4 cliff face
     const put = (x, y, col) => { const i = (y * W + x) * 4; out[i] = col[0]; out[i + 1] = col[1]; out[i + 2] = col[2]; out[i + 3] = 255; };
 
     for (let y = 0; y < H; y++) {
@@ -123,10 +125,37 @@ FUP.forestGround = {
           const n = this.fbm(x * 0.03, y * 0.03) + d;
           col = grass[n < 0.38 ? 0 : n < 0.52 ? 1 : n < 0.64 ? 2 : 3];
           const t = sample(treeL, fx - wob * 1.4, fy + wob * 1.4);   // wobbly, not square, tree-wall edges
-          if (t > 0.5 + d) { col = floor; k = 3; }                                // forest floor under tree walls
+          if (t > 0.5 + d) {                                                       // forest floor under tree walls
+            col = floor; k = 3;
+            const tAt = (ox, oy) => sample(treeL, fx - wob * 1.4 + ox, fy + wob * 1.4 + oy);
+            if (cliff && tAt(0, faceT) <= 0.5 + d) {
+              // Cliff face: how many map pixels above the plateau's south edge is this pixel?
+              let dd = faceH;
+              for (let s = 1; s <= faceH; s++) if (tAt(0, s / S) <= 0.5 + d) { dd = s; break; }
+              k = 4;
+              const band = Math.floor((y + this.noise(x * 0.15, y * 0.05) * 3) / CF.band);
+              if (dd > faceH - CF.lip) col = (dd === faceH - CF.lip + 1) ? grass[1] : grass[2];        // grass lip hanging over the top
+              else if (dd === faceH - CF.lip) col = cliff[0];                                           // dark line under the lip
+              else {
+                // Rock blocks in layers: each block lit on its left and top, dark crack on its right and bottom
+                const off = (band * 7) % CF.block, bx = (x + off) % CF.block, by = (y + Math.floor(this.noise(x * 0.15, y * 0.05) * 3)) % CF.band;
+                const blk = this.hash(Math.floor((x + off) / CF.block), band);
+                col = blk < 0.3 ? cliff[3] : (band & 1) ? cliff[1] : cliff[2];
+                if (bx === CF.block - 1 || by === CF.band - 1) col = cliff[0];                         // cracks between blocks
+                else if (bx === 0 || by === 0) col = blk < 0.3 ? cliff[2] : cliff[blk < 0.65 ? 2 : 3];  // lit edges
+                if (dd > faceH * 0.55 && bx !== CF.block - 1 && by !== CF.band - 1 && blk > 0.85) col = grass[0];   // moss near the top
+                if (dd <= 4) col = this.darker(col);                                                    // darker at the foot
+                if (dd <= 2) col = cliff[0];
+                if (this.hash(x >> 2, y >> 2) > 0.94 && dd > 3) col = grass[0];                         // a tuft clinging on
+              }
+            } else if (cliff && (tAt(-0.12, 0) <= 0.5 + d || tAt(0.12, 0) <= 0.5 + d)) {
+              col = this.darker(floor);                                                                 // the plateau's side edges
+            }
+          }
           else if (p > 0.46 && sample(pathL, fx + wob, fy + lip - wob) > 0.5) col = tuft;   // raised lip above a path
           else if (p > 0.44) col = grass[0];                                       // darker rim beside paths
           // Shadows cast downward by trees and buildings
+          if (k === 0 && cliff && sample(treeL, fx, fy - CF.shade) > 0.5) col = this.darker(col);   // deep shade at a cliff's foot
           if (k === 0 && (sample(treeL, fx, fy - reach) > 0.5 || sample(houseL, fx - reach * 0.4, fy - reach) > 0.5 && sample(houseL, fx, fy) < 0.5)) col = this.darker(col);
         }
         kind[y * W + x] = k;

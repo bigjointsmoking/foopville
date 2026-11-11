@@ -91,6 +91,7 @@ FUP.ambience = {
     A.avoid = this.avoidMap(scene, A);
     this.dress(scene, A);
     this.collectSway(scene, A);
+    this.castShadows(scene, A);
     this.collectLights(scene, A);
     this.spawnCritters(scene, A);
     this.makeSky(scene, A);
@@ -166,6 +167,39 @@ FUP.ambience = {
     r *= list.reduce((s, [, w]) => s + w, 0);
     for (const [k, w] of list) { r -= w; if (r <= 0) return k; }
     return list[0][0];
+  },
+
+  // ---------- Sun shadows: each standing picture's silhouette laid on the ground, away from the sun ----------
+  castShadows(scene, A) {
+    const S = this.D().sunShadow;
+    A.sunShadows = []; A.sunT = 0;
+    if (!S || A.P.dayNight === 0) return;
+    for (const o of scene.children.list.slice()) {
+      const key = o.texture && o.texture.key;
+      if (!key || (o.type !== 'Image' && o.type !== 'Sprite') || o.scrollFactorX === 0 || o.depth < -1) continue;
+      if (!S.keys.some(k => key.startsWith(k))) continue;
+      // Upside down, anchored at the feet: flipped with the origin mirrored (a negative scale gets culled by the camera)
+      const sh = scene.add.image(o.x, o.y, key, o.frame && o.frame.name).setOrigin(o.originX, 1 - o.originY)
+        .setFlipX(o.flipX).setFlipY(true).setTintFill(this.num('k0')).setAlpha(S.alpha).setDepth(-4.5);
+      A.sunShadows.push({ o, sh, sx: o.scaleX, sy: o.scaleY });
+    }
+  },
+  updateSun(scene, A, dt) {
+    const S = this.D().sunShadow;
+    if (!A.sunShadows || !A.sunShadows.length) return;
+    A.sunT -= dt;
+    if (A.sunT > 0) return;
+    A.sunT = S.every;
+    const s = FUP.clock ? FUP.clock.share() : 0.4;
+    const t = Math.max(0, Math.min(1, (s - 0.02) / 0.83));       // 0 dawn → 1 dusk
+    const ang = S.angle[0] + (S.angle[1] - S.angle[0]) * t;
+    const len = S.length[1] + (S.length[0] - S.length[1]) * Math.abs(t - 0.5) * 2;
+    const alpha = S.alpha * (1 - S.night * (A.dark || 0));
+    for (const r of A.sunShadows) {
+      if (!r.o.active) { r.sh.destroy(); r.dead = true; continue; }
+      r.sh.setPosition(r.o.x, r.o.y).setScale(r.sx, r.sy * len).setAngle(ang).setAlpha(alpha).setVisible(r.o.visible);
+    }
+    if (A.sunShadows.some(r => r.dead)) A.sunShadows = A.sunShadows.filter(r => !r.dead);
   },
 
   // ---------- Wind: everything with a bottom origin that's a plant or tree ----------
@@ -412,6 +446,7 @@ FUP.ambience = {
     if (A.playerLight && scene.player) A.playerLight.setPosition(scene.player.x, scene.player.y - 6).setAlpha(D.lights.player.alpha * Math.max(0, dark - 0.25) / 0.75);
 
     this.updateWind(scene, A, dt);
+    this.updateSun(scene, A, dt);
     this.updateCritters(scene, A, dt);
     this.updateFlyers(scene, A, dt, dark);
     this.updateBirds(scene, A, dt, dark);

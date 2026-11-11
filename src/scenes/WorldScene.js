@@ -178,7 +178,9 @@ class WorldScene extends Phaser.Scene {
           ui.sprite(this, x + T / 2, y + T * 0.85, 'rock', '🪨', 26).setOrigin(0.5, 1).setDepth(y + T * 0.85);
         } else if (ch === '#') {
           // Trees are sorted by how low they stand, so you walk behind the ones above you.
-          const ox = (noise(tx, ty, 3) - 0.5) * 12, oy = (noise(tx, ty, 4) - 0.5) * 8;
+          // Trees on a plateau's front edge stand on top of the cliff face (data/look.js map.cliff)
+          const lift = ground.colors.cliff && F.tileAt(tx, ty + 1) !== '#' && ty + 1 < F.height() ? FUP.look.map.cliff.height * T : 0;
+          const ox = (noise(tx, ty, 3) - 0.5) * 12, oy = (noise(tx, ty, 4) - 0.5) * 8 - lift - (lift ? 4 : 0);
           const tree = ui.sprite(this, x + T / 2 + ox, y + T + oy, pickTree(noise(tx, ty, 5)), '🌲', 40);
           tree.setOrigin(0.5, 0.92).setDepth(y + T + oy);
           if (tree.setFlipX && noise(tx, ty, 6) < 0.5) tree.setFlipX(true); // variety without leaving the palette

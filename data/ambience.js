@@ -257,6 +257,18 @@ FUP.ambienceData = {
   fireflyColor: 'g5',
   fireflies: 18,
   shadow: { color: 'k0', alpha: 0.28 },
+  // Sun shadows (v0.65): every standing picture whose name starts with one of `keys` casts its own
+  // silhouette onto the ground, away from the sun. Through the day the sun swings across: long shadows
+  // to the west at dawn, short ones at noon, long ones to the east at dusk; they fade at night.
+  sunShadow: {
+    keys: ['tree_', 'vil_', 'bush', 'rock', 'deco_stump', 'deco_log', 'deco_scarecrow', 'deco_haybale', 'deco_signpost', 'deco_rentsign',
+           'amb_bush', 'amb_bigbush', 'amb_berrybush', 'amb_rock', 'amb_toadstool', 'raid_desk', 'grave', 'campfire'],
+    alpha: 0.36,
+    angle: [55, -55],         // degrees: dawn → dusk (0 = straight down the screen)
+    length: [0.95, 0.4],      // share of the picture's height: dawn/dusk, noon
+    night: 0.85,              // how much they fade at full dark
+    every: 0.5,               // seconds between sun updates
+  },
   dust: { every: 0.22, color: 'w5', alpha: 0.5, life: 0.45 },
   fishJumpEvery: [3, 8],     // seconds between ripples / jumping fish on water in view
 };
