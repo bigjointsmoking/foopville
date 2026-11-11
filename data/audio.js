@@ -81,7 +81,7 @@ FUP.audioData = {
     edge: ['edge'], tollroad: ['tollroad'], deepwoods: ['deepwoods'], marsh: ['marsh'],
     battle: ['battle', 'battle2'], boss: ['boss'], raid: ['raid'],
   },
-  regionSongs: { village: 'village', docks: 'docks', edge: 'edge', tollroad: 'tollroad', deepwoods: 'deepwoods', marsh: 'marsh' },
+  regionSongs: { village: 'village', docks: 'docks', isle: 'docks', edge: 'edge', tollroad: 'tollroad', deepwoods: 'deepwoods', marsh: 'marsh' },
 
   sfx: {
     // Menus

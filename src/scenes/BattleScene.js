@@ -81,7 +81,7 @@ class BattleScene extends Phaser.Scene {
     }
     this.setMenu('main');
     const first = this.enemyKeys[0];
-    this.say(this.isBossFight ? 'bossStart' : this.isMiniBoss ? 'godfatherStart' : first === 'pigeon' ? 'pigeonStart' : rb.ambush ? 'raidAmbushStart' : first === 'sporeBouncer' ? 'bouncerStart' : 'start');
+    this.say(this.isBossFight ? 'bossStart' : this.isMiniBoss ? 'godfatherStart' : rb.tutorial ? 'dummyStart' : first === 'pigeon' ? 'pigeonStart' : rb.ambush ? 'raidAmbushStart' : first === 'sporeBouncer' ? 'bouncerStart' : 'start');
     // Spored in a raid hazard room: you start this fight with that many Poison stacks
     const R = this.inRaid && FUP.run.forest.raid;
     if (R && R.spored) {
@@ -270,7 +270,7 @@ class BattleScene extends Phaser.Scene {
     const useArt = data.sprite && this.textures.exists(data.sprite);
     const animated = useArt && FUP.anim.has(this, data.sprite, 'idle');   // Blender clip frames (src/anim.js)
     const pic = useArt
-      ? (animated ? this.add.sprite(0, 0, data.sprite) : this.add.image(0, 0, data.sprite)).setScale(FUP.ui.pixelScale).setFlipX(true)
+      ? (animated ? this.add.sprite(0, 0, data.sprite) : this.add.image(0, 0, data.sprite)).setScale(FUP.ui.pixelScale * (data.artScale || 1)).setFlipX(true)   // artScale: a small picture drawn bigger (the training dummy)
       : this.add.text(0, 0, data.emoji, { fontSize: (data.size || 104) + 'px' }).setOrigin(0.5);
     const size = useArt ? pic.displayHeight : (data.size || 104);
     const top = -size / 2 - (!useArt && data.hat ? size * 0.4 : 0);
@@ -1151,6 +1151,7 @@ class BattleScene extends Phaser.Scene {
     this.addLimit(r.amount / p.maxHp * 100 * bal.limitPerPercentHpLost);
     if (!prefix) this.addFocus(FUP.balance.focus.perHit);   // getting hit builds Focus (not poison)
 
+    if (p.hp <= 0 && (FUP.run.battle || {}).tutorial) p.hp = 1;   // Orientation Isle: the dummy can't kill you (v0.62)
     if (p.hp <= 0) this.endBattle('lose');
     else if (!this.saidLowHp && p.hp < p.maxHp * 0.3) { this.saidLowHp = true; this.say('lowHp'); }
   }
@@ -1225,6 +1226,7 @@ class BattleScene extends Phaser.Scene {
       if (lost.length) lines.push(`Backpack full. Left behind: ${show(lost)}`);
       // Gear drops (normal enemies sometimes, the Landlord always)
       for (const e of this.killed) {
+        if (e.noGear) continue;   // the training dummy drops nothing
         const chance = (run.battle && run.battle.gearChanceMult) || 1;   // a raid ambush: x2
         const tier = (run.battle && run.battle.dropTier) || 1;            // the region's dropTier (G1): never better than its shop tier
         const item = FUP.gear.rollDrop(!!(e.boss || e.gearMin), Math.random, e.gearMin, chance, tier);   // Godfather: always Rare+
@@ -1280,6 +1282,7 @@ class BattleScene extends Phaser.Scene {
     if (!survived && run.isHardcore()) { label = 'New life'; go = () => this.scene.start('Start'); }
     else if (!survived) { label = '🏠 Wake up at home'; go = () => this.scene.start('Village', { from: 'respawn' }); }
     else if (result === 'boss') { label = '🛝 Eviction Chute'; go = () => this.evictionChute(); }
+    else if (run.battle && run.battle.tutorial) { label = '🏝️ Back to the island'; go = () => this.scene.start('World', { from: 'tutorialFight' }); }   // Orientation Isle (v0.62)
     else if (run.forest && run.forest.raid && !this.isBossFight) { label = '🚪 Back to the basement'; go = () => this.scene.start('Raid', {}); }
     else if (run.forest && !this.isBossFight) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }
     else if (run.forest) { label = '🔥 Back to camp'; go = () => this.scene.start('Cook', { mode: 'campfire' }); }

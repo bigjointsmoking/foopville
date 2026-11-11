@@ -54,7 +54,7 @@ class StartScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, alpha: 1, scale: LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.61', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.62', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);

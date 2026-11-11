@@ -37,6 +37,18 @@ FUP.enemies = {
       eatMove: { name: 'Snack Time', type: 'eatStolen', tell: '🍽️', tellText: 'Eating YOUR snack (hit it!)' } },
   },
 
+  // Orientation Isle's practice target (v0.62, data/tutorial.js). Hits softly and slowly so you can
+  // learn Defend / Perfect Block. In a tutorial fight you can't drop below 1 HP (BattleScene.hurtPlayer).
+  trainingDummy: {
+    name: 'Training Dummy', emoji: '🎯', size: 96, sprite: 'deco_scarecrow', mapSprite: 'deco_scarecrow', artScale: 3.5,
+    maxHp: 22, atk: 3, def: 0, spd: 18, resolve: 0.05,
+    xp: 20, coins: 0, boss: false, weak: 'fire', resists: [], noGear: true,
+    moves: [
+      { name: 'Wobble Slap', type: 'attack', power: 0.8, tell: '⚔️', tellText: 'Attack (try Defend!)', weight: 3 },
+      { name: 'Ominous Creak', type: 'attack', power: 1.2, tell: '💥', tellText: 'Heavy hit (Defend!)', weight: 1 },
+    ],
+  },
+
   // Summoned by the Landlord in Phase 1. Blueprint 18.2.
   tenantShroom: {
     name: 'Tenant Shroom', emoji: '🍄', size: 64, sprite: 'tenant', mapSprite: 'tenant_map',

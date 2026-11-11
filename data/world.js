@@ -38,6 +38,9 @@ FUP.worldData = {
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },
+    // The tutorial island (v0.62): where a new life wakes up. No links: the ferry (data/tutorial.js) goes to the village, one way.
+    isle:      { name: 'Orientation Isle', kind: 'cozy', scene: 'World', box: { col: 1, row: 4 }, features: ['npcs', 'objects', 'fishing', 'campfire', 'tutorial'],
+                 links: {} },
     // East of the village over the repaired bridge (W2). Map in data/region_marsh.js
     marsh:     { name: 'Soggy Marsh', kind: 'danger', scene: 'World', box: { col: 1, row: 3 }, band: [15, 22], dropTier: 3,
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'village', edge: 'E' } } },

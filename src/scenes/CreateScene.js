@@ -14,6 +14,7 @@ class CreateScene extends Phaser.Scene {
     this.nameInput = null;
     this.started = false;   // reset: this screen is reused for every new life
     this.mode = FUP.runData.defaultMode;   // Normal or Hardcore (picked on the weapon step, locked for life)
+    this.tutorial = FUP.tutorial.wanted();  // Orientation Isle: on for your first life in this browser (v0.62)
     this.add.rectangle(0, 0, this.scale.width, this.scale.height, FUP.ui.colors.sky).setOrigin(0);
     FUP.ui.muteButton(this, this.scale.width - 30, 30);
 
@@ -186,6 +187,14 @@ class CreateScene extends Phaser.Scene {
       card.on('pointerdown', () => this.begin(key));
     });
 
+    // Tutorial switch (v0.62): Orientation Isle, or straight to Foopville
+    const tb = ui.button(this, W - 200, 520, 170, 50, `🏝️ Tutorial: ${this.tutorial ? 'ON' : 'OFF'}`, () => {
+      this.tutorial = !this.tutorial;
+      this.time.delayedCall(1, () => this.drawWeapons());
+    }, { size: 15, hot: this.tutorial });
+    g.addMultiple([tb.rect, tb.txt]);
+    add(ui.text(this, W - 115, 574, this.tutorial ? 'Learn the basics on an island first' : 'Start right in the village', 11, c.dim).setOrigin(0.5, 0));
+
     const back = ui.button(this, 40, 520, 140, 50, '◀ Back', () => { this.step = 'looks'; FUP.audio.typing = true; this.drawLooks(); }, { size: 17 });
     g.addMultiple([back.rect, back.txt]);
   }
@@ -195,8 +204,9 @@ class CreateScene extends Phaser.Scene {
     this.started = true;
     FUP.audio.sfx('select');
     FUP.run.newLife(weaponKey, { name: this.name, look: { ...this.look }, mode: this.mode });  // fresh bag, levels wiped
+    if (this.tutorial) FUP.tutorial.begin();   // wake up on Orientation Isle (src/systems/tutorial.js)
     FUP.save.write();
     this.cameras.main.fadeOut(300, 0, 0, 0);
-    this.time.delayedCall(320, () => this.scene.start('Village', { fresh: true }));
+    this.time.delayedCall(320, () => this.tutorial ? this.scene.start('World', { from: 'tutorial' }) : this.scene.start('Village', { fresh: true }));
   }
 }

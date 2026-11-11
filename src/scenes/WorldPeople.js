@@ -77,10 +77,12 @@ Object.assign(WorldScene.prototype, {
   },
 
   interact() {
+    if (this.tutDialog) { this.tutDialog.next(); return; }   // Orientation Isle: E / Space turns the tutor's page
     if (this.leaving || this.panel || this.pack) return;
     const s = this.nearestThing();
     if (!s) return;
     this.actBtn.setVisible(false); this.actText.setVisible(false); this.prompt.setVisible(false);
+    if (s.tut) { this.tutorUse(s); return; }   // tutors, the farm patch, sawhorse, dummy (WorldTutorial.js)
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }

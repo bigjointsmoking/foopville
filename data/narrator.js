@@ -137,6 +137,11 @@ FUP.narrator = {
   ],
   campEat: ['You eat the {dish}. The squirrel would have taken it anyway.'],
   // ---------- Village ----------
+  // Orientation Isle, the tutorial (v0.62, data/tutorial.js)
+  isleArrive: ['You wake up on an island. You don\'t remember the boat. It remembers you.', 'Orientation Isle. Where new arrivals learn things. Some of them, anyway.'],
+  isleBack: ['Orientation Isle. Still here. So are you.', 'Back on the island. The tutors pretend they missed you.'],
+  dummyStart: ['A Training Dummy. It has no feelings, no plans, and better posture than you.', 'The Training Dummy faces you. Wait for your bar, then Attack. When it winds up, Defend.'],
+  islandLeave: ['The ferry pulls away. The island waves. Or it\'s the wind.'],
   villageFirst: [
     'Welcome to Foopville, {name}. Population: small. Expectations: smaller.',
     'This is Foopville. {name} lives here now. The village has been informed. It sighed.',

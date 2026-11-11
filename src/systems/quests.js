@@ -86,6 +86,7 @@ FUP.quests = {
 
   // Something happened. Returns the names of quests it just finished (so the screen can cheer).
   event(type, data = {}) {
+    if (FUP.tutorial) FUP.tutorial.note(type);   // Orientation Isle listens too (fish, cook...)
     if (type === 'kill') this.runKills++;
     if (type === 'campfire') data = { ...data, kills: this.runKills };
     if (type === 'boss' || type === 'kill' || type === 'charm') data = { weapon: FUP.run.weapon, ...data };

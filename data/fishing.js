@@ -51,6 +51,7 @@ FUP.fishData = {
     pond: { name: 'The Village Pond', fish: { mudminnow: 5, grumpy_guppy: 4, pond_perch: 3, sulking_carp: 2, whiskered_catfish: 1 } },
     pier: { name: 'The Pier', fish: { salty_sardine: 5, dock_herring: 4, regret_snapper: 3, bashful_flounder: 3 } },   // the Docks (data/region_docks.js)
     marsh: { name: 'Marsh Water', fish: { mud_skipper: 4, croaker: 3, bog_eel: 2 } },   // the Soggy Marsh (data/region_marsh.js)
+    isle: { name: 'Orientation Pond', fish: { mudminnow: 3, grumpy_guppy: 1 } },   // Orientation Isle, the tutorial (data/region_isle.js)
     deep: { name: 'Deep Water', req: { skills: { fishing: 26 } }, fish: { sarcastic_mackerel: 4, grudge_tuna: 3, letter_opener: 2 } },
   },
   // Where the spots are on the village map (squares, corners included). Only '~' squares inside count.

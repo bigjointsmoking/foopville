@@ -30,7 +30,7 @@ class CookScene extends Phaser.Scene {
     this.pack = null;        // backpack screen (reset: Phaser reuses this screen)
     this.choice = null;      // the campfire's "where to?" box
     this.card = null; this.closingCard = false; this.tip = null; this.hiddenDish = null; // dish reveal card + hover tip
-    const fire = this.mode === 'campfire';
+    const fire = this.mode === 'campfire' || this.mode === 'isle';   // 'isle' = the campfire on Orientation Isle (v0.62): no Rest, no trip
 
     this.add.rectangle(0, 0, W, H, c.sky).setOrigin(0);
     FUP.ui.sprite(this, W - 60, H - 90, 'campfire', '🔥', 40).setAlpha(0.25);
@@ -40,7 +40,7 @@ class CookScene extends Phaser.Scene {
     this.narratorText = ui.text(this, 34, 38, '', 16, c.ink, { fontStyle: 'italic', wordWrap: { width: W - 350 } }).setOrigin(0, 0.5);
 
     // Campfire extras: the run timer and the Rest button
-    if (fire) {
+    if (this.mode === 'campfire') {
       this.timerText = ui.text(this, W - 222, 38, '', 18, c.accent, { fontStyle: '700' }).setOrigin(1, 0.5);
       this.restBtn = ui.button(this, W - 168, 20, 144, 36, `😴 Rest +${Math.round(FUP.forestData.restHealPercent * 100)}%`, () => this.rest(), { size: 15 });
       this.restBtn.setEnabled(!this.campArea().rested);
@@ -80,7 +80,7 @@ class CookScene extends Phaser.Scene {
     if (fire) this.say('campfireArrive');
     else this.say(FUP.run.runs === 0 ? 'campFirst' : 'campReturn');
     // At home, every change is saved (closing the page keeps your dishes).
-    if (!fire) this.events.on('postupdate', () => { if (this.dirty) { this.dirty = false; FUP.save.write(); } });
+    if (this.mode !== 'campfire') this.events.on('postupdate', () => { if (this.dirty) { this.dirty = false; FUP.save.write(); } });
   }
 
   // The run timer keeps ticking at the campfire (score = fastest run).
@@ -312,6 +312,7 @@ class CookScene extends Phaser.Scene {
     this.result = r;
     this.dirty = true;
     if (!r.burnt && r.recipe) FUP.facts.add(`recipe:${FUP.cooking.recipeId(r.recipe)}`);
+    if (r.burnt) FUP.tutorial.note('cook');   // the island counts a burnt dish too
     const questNews = r.burnt ? [] : FUP.quests.event('cook', { tier: r.tier.id, element: r.effects.element, method: r.method });
     if (r.discovered) questNews.push(...FUP.quests.event('secret'));
     if (questNews.length) this.time.delayedCall(2600, () => { if (this.narratorText.active) this.narratorText.setText(`📜 Quest done: ${questNews.join(', ')}. Hand it in at the Quest Board.`); });
@@ -344,7 +345,7 @@ class CookScene extends Phaser.Scene {
   openPack() {
     if (this.pack || this.leaving) return;
     this.hideDishTip();
-    this.pack = FUP.backpack.open(this, { home: this.mode !== 'campfire', onChange: () => { this.dirty = true; }, onClose: () => { this.pack = null; this.dirty = true; this.refreshAll(); } });
+    this.pack = FUP.backpack.open(this, { home: this.mode === 'home', onChange: () => { this.dirty = true; }, onClose: () => { this.pack = null; this.dirty = true; this.refreshAll(); } });
   }
 
   // ---------- Gear screen (old, replaced by the backpack in v0.41) ----------
@@ -399,7 +400,7 @@ class CookScene extends Phaser.Scene {
     // ----- Right: shop or your stuff -----
     const X = 460, RW = W - 40 - X;
     btn(X, 70, 170, 28, `Your stuff (${run.stash.length})`, () => { this.gearTab = 'stash'; }, { hot: true });
-    add(ui.text(this, X, 104, this.mode === 'campfire' ? 'The shops are back in the village. You can still change what you wear.' : 'Buy and sell at the Blacksmith and the Shopkeeper in the village.', 12, c.dim));
+    add(ui.text(this, X, 104, this.mode !== 'home' ? 'The shops are back in the village. You can still change what you wear.' : 'Buy and sell at the Blacksmith and the Shopkeeper in the village.', 12, c.dim));
 
     const rowH = 34, y0 = 122;
     if (this.gearTab === 'shop' && shopOpen) {
@@ -618,8 +619,8 @@ class CookScene extends Phaser.Scene {
     const ui = FUP.ui, y = 558, h = 34;
     ui.button(this, 20, y, 130, h, '📖 Recipes', () => { this.showBook = !this.showBook; this.bookPage = 0; this.renderBook(); }, { size: 15 });   // always opens on page 1
     ui.button(this, 160, y, 110, h, 'Clear pot', () => { this.picked = []; this.renderPot(); this.renderPantry(); this.renderResult(); }, { size: 15 });
-    const label = this.mode === 'campfire' ? '🔥 Leave the campfire' : '🏘️ Out to the village';
-    ui.button(this, 680, 555, 200, 38, label, () => this.mode === 'campfire' ? this.openLeaveChoice() : this.leave(), { size: 16, hot: true });
+    const label = this.mode === 'home' ? '🏘️ Out to the village' : '🔥 Leave the campfire';
+    ui.button(this, 680, 555, 200, 38, label, () => this.mode === 'campfire' ? this.openLeaveChoice() : this.leave(this.mode === 'isle' ? 'forest' : undefined), { size: 16, hot: true });
 
     if (FUP.cookingData.devXpButton) {
       const amt = FUP.cookingData.devXpAmount;
@@ -668,7 +669,7 @@ class CookScene extends Phaser.Scene {
       this.time.delayedCall(520, () => this.scene.start('Village', { from: 'retreat' }));
       return;
     }
-    if (this.mode === 'campfire' && where === 'forest') {
+    if (this.mode !== 'home' && where === 'forest') {
       // Back out into this area, standing next to the fire
       this.cameras.main.fadeOut(350, 0, 0, 0);
       this.time.delayedCall(370, () => this.scene.start('World', { from: 'campfire' }));

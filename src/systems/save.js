@@ -216,6 +216,13 @@ FUP.save = {
     reset: () => FUP.tools.reset(),
   });
 
+  // Orientation Isle (v0.62): which step you're on, what you've done, the practice patch
+  S.register('tutorial', {
+    get: () => FUP.tutorial.state,
+    set(d) { FUP.tutorial.state = { ...FUP.tutorial.fresh(), ...d, did: { ...(d.did || {}) }, patch: d.patch ? { ...d.patch } : null }; },
+    reset: () => FUP.tutorial.reset(),
+  });
+
   S.register('facts', {
     get: () => FUP.facts.state,
     set(d) { FUP.facts.state = { ...d }; },

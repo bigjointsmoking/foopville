@@ -43,6 +43,8 @@ class WorldScene extends Phaser.Scene {
     if (this.feature('fog')) this.drawFog();
     this.drawLight();
     this.drawHud();
+    this.tut = null;            // Orientation Isle, the tutorial (WorldTutorial.js): only on the island
+    if (this.scene.key === 'World' && this.f.area === FUP.tutorial.region()) this.drawTutorial();
     this.setupInput();
     FUP.progressUi.attach(this);   // "+XP" pop-ups (a good toll haggle gives Rizz XP)
 
@@ -62,6 +64,7 @@ class WorldScene extends Phaser.Scene {
   afterBattle() {
     const b = FUP.run.battle;
     FUP.run.battle = null;
+    if (b && b.tutorial) { this.tutorialAfterFight(b); return; }   // the training dummy (WorldTutorial.js)
     if (!b) {
       if (this.safe) { this.greetSafe(); return; }
       if (this.arrive.from === 'campfire') this.say('forestFromCampfire');
@@ -533,6 +536,7 @@ class WorldScene extends Phaser.Scene {
   openPack() {
     if (this.leaving || this.pack || this.panel) return;
     this.leaving = true;
+    FUP.tutorial.note('pack');   // Orientation Isle: "open your backpack"
     this.pack = FUP.backpack.open(this, { home: false, onChange: () => this.refreshHud(), onClose: () => { this.pack = null; this.leaving = false; this.drawSatchel(); this.refreshHud(); } });
   }
 
@@ -555,6 +559,8 @@ class WorldScene extends Phaser.Scene {
     f.time += dt;
     this.movePlayer(dt);
     this.updateAction();
+    if (this.tut) this.updateTutorial(dt);
+    if (this.leaving) return;
     this.pickUpItems();
     this.moveEnemies(dt);
     this.updateFog();
@@ -727,10 +733,11 @@ class WorldScene extends Phaser.Scene {
     if (dist > 30) return;
     this.leaving = true;
     this.A.campfireVisited = true;   // the Godfather now waits on the way to the hole instead
-    FUP.quests.event('campfire', { area: FUP.forest.number(this.f.area) });
+    if (!this.safe) FUP.quests.event('campfire', { area: FUP.forest.number(this.f.area) });
     FUP.audio.sfx('campfire');
+    if (this.safe) this.saveHere();
     this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.time.delayedCall(420, () => this.scene.start('Cook', { mode: 'campfire' }));
+    this.time.delayedCall(420, () => this.scene.start('Cook', { mode: this.safe ? 'isle' : 'campfire' }));   // a safe campfire = Orientation Isle's (no trip)
   }
 
   // Step onto a gap in the map's edge: cross into the next region (or home to the village).
