@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- PLAY.HTML: double-click this file to run Foopville from your own folder.
+     Edit the files in data/ with TextEdit, save, then refresh this page (Cmd+R).
+     This is a copy of index.html with the page wrapper added. Claude re-creates it
+     whenever new game files are added. -->
+</head>
+<body>
+<title>Foopville</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  /* Single dark look on purpose: it's a game screen, not a document. */
+  :root {
+    --bg: #0f0e0c;
+    --ink: #e6dcc2;
+    --dim: #aaa8a2;
+    --edge: #3e3a32;
+    --font: "Pixelify Sans", "Trebuchet MS", sans-serif;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    box-sizing: border-box;
+    padding-block: 12px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  #game { width: 100%; max-width: 1100px; flex: 1; min-height: 0; }
+  #game canvas { touch-action: none; -webkit-user-select: none; user-select: none; border: 2px solid var(--edge); border-radius: 4px; }
+  .foot { margin: 0; color: var(--dim); font-size: 13px; letter-spacing: 0.06em; text-align: center; }
+
+  /* Phones and tablets (src/screen.js adds .touch): the game takes the whole screen,
+     edge to edge, keeping clear of the notch and the home bar. */
+  body.touch {
+    position: fixed; inset: 0; margin: 0; overflow: hidden; overscroll-behavior: none;
+    height: 100dvh; gap: 0;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  body.touch #game { max-width: none; width: 100%; height: 100%; }
+  body.touch #game canvas { border: 0; border-radius: 0; }
+  body.touch .foot { display: none; }
+  #turn { display: none; }
+  @media (orientation: portrait) {
+    body.touch:not(.upright-ok) #turn {
+      display: flex; position: fixed; inset: 0; z-index: 10; background: var(--bg);
+      flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      padding: 24px; text-align: center; font-size: 22px; color: var(--ink);
+    }
+    #turn small { color: var(--dim); font-size: 14px; max-width: 280px; line-height: 1.4; }
+    .turn-icon { font-size: 54px; }
+  }
+  #fs {
+    position: fixed; z-index: 5; bottom: calc(6px + env(safe-area-inset-bottom, 0px)); left: calc(6px + env(safe-area-inset-left, 0px));
+    width: 34px; height: 34px; padding: 0; border: 1px solid var(--edge); border-radius: 6px;
+    background: rgba(15, 14, 12, 0.55); color: var(--ink); font-size: 18px; line-height: 1; opacity: 0.7;
+  }
+  body:not(.on-title) #fs, body.is-full #fs { display: none; }
+</style>
+
+<div id="game"></div>
+<p class="foot">FOOPVILLE · prototype v0.61 · fix the well, farm, cook, rebuild the Market, wade into the Marsh, pay (or punch) the tax goblin, upset the pigeons, raid the basement, evict the Mushroom Landlord</p>
+
+<!-- The game engine (Phaser 3), loaded from the web -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+
+<!-- Data: numbers and content you can tweak -->
+<script src="assets/font.js"></script>
+<script src="assets/sprites.js"></script>
+<script src="assets/sfx.js"></script>
+<script src="data/look.js"></script>
+<script src="data/balance.js"></script>
+<script src="data/weapons.js"></script>
+<script src="data/enemies.js"></script>
+<script src="data/narrator.js"></script>
+<script src="data/skills.js"></script>
+<script src="data/ingredients.js"></script>
+<script src="data/cooking.js"></script>
+<script src="data/recipes.js"></script>
+<script src="data/garden.js"></script>
+<script src="data/house.js"></script>
+<script src="data/audio.js"></script>
+<script src="data/gear.js"></script>
+<script src="data/run.js"></script>
+<script src="data/forest.js"></script>
+<script src="data/world.js"></script>
+<script src="data/region_docks.js"></script>
+<script src="data/region_marsh.js"></script>
+<script src="data/raid.js"></script>
+<script src="data/looks.js"></script>
+<script src="data/village.js"></script>
+<script src="data/quests.js"></script>
+<script src="data/unlocks.js"></script>
+<script src="data/facts.js"></script>
+<script src="data/fishing.js"></script>
+<script src="data/tools.js"></script>
+<script src="data/place.js"></script>
+<script src="data/clock.js"></script>
+<script src="data/stall.js"></script>
+<script src="data/repairs.js"></script>
+<script src="data/cosmetics.js"></script>
+
+<!-- Logic -->
+<script src="src/screen.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/fx.js"></script>
+<script src="src/anim.js"></script>
+<script src="src/progressUi.js"></script>
+<script src="src/backpack.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/looks.js"></script>
+<script src="src/forestGround.js"></script>
+<script src="src/dishArt.js"></script>
+<script src="src/fishingUi.js"></script>
+<script src="src/trapUi.js"></script>
+<script src="src/awayCard.js"></script>
+<script src="src/buildUi.js"></script>
+<script src="src/roomUi.js"></script>
+<script src="src/stallUi.js"></script>
+<script src="src/worldMapUi.js"></script>
+<script src="src/systems/skills.js"></script>
+<script src="src/systems/combat.js"></script>
+<script src="src/systems/cooking.js"></script>
+<script src="src/systems/run.js"></script>
+<script src="src/systems/gear.js"></script>
+<script src="src/systems/forest.js"></script>
+<script src="src/systems/world.js"></script>
+<script src="src/systems/raid.js"></script>
+<script src="src/systems/quests.js"></script>
+<script src="src/systems/village.js"></script>
+<script src="src/systems/garden.js"></script>
+<script src="src/systems/house.js"></script>
+<script src="src/systems/unlocks.js"></script>
+<script src="src/systems/grave.js"></script>
+<script src="src/systems/fishing.js"></script>
+<script src="src/systems/tools.js"></script>
+<script src="src/systems/place.js"></script>
+<script src="src/systems/clock.js"></script>
+<script src="src/systems/stall.js"></script>
+<script src="src/systems/repairs.js"></script>
+<script src="src/systems/cosmetics.js"></script>
+<script src="src/systems/facts.js"></script>
+<script src="src/systems/req.js"></script>
+<script src="src/systems/save.js"></script>
+<script src="src/scenes/BootScene.js"></script>
+<script src="src/scenes/StartScene.js"></script>
+<script src="src/scenes/CreateScene.js"></script>
+<script src="src/scenes/BattleScene.js"></script>
+<script src="src/scenes/BattleSkills.js"></script>
+<script src="src/scenes/CookScene.js"></script>
+<script src="src/scenes/WorldScene.js"></script>
+<script src="src/scenes/WorldPeople.js"></script>
+<script src="src/scenes/RaidScene.js"></script>
+<script src="src/scenes/VillageScene.js"></script>
+<script src="src/scenes/VillagePanels.js"></script>
+<script src="src/scenes/VillageFarm.js"></script>
+<script src="src/scenes/VillageRepairs.js"></script>
+<script src="src/main.js"></script>
+
+
+</body>
+</html>
