@@ -29,7 +29,7 @@ FUP.look = {
 
   // Snap every Blender sprite to the palette when the game starts.
   // (The hero's custom colours are left alone. Phase 3-5 re-render the art properly.)
-  snapSprites: true,
+  snapSprites: false,   // v0.64: off. The painted sprites keep their own shading (snapping flattened it)
 
   // ---------- Text ----------
   font: '"Pixelify Sans", "Trebuchet MS", sans-serif',

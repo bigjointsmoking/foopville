@@ -44,7 +44,8 @@ window.FUP = window.FUP || {};
       stroke: hex(L.textStroke),
     },
 
-    pixelScale: 2, // Blender sprites are drawn at 2x for chunky pixels
+    pixelScale: 2, // Blender sprites are drawn at 2x for chunky pixels. Painted sprites (v0.64) have
+                   // FUP.spriteRes = 2 times the pixels, so every scale is divided by it (artScale) and they show the same size.
 
     // ---------- Frames (the 9-slice look, drawn to any size) ----------
     // Returns a texture key for a framed box of this style and size.
@@ -90,8 +91,11 @@ window.FUP = window.FUP || {};
 
     // A Blender sprite if it exists, otherwise the emoji (so nothing breaks
     // before its art is made). Both are centred on (x, y).
+    // A scale for a Blender sprite, in old-art units (2 = the usual size), whatever resolution the art is
+    artScale(s) { return s / (FUP.spriteRes || 1); },
+
     sprite(scene, x, y, key, emoji = '❓', emojiSize = 32, scale = FUP.ui.pixelScale) {
-      if (key && scene.textures.exists(key)) return scene.add.image(x, y, key).setScale(scale);
+      if (key && scene.textures.exists(key)) return scene.add.image(x, y, key).setScale(FUP.ui.artScale(scale));
       return scene.add.text(x, y, emoji, { fontSize: emojiSize + 'px' }).setOrigin(0.5);
     },
 
@@ -131,7 +135,7 @@ window.FUP = window.FUP || {};
       const txt = FUP.ui.text(scene, x + (w + pad) / 2, ty, label, opts.size || 18, ink, {
         align: 'center', wordWrap: { width: w - 14 - pad }, lineSpacing: 2,
       }).setOrigin(0.5);
-      const icon = hasIcon ? scene.add.image(x + 20, y + h / 2, opts.icon).setScale(opts.iconScale || 1.5) : null;
+      const icon = hasIcon ? scene.add.image(x + 20, y + h / 2, opts.icon).setScale(FUP.ui.artScale(opts.iconScale || 1.5)) : null;
 
       const b = { rect, txt, icon, enabled: true };
       const press = (down) => { txt.y = ty + (down ? L.pressDepth : 0); if (icon) icon.y = y + h / 2 + (down ? L.pressDepth : 0); };

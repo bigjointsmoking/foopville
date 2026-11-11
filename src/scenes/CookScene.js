@@ -519,7 +519,7 @@ class CookScene extends Phaser.Scene {
     const idx = FUP.run.dishStacks().findIndex(st => st.idx.includes(FUP.run.satchel.indexOf(dish)));
     const tx = this.satchelSlotX(Math.max(0, idx)) + this.satchelStep() / 2 - 2, ty = 557 + 16;
     this.card.getChildren().forEach(o => { if (o !== pic) this.tweens.add({ targets: o, alpha: 0, duration: 200 }); });
-    this.tweens.add({ targets: pic, x: tx, y: ty, scale: 1.5, duration: 450, ease: 'Cubic.easeIn', onComplete: () => {
+    this.tweens.add({ targets: pic, x: tx, y: ty, scale: FUP.ui.artScale(1.5), duration: 450, ease: 'Cubic.easeIn', onComplete: () => {
       FUP.audio.sfx('plop');
       this.card.destroy(true); this.card = null; this.closingCard = false;
       this.hiddenDish = null;

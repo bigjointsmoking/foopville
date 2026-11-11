@@ -14,7 +14,7 @@ Object.assign(VillageScene.prototype, {
     for (const q of FUP.garden.squares()) {
       const c = M.center(q.tx, q.ty);
       const soil = this.add.image(c.x, c.y, 'farm_weeds').setDisplaySize(T + 2, T + 2).setDepth(-6);
-      const crop = this.add.image(c.x, c.y + T * 0.3, 'crop_sprout').setOrigin(0.5, 0.85).setScale(2).setDepth(c.y + T * 0.3).setVisible(false);
+      const crop = this.add.image(c.x, c.y + T * 0.3, 'crop_sprout').setOrigin(0.5, 0.85).setScale(FUP.ui.artScale(2)).setDepth(c.y + T * 0.3).setVisible(false);
       const icon = FUP.ui.text(this, c.x + 13, c.y - 9, '', 13, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(5200);
       this.tweens.add({ targets: icon, y: c.y - 13, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       soil.setInteractive({ useHandCursor: true });
@@ -52,13 +52,13 @@ Object.assign(VillageScene.prototype, {
       v.soil.setTexture(look === 'weeds' ? 'farm_weeds' : 'farm_soil').setDisplaySize(FUP.villageData.tileSize + 2, FUP.villageData.tileSize + 2);
       v.soil.setAlpha(mine ? 1 : 0.55);
       if (p.wet && look === 'growing') v.soil.setTint(0x8c96b8); else v.soil.clearTint();   // wet soil is darker
-      v.crop.setVisible(p.s === 'crop').setRotation(0).clearTint().setScale(2);
+      v.crop.setVisible(p.s === 'crop').setRotation(0).clearTint().setScale(FUP.ui.artScale(2));
       if (p.s === 'crop') {
         let key = 'crop_sprout', scale = 2;
         if (look === 'dead') key = 'crop_dead';
         else if (look === 'ready') { key = `crop_${p.crop}_3`; scale = 2.5; }
         else if (p.stage >= 1) { key = `crop_${p.crop}_2`; scale = p.stage === 1 ? 2.1 : 2.6; }
-        v.crop.setTexture(this.textures.exists(key) ? key : 'crop_sprout').setScale(scale);
+        v.crop.setTexture(this.textures.exists(key) ? key : 'crop_sprout').setScale(FUP.ui.artScale(scale));
         if (look === 'wilting') v.crop.setTint(0xc8a860).setRotation(0.3);
       }
       const icons = { thirsty: '💧', wilting: '🥀', ready: '✨', dead: '💀' };

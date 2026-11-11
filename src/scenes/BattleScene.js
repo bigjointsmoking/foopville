@@ -161,7 +161,7 @@ class BattleScene extends Phaser.Scene {
     const keys = b.trees.filter(k => this.textures.exists(k));
     const row = (y, scale, xs) => xs.forEach((x, i) => {
       if (!keys.length) return;
-      const t = this.add.image(x, y, keys[i % keys.length]).setScale(scale).setOrigin(0.5, 1).setDepth(-18 + scale).setAlpha(BG.treeAlpha);
+      const t = this.add.image(x, y, keys[i % keys.length]).setScale(FUP.ui.artScale(scale)).setOrigin(0.5, 1).setDepth(-18 + scale).setAlpha(BG.treeAlpha);
       if (i % 2) t.setFlipX(true);
     });
     row(262, 1.5, [30, 110, 200, 330, 450, 560, 680, 760, 870]);
@@ -270,7 +270,7 @@ class BattleScene extends Phaser.Scene {
     const useArt = data.sprite && this.textures.exists(data.sprite);
     const animated = useArt && FUP.anim.has(this, data.sprite, 'idle');   // Blender clip frames (src/anim.js)
     const pic = useArt
-      ? (animated ? this.add.sprite(0, 0, data.sprite) : this.add.image(0, 0, data.sprite)).setScale(FUP.ui.pixelScale * (data.artScale || 1)).setFlipX(true)   // artScale: a small picture drawn bigger (the training dummy)
+      ? (animated ? this.add.sprite(0, 0, data.sprite) : this.add.image(0, 0, data.sprite)).setScale(FUP.ui.artScale(FUP.ui.pixelScale * (data.artScale || 1))).setFlipX(true)   // artScale: a small picture drawn bigger (the training dummy)
       : this.add.text(0, 0, data.emoji, { fontSize: (data.size || 104) + 'px' }).setOrigin(0.5);
     const size = useArt ? pic.displayHeight : (data.size || 104);
     const top = -size / 2 - (!useArt && data.hat ? size * 0.4 : 0);
@@ -1301,7 +1301,7 @@ class BattleScene extends Phaser.Scene {
     const tube = this.add.graphics().setDepth(901);
     tube.lineStyle(70, FUP.look.num('w3')); tube.lineBetween(-40, 80, W + 40, H - 60);
     tube.lineStyle(56, FUP.look.num('k1')); tube.lineBetween(-40, 80, W + 40, H - 60);
-    const hero = ui.sprite(this, -20, 70, FUP.looks.key('hero_map'), '🧍', 40).setDepth(902).setAngle(30).setScale(FUP.ui.pixelScale * 1.4);
+    const hero = ui.sprite(this, -20, 70, FUP.looks.key('hero_map'), '🧍', 40).setDepth(902).setAngle(30).setScale(FUP.ui.artScale(FUP.ui.pixelScale * 1.4));
     ui.text(this, W / 2, 60, 'THE EVICTION CHUTE', 30, ui.colors.accent, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 6 }).setOrigin(0.5).setDepth(903);
     const line = Phaser.Utils.Array.GetRandom(FUP.narrator.chuteSlide);
     ui.text(this, W / 2, H - 40, line, 17, ui.colors.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: W - 80 } }).setOrigin(0.5).setDepth(903);

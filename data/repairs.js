@@ -22,7 +22,7 @@ FUP.repairData = {
   list: [
     { id: 'well', name: 'The Well', emoji: '⛲', cost: { coins: 400, items: { plank: 4 } },
       unlocks: 'Fill your watering can here again. And make a wish.', site: { tx: 14, ty: 10, w: 2, h: 1, talk: { tx: 14, ty: 11 } },
-      ruinTint: 'k2', ruinEmoji: '🕸️', clutter: [{ tx: 13, ty: 10, emoji: '🌿' }, { tx: 16, ty: 10, emoji: '🪨' }, { tx: 15, ty: 9, emoji: '🌿' }] },
+      ruinTint: 'k3', ruinEmoji: '🕸️', clutter: [{ tx: 13, ty: 10, emoji: '🌿' }, { tx: 16, ty: 10, emoji: '🪨' }, { tx: 15, ty: 9, emoji: '🌿' }] },
     { id: 'south_road', name: 'The South Road', emoji: '🛤️', req: { facts: { 'repair:well': 1 } }, cost: { coins: 1500, items: { plank: 12 } },
       unlocks: 'The road to the Docks: sea fishing, the Fishmonger\'s shop, fish traps.', site: { tx: 22, ty: 57, w: 1, h: 2, talk: { tx: 22, ty: 56 } },
       ruinEmoji: '🪨', blockWhenRuined: true, mapWhenDone: [{ tx: 22, ty: 57, ch: '=' }, { tx: 22, ty: 58, ch: '=' }, { tx: 22, ty: 59, ch: '=' }],

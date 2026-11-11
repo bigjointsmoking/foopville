@@ -31,7 +31,7 @@ class StartScene extends Phaser.Scene {
     for (let row = 0; row < 2; row++) {
       for (let i = 0, x = row * 40 - 20; x < W + 60; i++, x += 62 + (i % 3) * 10) {
         if (!keys.length) break;
-        const t = this.add.image(x, 448 + row * 14, keys[(i + row) % keys.length]).setOrigin(0.5, 1).setScale(2 + row * 0.5).setDepth(-30 + row);
+        const t = this.add.image(x, 448 + row * 14, keys[(i + row) % keys.length]).setOrigin(0.5, 1).setScale(FUP.ui.artScale(2 + row * 0.5)).setDepth(-30 + row);
         if (i % 2) t.setFlipX(true);
       }
     }
@@ -48,13 +48,13 @@ class StartScene extends Phaser.Scene {
     const glow = this.add.ellipse(W / 2, LG.y + 6, 640, 120, L.num(LG.glow), 0.16).setDepth(9);
     this.tweens.add({ targets: glow, alpha: 0.3, scaleX: 1.05, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     const logo = this.textures.exists('title_logo')
-      ? this.add.image(W / 2, LG.y, 'title_logo').setScale(LG.scale)
+      ? this.add.image(W / 2, LG.y, 'title_logo').setScale(FUP.ui.artScale(LG.scale))
       : ui.text(this, W / 2, LG.y, 'FOOPVILLE', 80, c.accent, { fontStyle: '700', stroke: c.stroke, strokeThickness: 8 }).setOrigin(0.5);
     logo.setDepth(10).setAlpha(0).setScale(logo.scaleX * 1.6);
-    this.tweens.add({ targets: logo, alpha: 1, scale: LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
+    this.tweens.add({ targets: logo, alpha: 1, scale: logo.type === 'Image' ? FUP.ui.artScale(LG.scale) : LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.63', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.64', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);
@@ -140,15 +140,15 @@ class StartScene extends Phaser.Scene {
   drawLandlord() {
     const LL = FUP.look.title.landlord;
     if (!this.textures.exists('landlord')) return;
-    const s = this.add.image(LL.x, LL.y, 'landlord').setOrigin(0.5, 1).setScale(LL.scale).setFlipX(true).setDepth(-35).setAlpha(LL.alpha);
+    const s = this.add.image(LL.x, LL.y, 'landlord').setOrigin(0.5, 1).setScale(FUP.ui.artScale(LL.scale)).setFlipX(true).setDepth(-35).setAlpha(LL.alpha);
     s.setTint(FUP.look.num(LL.shade));   // darkened into the dusk, still recognisably him
-    this.tweens.add({ targets: s, scaleY: LL.scale * 1.02, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: s, scaleY: FUP.ui.artScale(LL.scale) * 1.02, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   }
 
   drawVillage(W, H) {
     const TT = FUP.look.title, ui = FUP.ui;
     // Houses either side of the road, nearest at the bottom
-    const put = (key, x, y, sc = 2) => this.textures.exists(key) ? this.add.image(x, y, key).setOrigin(0.5, 1).setScale(sc).setDepth(y / 100) : null;
+    const put = (key, x, y, sc = 2) => this.textures.exists(key) ? this.add.image(x, y, key).setOrigin(0.5, 1).setScale(FUP.ui.artScale(sc)).setDepth(y / 100) : null;
     put('vil_forge', 150, 520); put('vil_house', 70, 610);
     put('vil_kitchen', 760, 520); put('vil_shop', 840, 615);
     put('vil_fence', 300, 560, 2); put('vil_fence', 600, 560, 2); put('vil_barrel', 250, 585, 2); put('vil_well', 660, 595, 2);

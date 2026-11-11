@@ -29,7 +29,7 @@ FUP.anim = {
   // A sprite that loops `clip` if it has frames, else a still picture (or the emoji).
   sprite(scene, x, y, key, clip = 'idle', emoji = '❓', emojiSize = 32, scale = FUP.ui.pixelScale) {
     if (!this.has(scene, key, clip)) return FUP.ui.sprite(scene, x, y, key, emoji, emojiSize, scale);
-    const s = scene.add.sprite(x, y, key).setScale(scale);
+    const s = scene.add.sprite(x, y, key).setScale(FUP.ui.artScale(scale));
     this.loop(s, key, clip);
     return s;
   },

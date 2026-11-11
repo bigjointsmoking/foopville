@@ -155,7 +155,7 @@ FUP.ambience = {
           const tex = !art ? key : cols ? `${key}_0_${cols[Math.floor(this.hash(tx, ty, 90 + i) * cols.length)]}` : `${key}_0`;
           if (!scene.textures.exists(tex)) continue;
           const x = tx * T + T * (0.15 + this.hash(tx, ty, 50 + i) * 0.7), y = ty * T + T * (0.3 + this.hash(tx, ty, 60 + i) * 0.65);
-          const sc = art ? D.pixelScale : FUP.ui.pixelScale * (D.dressScale[0] + this.hash(tx, ty, 70 + i) * (D.dressScale[1] - D.dressScale[0]));
+          const sc = art ? D.pixelScale : FUP.ui.artScale(FUP.ui.pixelScale) * (D.dressScale[0] + this.hash(tx, ty, 70 + i) * (D.dressScale[1] - D.dressScale[0]));
           const o = scene.add.image(x, y, tex).setOrigin(0.5, 1).setScale(sc).setDepth(standing.has(key) ? y : -5 + i * 0.01);
           if (this.hash(tx, ty, 80 + i) < 0.5) o.setFlipX(true);
         }

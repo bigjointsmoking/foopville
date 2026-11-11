@@ -30,18 +30,18 @@ FUP.dishArt = {
     const key = 'dishart_' + dish.method + '_' + dish.ids.join('+');
     if (tm.exists(key)) return key;
 
-    const S = this.SIZE, dt = tm.addDynamicTexture(key, S, S);
+    const R = FUP.spriteRes || 1, S = this.SIZE * R, dt = tm.addDynamicTexture(key, S, S);   // painted art: R times the pixels
     const mini = id => 'mini_' + id;
     const ids = dish.ids.filter(id => tm.exists(mini(id)));
     const stampMinis = () => lay.spots.forEach(([x, y], i) => {
       if (!ids.length) return;
-      dt.stamp(mini(ids[i % ids.length]), null, x, y, { scale: lay.scale || 1, tint: lay.tint || 0xffffff });
+      dt.stamp(mini(ids[i % ids.length]), null, x * R, y * R, { scale: lay.scale || 1, tint: lay.tint || 0xffffff });
     });
 
     if (lay.under) stampMinis();                       // skewer: chunks first, then the stick through them
     else dt.stamp(lay.base, null, S / 2, S / 2);       // everything else: container first
     if (lay.broth) {                                   // soup / pie filling in the ingredients' mixed colour
-      const [cx, cy, rx, ry] = lay.broth;
+      const [cx, cy, rx, ry] = lay.broth.map(v => v * R);
       const col = this.mix(dish.ids);
       for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) {
         const w = rx * Math.sqrt(Math.max(0, 1 - ((y - cy) / ry) ** 2));
