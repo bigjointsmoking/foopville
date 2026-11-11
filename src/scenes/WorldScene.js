@@ -58,6 +58,8 @@ class WorldScene extends Phaser.Scene {
     FUP.audio.music(FUP.audio.songFor(this.f.area, this.safe));   // each region has its own song (data/audio.js regionSongs)
     if (this.safe) this.keepSaving();
     this.stepTimer = 0;
+    // The life layer: extra scenery, wind, critters, birds, day/night light (src/ambience.js)
+    FUP.ambience.attach(this, { place: this.f.area, tiles: F, T, region: this.f.area });
   }
 
   // ---------- Coming back from a fight (or arriving) ----------
@@ -406,10 +408,12 @@ class WorldScene extends Phaser.Scene {
     const W = this.scale.width, H = this.scale.height, L = this.info.light;
     if (L) this.add.rectangle(0, 0, W, H, L.color, L.alpha).setOrigin(0).setScrollFactor(0).setDepth(6500).setBlendMode(Phaser.BlendModes[L.blend || 'NORMAL']);
     this.weather = [];
+    this.sunbeams = [];   // src/ambience.js hides them when it gets dark
     const kind = this.info.weather, rnd = Math.random;
     if (kind === 'sunbeams') {
       for (let k = 0; k < 4; k++) {
         const beam = this.add.rectangle(120 + k * 220, H / 2, 70 + rnd() * 60, H * 1.6, 0xfff2c0, 0.07).setAngle(28).setScrollFactor(0).setDepth(6600).setBlendMode(Phaser.BlendModes.ADD);
+        this.sunbeams.push(beam);
         this.tweens.add({ targets: beam, alpha: 0.02, x: beam.x + 40, duration: 3000 + rnd() * 2000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
     } else if (kind === 'leaves') {
@@ -418,7 +422,7 @@ class WorldScene extends Phaser.Scene {
         const leaf = this.add.rectangle(rnd() * W, rnd() * H, 7, 4, cols[k % 4]).setScrollFactor(0).setDepth(6600);
         this.weather.push({ o: leaf, vx: -20 - rnd() * 25, vy: 35 + rnd() * 30, sway: rnd() * 6, spin: 90 + rnd() * 120 });
       }
-    } else if (kind === 'fireflies') {
+    } else if (kind === 'fireflies' && !FUP.ambience) {   // src/ambience.js does fireflies now (they come out when it's dark)
       for (let k = 0; k < 18; k++) {
         const fly = this.add.circle(rnd() * W, rnd() * H, 2.5, 0xd8ff7a).setScrollFactor(0).setDepth(6600).setBlendMode(Phaser.BlendModes.ADD);
         this.weather.push({ o: fly, vx: (rnd() - 0.5) * 30, vy: (rnd() - 0.5) * 30, blink: rnd() * 6, fly: true });
@@ -554,6 +558,7 @@ class WorldScene extends Phaser.Scene {
   update(time, delta) {
     const dt = Math.min(delta, 100) / 1000;
     this.updateWeather(dt);       // leaves and fireflies keep moving even while a question is up
+    FUP.ambience.update(this, dt);
     if (this.leaving || this.panel) return;
     const f = this.f;
     f.time += dt;

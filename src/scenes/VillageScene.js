@@ -69,6 +69,8 @@ class VillageScene extends Phaser.Scene {
     else this.say('villageBack', { name: FUP.run.hero.name });
     this.rundownLine();
     this.time.delayedCall(450, () => { if (!this.leaving) FUP.awayCard.show(this); });   // "While you were out" (src/awayCard.js)
+    // The life layer: extra scenery, wind, chickens and ducks, birds, day/night light, chimney smoke (src/ambience.js)
+    FUP.ambience.attach(this, { place: 'village', tiles: M, T: d.tileSize, region: 'village', lamps: 'l' });
   }
 
   // ---------- The map: ground, trees, little things ----------
@@ -266,8 +268,9 @@ class VillageScene extends Phaser.Scene {
 
   // ---------- Every frame ----------
   update(time, delta) {
-    if (this.leaving || this.panel || this.busy) return;
     const dt = Math.min(delta, 100) / 1000;
+    FUP.ambience.update(this, dt);   // critters, wind and light keep going while a window is open
+    if (this.leaving || this.panel || this.busy) return;
     this.movePlayer(dt);
     this.updatePrompt();
     this.checkEdges();

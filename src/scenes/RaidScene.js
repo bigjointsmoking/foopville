@@ -51,6 +51,7 @@ class RaidScene extends WorldScene {
     this.updateSight();
     FUP.audio.music(this.info.kind === 'office' ? 'boss' : 'raid');
     this.stepTimer = 0;
+    FUP.ambience.attach(this, { place: 'raid', tiles: R, T });   // spores, shadows, dark corners (src/ambience.js)
   }
 
   hudLabel() {
@@ -493,6 +494,7 @@ class RaidScene extends WorldScene {
   // ---------- Every frame ----------
   update(time, delta) {
     const dt = Math.min(delta, 100) / 1000;
+    FUP.ambience.update(this, dt);
     if (this.leaving) return;
     this.f.time += dt;
     this.hz += dt;

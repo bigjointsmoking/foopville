@@ -168,14 +168,14 @@ FUP.look = {
       dirt: ['s1', 's2', 's3'], dirtEdge: 'k2', pebble: 's3',            // cobbles
       water: ['b1', 'b2', 'b3'], shore: 'w3', sparkle: 'b4',
       pathStyle: 'cobble', floor: 'g1', foam: 'b4', bank: 'k0',
-      detail: { tuft: 0.55, flower: 0.10, pebble: 0.06, leaf: 0 },
+      detail: { tuft: 0.9, flower: 0.28, pebble: 0.08, leaf: 0 },
     },
     forestEdge: {
       grass: ['g3', 'g3', 'g4', 'g4'], grassTuft: 'g5', flowers: ['k4', 'y2', 'p2', 'b4'],
       dirt: ['w3', 'w4', 'w5'], dirtEdge: 'w2', pebble: 's3',
       water: ['b1', 'b2', 'b3'], shore: 'w3', sparkle: 'b4',
       pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0',
-      detail: { tuft: 0.7, flower: 0.16, pebble: 0.05, leaf: 0 },
+      detail: { tuft: 0.95, flower: 0.3, pebble: 0.06, leaf: 0 },
       light: { color: 'y2', alpha: 0.03, blend: 'ADD' },
     },
     docks: {   // the Foopville Docks (v0.54): Forest Edge grass, sand by the sea, no tint
@@ -183,7 +183,7 @@ FUP.look = {
       dirt: ['w3', 'w4', 'w5'], dirtEdge: 'w2', pebble: 's3',
       water: ['b1', 'b2', 'b3'], shore: 'y1', sparkle: 'b4',
       pathStyle: 'dirt', floor: 'g1', foam: 'b4', bank: 'k0',
-      detail: { tuft: 0.5, flower: 0.08, pebble: 0.05, leaf: 0 },
+      detail: { tuft: 0.8, flower: 0.18, pebble: 0.07, leaf: 0 },
       sand: 'y1',
     },
     tollRoad: {
