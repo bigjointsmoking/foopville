@@ -163,6 +163,8 @@ class WorldScene extends Phaser.Scene {
         } else if (ch === '.' && shore && nextToWater(tx, ty) && noise(tx, ty, 17) < shore[1]) {
           const dx = x + T * (0.3 + noise(tx, ty, 15) * 0.4), dy = y + T * (0.6 + noise(tx, ty, 16) * 0.35);
           ui.sprite(this, dx, dy, shore[0], '', 10).setOrigin(0.5, 1).setDepth(dy);
+        } else if (ch === '.' && (FUP.hills.at(this.f.area, tx, ty).edge === 'face' || FUP.hills.at(this.f.area, tx, ty).stair)) {
+          // nothing pinned on a hill's cliff face or stairs (src/systems/hills.js)
         } else if (ch === '.') {
           // Flowers, tufts, little mushrooms, stumps, logs, bushes. You walk over (or behind) them.
           let roll = noise(tx, ty, 14);

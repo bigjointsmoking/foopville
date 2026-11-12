@@ -104,6 +104,8 @@ class VillageScene extends Phaser.Scene {
         } else if (ch === 'f') {
           ui.sprite(this, x + T / 2, y + T * 0.8, 'vil_fence', '🪵', 20, 1.7).setOrigin(0.5, 1).setDepth(y + T * 0.8);
         } else if (ch === '.') {
+          const hc = FUP.hills.at('village', tx, ty);
+          if (hc.edge === 'face' || hc.stair) continue;   // nothing pinned on a cliff face or stairs
           let roll = noise(tx, ty, 14);
           for (const key of decoKeys) {
             if (roll < d.decorations[key]) {

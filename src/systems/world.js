@@ -36,6 +36,8 @@ FUP.world = {
     return null;
   },
   // What you can't walk through on that region's map
+  // Can you stand on this square of region id? (map letters + hill borders, src/systems/hills.js)
+  walkable(id, tx, ty) { return !this.blockedChars(id).includes(this.tile(id, tx, ty)) && !(FUP.hills && FUP.hills.blocked(id, tx, ty)); },
   blockedChars(id) { return this.region(id) && this.region(id).scene === 'Village' ? FUP.villageMap.BLOCKED : FUP.forest.BLOCKED; },
   tile(id, tx, ty) { const rows = this.area(id).map, row = rows[ty]; return row && tx >= 0 && tx < row.length ? row[tx] : '#'; },
   tileSize(id) { return this.area(id).tileSize || FUP.forestData.tileSize; },   // Forest maps share one size
@@ -120,7 +122,7 @@ FUP.world = {
     if (!r || !this.safe(id) || r.scene !== 'World' || !this.built(id) || !this.area(id)) return null;
     const T = this.tileSize(id), at = this.state.x !== null ? { x: this.state.x, y: this.state.y } : this.gapMiddle(id, 'N');
     const tx = Math.floor(at.x / T), ty = Math.floor(at.y / T);
-    const ok = !this.blockedChars(id).includes(this.tile(id, tx, ty));
+    const ok = this.walkable(id, tx, ty);
     return this.startVisit(id, ok ? at : this.gapMiddle(id, Object.keys(r.links)[0]));
   },
 

@@ -47,6 +47,25 @@ FUP.forestGround = {
     return best;
   },
 
+  // For any colour: the palette colour that reads as "the same, in sunlight" (hill tops, v0.66).
+  _light: null,
+  lighter(c) {
+    if (!this._light) this._light = new Map();
+    const key = (c[0] << 16) | (c[1] << 8) | c[2];
+    if (this._light.has(key)) return this._light.get(key);
+    const lum = q => q[0] * 0.3 + q[1] * 0.59 + q[2] * 0.11;
+    const want = c.map(v => Math.min(255, v * 1.22 + 6)), L0 = lum(c);
+    let best = c, bd = Infinity;
+    for (const hex of Object.values(FUP.look.palette)) {
+      const q = this.rgb(hex);
+      if (lum(q) <= L0 * 1.05) continue;
+      const d = (q[0] - want[0]) ** 2 + (q[1] - want[1]) ** 2 + (q[2] - want[2]) ** 2;
+      if (d < bd) { bd = d; best = q; }
+    }
+    this._light.set(key, best);
+    return best;
+  },
+
   // Returns the texture key. Draw it with scene.add.image(0, 0, key).setOrigin(0).setScale(2).
   // The village uses this too: make(scene, FUP.villageMap, FUP.villageData.ground, 'village_ground').
   // The Forest passes each area's own colours and key (see FUP.forest.ground()).
@@ -75,6 +94,10 @@ FUP.forestGround = {
     const floor = C('floor') || grass[0];
     const cliff = C('cliff');   // [dark, mid, light, stone]: the raised plateau's cliff face (v0.65), or none
     const CF = M.cliff, faceH = Math.round(CF.height * S), faceT = CF.height;
+    // Hills you climb (src/systems/hills.js): plateau tops, cliff faces, side edges, stairs
+    const hillRegion = F.hillRegion && FUP.hills ? F.hillRegion() : null;
+    const hillAt = hillRegion && FUP.hills.list(hillRegion).length ? (tx, ty) => FUP.hills.at(hillRegion, tx, ty) : null;
+    const rock = cliff || [this.rgb(FUP.look.hex('k1')), this.rgb(FUP.look.hex('s1')), this.rgb(FUP.look.hex('s2')), this.rgb(FUP.look.hex('s3'))];
     const cobble = G.pathStyle === 'cobble', CW = M.cobble.w, CH = M.cobble.h;
     const lip = M.lipPixels / S, bankH = M.bankPixels / S, reach = M.shadowReach, dith = M.ditherStrength;
 
@@ -157,6 +180,54 @@ FUP.forestGround = {
           // Shadows cast downward by trees and buildings
           if (k === 0 && cliff && sample(treeL, fx, fy - CF.shade) > 0.5) col = this.darker(col);   // deep shade at a cliff's foot
           if (k === 0 && (sample(treeL, fx, fy - reach) > 0.5 || sample(houseL, fx - reach * 0.4, fy - reach) > 0.5 && sample(houseL, fx, fy) < 0.5)) col = this.darker(col);
+        }
+        if (hillAt) {
+          const tx = Math.floor(fx), ty = Math.floor(fy), hc = hillAt(tx, ty), lx = x - tx * S, ly = y - ty * S;
+          if (hc.top) {
+            const stone = (bx, by, band) => {           // one pixel of a rock block wall
+              const blk = this.hash(Math.floor(bx / CF.block), band);
+              let c = blk < 0.3 ? rock[3] : (band & 1) ? rock[1] : rock[2];
+              if (bx % CF.block === CF.block - 1 || by % CF.band === CF.band - 1) c = rock[0];
+              else if (bx % CF.block === 0 || by % CF.band === 0) c = blk < 0.65 ? rock[2] : rock[3];
+              return c;
+            };
+            const steps = (along, across, n) => {       // stairs: lit tread, dark riser, darker rails
+              if (across < 3 || across > n - 4) return across === 0 || across === n - 1 ? rock[0] : rock[1];
+              const st = along % 5;
+              return st === 0 ? rock[3] : st === 4 ? rock[0] : rock[2];
+            };
+            if (hc.edge === 'face') {
+              k = 4;
+              if (hc.stair) col = steps(ly, lx, S);
+              else if (ly < CF.lip) col = this.lighter(grass[2]);                                        // grass lip of the top
+              else if (ly === CF.lip) col = rock[0];
+              else {
+                const band = Math.floor((y + (this.hash(tx, 3) * 4 | 0)) / CF.band), off = (band * 7) % CF.block;
+                col = stone(x + off, y, band);
+                if (ly < S * 0.45 && this.hash(x >> 1, band * 3) > 0.9) col = grass[1];                  // moss near the top
+                if (ly >= S - 4) col = this.darker(col);
+                if (ly >= S - 2) col = rock[0];
+              }
+            } else {
+              // Top of the hill (and its side / back edges): sunlit, a step lighter per level
+              if (k === 0) col = this.lighter(col);
+              if (hc.edge === 'west' || hc.edge === 'east') {
+                const out = hc.edge === 'west' ? lx : S - 1 - lx;                                       // pixels from the drop
+                if (hc.stair) { col = steps(lx, ly, S); k = 4; }
+                else if (out < 5) { k = 4; col = out === 0 ? rock[0] : hc.edge === 'west' ? stone(y, x, Math.floor(x / 3)) : this.darker(stone(y, x, Math.floor(x / 3))); }
+                else if (out === 5) col = this.darker(col);
+              } else if (hc.edge === 'back') {
+                if (hc.stair) { col = steps(ly, lx, S); k = 4; }
+                else if (ly < 2) { col = rock[0]; k = 4; }                                               // the drop behind
+                else if (ly === 2) col = this.darker(col);
+              }
+            }
+          } else if (k === 0 || k === 1) {
+            // Shade on low ground: below a cliff face, and east of a hill's east edge
+            const above = hillAt(tx, ty - 1), left = hillAt(tx - 1, ty);
+            if (above.edge === 'face' && !above.stair && ly < S * 0.45) col = this.darker(ly < S * 0.2 ? this.darker(col) : col);
+            else if (left.edge === 'east' && !left.stair && lx < S * 0.3) col = this.darker(col);
+          }
         }
         kind[y * W + x] = k;
         put(x, y, col);

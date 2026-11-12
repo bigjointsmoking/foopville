@@ -297,6 +297,16 @@ FUP.villageData = {
     treeShade: 0.75,
     edgeWobble: 0.08,   // low = straight village streets
   },
-  decorations: { deco_flowers: 0.10, deco_tuft: 0.06, bush: 0.01 },
+  decorations: { deco_flowers: 0.10, bush: 0.01 },   // (v0.66: deco_tuft dropped, too small to read; data/ambience.js tall grass does that job)
+  // Hills you can climb (v0.66, src/systems/hills.js): tx, ty = top-left square, w x h squares.
+  // The border is cliff (front row = the face you see); stairs are the way up. A hill inside
+  // another hill's top is one level higher (the lookout). Placed so nothing gets cut off (tests/hills.js).
+  hills: [
+    { tx: 27, ty: 9, w: 9, h: 6, stairs: [[31, 14], [31, 9]] },     // east of the square, with the lookout on top
+    { tx: 32, ty: 10, w: 3, h: 3, stairs: [[33, 12]] },             // the lookout
+    { tx: 1, ty: 24, w: 9, h: 6, stairs: [[5, 29], [5, 24]] },      // west meadow
+    { tx: 22, ty: 18, w: 8, h: 6, stairs: [[26, 23], [26, 18]] },   // by the Manor road
+    { tx: 13, ty: 26, w: 9, h: 5, stairs: [[17, 30], [17, 26]] },   // south meadow
+  ],
   lilyPadChance: 0.3,
 };

@@ -48,7 +48,7 @@ FUP.worldData.areas.isle = {
   landmarks: [],
   sand: { rows: [18, 20] },     // beach rows by the sea
   trees: { tree_round: 4, tree_birch: 3, tree_pine: 2 },
-  decorations: { deco_flowers: 0.08, deco_tuft: 0.04, deco_shroom: 0.005, deco_stump: 0.005, bush: 0.015 },
+  decorations: { deco_flowers: 0.08, deco_shroom: 0.005, deco_stump: 0.005, bush: 0.015 },
   ground: { ...FUP.look.mood('docks'), treeShade: 0.85, waterChars: '~F' },
   light: null, weather: 'sunbeams', fog: null,
   sea: true,

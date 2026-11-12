@@ -51,9 +51,14 @@ FUP.worldData.areas.docks = {
     { kind: 'sign', tx: 21, ty: 11, text: 'PIER. Fish at your own risk. The fish certainly do.' },
   ],
   landmarks: [['vil_shop', 26, 6]],                                  // Gill's shack on the wall block, cols 25-27 rows 5-6 (placeholder picture)
-  sand: { rows: [9, 11] },                                           // beach rows, tinted with the mood's sand colour
+  sand: { rows: [9, 11] },
+  // Hills you can climb (v0.66, src/systems/hills.js): border = cliff, stairs = the way up
+  hills: [
+    { tx: 28, ty: 2, w: 7, h: 6, stairs: [[31, 7], [31, 2]] },
+    { tx: 11, ty: 4, w: 8, h: 4, stairs: [[15, 7], [15, 4]] },
+  ],                                           // beach rows, tinted with the mood's sand colour
   trees: { tree_birch: 5, tree_round: 3, tree_pine: 2 },             // same as the Forest Edge
-  decorations: { deco_flowers: 0.08, deco_tuft: 0.04, deco_shroom: 0.005, deco_stump: 0.005, bush: 0.015 },   // the Edge's, half as many
+  decorations: { deco_flowers: 0.08, deco_shroom: 0.005, deco_stump: 0.005, bush: 0.015 },   // the Edge's, half as many
   ground: { ...FUP.look.mood('docks'), treeShade: 0.85, waterChars: '~FD' },
   light: null, weather: 'sunbeams', fog: null,
   sea: true,                                                         // no pond lily pads out here

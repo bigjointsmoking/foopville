@@ -143,7 +143,11 @@ FUP.ambience = {
           if (ch === '#') tree = true; else if (water.includes(ch)) wat = true; else if (path.includes(ch)) pth = true;
         }
         if (!quiet) continue;
-        const where = tree ? 'treeEdge' : wat ? 'waterEdge' : pth ? 'pathEdge' : 'open';
+        // Hills: nothing on a cliff face or stairs; the side / back edges get rocks and bushes like a tree line
+        const hc = FUP.hills && A.region ? FUP.hills.at(A.region, tx, ty) : null;
+        if (hc && (hc.edge === 'face' || hc.stair)) continue;
+        const rim = !!(hc && hc.edge);
+        const where = tree || rim ? 'treeEdge' : wat ? 'waterEdge' : pth ? 'pathEdge' : 'open';
         const clump = G.fbm(tx / R.clump + 31.7, ty / R.clump + 11.3);
         const dens = where === 'open' ? R.open * Math.max(0, Math.min(1, (clump - 0.3) / 0.3)) : R[where] * (0.45 + 0.55 * clump);
         if (this.hash(tx, ty, 41) > dens) continue;
@@ -284,6 +288,7 @@ FUP.ambience = {
     scene.tweens.add({ targets: cr.s, scaleY: cr.s.scaleY * 1.08, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   },
   blockedAt(A, tx, ty) {
+    if (FUP.hills && A.region && FUP.hills.blocked(A.region, tx, ty)) return true;   // hill borders (src/systems/hills.js)
     if (A.region === 'village') return FUP.villageMap.blockedTile(tx, ty) || (FUP.place && FUP.place.blocked('village', tx, ty));
     return false;
   },

@@ -48,7 +48,7 @@ FUP.forestData = {
       coinMult: 1.0,         // ...and their coins by this (v0.40: deeper = better money)
       level: 3,              // the Melee level this area is meant for: enemies scale up if you're above it (v0.41)
       trees: { tree_birch: 5, tree_round: 3, tree_pine: 2 },
-      decorations: { deco_flowers: 0.16, deco_tuft: 0.08, deco_shroom: 0.01, deco_stump: 0.01, bush: 0.03 },
+      decorations: { deco_flowers: 0.16, deco_shroom: 0.01, deco_stump: 0.01, bush: 0.03 },
       landmarks: [['deco_signpost', 2, 18], ['deco_stump', 28, 16], ['deco_stump', 32, 16], ['deco_stump', 28, 20], ['deco_stump', 32, 20]],
       ground: { ...FUP.look.mood('forestEdge'), treeShade: 0.78 },   // colours: data/look.js
       light: FUP.look.mood('forestEdge').light,
@@ -95,7 +95,7 @@ FUP.forestData = {
       coinMult: 1.4,
       level: 7,
       trees: { tree_autumn: 4, tree_autumn_red: 3, tree_dead: 3 },
-      decorations: { deco_leaves: 0.14, deco_puddle: 0.07, deco_tuft: 0.03, deco_log: 0.012, deco_stump: 0.01 },
+      decorations: { deco_leaves: 0.14, deco_puddle: 0.07, deco_log: 0.012, deco_stump: 0.01 },
       shoreDeco: ['deco_reeds', 0.55],
       landmarks: [['deco_fence', 8, 11], ['deco_fence', 14, 11], ['deco_fence', 26, 11], ['deco_fence', 32, 11]],
       ground: { ...FUP.look.mood('tollRoad'), treeShade: 0.75 },     // colours: data/look.js

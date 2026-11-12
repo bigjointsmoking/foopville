@@ -161,7 +161,7 @@ FUP.ambienceData = {
   dressing: {
     meadow: {
       clump: 7, open: 0.8, treeEdge: 0.95, waterEdge: 0.9, pathEdge: 0.5, perSquare: [2, 4],
-      open_pick: [['amb_tallgrass', 6], ['amb_flower', 3], ['amb_flowerpatch', 1.5], ['amb_daisy', 2], ['deco_tuft', 2], ['amb_bush', 1], ['amb_bigbush', 0.5], ['amb_pebbles', 0.7], ['amb_rock', 0.35]],
+      open_pick: [['amb_tallgrass', 6], ['amb_flower', 3], ['amb_flowerpatch', 1.5], ['amb_daisy', 2], ['amb_bush', 1], ['amb_bigbush', 0.5], ['amb_pebbles', 0.7], ['amb_rock', 0.35]],
       treeEdge_pick: [['amb_bigbush', 2], ['amb_bush', 3], ['deco_fern', 3], ['amb_tallgrass', 2], ['amb_berrybush', 1.2], ['amb_toadstool', 0.8], ['deco_stump', 0.3]],
       waterEdge_pick: [['deco_reeds', 5], ['amb_tallgrass', 2], ['amb_daisy', 1]],
       pathEdge_pick: [['amb_flower', 2], ['amb_daisy', 2], ['amb_tallgrass', 2], ['amb_pebbles', 1]],
