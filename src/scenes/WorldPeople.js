@@ -34,6 +34,9 @@ Object.assign(WorldScene.prototype, {
       FUP.trapUi.draw(this, this.f.area, F);
       this.spots.push(...FUP.trapUi.spots(this.f.area, F));
     }
+    // Scrap piles (v0.70, src/salvageUi.js): every region that has some
+    FUP.salvageUi.draw(this, this.f.area, F);
+    this.spots.push(...FUP.salvageUi.spots(this, this.f.area, F));
     // The round action button (bottom right) and the "E: Talk" prompt, like in the village
     const W = this.scale.width, H = this.scale.height;
     this.actBtn = this.add.circle(W - 70, H - 120, 42, c.btnHot, 0.95).setStrokeStyle(3, c.btnHotEdge).setScrollFactor(0).setDepth(16000).setVisible(false)
@@ -86,6 +89,13 @@ Object.assign(WorldScene.prototype, {
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }
+    if (s.kind === 'salvage') {
+      FUP.salvageUi.use(this, s, () => {
+        FUP.salvageUi.draw(this, this.f.area, this.tiles);
+        this.spots = this.spots.filter(q => q.kind !== 'salvage').concat(FUP.salvageUi.spots(this, this.f.area, this.tiles));
+      });
+      return;
+    }
     if (s.kind === 'fish') this.goFish(s);
   },
 

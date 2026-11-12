@@ -39,6 +39,8 @@ class VillageScene extends Phaser.Scene {
     this._trapViews = null; this.trapSig = null;
     FUP.trapUi.draw(this, 'village', FUP.villageMap);   // fish traps by the pond (src/trapUi.js)
     this.spots.push(...FUP.trapUi.spots('village', FUP.villageMap));
+    this._salvageViews = null; this.refreshSalvage();     // scrap piles (src/salvageUi.js, v0.70)
+    this._comViews = null; this._comTimers = []; this.drawCommissions();   // villagers' build jobs (VillageCommissions.js)
     this.drawHud();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
     this.input.keyboard.on('keydown-E', () => this.interact());
@@ -269,6 +271,7 @@ class VillageScene extends Phaser.Scene {
     this.coinText.setText(`🪙 ${run.coins}`);
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
+    if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back
     const ts = JSON.stringify(FUP.fishing.state.traps.map(t => [t.region, t.tx, t.ty, t.fish.length]));
     if (ts !== this.trapSig && !this.panel) { this.trapSig = ts; FUP.trapUi.draw(this, 'village', FUP.villageMap); }   // a trap caught something
     if (FUP.clock.rolled) { FUP.clock.rolled = 0; if (!this.panel) this.say('newDay'); }   // a new day started while you walked
@@ -437,8 +440,18 @@ class VillageScene extends Phaser.Scene {
     if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
     if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
+    if (s.kind === 'salvage') { FUP.salvageUi.use(this, s, () => { this.refreshSalvage(); this.refreshHud(); }); return; }
+    if (s.kind === 'commission') { this.openCommission(s); return; }
     this.openPanel(s.id);   // villagers, and objects like the Compost Bin
   }
+
+  // Scrap piles (v0.70): draw them and their action spots again (one was emptied, or a new day)
+  refreshSalvage() {
+    FUP.salvageUi.draw(this, 'village', FUP.villageMap);
+    this.spots = (this.spots || []).filter(s => s.kind !== 'salvage').concat(FUP.salvageUi.spots(this, 'village', FUP.villageMap));
+    this._salSig = this.salvageSig();
+  }
+  salvageSig() { return FUP.salvage.spots('village').map((s, i) => FUP.salvage.ready('village', i) ? 1 : 0).join('') + FUP.skills.level('building'); }
 
   // Saw Bark into a plank at the sawhorse (a job like farming: you stand still while it happens).
   // Keeps going while you hold the button down.

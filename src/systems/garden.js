@@ -43,7 +43,7 @@ FUP.garden = {
   // Gardening perks (data/unlocks.js): a bigger can, more seeds back
   canMax() { return FUP.unlocks.perkBest('canMax', FUP.gardenData.canMax) + FUP.unlocks.perkSum('canBonus'); },   // + the watering can tool (G2)
   seedBack() { return FUP.unlocks.perkBest('seedBack', FUP.gardenData.seedBackChance); },
-  fresh() { return { s: 'weeds', crop: null, need: 0, stage: 0, grown: 0, wet: false, dry: 0, wilt: false, dead: false, yield: 0, left: 0, paid: false, idle: 0 }; },
+  fresh() { return { s: 'weeds', crop: null, need: 0, stage: 0, grown: 0, wet: false, dry: 0, wilt: false, dead: false, yield: 0, left: 0, paid: false, idle: 0, scared: false }; },
 
   // Every patch square on the village map: [{ tx, ty, ch, key }]
   squares() {
@@ -185,6 +185,9 @@ FUP.garden = {
     const p = this.at(tx, ty);
     if (this.look(p) !== 'ready') return null;
     const id = p.crop;
+    // A scarecrow nearby (v0.70): sometimes one extra
+    let scared = false;
+    if (!p.paid && !p.scared) { p.scared = true; const h = this.helperNear(tx, ty, 'scarecrow'); if (h && rng() < h.def.chance) { p.left++; scared = true; } }
     let got = 0, toPantry = 0;
     while (p.left > 0 && FUP.run.addToBag(id)) { p.left--; got++; }
     while (p.left > 0 && FUP.house.addOne(id)) { p.left--; got++; toPantry++; }
@@ -198,7 +201,7 @@ FUP.garden = {
     }
     const left = p.left;
     if (left <= 0) Object.assign(p, this.fresh(), { s: 'soil' });
-    return { id, got, left, toPantry, seed, golden };
+    return { id, got, left, toPantry, seed, golden, scared };
   },
 
   fillCan() {
@@ -225,7 +228,38 @@ FUP.garden = {
     const away = dt > FUP.gardenData.awayGap;   // the game was closed or hidden
     let changed = false;
     for (const p of Object.values(this.state.patches)) if (this.advance(p, dt, away)) changed = true;
+    if (this.barrelWater()) changed = true;
     return changed;
+  },
+
+  // ---------- Farm helpers you build (v0.70, data/place.js `helper`) ----------
+  // The nearest placed helper of this kind that reaches square (tx, ty): { p, def } or null
+  helperNear(tx, ty, kind) {
+    if (!FUP.place || !FUP.place.state) return null;
+    for (const p of FUP.place.state.placed) {
+      const it = FUP.place.item(p.item), z = FUP.place.zone(p.zone);
+      if (!it || !it.helper || it.helper.kind !== kind || !z || z.where.region !== 'village') continue;
+      const hx = z.where.tx + p.tx, hy = z.where.ty + p.ty;
+      if (Math.max(Math.abs(hx - tx), Math.abs(hy - ty)) <= it.helper.radius && (kind !== 'barrel' || this.barrelLeft(p) > 0)) return { p, def: it.helper };
+    }
+    return null;
+  },
+  // Waterings a rain barrel has left today (it refills every morning)
+  barrelLeft(p) { const it = FUP.place.item(p.item), today = FUP.clock ? FUP.clock.day() : 1; return it.helper.water - (p.usedDay === today ? p.used || 0 : 0); },
+  // Thirsty crops next to a barrel get watered (no XP: the barrel did it). Returns true if any were.
+  barrelWater() {
+    let any = false;
+    for (const [key, p] of Object.entries(this.state.patches)) {
+      if (p.s !== 'crop' || p.wet || p.dead || p.stage >= FUP.gardenData.stages) continue;
+      const [tx, ty] = key.split(',').map(Number), h = this.helperNear(tx, ty, 'barrel');
+      if (!h) continue;
+      const today = FUP.clock ? FUP.clock.day() : 1;
+      if (h.p.usedDay !== today) { h.p.usedDay = today; h.p.used = 0; }
+      h.p.used++;
+      p.wet = true; p.dry = 0; p.wilt = false;
+      any = true;
+    }
+    return any;
   },
 
   // One patch, dt seconds later (dt can be hours if the game was closed: away = true).

@@ -29,7 +29,8 @@ FUP.req = {
 
   // ---------- Costs ----------
   // Where each kind of thing is taken from, in order
-  itemCount(id) { return (FUP.run.bag[id] || 0) + ((FUP.house.state.pantry || {})[id] || 0); },
+  // Materials (planks, nails...) come from the materials pouch (v0.70, src/systems/salvage.js)
+  itemCount(id) { return (FUP.mats && FUP.mats.is(id) ? FUP.mats.count(id) : 0) + (FUP.run.bag[id] || 0) + ((FUP.house.state.pantry || {})[id] || 0); },
   gearSpots() { return [FUP.run.stash, FUP.house.state.gear || []]; },
 
   // Coins to pay. Pass { npc: 'shop' } and the Rizz discount + haggling apply (village.js buyPrice).
@@ -58,7 +59,9 @@ FUP.req = {
     if (!this.canPay(cost, opts)) return false;
     const run = FUP.run, pantry = FUP.house.state.pantry;
     run.coins -= this.coinPrice(cost, opts);
-    for (const [id, n] of Object.entries(cost.items || {})) {
+    for (const [id, want] of Object.entries(cost.items || {})) {
+      let n = want;
+      if (FUP.mats && FUP.mats.is(id)) { const m = Math.min(n, FUP.mats.count(id)); if (m) FUP.mats.take(id, m); n -= m; if (!n) continue; }
       const fromBag = Math.min(n, run.bag[id] || 0);
       if (fromBag) { run.bag[id] -= fromBag; if (!run.bag[id]) delete run.bag[id]; }
       const rest = n - fromBag;
@@ -78,7 +81,7 @@ FUP.req = {
     if (!cost) return 'Free';
     const parts = [];
     if (cost.coins) parts.push(`${cost.coins} 🪙`);
-    for (const [id, n] of Object.entries(cost.items || {})) parts.push(`${n} ${(FUP.ingredients[id] || {}).name || id}`);
+    for (const [id, n] of Object.entries(cost.items || {})) parts.push(`${n} ${(FUP.mats && FUP.mats.is(id) ? FUP.mats.info(id) : FUP.ingredients[id] || {}).name || id}`);
     for (const key of cost.gear || []) {
       const it = FUP.gearData.items[key] || {};
       parts.push(it.names ? it.names[FUP.run.weapon] : it.name || key);

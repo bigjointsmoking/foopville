@@ -63,7 +63,7 @@ FUP.backpack = {
     add(ui.panel(s, PX, PY, PW, PH, 'panel'), 1);
     add(ui.text(s, PX + 20, PY + 14, { pack: '🎒 BACKPACK', store: '🏠 STORAGE AT HOME', wardrobe: '🎩 WARDROBE' }[bp.tab], 22, c.accent, { fontStyle: '700' }), 2);
     // Your name + title (G2), then this tab's info line (kept left so the tab buttons fit on narrow screens)
-    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}` : bp.tab === 'store' ? 'Spare gear and food.' : 'Hats and titles. No stats, all style.';
+    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}   ·   Materials: ${FUP.mats.text()}` : bp.tab === 'store' ? 'Spare gear and food.' : 'Hats and titles. No stats, all style.';
     add(ui.text(s, PX + 20, PY + 42, `${FUP.cosmetics.nameLine()}   ·   ${info}`, 13, c.ink, { fontStyle: '700' }), 2);
     btn(PX + PW - 110, PY + 10, 94, 32, 'Close', () => bp.destroy(), { hot: true, size: 15 });
     if (bp.opts.home) btn(PX + PW - 204, PY + 10, 90, 32, '🏠 Storage', () => { bp.tab = 'store'; bp.sel = null; }, { hot: bp.tab === 'store' });

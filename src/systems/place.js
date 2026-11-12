@@ -51,13 +51,13 @@ FUP.place = {
   // 'ok' | 'noBark' | 'full'
   canSaw() {
     if (!FUP.req.canPay({ items: { bark: this.plankBark() } })) return 'noBark';
-    return FUP.run.canAddIng('plank') ? 'ok' : 'full';
+    return 'ok';   // planks go in the materials pouch (no backpack space needed, v0.70)
   },
   // Turn Bark (backpack first, then pantry) into 1 plank + Building XP. Returns true if it worked.
   saw(where = null) {
     if (this.canSaw() !== 'ok') return false;
     FUP.req.pay({ items: { bark: this.plankBark() } });
-    if (!FUP.run.addToBag('plank')) return false;
+    FUP.mats.add('plank', 1);
     FUP.skills.addXp('building', FUP.placeData.xp.plank, where);
     FUP.facts.add('sawn');
     return true;
@@ -65,7 +65,7 @@ FUP.place = {
   plankPrice() { return FUP.village.buyPrice(FUP.placeData.plankPrice, 'carpenter'); },
   buyPlanks(n = 1) {
     let got = 0;
-    while (got < n && FUP.run.coins >= this.plankPrice() && FUP.run.addToBag('plank')) { FUP.run.coins -= this.plankPrice(); got++; }
+    while (got < n && FUP.run.coins >= this.plankPrice()) { FUP.run.coins -= this.plankPrice(); FUP.mats.add('plank', 1); got++; }
     return got;
   },
 

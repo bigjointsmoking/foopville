@@ -318,8 +318,8 @@ FUP.villagePanels = {
     // Planks first: sawn from Bark at the sawhorse outside, or bought here
     const pp = P.plankPrice(), buyP = n => { if (P.buyPlanks(n)) { FUP.audio.sfx('coins'); this.talk('bought'); } else this.talk('broke'); };
     rows.unshift({
-      emoji: '🪵', pic: FUP.ui.ingKey('plank'), name: `Plank  (you have ${run.bagCount('plank') + FUP.house.pantryCount('plank')})`,
-      sub: `Or saw your own at the sawhorse outside: ${P.plankBark()} Bark each, and it trains Building.`,
+      emoji: '🪵', pic: FUP.ui.ingKey('plank'), name: `Plank  (you have ${FUP.mats.count('plank')})`,
+      sub: `Or find your own: scrap piles round the village and out in the world, or ${P.plankBark()} Bark each at the sawhorse.`,
       btn: `5 for ${pp * 5} 🪙`, disabled: run.coins < pp, fn: () => buyP(5), btn2: `1: ${pp}`, fn2: () => buyP(1),
     });
     // The hammer (data/tools.js): cheaper building

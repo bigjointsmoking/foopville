@@ -167,6 +167,15 @@ FUP.narrator = {
   fishFull: ["Your bag is full of things that aren't fish.", 'No room. The fish are relieved.'],
   // Decorating (v0.57)
   placeTrapped: ['You were about to fence yourself in. Bold. Stupid, but bold.', 'That would wall you in. The narrator refuses to narrate your slow starvation.'],
+  // ---------- Salvage + commissions (v0.70) ----------
+  salvage: ['You pry it apart. Some of it was load-bearing. Was.', 'Scavenging. Your ancestors would be proud. They were also scavengers.'],
+  salvage_shed: ['The shed gives up its planks without a fight. It had nothing left to give. Relatable.', 'You take apart a shed someone else gave up on.'],
+  salvage_tree: ['The storm did the hard part. You take the credit.', 'A fallen tree, now several planks. Nature is recycling. Through you.'],
+  salvage_cart: ['A broken cart. One wheel, zero dignity. Now it\'s yours.', 'You salvage a cart. Somewhere, a horse is relieved.'],
+  salvage_wreck: ['Washed-up wreckage. The sea didn\'t want it either.', 'A shipwreck, in pieces, for your pieces.'],
+  salvage_crate: ['You drag a crate out of the mud. The mud wants it back.', 'A sunken crate. Smells like the Marsh. Everything does.'],
+  commissionStart: ['Scaffolding up. Now it builds itself while you pretend to supervise.', 'Construction begins. Mostly of your reputation.'],
+
   // ---------- Your house (v0.68, HouseScene) ----------
   houseArrive: ['Home. Four walls and a roof. Two more things than the Forest has.', 'You wipe your feet. Out of habit, not manners.', 'Home sweet home. The draft says hello.'],
   houseFromStove: ['You step away from the stove. It keeps judging you.', 'Back in the room, smelling faintly of whatever that was.'],

@@ -255,7 +255,7 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
 FUP.villageMap = FUP.tilemap(() => FUP.villageData, '#~bwlkfhy');
 // Repairs change the map (the South Road becomes a path) and ruins block squares (src/systems/repairs.js)
 FUP.villageMap.rows = () => FUP.repairs ? FUP.repairs.rows(FUP.villageData.map) : FUP.villageData.map;
-FUP.villageMap.blockedTile = function (tx, ty) { return this.BLOCKED.includes(this.tileAt(tx, ty)) || !!(FUP.repairs && FUP.repairs.blocked(tx, ty)) || !!(FUP.hills && FUP.hills.blocked('village', tx, ty)) || this.extraBlocked(tx, ty); };
+FUP.villageMap.blockedTile = function (tx, ty) { return this.BLOCKED.includes(this.tileAt(tx, ty)) || !!(FUP.repairs && FUP.repairs.blocked(tx, ty)) || !!(FUP.hills && FUP.hills.blocked('village', tx, ty)) || this.extraBlocked(tx, ty) || !!(FUP.commissions && FUP.commissions.blocked(tx, ty)); };   // + finished commissions (v0.70)
 // Hollis's fields and solid props (data/village.js fields / props, v0.67) block walking too
 FUP.villageMap.extraBlocked = function (tx, ty) {
   const d = FUP.villageData;

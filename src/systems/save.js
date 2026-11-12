@@ -68,6 +68,7 @@ FUP.save = {
     const r = FUP.run;
     r.newLife(d.parts.run.weapon, d.parts.run.hero);   // clean slate, then fill it in
     for (const [name, p] of Object.entries(this.parts)) if (d.parts[name] !== undefined && d.parts[name] !== null) p.set(d.parts[name], d);
+    if (FUP.mats) FUP.mats.migrate();   // v0.70: planks left in the backpack / pantry move into the materials pouch
     r.forest = null; r.battle = null;
     if (FUP.repairs) FUP.repairs.resume();   // a repair paid for when the page closed
     const lostRun = !!d.onRun;
@@ -230,5 +231,21 @@ FUP.save = {
     get: () => FUP.facts.state,
     set(d) { FUP.facts.state = { ...d }; },
     reset: () => FUP.facts.reset(),
+  });
+  // Building materials + scrap piles (v0.70). Old saves' planks move from the backpack / pantry into the pouch after loading.
+  S.register('mats', {
+    get: () => FUP.mats.state,
+    set(d) { FUP.mats.state = { ...d }; },
+    reset: () => FUP.mats.reset(),
+  });
+  S.register('commissions', {
+    get: () => FUP.commissions.state,
+    set(d) { FUP.commissions.state = { jobs: JSON.parse(JSON.stringify(d.jobs || {})), done: { ...(d.done || {}) } }; },
+    reset: () => FUP.commissions.reset(),
+  });
+  S.register('salvage', {
+    get: () => FUP.salvage.state,
+    set(d) { FUP.salvage.state = { done: { ...(d.done || {}) } }; },
+    reset: () => FUP.salvage.reset(),
   });
 })();

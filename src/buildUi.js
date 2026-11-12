@@ -25,7 +25,7 @@ FUP.buildUi = {
       const b = this.box(p, tile);
       // Solid things get a soft shadow so they sit on the ground instead of floating
       if (it.solid) scene._placeViews.push(scene.add.ellipse(b.x + b.w / 2, b.y + b.h - 6, b.w * 0.8, tile * 0.35, 0x000000, 0.28).setDepth(-3));
-      const key = 'place_' + p.item;
+      const key = it.sprite || 'place_' + p.item;
       let s;
       if (scene.textures.exists(key)) {
         // A painted picture (v0.68 furniture): as wide as its squares; standing things stand on the bottom of them

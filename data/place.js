@@ -57,6 +57,14 @@ FUP.placeData = {
     // Boss trophies (G1): only from boss chase drops (data/gear.js bossDrops). noShop = never sold anywhere.
     golden_perch:  { name: 'Golden Perch', emoji: '🏆', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'The Godfather sat here. Now you do. Well, a pigeon does.' },
     framed_notice: { name: 'Framed Final Notice', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'Evicted the evictor. Framed it.' },
+    // Farm helpers (v0.70): put them near your patches. helper.kind = what they do (src/systems/garden.js), radius in squares.
+    //   scarecrow: chance of one extra crop at harvest · barrel: waters thirsty crops by itself, `water` times a day
+    scarecrow:   { name: 'Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { building: 4 } },
+                   cost: { items: { plank: 4, nails: 2 } }, helper: { kind: 'scarecrow', radius: 3, chance: 0.35 },
+                   blurb: 'Crops within 3 squares: 35% chance of one extra at harvest. The crows were never real. The results are.' },
+    rain_barrel: { name: 'Rain Barrel', emoji: '🛢️', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { building: 8 } },
+                   cost: { items: { plank: 6, nails: 3, stone: 1 } }, helper: { kind: 'barrel', radius: 2, water: 6 },
+                   blurb: 'Waters thirsty crops within 2 squares by itself, 6 times a day. Lazy farming, built properly.' },
     // Only from the repaired Market (source: 'market': hidden from the Carpenter's Build tab)
     gnome:         { name: 'Judgemental Gnome', emoji: '🧙', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 400 }, source: 'market', blurb: 'It has seen what you plant.' },
     weathervane:   { name: 'Weathervane', emoji: '🐓', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 600 }, source: 'market', blurb: 'Points at the wind. The wind ignores it.' },
@@ -65,7 +73,7 @@ FUP.placeData = {
   },
 
   // ---------- Building skill ----------
-  xp: { plank: 6, perCoin: 0.25, firstPlace: 20 },   // XP per plank sawn / per coin of a thing's listed price / first time you place a kind of thing
+  xp: { plank: 6, perCoin: 0.1, firstPlace: 20 },   // v0.70: perCoin 0.25 -> 0.1 (most Building XP now comes from salvage and commissions)   // XP per plank sawn / per coin of a thing's listed price / first time you place a kind of thing
   plankBark: 3,       // Bark per plank at the sawhorse (Tidy Saw perk: 2)
   sawSeconds: 1.0,    // seconds of sawing per plank
   plankPrice: 15,     // the Carpenter sells planks too (no Building XP for those)
