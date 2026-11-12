@@ -61,7 +61,11 @@ FUP.villagePanels = {
     return b;
   },
   pText(x, y, str, size, color, extra) { return this.pAdd(FUP.ui.text(this, x, y, str, size, color, extra)); },
-  pPic(x, y, key, emoji, scale = 1.5) { return this.pAdd(FUP.ui.sprite(this, x, y, key, emoji, 18, scale)); },
+  pPic(x, y, key, emoji, scale = 1.5) {
+    const s = FUP.ui.sprite(this, x, y, key, emoji, 18, scale);
+    if (s.width && s.displayWidth && Math.max(s.displayWidth, s.displayHeight) > 32) s.setScale(s.scaleX * 32 / Math.max(s.displayWidth, s.displayHeight));   // big pictures (furniture) shrink to fit the slot
+    return this.pAdd(s);
+  },
 
   // A list of rows with paging. Each row: { pic, emoji, name, color, sub, btn, fn, disabled, btn2, fn2 }
   pRows(rows, x, y, w, perPage, rowH = 40) {

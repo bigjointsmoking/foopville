@@ -45,11 +45,12 @@ FUP.placeData = {
     lantern:    { name: 'Lantern',    emoji: '🏮', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 9 } },  cost: { coins: 80 }, blurb: 'Light for your late-night farming regrets.' },
     stone_path: { name: 'Stone Path', emoji: '⬜', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], req: { skills: { building: 12 } }, cost: { coins: 20 }, blurb: 'A path that means business.' },
     // Furniture for your room (purely for looks). solid = you walk round it (rugs you walk on).
+    // flat: true = lies on the floor; one other (not flat) thing can stand on it (a table on a rug)
     // act: what happens when you walk up and press the button: say = a narrator line (data/narrator.js), bed = works like your bed
     table:      { name: 'Table',        emoji: '🍽️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], act: { label: '🍽️ Sit down', say: 'furnTable' }, cost: { coins: 200 }, blurb: 'Eat at it. Or under it. No judgement.' },
     chair:      { name: 'Chair',        emoji: '💺', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '💺 Sit', say: 'furnChair' }, cost: { coins: 80 }, blurb: 'For sitting. Revolutionary.' },
     plant:      { name: 'Potted Plant', emoji: '🪴', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '🪴 Look', say: 'furnPlant' }, cost: { coins: 60 }, blurb: 'The only crop you won\'t eat.' },
-    rug:        { name: 'Rug',          emoji: '🟥', kind: 'furniture', w: 2, h: 2, zones: ['home'], req: { skills: { building: 4 } },  cost: { coins: 150 }, blurb: 'Ties the room together.' },
+    rug:        { name: 'Rug',          emoji: '🟥', kind: 'furniture', w: 2, h: 2, flat: true, zones: ['home'], req: { skills: { building: 4 } },  cost: { coins: 150 }, blurb: 'Ties the room together.' },
     bookshelf:  { name: 'Bookshelf',    emoji: '📚', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 6 } },  act: { label: '📚 Read', say: 'furnBooks' }, cost: { coins: 300, items: { plank: 4 } }, blurb: 'Books you will absolutely read. Someday.' },
     fireplace:  { name: 'Fireplace',    emoji: '🔥', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 15 } }, act: { label: '🔥 Warm up', say: 'furnFire' }, cost: { coins: 900, items: { plank: 10 } }, blurb: 'Cosy. Do not cook in it. You have a stove.' },
     fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 1200, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
@@ -59,7 +60,7 @@ FUP.placeData = {
     // Only from the repaired Market (source: 'market': hidden from the Carpenter's Build tab)
     gnome:         { name: 'Judgemental Gnome', emoji: '🧙', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 400 }, source: 'market', blurb: 'It has seen what you plant.' },
     weathervane:   { name: 'Weathervane', emoji: '🐓', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 600 }, source: 'market', blurb: 'Points at the wind. The wind ignores it.' },
-    fancy_rug:     { name: 'Suspiciously Fine Rug', emoji: '🟪', kind: 'furniture', w: 2, h: 2, zones: ['home'], cost: { coins: 500 }, source: 'market', blurb: 'Too nice for you. Nobody asks where it came from.' },
+    fancy_rug:     { name: 'Suspiciously Fine Rug', emoji: '🟪', kind: 'furniture', w: 2, h: 2, flat: true, zones: ['home'], cost: { coins: 500 }, source: 'market', blurb: 'Too nice for you. Nobody asks where it came from.' },
     pigeon_statue: { name: 'Pigeon Statue', emoji: '🐦', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], max: 1, cost: { coins: 800 }, source: 'market', blurb: 'A tribute. The pigeons approve. Mostly.' },
   },
 

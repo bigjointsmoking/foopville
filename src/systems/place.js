@@ -73,7 +73,12 @@ FUP.place = {
   list(zoneId) { return this.state.placed.filter(p => p.zone === zoneId); },
   covers(p, tx, ty) { const it = this.item(p.item); return tx >= p.tx && tx < p.tx + it.w && ty >= p.ty && ty < p.ty + it.h; },
   // The placed thing on this zone square, or null
-  at(zoneId, tx, ty) { return this.list(zoneId).find(p => this.covers(p, tx, ty)) || null; },
+  at(zoneId, tx, ty) {
+    const here = this.list(zoneId).filter(p => this.covers(p, tx, ty));
+    return here.find(p => !this.item(p.item).flat) || here[0] || null;   // a table on a rug: the table is what you tap
+  },
+  // Flat things (rugs) can lie under one other thing that isn't flat (v0.68)
+  stacks(a, b) { return !!this.item(a).flat !== !!this.item(b).flat; },
   // The slot that covers this zone square, or null
   slotAt(zoneId, tx, ty) { return this.zone(zoneId).slots.find(s => tx >= s.tx && tx < s.tx + s.w && ty >= s.ty && ty < s.ty + s.h) || null; },
   // Which zone is this map square in? Returns { zone, tx, ty } (tx, ty inside the zone) or null.
@@ -123,8 +128,7 @@ FUP.place = {
     }
     const map = this.mapOf(z.where.region), ground = z.ground || FUP.placeData.walkable;
     for (let y = ty; y < ty + it.h; y++) for (let x = tx; x < tx + it.w; x++) {
-      const other = this.at(zoneId, x, y);
-      if (other && other.uid !== ignoreUid) return false;
+      if (this.list(zoneId).some(o => o.uid !== ignoreUid && this.covers(o, x, y) && !this.stacks(itemId, o.item))) return false;
       if (map && !ground.includes(map.tileAt(z.where.tx + x, z.where.ty + y))) return false;
     }
     return true;

@@ -25,7 +25,15 @@ FUP.buildUi = {
       const b = this.box(p, tile);
       // Solid things get a soft shadow so they sit on the ground instead of floating
       if (it.solid) scene._placeViews.push(scene.add.ellipse(b.x + b.w / 2, b.y + b.h - 6, b.w * 0.8, tile * 0.35, 0x000000, 0.28).setDepth(-3));
-      const s = FUP.ui.sprite(scene, b.x + b.w / 2, b.y + b.h / 2, 'place_' + p.item, it.emoji, Math.round(tile * (it.solid ? 0.95 : 0.8))).setDepth(it.solid ? b.y + b.h : -2);
+      const key = 'place_' + p.item;
+      let s;
+      if (scene.textures.exists(key)) {
+        // A painted picture (v0.68 furniture): as wide as its squares; standing things stand on the bottom of them
+        // (tall ones like the bookshelf rise above), flat ones (rugs) lie in the middle
+        s = scene.add.image(b.x + b.w / 2, it.solid ? b.y + b.h + 2 : b.y + b.h / 2, key).setOrigin(0.5, it.solid ? 1 : 0.5);
+        s.setScale(b.w * (it.w === 1 ? 0.92 : 0.98) / s.width);
+      } else s = FUP.ui.sprite(scene, b.x + b.w / 2, b.y + b.h / 2, key, it.emoji, Math.round(tile * (it.solid ? 0.95 : 0.8)));
+      s.setDepth(it.solid ? b.y + b.h : -2);
       scene._placeViews.push(s);
     }
   },
