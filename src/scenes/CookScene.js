@@ -1,7 +1,7 @@
 // ============================================================
 // CAMP — cook what's in your bag. Two versions of this screen:
-//   'home'     = your house in the village. Cook and change gear, then
-//                head back out to the village. Saves after every change.
+//   'home'     = the stove in your house (you need one, v0.68). Cook, then
+//                step back into your room (HouseScene). Saves after every change.
 //   'campfire' = a campfire in one of the 3 Forest areas. Cook, Rest once
 //                per campfire (+30% HP), change gear, go back into the Forest
 //                or head home. The Landlord is no longer here: he's at the
@@ -45,14 +45,7 @@ class CookScene extends Phaser.Scene {
       this.restBtn = ui.button(this, W - 168, 20, 144, 36, `😴 Rest +${Math.round(FUP.forestData.restHealPercent * 100)}%`, () => this.rest(), { size: 15 });
       this.restBtn.setEnabled(!this.campArea().rested);
     }
-    // Your bed (v0.41, every house): Sleep at home = full heal.
-    if (!fire && FUP.house.canNap()) {
-      // Early in the day it's a nap (full heal). In the second half it's Sleep until morning: full heal + a new day.
-      this.napBtn = ui.button(this, W - 208, 20, 184, 36, '', () => this.nap(), { size: 13 });
-      this.refreshNap();
-      this.time.addEvent({ delay: 1000, loop: true, callback: () => this.refreshNap() });
-    }
-
+    // (Your bed moved into the house itself in v0.68: Nap / Sleep live in HouseScene.)
     // (The garden menu is gone: farming happens on the village map now, see data/garden.js.)
     ui.muteButton(this, W - 196, 38);
     this.bagTitle = ui.text(this, 20, 75, '', 16, c.accent, { fontStyle: '700' });
@@ -65,9 +58,7 @@ class CookScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-I', () => this.openPack());
     FUP.progressUi.guideButton(this, 406, 66, 80, 30, { skill: 'cooking', size: 14, canOpen: () => !this.guide, onOpen: g => { this.guide = g; }, onClose: () => { this.guide = null; } });
     this.guide = null;
-    // Decorate your room (v0.57, src/roomUi.js): home only, rebuilt every time it opens
-    this.decor = null;
-    if (!fire) ui.button(this, 490, 66, 116, 30, '🛋️ Decorate', () => { if (!this.decor) this.decor = FUP.roomUi.open(this, () => { this.decor = null; }); }, { size: 14 });
+    // (Decorating moved into the house itself in v0.68: HouseScene's 🔨 Decorate.)
     FUP.progressUi.attach(this);
     this.gearPanel = null; this.gearTab = 'shop';
 
@@ -106,32 +97,6 @@ class CookScene extends Phaser.Scene {
     this.renderSatchel();
     this.say('campfireRest');
     FUP.audio.sfx('heal');
-  }
-
-  // Sleep in your bed: full HP, as often as you like, but only at home.
-  nap() {
-    const sleep = FUP.clock.canSleep();
-    if (!sleep && FUP.run.currentHp() >= FUP.run.maxHp()) return;
-    FUP.run.hp = null;
-    this.dirty = true;
-    FUP.audio.sfx('heal');
-    if (sleep) {
-      // Sleep until morning: the screen goes dark, a new day starts (src/systems/clock.js)
-      FUP.clock.sleep(); FUP.clock.rolled = 0;
-      this.cameras.main.fadeOut(350, 0, 0, 0);
-      this.time.delayedCall(450, () => { this.cameras.main.fadeIn(500, 0, 0, 0); this.say('sleepDay'); this.renderSatchel(); this.refreshNap(); });
-    } else {
-      this.renderSatchel();
-      this.say('homeNap');
-    }
-    this.refreshNap();
-  }
-  // The bed button's words depend on the time of day
-  refreshNap() {
-    if (!this.napBtn || !this.napBtn.txt.active) return;
-    const sleep = FUP.clock.canSleep();
-    this.napBtn.txt.setText(sleep ? `🛏️ Sleep until morning` : '😴 Nap (full heal)');
-    this.napBtn.setEnabled(sleep || FUP.run.currentHp() < FUP.run.maxHp());
   }
 
   // ---------- Redraw everything that depends on your Cooking level or the pot ----------
@@ -430,39 +395,8 @@ class CookScene extends Phaser.Scene {
   // ---------- Pantry: move ingredients between your bag and the pantry ----------
   openPantry() {
     this.hideDishTip();
-    if (this.pantryPanel) this.pantryPanel.destroy(true);
-    const ui = FUP.ui, c = ui.colors, run = FUP.run, H = FUP.house, W = this.scale.width, Hh = this.scale.height, Z = 400;
-    const g = this.pantryPanel = this.add.group();
-    const add = o => { g.add(o); if (o.setDepth) o.setDepth(Z + 1); return o; };
-    const btn = (x, y, w, h, label, fn, opts = {}) => {
-      const b = ui.button(this, x, y, w, h, label, () => { fn(); this.dirty = true; if (this.pantryPanel) this.openPantry(); }, { size: 13, ...opts });
-      b.rect.setDepth(Z + 2); b.txt.setDepth(Z + 3); g.addMultiple([b.rect, b.txt]);
-      if (opts.disabled) b.setEnabled(false);
-      return b;
-    };
-    add(FUP.ui.shade(this, 0.75)).setDepth(Z);
-    add(FUP.ui.panel(this, 20, 20, W - 40, Hh - 40, 'panel'));
-    add(ui.text(this, 40, 34, `🗄️ ${H.current('pantries').name.toUpperCase()}`, 22, c.accent, { fontStyle: '700' }));
-    btn(W - 136, 30, 96, 32, 'Close', () => { this.pantryPanel.destroy(true); this.pantryPanel = null; this.refreshAll(); }, { size: 15, hot: true });
-    const bagFull = run.freeSlots() <= 0;
-    add(ui.text(this, 40, 70, `Backpack ${run.slotsUsed()}/${run.packMax()} slots     Pantry ${H.pantryTotal()}/${H.pantryMax()}     (the pantry stays at home; take things out to cook or carry them)`, 13, bagFull || H.pantryFull() ? c.bad : c.dim));
-
-    const ids = Object.keys(FUP.ingredients).filter(id => run.bagCount(id) > 0 || H.pantryCount(id) > 0);
-    if (!ids.length) add(ui.text(this, 40, 110, 'Nothing in your bag or the pantry. The shelves echo.', 15, c.dim));
-    add(ui.text(this, 330, 98, 'BAG', 12, c.dim, { fontStyle: '700' }).setOrigin(0.5, 0));
-    add(ui.text(this, 690, 98, 'PANTRY', 12, c.dim, { fontStyle: '700' }).setOrigin(0.5, 0));
-    ids.forEach((id, i) => {
-      const y = 118 + i * 46, ing = FUP.ingredients[id], inBag = run.bagCount(id), inP = H.pantryCount(id);
-      add(FUP.ui.panel(this, 36, y, W - 72, 40, 'inset'));
-      add(ui.sprite(this, 58, y + 20, ui.ingKey(id), ing.emoji, 18, 1.4));
-      add(ui.text(this, 82, y + 11, ing.name, 14, c.ink, { fontStyle: '700' }));
-      add(ui.text(this, 330, y + 20, `x${inBag}`, 15, inBag ? c.accent : c.dim, { fontStyle: '700' }).setOrigin(0.5));
-      btn(380, y + 6, 110, 28, 'Store all →', () => H.store(id, 99), { disabled: !inBag || H.pantryFull() });
-      btn(496, y + 6, 90, 28, 'Store 1 →', () => H.store(id, 1), { disabled: !inBag || H.pantryFull() });
-      add(ui.text(this, 690, y + 20, `x${inP}`, 15, inP ? c.accent : c.dim, { fontStyle: '700' }).setOrigin(0.5));
-      btn(724, y + 6, 66, 28, '← 1', () => H.take(id, 1), { disabled: !inP || bagFull });
-      btn(796, y + 6, 66, 28, '← all', () => H.take(id, 99), { disabled: !inP || bagFull });
-    });
+    if (this.pantryPanel) return;
+    this.pantryPanel = FUP.pantryUi.open(this, () => { this.pantryPanel = null; this.dirty = true; this.refreshAll(); });   // src/pantryUi.js
   }
 
   // ---------- Dish reveal: a big card that says exactly what you made ----------
@@ -619,7 +553,7 @@ class CookScene extends Phaser.Scene {
     const ui = FUP.ui, y = 558, h = 34;
     ui.button(this, 20, y, 130, h, '📖 Recipes', () => { this.showBook = !this.showBook; this.bookPage = 0; this.renderBook(); }, { size: 15 });   // always opens on page 1
     ui.button(this, 160, y, 110, h, 'Clear pot', () => { this.picked = []; this.renderPot(); this.renderPantry(); this.renderResult(); }, { size: 15 });
-    const label = this.mode === 'home' ? '🏘️ Out to the village' : '🔥 Leave the campfire';
+    const label = this.mode === 'home' ? '🏠 Back to the room' : '🔥 Leave the campfire';
     ui.button(this, 680, 555, 200, 38, label, () => this.mode === 'campfire' ? this.openLeaveChoice() : this.leave(this.mode === 'isle' ? 'forest' : undefined), { size: 16, hot: true });
 
     if (FUP.cookingData.devXpButton) {
@@ -681,10 +615,10 @@ class CookScene extends Phaser.Scene {
       this.time.delayedCall(650, () => this.scene.start('Battle', { enemies: ['landlord'] }));
       return;
     }
-    // Home: back out to the village (the gate to the Forest is there)
+    // Home: step back from the stove into your room (HouseScene, v0.68)
     FUP.save.write();
-    this.cameras.main.fadeOut(300, 0, 0, 0);
-    this.time.delayedCall(320, () => this.scene.start('Village', { from: 'home' }));
+    this.cameras.main.fadeOut(250, 0, 0, 0);
+    this.time.delayedCall(270, () => this.scene.start('House', { from: 'stove' }));
   }
 
   // ---------- Satchel: the dishes you'll bring into the next fight ----------

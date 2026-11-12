@@ -9,7 +9,7 @@ const config = {
   backgroundColor: FUP.look.hex(FUP.look.screen.sky),
   input: { activePointers: 3 },   // joystick + action button at the same time on phones
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [BootScene, StartScene, CreateScene, VillageScene, BattleScene, CookScene, WorldScene, RaidScene],
+  scene: [BootScene, StartScene, CreateScene, VillageScene, HouseScene, BattleScene, CookScene, WorldScene, RaidScene],
 };
 
 // Wait for the pixel font to load so text doesn't flash in the wrong font.

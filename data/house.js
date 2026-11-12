@@ -1,6 +1,6 @@
 // ============================================================
 // HOUSE — your home and what the Carpenter sells (GAME_DESIGN.md sections 18.5 and 18.7).
-// You start in a small cottage with an old stove and 4 farm patches.
+// You start in a small cottage with no stove and 4 farm patches (v0.68: buy a stove to cook at home).
 // Each upgrade line is a list of tiers, bought in order with coins.
 // Tier 0 is what you start with (price 0). Rizz discounts and haggling apply.
 // Dying wipes the house like everything else.
@@ -20,9 +20,12 @@ FUP.houseData = {
     { name: 'Manor',       price: 24000, plotChar: '3', satchelBonus: 4, pantryBonus: 40, blurb: 'South-east. 9 farm patches, a tower you don\'t need, +4 backpack slots and +40 storage space.' },
   ],
 
-  // Stove: less chance to burn food (taken off the burn chance in data/cooking.js).
+  // Stove: you need one to cook at home (v0.68, Jesus). Better stoves = less chance to burn food
+  // (taken off the burn chance in data/cooking.js). Tier 0 = no stove: the kitchen nook is empty.
+  // canCook: false = this tier can't cook. PLACEHOLDER price for the Old Stove.
   stoves: [
-    { name: 'Old Stove',     price: 0,   burnCut: 0,    blurb: 'It works. Mostly. It has opinions.' },
+    { name: 'No stove',      price: 0,   burnCut: 0, canCook: false, blurb: 'An empty corner where a stove should be. You can\'t cook at home.' },
+    { name: 'Old Stove',     price: 150, burnCut: 0,    blurb: 'Lets you cook at home. It works. Mostly. It has opinions.' },
     { name: 'Iron Stove',    price: 960, burnCut: 0.05, blurb: '5% less chance to burn food.' },
     { name: 'Chef\'s Range', price: 3200, burnCut: 0.10, blurb: '10% less chance to burn food.' },
   ],

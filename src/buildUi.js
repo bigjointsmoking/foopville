@@ -45,8 +45,9 @@ FUP.buildUi = {
     const gfx = scene.add.graphics().setDepth(-4);   // on the grass, under everything placed
 
     // The camera stops following you: it looks at the plot instead (▲ ▼ scroll it)
-    const minY = zy - 70, maxY = Math.max(minY, zy + z.h * T - stripY + 10);
-    const minX = zx - 40, maxX = Math.max(minX, zx + z.w * T - W + 40);   // the farm is wider than the screen: ◀ ▶ scroll it
+    // A zone smaller than the screen (your room) sits in the middle of the space above the strip
+    const minY = Math.min(zy - 70, Math.round(zy + z.h * T / 2 - (62 + stripY) / 2)), maxY = Math.max(minY, zy + z.h * T - stripY + 10);
+    const minX = Math.min(zx - 40, Math.round(zx + z.w * T / 2 - W / 2)), maxX = Math.max(minX, zx + z.w * T - W + 40);   // the farm is wider than the screen: ◀ ▶ scroll it
     const startX = z.w * T + 80 > W ? scene.player.x - W / 2 : zx + z.w * T / 2 - W / 2;
     cam.stopFollow();
     cam.setScroll(Math.max(minX, Math.min(maxX, startX)), Math.max(minY, Math.min(maxY, scene.player.y - 220)));
@@ -81,8 +82,8 @@ FUP.buildUi = {
       fix(ui.panel(scene, 16, stripY, W - 32, STRIP, 'panel'));
       const help = removing ? 'Remove: tap placed things to take them back. Tap Remove again to stop.'
         : moving ? `${P.item(moving.item).name}: tap a new spot to move it, or take it back.`
-        : sel ? `${P.item(sel).name}: tap ${P.item(sel).kind === 'ground' ? 'a free square (not a slot)' : 'a green slot'} to put it down.`
-        : 'Tap something you own, then tap the plot. Tap a placed thing to move it or take it back.';
+        : sel ? `${P.item(sel).name}: tap ${P.freeKind(P.item(sel).kind) ? 'a free square' + (z.slots.length ? ' (not a slot)' : '') : 'a green slot'} to put it down.`
+        : `Tap something you own, then tap ${zoneId === 'home' ? 'the floor' : 'the plot'}. Tap a placed thing to move it or take it back.`;
       fix(ui.text(scene, 30, stripY + 10, `🔨 ${z.name.toUpperCase()}`, 14, c.accent, { fontStyle: '700' }), 2);
       fix(ui.text(scene, 30, stripY + 30, note || help, 12, note ? c.bad : c.dim, { wordWrap: { width: W - 330 } }), 2);
       if (moving) {

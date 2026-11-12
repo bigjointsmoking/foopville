@@ -7,12 +7,13 @@ window.FUP = window.FUP || {};
 FUP.house = {
   // Tier owned on each line (0 = what you start with), and what's in the pantry.
   // gear / dishes: spare gear and food kept at home (v0.41 storage; no limit)
-  state: { houses: 0, stoves: 0, pantries: 0, pantry: {}, gear: [], dishes: [] },
+  state: { houses: 0, stoves: 0, pantries: 0, pantry: {}, gear: [], dishes: [], stoveLine: 2 },
 
   // The upgrade lines, in the order the Carpenter shows them.
   LINES: ['houses', 'stoves', 'pantries'],
 
-  reset() { this.state = { houses: 0, stoves: 0, pantries: 0, pantry: {}, gear: [], dishes: [] }; },
+  reset() { this.state = { houses: 0, stoves: 0, pantries: 0, pantry: {}, gear: [], dishes: [], stoveLine: 2 }; },
+  // stoveLine 2 (v0.68): 'No stove' became tier 0. Older saves owned at least the Old Stove, so they move up one.
 
   // What you own on a line, and the next thing you could buy (null = all bought).
   current(line) { return FUP.houseData[line][this.state[line]]; },
@@ -39,6 +40,7 @@ FUP.house = {
   },
   houseForPatch(ch) { return FUP.houseData.houses.findIndex(h => h.plotChar === ch); },
   stoveBurnCut() { return this.current('stoves').burnCut; },
+  canCook() { return this.current('stoves').canCook !== false; },   // you own a stove (v0.68)
 
   // ---------- Pantry ----------
   // Perks from every house you own (they add up)

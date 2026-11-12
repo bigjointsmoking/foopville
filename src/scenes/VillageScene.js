@@ -4,7 +4,7 @@
 // On phones: drag anywhere to walk (joystick), tap the round button to talk.
 //   Blacksmith = weapons + armor     Shopkeeper = trinkets, ingredients, buys your stuff
 //   Chef Marrowbone = secret-recipe riddles   Quest Board Keeper = quests
-//   Your house = cook + change gear  The gate (top) = walk through it into the Forest Edge
+//   Your house = walk inside (HouseScene) The gate (top) = walk through it into the Forest Edge
 //   The south road and east bridge lead off the map too, once they're fixed (data/world.js).
 //   Planksworth = houses, stove, pantry. Farm patches: see VillageFarm.js.
 // The game saves every time you arrive here and after every purchase.
@@ -480,7 +480,7 @@ class VillageScene extends Phaser.Scene {
     FUP.house.state.door = door;   // come back out of the same door
     FUP.audio.sfx('select');
     this.cameras.main.fadeOut(300, 0, 0, 0);
-    this.time.delayedCall(320, () => this.scene.start('Cook', { mode: 'home' }));
+    this.time.delayedCall(320, () => this.scene.start('House', {}));   // inside your house (v0.68, HouseScene)
   }
 
   // ---------- The edges of the village: the gate north, the south road, the east bridge ----------

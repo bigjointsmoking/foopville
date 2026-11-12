@@ -23,30 +23,12 @@ FUP.placeData = {
     },
     // The big farm south of the village (inside its fence): ground things only, on plain grass (v0.57)
     farm: { name: 'The farm', where: { region: 'village', tx: 5, ty: 42 }, w: 52, h: 15, slots: [], ground: '.' },
-    // A room in your house (the house screen's Decorate button): 10 floor slots (2x2) and 5 wall spots on the top row (v0.57)
-    home: {
-      name: 'Your room', where: { screen: 'home' }, w: 10, h: 6,
-      slots: [
-        { id: 'f1', tx: 0, ty: 1, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f2', tx: 2, ty: 1, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f3', tx: 4, ty: 1, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f4', tx: 6, ty: 1, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f5', tx: 8, ty: 1, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f6', tx: 0, ty: 4, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f7', tx: 2, ty: 4, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f8', tx: 4, ty: 4, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f9', tx: 6, ty: 4, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'f10', tx: 8, ty: 4, w: 2, h: 2, fits: ['furniture'] },
-        { id: 'w1', tx: 1, ty: 0, w: 1, h: 1, fits: ['wall'] },
-        { id: 'w2', tx: 3, ty: 0, w: 1, h: 1, fits: ['wall'] },
-        { id: 'w3', tx: 5, ty: 0, w: 1, h: 1, fits: ['wall'] },
-        { id: 'w4', tx: 7, ty: 0, w: 1, h: 1, fits: ['wall'] },
-        { id: 'w5', tx: 9, ty: 0, w: 1, h: 1, fits: ['wall'] },
-      ],
-    },
+    // The floor of your room (v0.68): a walk-around room (src/scenes/HouseScene.js). Furniture goes on any free floor square.
+    // where / w / h are set by FUP.home.build() from the house you own (data/home.js rooms); these are the Cottage's.
+    home: { name: 'Your room', where: { region: 'home', tx: 1, ty: 2 }, w: 14, h: 8, slots: [], ground: '.' },
   },
 
-  // kind: 'building' (needs a building slot) | 'furniture' (a room's floor slots) | 'wall' (a room's wall spots) | 'ground' (any free square)
+  // kind: 'building' (needs a building slot) | 'furniture' (any free square of your room's floor) | 'ground' (any free square)
   // w, h = size in squares. solid = you can't walk through it. cost / req: the shared format (src/systems/req.js).
   // PLACEHOLDER prices.
   items: {
@@ -62,14 +44,15 @@ FUP.placeData = {
     hedge:      { name: 'Hedge',      emoji: '🌳', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 7 } },  cost: { coins: 25 }, free: true, blurb: 'A fence that grows. Ambitious.' },
     lantern:    { name: 'Lantern',    emoji: '🏮', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 9 } },  cost: { coins: 80 }, blurb: 'Light for your late-night farming regrets.' },
     stone_path: { name: 'Stone Path', emoji: '⬜', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], req: { skills: { building: 12 } }, cost: { coins: 20 }, blurb: 'A path that means business.' },
-    // Furniture for your room (purely for looks)
-    table:      { name: 'Table',        emoji: '🍽️', kind: 'furniture', w: 2, h: 2, zones: ['home'], cost: { coins: 200 }, blurb: 'Eat at it. Or under it. No judgement.' },
-    chair:      { name: 'Chair',        emoji: '💺', kind: 'furniture', w: 1, h: 1, zones: ['home'], cost: { coins: 80 }, blurb: 'For sitting. Revolutionary.' },
-    plant:      { name: 'Potted Plant', emoji: '🪴', kind: 'furniture', w: 1, h: 1, zones: ['home'], cost: { coins: 60 }, blurb: 'The only crop you won\'t eat.' },
+    // Furniture for your room (purely for looks). solid = you walk round it (rugs you walk on).
+    // act: what happens when you walk up and press the button: say = a narrator line (data/narrator.js), bed = works like your bed
+    table:      { name: 'Table',        emoji: '🍽️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], act: { label: '🍽️ Sit down', say: 'furnTable' }, cost: { coins: 200 }, blurb: 'Eat at it. Or under it. No judgement.' },
+    chair:      { name: 'Chair',        emoji: '💺', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '💺 Sit', say: 'furnChair' }, cost: { coins: 80 }, blurb: 'For sitting. Revolutionary.' },
+    plant:      { name: 'Potted Plant', emoji: '🪴', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '🪴 Look', say: 'furnPlant' }, cost: { coins: 60 }, blurb: 'The only crop you won\'t eat.' },
     rug:        { name: 'Rug',          emoji: '🟥', kind: 'furniture', w: 2, h: 2, zones: ['home'], req: { skills: { building: 4 } },  cost: { coins: 150 }, blurb: 'Ties the room together.' },
-    bookshelf:  { name: 'Bookshelf',    emoji: '📚', kind: 'furniture', w: 2, h: 1, zones: ['home'], req: { skills: { building: 6 } },  cost: { coins: 300, items: { plank: 4 } }, blurb: 'Books you will absolutely read. Someday.' },
-    fireplace:  { name: 'Fireplace',    emoji: '🔥', kind: 'furniture', w: 2, h: 1, zones: ['home'], req: { skills: { building: 15 } }, cost: { coins: 900, items: { plank: 10 } }, blurb: 'Cosy. Do not cook in it. You have a stove.' },
-    fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, zones: ['home'], req: { skills: { building: 18 } }, cost: { coins: 1200, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
+    bookshelf:  { name: 'Bookshelf',    emoji: '📚', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 6 } },  act: { label: '📚 Read', say: 'furnBooks' }, cost: { coins: 300, items: { plank: 4 } }, blurb: 'Books you will absolutely read. Someday.' },
+    fireplace:  { name: 'Fireplace',    emoji: '🔥', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 15 } }, act: { label: '🔥 Warm up', say: 'furnFire' }, cost: { coins: 900, items: { plank: 10 } }, blurb: 'Cosy. Do not cook in it. You have a stove.' },
+    fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 1200, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
     // Boss trophies (G1): only from boss chase drops (data/gear.js bossDrops). noShop = never sold anywhere.
     golden_perch:  { name: 'Golden Perch', emoji: '🏆', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'The Godfather sat here. Now you do. Well, a pigeon does.' },
     framed_notice: { name: 'Framed Final Notice', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'Evicted the evictor. Framed it.' },

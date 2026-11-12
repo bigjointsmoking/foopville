@@ -128,7 +128,10 @@ FUP.save = {
 
   S.register('house', {
     get: () => FUP.house.state,
-    set(d) { FUP.house.state = { ...FUP.house.state, ...d, pantry: { ...(d.pantry || {}) }, gear: (d.gear || []).slice(), dishes: (d.dishes || []).slice() }; },
+    set(d) {
+      FUP.house.state = { ...FUP.house.state, ...d, pantry: { ...(d.pantry || {}) }, gear: (d.gear || []).slice(), dishes: (d.dishes || []).slice() };
+      if (!d.stoveLine) { FUP.house.state.stoves = (d.stoves || 0) + 1; FUP.house.state.stoveLine = 2; }   // v0.68: older saves keep the stove they had
+    },
     reset: () => FUP.house.reset(),
   });
 

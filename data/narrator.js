@@ -167,6 +167,18 @@ FUP.narrator = {
   fishFull: ["Your bag is full of things that aren't fish.", 'No room. The fish are relieved.'],
   // Decorating (v0.57)
   placeTrapped: ['You were about to fence yourself in. Bold. Stupid, but bold.', 'That would wall you in. The narrator refuses to narrate your slow starvation.'],
+  // ---------- Your house (v0.68, HouseScene) ----------
+  houseArrive: ['Home. Four walls and a roof. Two more things than the Forest has.', 'You wipe your feet. Out of habit, not manners.', 'Home sweet home. The draft says hello.'],
+  houseFromStove: ['You step away from the stove. It keeps judging you.', 'Back in the room, smelling faintly of whatever that was.'],
+  houseNoStove: ['An empty corner where a stove should go. Planksworth the Carpenter sells stoves. You can still cook at a campfire, like a caveman.', 'No stove. You stare at the corner. The corner does not cook.'],
+  houseNoPantry: ['A bare shelf. Planksworth sells pantry shelves to put your ingredients on.', 'An empty shelf, ready for groceries you don\'t have.'],
+  houseChest: ['You open the chest. Everything you own that isn\'t on you.', 'The storage chest. Organised chaos.'],
+  houseFull: ['Already fully rested. Lying down now would just be lying.'],
+  furnChair: ['You sit. You stand. Riveting.', 'A good sit. Your knees thank you.'],
+  furnTable: ['You sit at the table, alone, like a person with plans.', 'A table. You put your elbows on it. Nobody stops you.'],
+  furnPlant: ['The plant is doing better than you.', 'You tell the plant about your day. It leans away.'],
+  furnBooks: ['You open a book. The pictures are nice.', 'Chapter one: "So You Live In A Village With A Mushroom Problem."', 'You read a page. You understand most of the words.'],
+  furnFire: ['You warm your hands. Cosy. Do not put fish in it.', 'The fire crackles. You feel almost competent.'],
   decorateOpen: ['Interior design time. Try to make it look like someone with taste lives here.', 'Your room. A blank canvas. Mostly blank. Mostly canvas.'],
   hammerBought: ['A better hammer. Nails everywhere tremble.', 'New hammer. Planksworth pretends he is not jealous.'],
   // Fish traps + the away card (v0.56)

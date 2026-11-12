@@ -17,7 +17,9 @@ FUP.place = {
   // How many you have in all: in your pocket + placed
   total(id) { return this.ownedCount(id) + this.state.placed.filter(p => p.item === id).length; },
   // The map that a region's squares live on (more regions arrive with the world map)
-  mapOf(region) { return region === 'village' ? FUP.villageMap : null; },
+  mapOf(region) { return region === 'village' ? FUP.villageMap : region === 'home' ? (FUP.homeMap || null) : null; },
+  // Ground things and furniture go on any free square; buildings snap to slots (v0.68: furniture is free-placed in your room)
+  freeKind(kind) { return kind === 'ground' || kind === 'furniture'; },
 
   // ---------- Buying (from the Carpenter) ----------
   // The hammer (data/tools.js buildCut) takes coins off anything you build. Building Mastery makes paths, fences and hedges free.
@@ -102,7 +104,7 @@ FUP.place = {
   // Where this item would really go if you tap this square: buildings snap to the slot's top-left corner.
   snap(itemId, zoneId, tx, ty) {
     const it = this.item(itemId);
-    if (it && it.kind !== 'ground') { const s = this.slotAt(zoneId, tx, ty); if (s) return { tx: s.tx, ty: s.ty }; }
+    if (it && !this.freeKind(it.kind)) { const s = this.slotAt(zoneId, tx, ty); if (s) return { tx: s.tx, ty: s.ty }; }
     return { tx, ty };
   },
   // `ignoreUid`: a placed thing that doesn't count as in the way (the one being moved)
@@ -110,7 +112,7 @@ FUP.place = {
     const it = this.item(itemId), z = this.zone(zoneId);
     if (!it || !z || !(it.zones || []).includes(zoneId)) return false;
     if (tx < 0 || ty < 0 || tx + it.w > z.w || ty + it.h > z.h) return false;
-    if (it.kind === 'ground') {
+    if (this.freeKind(it.kind)) {
       for (let y = ty; y < ty + it.h; y++) for (let x = tx; x < tx + it.w; x++) if (this.slotAt(zoneId, x, y)) return false;
     } else {
       // Top-left corner on a slot's corner, the right kind of slot, and no bigger than the slot
