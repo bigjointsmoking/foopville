@@ -34,6 +34,7 @@ class VillageScene extends Phaser.Scene {
     this.drawBuildings();
     this.drawFarm();
     this.drawPeople();
+    this.drawProps();     // benches, the telescope, the statue, the orchard, farm things (data/village.js props)
     this.drawRepairs();   // ruins, the Restoration Board, the well (VillageRepairs.js)
     this._trapViews = null; this.trapSig = null;
     FUP.trapUi.draw(this, 'village', FUP.villageMap);   // fish traps by the pond (src/trapUi.js)
@@ -148,6 +149,16 @@ class VillageScene extends Phaser.Scene {
       sp.label = H.owns(sp.door) ? 'Go inside' : 'For sale';
     }
     if (this.farmViews) this.refreshFarm(true);
+  }
+
+  // ---------- Props (v0.67): the things on the hills and round the farm. Some you can read. ----------
+  drawProps() {
+    const T = FUP.villageData.tileSize, ui = FUP.ui;
+    for (const p of FUP.villageData.props || []) {
+      const x = p.tx * T + T / 2, y = p.ty * T + T * 0.92;
+      const s = ui.sprite(this, x, y, p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
+      if (p.text) this.spots.push({ kind: 'read', x, y: p.ty * T + T / 2, sprite: s, label: '📜 Read', text: p.text });
+    }
   }
 
   // ---------- Villagers, your door, the gate, and you ----------
@@ -424,6 +435,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'saw') { this.sawPlank(s); return; }
     if (s.kind === 'stall') { this.openStall(s.uid); return; }
     if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
+    if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
     this.openPanel(s.id);   // villagers, and objects like the Compost Bin
   }

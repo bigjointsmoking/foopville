@@ -255,7 +255,19 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
 FUP.villageMap = FUP.tilemap(() => FUP.villageData, '#~bwlkfhy');
 // Repairs change the map (the South Road becomes a path) and ruins block squares (src/systems/repairs.js)
 FUP.villageMap.rows = () => FUP.repairs ? FUP.repairs.rows(FUP.villageData.map) : FUP.villageData.map;
-FUP.villageMap.blockedTile = function (tx, ty) { return this.BLOCKED.includes(this.tileAt(tx, ty)) || !!(FUP.repairs && FUP.repairs.blocked(tx, ty)) || !!(FUP.hills && FUP.hills.blocked('village', tx, ty)); };
+FUP.villageMap.blockedTile = function (tx, ty) { return this.BLOCKED.includes(this.tileAt(tx, ty)) || !!(FUP.repairs && FUP.repairs.blocked(tx, ty)) || !!(FUP.hills && FUP.hills.blocked('village', tx, ty)) || this.extraBlocked(tx, ty); };
+// Hollis's fields and solid props (data/village.js fields / props, v0.67) block walking too
+FUP.villageMap.extraBlocked = function (tx, ty) {
+  const d = FUP.villageData;
+  if (this._xbFor !== d) {
+    this._xbFor = d; this._xb = new Set();
+    for (const f of d.fields || []) for (let y = f.ty; y < f.ty + f.h; y++) for (let x = f.tx; x < f.tx + f.w; x++) this._xb.add(x + ',' + y);
+    for (const p of d.props || []) if (p.solid) this._xb.add(p.tx + ',' + p.ty);
+  }
+  return this._xb.has(tx + ',' + ty);
+};
+// The field at a square (or null)
+FUP.villageMap.fieldAt = function (tx, ty) { return (FUP.villageData.fields || []).find(f => tx >= f.tx && tx < f.tx + f.w && ty >= f.ty && ty < f.ty + f.h) || null; };
 FUP.villageMap.hillRegion = () => 'village';
 
 // Hills (src/systems/hills.js, v0.66): a hill's border is solid except its stairs

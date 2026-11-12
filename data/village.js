@@ -33,29 +33,29 @@ FUP.villageData = {
     '#..bbbb.......==......bbbb......bbbb...f222f.................#',
     '#....=........==........=.kk......=....f...f.................#',
     '#....=================================......==============...#',
-    '#.............==..........pp.........=...................=...#',
-    '#..bbbb.......==.....bb............k.=.....k.............=...#',
+    '#.............==..........pp...=.....=...................=...#',
+    '#..bbbb.......==.....bb........=...k.=.....k.............=...#',
     '#k.bbbb....========..=...............=...................=...#',
-    '#....=.....===ww===..=...............=...~...............=...#',
-    '#....=================...............=..~~~..............=...#',
-    '#..........l..==..l....~~............=..~~~..............=...#',
-    '#.k...........==......~~~~~..........=...~...............=...#',
+    '#....=.....===ww===..=.........=.....=...~...............=...#',
+    '#....=================.........=.....=..~~~..............=...#',
+    '#..........l..==..l....~~......=.....=..~~~..............=...#',
+    '#.k...........==......~~~~~....===...=...~...............=...#',
     '#..bbbb.fff...==.......~~............=...................=...#',
-    '#..bbbb.11f...==.......pp............=...................=...#',
-    '#....=P.11f...==..fff..pp............=...................=...#',
+    '#..bbbb.11f...==.......pp......=.....=...................=...#',
+    '#....=P.11f...==..fff..pp......=.....=...................=...#',
     '#....=================================...................=...#',
     '#.............=......................=...................=...#',
     '#.............=......................=...................=...#',
     '#.......~~~~..=...k..................=...................=...#',
     '#.....##~~~~..=......................=...................=...#',
     '#....###.~~...=...............l......=.fffff.............=...#',
-    '#.............========...............=.f333f.............=...#',
-    '#...................##.........bbbbbb=.f333f....~~~......=...#',
-    '#....................##........bbbbbb=.f333f...~~~~~.....=...#',
-    '#.....................=.......========.f...f....~~~......=...#',
-    '#.....................=.....k............................=...#',
-    '#...........#.........=..................................=...#',
-    '#.....................=...##......................k......=...#',
+    '#....==================..............=.f333f.............=...#',
+    '#.....................=........bbbbbb=.f333f....~~~......=...#',
+    '#....=................=........bbbbbb=.f333f...~~~~~.....=...#',
+    '#....=................=.......========.f...f....~~~......=...#',
+    '#....=...........=....=.....k............................=...#',
+    '#....=......#.....===.=..................................=...#',
+    '#................=....=...##......................k......=...#',
     '#.....................=..............................k...=...#',
     '#....#....#....#....#.=..#...............................=...#',
     '#......#......#......#=.....#......#......#..............=...#',
@@ -302,11 +302,46 @@ FUP.villageData = {
   // The border is cliff (front row = the face you see); stairs are the way up. A hill inside
   // another hill's top is one level higher (the lookout). Placed so nothing gets cut off (tests/hills.js).
   hills: [
-    { tx: 27, ty: 9, w: 9, h: 6, stairs: [[31, 14], [31, 9]] },     // east of the square, with the lookout on top
-    { tx: 32, ty: 10, w: 3, h: 3, stairs: [[33, 12]] },             // the lookout
-    { tx: 1, ty: 24, w: 9, h: 6, stairs: [[5, 29], [5, 24]] },      // west meadow
-    { tx: 22, ty: 18, w: 8, h: 6, stairs: [[26, 23], [26, 18]] },   // by the Manor road
-    { tx: 13, ty: 26, w: 9, h: 5, stairs: [[17, 30], [17, 26]] },   // south meadow
+    { tx: 27, ty: 9, w: 9, h: 6, stairs: [[31, 14], [31, 9]] },     // Lookout Hill: benches, a flag, the lookout on top
+    { tx: 32, ty: 10, w: 3, h: 3, stairs: [[33, 12]] },             // the lookout itself (the telescope)
+    { tx: 1, ty: 24, w: 9, h: 6, stairs: [[5, 29], [5, 24]] },      // Orchard Hill: Hollis's apple trees and beehives
+    { tx: 13, ty: 26, w: 9, h: 5, stairs: [[17, 30], [17, 26], [21, 28]] },   // Founder's Hill: the statue, steps up from the farm road
+  ],
+  // Things that give the hills and the farm a purpose (v0.67). sprite, square, solid = blocks walking,
+  // text = walk up and read it (narrator bar). Pictures: art/fupville_art.py (prop_*, deco_*).
+  props: [
+    { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light is on in the Landlord's basement. He's up late, counting your rent." },
+    { sprite: 'prop_flag', tx: 32, ty: 10 },
+    { sprite: 'prop_bench', tx: 29, ty: 11, solid: true },
+    { sprite: 'prop_flowerbed', tx: 29, ty: 13 },
+    { sprite: 'prop_flowerbed', tx: 34, ty: 13 },
+    { sprite: 'prop_fruit_tree', tx: 3, ty: 25, solid: true },
+    { sprite: 'prop_fruit_tree', tx: 7, ty: 25, solid: true },
+    { sprite: 'prop_fruit_tree', tx: 3, ty: 27, solid: true },
+    { sprite: 'prop_fruit_tree', tx: 7, ty: 27, solid: true },
+    { sprite: 'prop_beehive', tx: 2, ty: 28, solid: true },
+    { sprite: 'prop_beehive', tx: 8, ty: 28, solid: true },
+    { sprite: 'deco_signpost', tx: 6, ty: 28, text: "Hollis's Orchard. The apples are for looking at. Hollis counts them every night. Twice." },
+    { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'Sir Reginald Foop, founder of Foopville. He got lost, it got dark, he gave up and built a house. Visionary.' },
+    { sprite: 'prop_bench', tx: 15, ty: 27, solid: true },
+    { sprite: 'prop_bench', tx: 19, ty: 27, solid: true },
+    { sprite: 'prop_flowerbed', tx: 15, ty: 29 },
+    { sprite: 'prop_flowerbed', tx: 19, ty: 29 },
+    // The farm
+    { sprite: 'prop_coop', tx: 20, ty: 43, solid: true },
+    { sprite: 'prop_haystack', tx: 6, ty: 43, solid: true },
+    { sprite: 'prop_haystack', tx: 6, ty: 50, solid: true },
+    { sprite: 'prop_haystack', tx: 21, ty: 55, solid: true },
+    { sprite: 'prop_wheelbarrow', tx: 25, ty: 43, solid: true },
+    { sprite: 'prop_trough', tx: 24, ty: 50, solid: true },
+  ],
+  // Hollis's fields (v0.67): rows of crops in the farm's empty land. You can't walk through them.
+  fields: [
+    { crop: 'field_wheat',   tx: 32, ty: 43, w: 7,  h: 4 },
+    { crop: 'field_corn',    tx: 45, ty: 42, w: 11, h: 5 },
+    { crop: 'field_cabbage', tx: 32, ty: 50, w: 7,  h: 4 },
+    { crop: 'field_pumpkin', tx: 45, ty: 50, w: 11, h: 4 },
+    { crop: 'field_wheat',   tx: 6,  ty: 55, w: 15, h: 2 },
   ],
   lilyPadChance: 0.3,
 };

@@ -209,7 +209,8 @@ FUP.ambienceData = {
   // ---------- Wind: degrees each kind leans at most ----------
   wind: {
     sway: { deco_tuft: 7, deco_flowers: 6, deco_fern: 5, deco_reeds: 8, bush: 2, deco_glowshroom: 2, deco_shroom: 1.5, tree: 1.4,
-            amb_tallgrass: 8, amb_flower: 7, amb_flowerpatch: 5, amb_daisy: 4, amb_bush: 2, amb_bigbush: 1.5, amb_berrybush: 2 },
+            amb_tallgrass: 8, amb_flower: 7, amb_flowerpatch: 5, amb_daisy: 4, amb_bush: 2, amb_bigbush: 1.5, amb_berrybush: 2,
+            field_wheat: 6, field_corn: 3, field_cabbage: 1, field_pumpkin: 1.5, prop_fruit_tree: 1.4, prop_flag: 1.5 },
     speed: 1.3,             // gentle back-and-forth
     gustEvery: [6, 14],     // seconds between gusts
     gustSpeed: 260,         // px/s a gust rolls across the map
@@ -262,7 +263,7 @@ FUP.ambienceData = {
   // to the west at dawn, short ones at noon, long ones to the east at dusk; they fade at night.
   sunShadow: {
     keys: ['tree_', 'vil_', 'bush', 'rock', 'deco_stump', 'deco_log', 'deco_scarecrow', 'deco_haybale', 'deco_signpost', 'deco_rentsign',
-           'amb_bush', 'amb_bigbush', 'amb_berrybush', 'amb_rock', 'amb_toadstool', 'raid_desk', 'grave', 'campfire'],
+           'amb_bush', 'amb_bigbush', 'amb_berrybush', 'amb_rock', 'amb_toadstool', 'raid_desk', 'grave', 'campfire', 'prop_', 'field_corn'],
     alpha: 0.36,
     angle: [55, -55],         // degrees: dawn → dusk (0 = straight down the screen)
     length: [0.95, 0.4],      // share of the picture's height: dawn/dusk, noon

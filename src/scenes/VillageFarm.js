@@ -10,6 +10,7 @@ Object.assign(VillageScene.prototype, {
   // ---------- Drawing ----------
   drawFarm() {
     const T = FUP.villageData.tileSize, M = FUP.villageMap;
+    this.drawFields();
     this.farmViews = {};
     for (const q of FUP.garden.squares()) {
       const c = M.center(q.tx, q.ty);
@@ -37,6 +38,23 @@ Object.assign(VillageScene.prototype, {
     this.time.addEvent({ delay: 500, loop: true, callback: () => this.refreshFarm() });
   },
 
+  // Hollis's fields (data/village.js fields, v0.67): tilled rows, two plants per square, swaying in the wind.
+  drawFields() {
+    const T = FUP.villageData.tileSize, ui = FUP.ui;
+    const n = (x, y, k) => { const v = Math.sin(x * 12.9898 + y * 78.233 + k * 37.719) * 43758.5453; return v - Math.floor(v); };
+    for (const f of FUP.villageData.fields || []) {
+      for (let ty = f.ty; ty < f.ty + f.h; ty++) for (let tx = f.tx; tx < f.tx + f.w; tx++) {
+        const x = tx * T, y = ty * T;
+        this.add.image(x + T / 2, y + T / 2, 'farm_soil').setDisplaySize(T + 2, T + 2).setDepth(-6);
+        for (let k = 0; k < 2; k++) {
+          const px = x + T * (0.28 + k * 0.46) + (n(tx, ty, k) - 0.5) * 6, py = y + T * (0.55 + k * 0.35) + (n(tx, ty, k + 3) - 0.5) * 4;
+          const s = ui.sprite(this, px, py, f.crop, '', 10).setOrigin(0.5, 0.95).setDepth(py);
+          if (n(tx, ty, k + 6) < 0.5 && s.setFlipX) s.setFlipX(true);
+        }
+      }
+    }
+  },
+
   // Redraw patches that changed (crops grow on the real clock, see garden.tick).
   refreshFarm(all = false) {
     const G = FUP.garden, c = FUP.ui.colors;
@@ -50,14 +68,15 @@ Object.assign(VillageScene.prototype, {
       if (!all && sig === v.sig) continue;
       v.sig = sig;
       v.soil.setTexture(look === 'weeds' ? 'farm_weeds' : 'farm_soil').setDisplaySize(FUP.villageData.tileSize + 2, FUP.villageData.tileSize + 2);
-      v.soil.setAlpha(mine ? 1 : 0.55);
+      v.soil.setAlpha(mine ? 1 : 0.92);   // for sale: overgrown, not greyed out (v0.67)
       if (p.wet && look === 'growing') v.soil.setTint(0x8c96b8); else v.soil.clearTint();   // wet soil is darker
       v.crop.setVisible(p.s === 'crop').setRotation(0).clearTint().setScale(FUP.ui.artScale(2));
       if (p.s === 'crop') {
+        // v0.67: the painted crops are drawn at their real size (bigger pictures, so no extra scaling)
         let key = 'crop_sprout', scale = 2;
         if (look === 'dead') key = 'crop_dead';
-        else if (look === 'ready') { key = `crop_${p.crop}_3`; scale = 2.5; }
-        else if (p.stage >= 1) { key = `crop_${p.crop}_2`; scale = p.stage === 1 ? 2.1 : 2.6; }
+        else if (look === 'ready') key = `crop_${p.crop}_3`;
+        else if (p.stage >= 1) { key = `crop_${p.crop}_2`; scale = p.stage === 1 ? 1.7 : 2; }
         v.crop.setTexture(this.textures.exists(key) ? key : 'crop_sprout').setScale(FUP.ui.artScale(scale));
         if (look === 'wilting') v.crop.setTint(0xc8a860).setRotation(0.3);
       }

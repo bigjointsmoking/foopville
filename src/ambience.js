@@ -115,6 +115,7 @@ FUP.ambience = {
     if (A.region === 'village') {
       // Build zones: flat things only (2), so what you build sits on top of them
       for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) if (FUP.place && FUP.place.zoneAt('village', x, y) && !bad[y * TW + x]) bad[y * TW + x] = 2;
+      for (const f of FUP.villageData.fields || []) for (let y = f.ty - 1; y <= f.ty + f.h; y++) for (let x = f.tx; x < f.tx + f.w; x++) mark(x, y, 0);   // Hollis's fields
       for (const r of (FUP.repairs && FUP.repairs.list()) || []) {
         const s = r.site;
         if (s) for (let y = s.ty - 1; y <= s.ty + s.h; y++) for (let x = s.tx - 1; x <= s.tx + s.w; x++) mark(x, y, 0);
