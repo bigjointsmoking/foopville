@@ -39,6 +39,7 @@ FUP.village = {
     if (this.haggled()) FUP.run.haggleRetried = true;
     const won = rng() < this.haggleChance();
     FUP.run.haggle = won ? 'win' : 'fail';
+    if (FUP.tutorial) FUP.tutorial.note('haggle');   // Orientation Isle
     return { won, levels: FUP.skills.addXp('rizz', FUP.villageData.haggle.xp) };
   },
 
@@ -58,7 +59,8 @@ FUP.village = {
 
   // ---------- Selling (to the Shopkeeper) ----------
   gearSellPrice(item) { return this.sellPrice(item.sell); },
-  sellGear(item) { const p = this.gearSellPrice(item); FUP.run.sell(item, p); return p; },
+  sellGear(item) { const p = this.gearSellPrice(item); FUP.run.sell(item, p); this.sold(); return p; },
+  sold() { if (FUP.tutorial) FUP.tutorial.note('sell'); },   // Orientation Isle: "sell something"
 
   // A dish's plain price (no Rizz bonus, no haggling): food stalls use this
   dishBasePrice(dish) {
@@ -72,6 +74,7 @@ FUP.village = {
     const p = this.dishSellPrice(dish);
     FUP.run.satchel.splice(index, 1);
     FUP.run.coins += p;
+    this.sold();
     return p;
   },
 
@@ -81,6 +84,7 @@ FUP.village = {
     const p = this.ingredientSellPrice(id);
     FUP.run.takeFromBag([id]);
     FUP.run.coins += p;
+    this.sold();
     return p;
   },
 
@@ -105,6 +109,7 @@ FUP.village = {
     }
     FUP.run.coins += sold * price;
     if (sold) FUP.quests.event('sellFish', { id, count: sold });
+    if (sold) this.sold();
     return sold * price;
   },
 

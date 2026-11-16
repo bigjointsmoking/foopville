@@ -179,7 +179,7 @@ FUP.garden = {
     return { saved };
   },
 
-  // Pick a ready crop: bag first, then the pantry at home; the rest waits in the patch.
+  // Pick a ready crop into your backpack; what doesn't fit waits in the patch (v0.72: nothing slips into the pantry).
   // The first pick can also give a seed back (seedBackChance).
   harvest(tx, ty, where, rng = Math.random) {
     const p = this.at(tx, ty);
@@ -188,20 +188,19 @@ FUP.garden = {
     // A scarecrow nearby (v0.70): sometimes one extra
     let scared = false;
     if (!p.paid && !p.scared) { p.scared = true; const h = this.helperNear(tx, ty, 'scarecrow'); if (h && rng() < h.def.chance) { p.left++; scared = true; } }
-    let got = 0, toPantry = 0;
+    let got = 0;
     while (p.left > 0 && FUP.run.addToBag(id)) { p.left--; got++; }
-    while (p.left > 0 && FUP.house.addOne(id)) { p.left--; got++; toPantry++; }
     let seed = false, golden = false;
     if (!p.paid && got > 0) {
       p.paid = true;
       this.xp(FUP.gardenData.crops[id].harvestXp, where);
       if (rng() < this.seedBack()) { this.state.seeds[id] = this.seedCount(id) + 1; seed = true; }
       // Golden Harvest perk: sometimes a bonus Heartroot
-      if (rng() < FUP.unlocks.perkSum('goldenChance') && (FUP.run.addToBag('heartroot') || FUP.house.addOne('heartroot'))) golden = true;
+      if (rng() < FUP.unlocks.perkSum('goldenChance') && FUP.run.addToBag('heartroot')) golden = true;
     }
     const left = p.left;
     if (left <= 0) Object.assign(p, this.fresh(), { s: 'soil' });
-    return { id, got, left, toPantry, seed, golden, scared };
+    return { id, got, left, seed, golden, scared };
   },
 
   fillCan() {

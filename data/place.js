@@ -74,6 +74,7 @@ FUP.placeData = {
 
   // ---------- Building skill ----------
   xp: { plank: 6, perCoin: 0.1, firstPlace: 20 },   // v0.70: perCoin 0.25 -> 0.1 (most Building XP now comes from salvage and commissions)   // XP per plank sawn / per coin of a thing's listed price / first time you place a kind of thing
+  stallNoRoom: 'Your backpack can\'t hold the stall\'s dishes. Make room, then take it back.',   // v0.72: nothing goes to storage by itself
   plankBark: 3,       // Bark per plank at the sawhorse (Tidy Saw perk: 2)
   sawSeconds: 1.0,    // seconds of sawing per plank
   plankPrice: 15,     // the Carpenter sells planks too (no Building XP for those)

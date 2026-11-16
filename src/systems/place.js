@@ -178,7 +178,7 @@ FUP.place = {
   take(uid) {
     const p = this.byUid(uid);
     if (!p) return false;
-    if (this.item(p.item).stall && FUP.stall) FUP.stall.closeDown(uid);   // its dishes and coins come back to you
+    if (this.item(p.item).stall && FUP.stall && !FUP.stall.closeDown(uid)) return false;   // its dishes and coins come back to you; no room = it stays
     this.state.placed = this.state.placed.filter(q => q !== p);
     this.state.owned[p.item] = this.ownedCount(p.item) + 1;
     return true;

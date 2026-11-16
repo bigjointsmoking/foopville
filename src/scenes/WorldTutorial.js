@@ -134,6 +134,7 @@ Object.assign(WorldScene.prototype, {
     if (st.at === 'patch') return this.tut.patch;
     if (st.at === 'saw') return this.tut.saw;
     if (st.at === 'dummy') return this.tut.dummy;
+    if (this.tut.tutors[st.at]) return this.tut.tutors[st.at];   // a tutor (the Shopkeeper's haggle / sell steps)
     if (st.at === 'campfire') return this.campfire;
     if (st.at === 'pond') { const F = this.tiles.find('F')[0]; return F ? this.tiles.center(F.tx, F.ty) : null; }
     return null;
@@ -232,6 +233,8 @@ Object.assign(WorldScene.prototype, {
   talkTutor(id) {
     const TU = FUP.tutorial, said = TU.talkFor(id);
     FUP.audio.sfx('click');
+    const t = FUP.tutorialData.tutors[id];
+    if (said.line && t.shop && TU.reached(s => s.kind === 'talk' && s.tutor === id)) { this.openPanel(t.shop); return; }   // the Shopkeeper's real window
     if (said.line) { this.sayLine(said.line); return; }
     this.openTutorDialog(id, said.pages);
   },

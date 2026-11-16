@@ -83,16 +83,17 @@ FUP.stall = {
     return 'ok';
   },
 
-  // The stall is taken back into your pocket: its dishes go to the backpack (or home storage), the till is paid out.
+  // The stall is taken back into your pocket: its dishes go to the backpack, the till is paid out.
+  // v0.72 (Jesus): nothing slips into home storage. Dishes that don't fit stay in the stall, and
+  // the stall stays put. Returns true when it's empty and closed.
   closeDown(uid) {
     const s = this.state.byUid[uid];
-    if (!s) return;
-    for (const d of s.stock) {
-      if (FUP.run.canAddDish(d.name, d.tier)) FUP.run.satchel.push(d);
-      else FUP.house.state.dishes.push(d);
-    }
-    FUP.run.coins += s.till;
+    if (!s) return true;
+    FUP.run.coins += s.till; s.till = 0;
+    s.stock = s.stock.filter(d => { if (!FUP.run.canAddDish(d.name, d.tier)) return true; FUP.run.satchel.push(d); return false; });
+    if (s.stock.length) return false;
     delete this.state.byUid[uid];
+    return true;
   },
 };
 

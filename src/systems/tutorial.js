@@ -151,6 +151,7 @@ FUP.tutorial = {
   // ---------- The ferry (or Skip): off to Foopville ----------
   finish(skipped = false) {
     FUP.run.coins += this.data().coins;
+    FUP.run.haggle = null; FUP.run.haggleRetried = false;   // the island's haggle doesn't follow you to Foopville
     FUP.run.hp = null;   // full HP for the new life (the dummy may have left a mark)
     this.state = { ...this.fresh(), done: true, skipped };
     this.news = null;

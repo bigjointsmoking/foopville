@@ -153,15 +153,15 @@ FUP.villagePanels = {
     // Haggle: once per visit
     const h = V.haggled();
     if (!h || V.canRetryHaggle()) {
-      this.pBtn(X + 358, 32, 190, 32, `😎 Haggle (${Math.round(V.haggleChance() * 100)}%)`, () => {
+      this.pBtn(X + 352, 32, 124, 32, `😎 Haggle ${Math.round(V.haggleChance() * 100)}%`, () => {   // narrower: it used to run under Close (v0.72)
         const r = V.tryHaggle();
         if (!r) return;
         this.talk(r.won ? 'haggleWin' : 'haggleFail');
         FUP.audio.sfx(r.won ? 'charm' : 'error');
         if (r.levels.to > r.levels.from) this.sayLine(`Rizz level ${r.levels.to}! Haggling has made you slightly more charming. Slightly.`);
-      }, { size: 14 });
+      }, { size: 13 });
     } else {
-      this.pText(X + 362, 48, h === 'win' ? 'Haggled: better prices this visit' : 'Haggle failed: prices up this visit', 12, h === 'win' ? c.good : c.bad).setOrigin(0, 0.5);
+      this.pText(X + 356, 48, h === 'win' ? '😎 Better prices' : '😎 Prices up', 13, h === 'win' ? c.good : c.bad, { fontStyle: '700' }).setOrigin(0, 0.5);   // short: fits where the button was, clear of Close
     }
     this.pText(X, 72, this.priceNote(), 12, c.dim);
 

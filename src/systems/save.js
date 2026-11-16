@@ -2,9 +2,8 @@
 // SAVING — keeps your life in this browser (localStorage). Version 2.
 // Saved whenever you're in the village or at home. Dying in Hardcore
 // deletes it (full wipe); dying in Normal saves your grave. Closing the
-// page in the middle of a run: next time you wake up at home, but the
-// bag and satchel you took with you are gone (otherwise closing the
-// page would dodge a bad fight).
+// page in the middle of a run: next time you wake up at home with
+// everything you carried (v0.72, Jesus: no more wiping the bag).
 //
 // Each system owns its slice of the save: a "part" with
 //   get()      -> the data to save
@@ -72,7 +71,7 @@ FUP.save = {
     r.forest = null; r.battle = null;
     if (FUP.repairs) FUP.repairs.resume();   // a repair paid for when the page closed
     const lostRun = !!d.onRun;
-    if (lostRun) { r.bag = {}; r.satchel = []; this.write(false); }
+    if (lostRun) this.write(false);   // closed mid-trip: the trip ends, you wake up at home WITH your things (v0.72, Jesus: no more wiping the bag)
     return { lostRun };
   },
 

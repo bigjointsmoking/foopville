@@ -149,7 +149,6 @@ Object.assign(VillageScene.prototype, {
         if (!r || !r.got) { FUP.audio.sfx('error'); this.say('gardenBagFull'); return; }
         const ing = FUP.ingredients[r.id];
         this.say(r.left ? 'gardenBagFull' : 'gardenHarvest', { item: `${r.got} ${ing.short || ing.name}` });
-        if (r.toPantry) this.sayLine(this.narratorText.text + ` (${r.toPantry} went to the pantry.)`);
         if (r.seed) this.sayLine(this.narratorText.text + ` You also got a ${ing.short || ing.name} seed back.`);
         if (r.golden) this.sayLine(this.narratorText.text + ' And a golden Heartroot. Golden Harvest says hi.');
         if (r.scared) this.sayLine(this.narratorText.text + ' The scarecrow got you one extra. It takes no credit. It has no mouth.');

@@ -95,7 +95,7 @@ FUP.buildUi = {
       fix(ui.text(scene, 30, stripY + 10, `🔨 ${z.name.toUpperCase()}`, 14, c.accent, { fontStyle: '700' }), 2);
       fix(ui.text(scene, 30, stripY + 30, note || help, 12, note ? c.bad : c.dim, { wordWrap: { width: W - 330 } }), 2);
       if (moving) {
-        btn(30, stripY + 54, 130, 32, '↩ Take back', () => { P.take(picked); picked = null; note = ''; FUP.audio.sfx('pickup'); if (scene.say) scene.say('placeTake'); });
+        btn(30, stripY + 54, 130, 32, '↩ Take back', () => { if (!P.take(picked)) { note = FUP.placeData.stallNoRoom; FUP.audio.sfx('error'); return; } picked = null; note = ''; FUP.audio.sfx('pickup'); if (scene.say) scene.say('placeTake'); });
         btn(170, stripY + 54, 100, 32, 'Cancel', () => { picked = null; note = ''; });
       } else {
         // Only what fits this zone (no furniture on the farm), 4 at a time
@@ -124,7 +124,7 @@ FUP.buildUi = {
       note = '';
       if (removing) {
         const p = P.at(zoneId, at.tx, at.ty);
-        if (p) { P.take(p.uid); FUP.audio.sfx('pickup'); }
+        if (p) { if (P.take(p.uid)) FUP.audio.sfx('pickup'); else { note = FUP.placeData.stallNoRoom; FUP.audio.sfx('error'); } }   // a stall with dishes that don't fit stays
         draw();
         return;
       }

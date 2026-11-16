@@ -88,10 +88,7 @@ FUP.unlocks = {
     if (g.ingredient) {
       let got = 0;
       for (let i = 0; i < (g.count || 1); i++) {
-        if (run.addToBag(g.ingredient)) got++;
-        else if (!FUP.house.pantryFull()) {
-          FUP.house.state.pantry[g.ingredient] = (FUP.house.state.pantry[g.ingredient] || 0) + 1; got++;
-        }
+        if (run.addToBag(g.ingredient)) got++;   // full backpack = no room (v0.72: nothing goes to the pantry by itself)
       }
       const ing = FUP.ingredients[g.ingredient];
       return got ? `+${got} ${ing.emoji} ${ing.name}` : `(no room for the ${ing.name})`;

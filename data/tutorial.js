@@ -42,6 +42,7 @@ FUP.tutorialData = {
     farmer:  { name: 'Turnip Tess',       sprite: 'npc_farmhand_map', emoji: '🧑‍🌾', tint: 0xd8e8a0, tx: 14, ty: 10 },
     cook:    { name: 'Burnt Bertram',     sprite: 'npc_chef_map', emoji: '👨‍🍳', tint: 0xc8a088, tx: 25, ty: 6 },
     builder: { name: 'Nailbiter Nell',    sprite: 'npc_carpenter_map', emoji: '🪚', tint: 0xe8d098, tx: 33, ty: 11 },
+    merchant: { name: 'The Shopkeeper', sprite: 'npc_shop_map', emoji: '🪙', tx: 25, ty: 11, shop: 'shop' },   // visiting from Foopville; after her talk she opens her real shop (shop = villager id)
     scout:   { name: 'Scout Wanda',       sprite: 'npc_farmhand_map', emoji: '🧭', tint: 0xa8d8b8, tx: 22, ty: 13 },
     quests:  { name: 'Clipboard Clive',   sprite: 'npc_quest_map', emoji: '📋', tint: 0xb8b8e8, tx: 18, ty: 15 },
     combat:  { name: 'Sergeant Bruise',   sprite: 'npc_smith_map', emoji: '🥊', tint: 0xe8a0a0, tx: 29, ty: 14 },
@@ -50,7 +51,8 @@ FUP.tutorialData = {
 
   // ---------- The steps, in order ----------
   //   talk: talk to that tutor (their `pages`). give: what they hand you. at: where the arrow points.
-  //   do:   do the thing (event). Events: pack, skills, map, fish, hoe, plant, water, harvest, cook, salvage, saw, fight.
+  //   do:   do the thing (event). Events: pack, skills, map, fish, hoe, plant, water, harvest, cook, salvage, saw, haggle, sell, fight.
+  //   A tutor with `shop: '<villager id>'` opens that villager's real window once you've had their talk.
   //   done: the narrator's line when the step is finished.
   // v0.71 (Jesus: friends were lost after the island): every system gets explained, and the
   // captain ends with a numbered first-day plan.
@@ -59,10 +61,11 @@ FUP.tutorialData = {
       pages: [
         'Welcome to Orientation Isle, {name}. Everyone starts here. Most people leave. Eventually.',
         'Over the water is Foopville, your new home. Before the ferry takes you there, the tutors here will teach you everything: fishing, farming, cooking, building, finding your way, quests and fighting.',
-        'Your new life, the short version: catch and grow food, cook it, fight your way through the Forest, fix up the run-down village, and one day evict the Mushroom Landlord. He owns the whole Forest. He is not a good landlord.',
+        'Your new life, the short version: catch and grow food, cook it, fight your way through the Forest, fix up the run-down village, and push further out into a world full of nastier places and bigger bosses. Nobody expects much. Prove them right, or don\'t.',
         'To walk: {walk}. Walk up to anyone or anything and {talk} to use it. The card in the top left always says what to do next, and the arrow points to it.',
         { normal: 'You picked Normal mode. If you die, you wake up at home and your things wait in a grave where you fell. Fetch them within 15 minutes of play.',
           hardcore: 'You picked Hardcore mode. If you die, that character is gone for good. Levels, coins, house, everything. No pressure.' },
+        'Time passes while you play: 20 minutes is one day (the Day label, top right). Crops keep growing, and scrap piles and the Market refill every new day. Your bed at home heals you fully; late in the day it lets you sleep until the next morning.',
         'Your screen: HP at the bottom left (it does NOT refill by itself), 🎒 your backpack, 🗺️ the world map, 📊 your skills. First, open your backpack: {pack}.',
       ],
       again: 'Old Finnick is by the pond. He has been by the pond for years. Go and see him.' },
@@ -137,10 +140,23 @@ FUP.tutorialData = {
         'To get home, walk back out the way you came, or pick "Walk back" at a campfire. That ends the trip safely and you keep everything you carry.',
         { normal: 'Die on a trip and your things drop in a grave right there. You wake up at home with 15 minutes of play to go and fetch them.',
           hardcore: 'Die on a trip and that\'s the end: new life, new name, back to this island. Know when to walk home.' },
-        'The big goal: somewhere in the Deep Woods is a hidden hole. Down there is the Landlord\'s Basement, and at the bottom, the Mushroom Landlord. Evict him.',
+        'The world is bigger than it looks. Areas hide secrets and bosses, and the deeper you go, the better the loot and the worse the company. Explore, get stronger, go further.',
         'The other roads out of Foopville are broken: the South Road (🪨) to the Docks and the East Bridge (🌉) to the Soggy Marsh. Repair them at the Restoration Board and they open up. Locked places show as ??? on the map.',
       ],
       again: 'North gate, Forest, campfires, walk home. And find that hole in the Deep Woods, eventually.' },
+
+    { kind: 'talk', tutor: 'merchant', goal: 'Talk to the Shopkeeper',
+      pages: [
+        'Oh, a new customer! I came over from Foopville to meet you before anyone else gets your money.',
+        'Coins come from fights, quests and selling. Sell me what you don\'t need: ingredients, dishes, gear. Gill at the Docks pays more for raw fish, once the road is fixed.',
+        'Haggling: once per visit you can try to charm me. Win and I sell cheaper AND pay you more. Lose and prices go up. Your Rizz level decides the odds. Haggle BEFORE you sell. Ugh. I said it.',
+        'Go on, try it: walk up to me again, press 😎 Haggle, then sell me something on the Sell tab.',
+      ],
+      again: 'Haggle first, then sell. In that order. I can\'t believe I\'m helping you.' },
+    { kind: 'do', event: 'haggle', at: 'merchant', goal: 'Open her shop and press 😎 Haggle',
+      done: 'Haggled. Win or lose, it counted, and Rizz XP is Rizz XP.' },
+    { kind: 'do', event: 'sell', at: 'merchant', goal: 'Sell something on the Sell tab',
+      done: 'Coins! Not many. Hold them carefully. They spook easily.' },
 
     { kind: 'talk', tutor: 'quests', goal: 'Talk to Clipboard Clive',
       pages: [
@@ -179,7 +195,7 @@ FUP.tutorialData = {
         'Everyone asks what to do first, so here: 1) Talk to the Quest Board Keeper in the square and take a couple of quests. 2) Buy seeds from Pip on the farm and plant them in your cottage\'s patches.',
         '3) Walk out the north gate into the Forest Edge. Fight, pick up ingredients, cook at the campfire, and walk home before your HP runs low.',
         '4) Sell what you don\'t need to the Shopkeeper and buy better gear from the Blacksmith. 5) Pry scrap piles around the village and put coins and planks toward the Well at the Restoration Board.',
-        'Sleep in your bed at home to heal fully. When your Melee level matches the next area on the 🗺️ map, go deeper. The Landlord is waiting. Off you go.',
+        'Sleep in your bed at home to heal fully. When your Melee level matches the next area on the 🗺️ map, go deeper. The world is waiting. It is not excited. Off you go.',
       ] },
   ],
 
