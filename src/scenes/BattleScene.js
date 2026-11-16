@@ -616,6 +616,17 @@ class BattleScene extends Phaser.Scene {
     if (this.fever > 0 && !this.over) { this.fever--; if (this.fever === 0) this.endFever(); }
     if (!this.over) this.setMenu('main');
     if (this.lesson) this.lessonActed(opts.cat);
+    else if (!this.over) this.saveMidFight();   // food eaten / thrown, HP healed
+  }
+
+  // On a trip, every hit you take and every dish you use is saved as it happens (v0.73, Jesus):
+  // closing the game mid-fight puts you back on the map just before it, with this HP and this food.
+  saveMidFight() {
+    const rb = FUP.run.battle;
+    if (!FUP.run.forest || this.over || (rb && rb.tutorial) || this.player.hp <= 0) return;
+    FUP.run.hp = this.player.hp;
+    FUP.run.limit = this.player.limit;
+    FUP.save.write(true);
   }
 
   // ---------- Player actions ----------
@@ -1158,7 +1169,9 @@ class BattleScene extends Phaser.Scene {
 
     if (p.hp <= 0 && (FUP.run.battle || {}).tutorial) p.hp = 1;   // Orientation Isle: the dummy can't kill you (v0.62)
     if (p.hp <= 0) this.endBattle('lose');
-    else if (!this.saidLowHp && p.hp < p.maxHp * 0.3) { this.saidLowHp = true; this.say('lowHp'); }
+    else this.saveMidFight();
+    if (p.hp <= 0) return;
+    if (!this.saidLowHp && p.hp < p.maxHp * 0.3) { this.saidLowHp = true; this.say('lowHp'); }
   }
 
   addLimit(amount) {
