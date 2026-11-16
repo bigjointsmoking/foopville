@@ -131,8 +131,10 @@ Object.assign(WorldScene.prototype, {
     else this.say(id + 'Back');
   },
   // Safe regions save where you stand, so a reload wakes you here (not on a trip: nothing to lose)
+  // On a trip (v0.73): save the whole trip (where you stand is in this area's state), marked onRun
   saveHere() {
-    if (!this.safe) return;
+    if (!this.player) return;
+    if (!this.safe) { if (this.A && this.A.player) { this.A.player.x = this.player.x; this.A.player.y = this.player.y; } FUP.save.write(true); return; }
     FUP.world.remember(this.player.x, this.player.y);
     FUP.save.write(false);
   },

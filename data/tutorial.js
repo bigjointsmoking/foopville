@@ -163,27 +163,23 @@ FUP.tutorialData = {
         'Quests! Someone wants a thing done, you do it, they pay you. Like a job, but you\'re allowed to say no.',
         'In Foopville the Quest Board Keeper has a board full of jobs: beat things, cook things, catch things. Take up to {maxQuests} at a time. When one is done, go back to the board and hand it in for coins.',
         'The 📜 at the bottom of the village screen counts your quests and says when one is ready to hand in. New quests show up as you finish old ones.',
-        'Here\'s your first one: beat the training dummy in the ring. Then come back to me and hand it in. Sergeant Bruise will explain the hitting part.',
+        'Here\'s your first one: finish Sergeant Bruise\'s combat lesson in the ring. Then come back to me and hand it in.',
       ],
-      again: 'Your quest: beat the training dummy. Then come back here. The paperwork waits for no one.' },
+      again: 'Your quest: finish Sergeant Bruise\'s combat lesson. Then come back here. The paperwork waits for no one.' },
     { kind: 'talk', tutor: 'combat', goal: 'Talk to Sergeant Bruise by the ring',
       pages: [
-        'Fighting! It happens in real time. Your bar fills up, and when it\'s full you choose what to do. The enemy\'s bar fills too. It does not wait for you.',
-        'Attack hits. Skills are your weapon\'s special moves: they cost Focus, which you build by hitting and getting hit. Defend softens the next hit.',
-        'The icon over an enemy shows what it\'s about to do. Defend just before a hit lands for a Perfect Block, and you hit back for free.',
-        'Eat a dish from your satchel to heal, or Throw it for damage. Rizz talks your way out of a fight. Flee runs away, at the cost of your dignity.',
-        'Your HP does not refill after a fight. Eat, Rest at a campfire, or sleep in your bed at home. Winning gives Melee XP, coins, ingredients and sometimes gear.',
-        'Better gear makes a big difference. The Blacksmith in Foopville sells weapons and armour; wear it from your backpack.',
-        { normal: 'Out there, lose all your HP and you drop your things in a grave. In here the dummy can\'t kill you. It has tried.',
-          hardcore: 'Out there, lose all your HP and your whole life ends. In here the dummy can\'t kill you. It has tried.' },
-        'Walk into the ring and up to the dummy to start the fight.',
+        'Fighting! Out there, fights happen in real time and nothing waits for you. In here, I stop time and walk you through every button, one at a time.',
+        'Your HP does not refill after a fight. Eat, Rest at a campfire, or sleep in your bed at home. Winning gives Melee XP, coins, ingredients and sometimes gear. The Blacksmith in Foopville sells better gear; wear it from your backpack.',
+        { normal: 'Out there, lose all your HP and you drop your things in a grave. In here, the dummy can\'t hurt you much. It has tried.',
+          hardcore: 'Out there, lose all your HP and your whole life ends. In here, the dummy can\'t hurt you much. It has tried.' },
+        'Walk into the ring and up to the dummy to start the lesson.',
       ],
-      again: 'The dummy is in the ring. Hit it until it stops being a dummy. Well. More of a dummy.' },
-    { kind: 'do', event: 'fight', at: 'dummy', goal: 'Beat the training dummy',
-      done: 'You beat a dummy. It never stood a chance. It never stood at all, really. It\'s on a pole.' },
+      again: 'The dummy is in the ring. Walk up to it and we start.' },
+    { kind: 'do', event: 'fight', at: 'dummy', goal: 'Do the combat lesson (walk up to the dummy)',
+      done: 'Lesson over. You now know every button. Knowing when to press them is the hard part.' },
     { kind: 'talk', tutor: 'quests', goal: 'Hand in your quest to Clipboard Clive', reward: true,
       pages: [
-        'The dummy has been defeated. Paperwork: complete. Here\'s your reward: Rizz XP. Charm, it turns out, can be earned.',
+        'Combat lesson: done. Paperwork: complete. Here\'s your reward: Rizz XP. Charm, it turns out, can be earned.',
         'That\'s how quests work. Captain Dreary is at the end of the pier. The ferry is waiting. Shoo.',
       ],
       again: 'The ferry. End of the pier. You can\'t miss it. People have tried.' },
@@ -199,6 +195,35 @@ FUP.tutorialData = {
       ] },
   ],
 
+  // ---------- Sergeant Bruise's combat lesson (src/scenes/BattleLesson.js, v0.73) ----------
+  // Time stops; each step explains one button, only that button works, you press it.
+  //   press = the button taught (allow = every button that may be pressed on the way, e.g. a menu then its choice)
+  //   text = before you press it · done = after it worked · enemyHits = the dummy swings right after (Defend)
+  //   A step with no press is just a card with Next. {special} / {cost} = your weapon's Special and its Focus cost.
+  lesson: {
+    biscuits: 2,   // lent for Eat + Throw; leftovers are taken back when the fight ends
+    resultLine: 'Every button pressed at least once.\nSergeant Bruise is satisfied. Mostly.',   // the results screen after the lesson
+    biscuit: { name: 'Practice Biscuit', emoji: '🍪', tier: 'Edible', heal: 6, throwDamage: 4, element: 'blunt', practice: true },
+    pressLabel: { attack: 'Press ATTACK', skills: 'Press SKILLS, then your Special', defend: 'Press DEFEND', rizz: 'Press RIZZ, then ROAST', eat: 'Press EAT, then a biscuit', throw: 'Press THROW, then a biscuit', flee: 'Press FLEE' },
+    steps: [
+      { text: 'Right, recruit. I\'ve stopped time. Bottom left: your HP, your TURN bar, your LIMIT bar and FOCUS. Over the dummy: its HP and its own turn bar. In a real fight both turn bars fill on their own, and when yours is full you pick a move.' },
+      { press: 'attack', text: 'ATTACK: a plain hit with your weapon. Every hit that lands also builds Focus. Go on, hit it.',
+        done: 'Good. Watch the FOCUS bar: it went up. Getting hit builds Focus too.' },
+      { press: 'skills', allow: ['skills', 'skill'], text: 'SKILLS: your weapon\'s special moves. They cost Focus. Your {special} costs {cost} Focus, and you have enough. Press Skills, then {special}. More skills unlock at higher Melee levels.',
+        done: 'That\'s your Special. Use it whenever your Focus allows.' },
+      { press: 'defend', enemyHits: true, text: 'See the icon over the dummy? That\'s what it\'s about to do. A hit is coming. DEFEND makes the next hit hurt less. Press it, then watch.',
+        done: 'Much less painful. Pro tip: Defend JUST before a hit lands and it\'s a Perfect Block: no damage, and you hit back for free.' },
+      { press: 'rizz', allow: ['rizz', 'roast'], text: 'RIZZ: talking instead of hitting. Charm makes an enemy leave (not bosses), Roast lowers its attack. If it fails, the enemy gets angry. Press Rizz, then Roast.',
+        done: 'Your Rizz level decides the odds. Roasting a dummy: a new low, even for you.' },
+      { press: 'eat', allow: ['eat', 'practice'], text: 'I\'ve lent you two Practice Biscuits. EAT a dish to heal. Some dishes also boost you for a few turns. Press Eat, then a biscuit.',
+        done: 'Healed. Cooked food heals far more than raw. Never go out without food.' },
+      { press: 'throw', allow: ['throw', 'practice'], text: 'THROW a dish at an enemy for damage. Some foods hurt some enemies much more; you find out by trying. Press Throw, then the other biscuit.',
+        done: 'Splat. Even burnt food can be thrown.' },
+      { text: 'The LIMIT bar fills when you get hurt or Defend. When it\'s full, a LIMIT BREAK button appears: one huge move. Save it for a bad moment.' },
+      { press: 'flee', text: 'FLEE: run away. It doesn\'t always work, and you get no loot. Today it works. Press Flee to end the lesson.' },
+    ],
+  },
+
   // Talking to a tutor who isn't next
   notYet: 'Not yet, {name}. First: {goal}.',
   // The patch, when you use it at the wrong moment
@@ -210,8 +235,8 @@ FUP.tutorialData = {
   },
   sawNotYet: 'Nailbiter Nell wants a word before you use her sawhorse.',
   dummyNotYet: 'Sergeant Bruise wants a word before you start punching the furniture.',
-  dummyDone: 'The dummy has had enough. It\'s a dummy, not a fool.',
-  dummyFled: 'You ran away from a dummy. It isn\'t angry. Just disappointed. Try again.',
+  dummyDone: 'The dummy has had enough lessons for one day. So has Sergeant Bruise.',
+  dummyFled: 'The lesson didn\'t finish. Walk up to the dummy to start it again.',
   // The card in the top left, and the skip question
   cardTitle: '🏝️ ORIENTATION',
   skipAsk: 'Skip the tutorial?',

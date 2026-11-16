@@ -54,7 +54,7 @@ class StartScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, alpha: 1, scale: logo.type === 'Image' ? FUP.ui.artScale(LG.scale) : LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.72', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.73', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);
@@ -214,6 +214,8 @@ class StartScene extends Phaser.Scene {
     FUP.audio.sfx('select');
     const res = FUP.save.load();
     if (!res) { this.saved = null; this.drawButtons(); return; }
+    // Saved mid-trip (v0.73): back exactly where you stood, in the Forest or the basement
+    if (res.trip) { this.scene.start(FUP.run.forest.raid ? 'Raid' : 'World', { from: 'load' }); return; }
     // Saved while standing somewhere safe out in the world (the Docks): wake up there
     if (!res.lostRun && FUP.world.resumeVisit()) { this.scene.start('World', { from: 'load' }); return; }
     this.scene.start('Village', { lostRun: res.lostRun });

@@ -146,7 +146,8 @@ FUP.tutorial = {
   // The dummy only fights once Sergeant Bruise has talked to you, and only once
   canFight() { const st = this.step(); return !!st && st.event === 'fight'; },
   foughtAlready() { return this.reached(s => s.event === 'fight') && !this.canFight(); },
-  fightOver(result) { return result === 'win' || result === 'charmed' ? this.note('fight') : null; },
+  // v0.73: the fight is Bruise's lesson, which ends with Flee (lessonDone). A win / charm still counts.
+  fightOver(result, lessonDone = false) { return result === 'win' || result === 'charmed' || lessonDone ? this.note('fight') : null; },
 
   // ---------- The ferry (or Skip): off to Foopville ----------
   finish(skipped = false) {

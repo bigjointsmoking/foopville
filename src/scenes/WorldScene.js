@@ -56,7 +56,7 @@ class WorldScene extends Phaser.Scene {
     this.afterBattle();
     this.updateSight();
     FUP.audio.music(FUP.audio.songFor(this.f.area, this.safe));   // each region has its own song (data/audio.js regionSongs)
-    if (this.safe) this.keepSaving();
+    this.keepSaving();   // safe places and trips both save where you stand (v0.73)
     this.stepTimer = 0;
     // The life layer: extra scenery, wind, critters, birds, day/night light (src/ambience.js)
     FUP.ambience.attach(this, { place: this.f.area, tiles: F, T, region: this.f.area });
@@ -673,6 +673,7 @@ class WorldScene extends Phaser.Scene {
   // Touching an enemy. The Moss Goblin asks for his toll first; pigeons come as a flock.
   startBattle(index, opts = {}) {
     if (this.leaving) return;
+    this.saveHere();   // closed during the fight = back here, the enemy still waiting (v0.73)
     this.leaving = true;
     const e = this.A.enemies[index];
     if (e.type === 'goblin' && !opts.enraged) { this.openToll(index); return; }

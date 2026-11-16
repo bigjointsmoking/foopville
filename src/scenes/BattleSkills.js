@@ -146,7 +146,7 @@ Object.assign(BattleScene.prototype, {
 
   // Every bit of damage an enemy takes goes through here (counts toward contesting the Final Notice).
   applyDamage(e, amount) {
-    e.hp = Math.max(0, e.hp - amount);
+    e.hp = Math.max(this.lesson ? 1 : 0, e.hp - amount);   // the lesson's dummy never falls over
     const n = e.notice;
     if (n && !e.fake) {
       n.dealt += amount;

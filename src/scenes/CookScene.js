@@ -71,7 +71,7 @@ class CookScene extends Phaser.Scene {
     if (fire) this.say('campfireArrive');
     else this.say(FUP.run.runs === 0 ? 'campFirst' : 'campReturn');
     // At home, every change is saved (closing the page keeps your dishes).
-    if (this.mode !== 'campfire') this.events.on('postupdate', () => { if (this.dirty) { this.dirty = false; FUP.save.write(); } });
+    if (!this.saveHooked) { this.saveHooked = true; this.events.on('postupdate', () => { if (this.dirty) { this.dirty = false; FUP.save.write(this.mode === 'campfire'); } }); }   // once (this screen is reused); a Forest campfire saves as part of the trip (v0.73)
   }
 
   // The run timer keeps ticking at the campfire (score = fastest run).

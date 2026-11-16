@@ -1,9 +1,11 @@
 // ============================================================
 // SAVING — keeps your life in this browser (localStorage). Version 2.
 // Saved whenever you're in the village or at home. Dying in Hardcore
-// deletes it (full wipe); dying in Normal saves your grave. Closing the
-// page in the middle of a run: next time you wake up at home with
-// everything you carried (v0.72, Jesus: no more wiping the bag).
+// deletes it (full wipe); dying in Normal saves your grave. On a trip
+// (the Forest, the Marsh, the basement) the game saves where you stand
+// every few seconds and right before each fight: closing the page and
+// coming back puts you exactly there, mid-trip (v0.73, Jesus). Closed
+// during a fight = back on the map just before it, the enemy still there.
 //
 // Each system owns its slice of the save: a "part" with
 //   get()      -> the data to save
@@ -68,11 +70,13 @@ FUP.save = {
     r.newLife(d.parts.run.weapon, d.parts.run.hero);   // clean slate, then fill it in
     for (const [name, p] of Object.entries(this.parts)) if (d.parts[name] !== undefined && d.parts[name] !== null) p.set(d.parts[name], d);
     if (FUP.mats) FUP.mats.migrate();   // v0.70: planks left in the backpack / pantry move into the materials pouch
-    r.forest = null; r.battle = null;
+    // A trip saved mid-way (part 'trip', v0.73): pick it back up where you stood
+    const trip = !!(d.onRun && d.parts.trip);
+    r.forest = trip ? r.forest : null; r.battle = null;
     if (FUP.repairs) FUP.repairs.resume();   // a repair paid for when the page closed
-    const lostRun = !!d.onRun;
-    if (lostRun) this.write(false);   // closed mid-trip: the trip ends, you wake up at home WITH your things (v0.72, Jesus: no more wiping the bag)
-    return { lostRun };
+    const lostRun = !!d.onRun && !trip;   // only saves from before v0.73 (no trip saved): home, with your things
+    if (lostRun) this.write(false);
+    return { lostRun, trip };
   },
 
   wipe() { try { localStorage.removeItem(this.KEY); } catch (e) { /* nothing to delete */ } },
@@ -199,10 +203,10 @@ FUP.save = {
 
   S.register('world', {
     get: () => FUP.world.state,
-    set(d) {
+    set(d, all) {
       const W = FUP.world;
       W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) }, respawn: { ...(d.respawn || {}) } };
-      if (W.region(d.region) && W.safe(d.region)) W.state.region = d.region;   // saved mid-trip = you wake up at home
+      if (W.region(d.region) && (W.safe(d.region) || (all && all.onRun && all.parts.trip))) W.state.region = d.region;   // mid-trip with the trip saved: still out there (v0.73)
     },
     reset: () => FUP.world.reset(),
   });
@@ -217,6 +221,13 @@ FUP.save = {
     get: () => FUP.tools.state,
     set(d) { FUP.tools.state = { rod: d.rod || 0, hammer: d.hammer || 0, hoe: d.hoe || 0, can: d.can || 0 }; },
     reset: () => FUP.tools.reset(),
+  });
+
+  // Your trip (v0.73): every region you've walked through this trip, its enemies, items, fog, where you stand,
+  // the basement rooms. Only used when the save was made on a trip (onRun); otherwise ignored.
+  S.register('trip', {
+    get: () => FUP.run.forest || null,
+    set(d) { FUP.run.forest = d ? copy(d) : null; },
   });
 
   // Orientation Isle (v0.62): which step you're on, what you've done, the practice patch

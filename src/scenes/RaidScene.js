@@ -52,6 +52,7 @@ class RaidScene extends WorldScene {
     FUP.audio.music(this.info.kind === 'office' ? 'boss' : 'raid');
     this.stepTimer = 0;
     FUP.ambience.attach(this, { place: 'raid', tiles: R, T });   // spores, shadows, dark corners (src/ambience.js)
+    this.keepSaving();   // the basement saves where you stand too (v0.73)
   }
 
   hudLabel() {
@@ -258,6 +259,7 @@ class RaidScene extends WorldScene {
   // ---------- Fights ----------
   startBattle(index) {
     if (this.leaving) return;
+    this.saveHere();   // closed during the fight = back here (v0.73)
     this.leaving = true;
     const e = this.A.enemies[index], D = FUP.raidData;
     if (e.landlord) {

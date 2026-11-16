@@ -216,7 +216,7 @@ Object.assign(WorldScene.prototype, {
     }
     this.leaving = true;
     this.saveHere();
-    FUP.run.battle = { index: -1, type: D.dummy.enemy, result: null, mult: 1, coinMult: 1, areaLevel: 1, dropTier: 1, tutorial: true };
+    FUP.run.battle = { index: -1, type: D.dummy.enemy, result: null, mult: 1, coinMult: 1, areaLevel: 1, dropTier: 1, tutorial: true, lesson: true };   // lesson: Bruise's guided fight (BattleLesson.js)
     FUP.audio.sfx('encounter');
     FUP.fx.shake(this, 'encounter');
     this.cameras.main.flash(200, 255, 255, 255);
@@ -225,7 +225,7 @@ Object.assign(WorldScene.prototype, {
 
   // Back from the dummy fight (WorldScene.afterBattle)
   tutorialAfterFight(b) {
-    if (FUP.tutorial.fightOver(b.result)) return;   // the card + done line come from updateTutorial
+    if (FUP.tutorial.fightOver(b.result, b.lessonDone)) return;   // the card + done line come from updateTutorial
     if (b.result === 'fled') this.sayLine(FUP.tutorialData.dummyFled);
   },
 

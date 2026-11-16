@@ -91,6 +91,8 @@ class BattleScene extends Phaser.Scene {
     }
     FUP.audio.music(this.isBossFight || this.isMiniBoss ? 'boss' : 'battle');
     if (this.player.hp < this.player.maxHp * 0.3) { this.saidLowHp = true; this.say('startWounded'); }
+    this.lesson = null;                   // Orientation Isle's combat lesson (BattleLesson.js)
+    if (rb.lesson) this.startLesson();
   }
 
   // ---------- Runs every frame ----------
@@ -98,6 +100,7 @@ class BattleScene extends Phaser.Scene {
     if (this.over) return;
     const dt = Math.min(delta, 100) / 1000;
     const C = FUP.combat, p = this.player;
+    if (this.lesson) { this.refreshHud(); return; }   // the combat lesson stops time (BattleLesson.js)
     this.elapsed += dt;
     if (FUP.run.forest) FUP.run.forest.time += dt; // the run timer keeps going in fights
     if (this.feverFx) this.feverFx.hue(this.elapsed * 140);
@@ -399,7 +402,8 @@ class BattleScene extends Phaser.Scene {
     this.timerText.setText(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`);
 
     // Everything waits for your turn (Rizz, Eat and Throw too). Only '← Back' always works.
-    for (const b of this.buttons) b.setEnabled(b.item.back ? true : ready && (b.item.needs ? b.item.needs() : true));
+    for (const b of this.buttons) b.setEnabled(this.lesson ? this.lessonAllows(b.item) && (b.item.back || ready && (b.item.needs ? b.item.needs() : true))
+      : b.item.back ? true : ready && (b.item.needs ? b.item.needs() : true));
   }
 
   // ---------- The action menu ----------
@@ -415,13 +419,13 @@ class BattleScene extends Phaser.Scene {
 
     if (mode === 'main') {
       items = [
-        { label: 'Attack', act: () => this.withTarget(() => this.doAttack()) },
-        { label: `Skills (${this.allSkills().filter(k => this.skillReady(k)).length})`, nav: () => this.setMenu('skills') },
-        { label: 'Defend', act: () => this.doDefend() },
-        { label: 'Rizz', nav: () => this.setMenu('rizz') },
-        { label: `Eat (${this.satchel.length})`, nav: () => this.setMenu(this.satchel.length ? 'eat' : 'eatRaw'), needs: () => this.satchel.length > 0 || this.rawIds().length > 0 },
-        { label: `Throw (${this.satchel.length})`, nav: () => this.setMenu('throw'), needs: () => this.satchel.length > 0 },
-        { label: 'Flee', act: () => this.doFlee(), needs: () => this.canFlee() },
+        { id: 'attack', label: 'Attack', act: () => this.withTarget(() => this.doAttack()) },
+        { id: 'skills', label: `Skills (${this.allSkills().filter(k => this.skillReady(k)).length})`, nav: () => this.setMenu('skills') },
+        { id: 'defend', label: 'Defend', act: () => this.doDefend() },
+        { id: 'rizz', label: 'Rizz', nav: () => this.setMenu('rizz') },
+        { id: 'eat', label: `Eat (${this.satchel.length})`, nav: () => this.setMenu(this.satchel.length ? 'eat' : 'eatRaw'), needs: () => this.satchel.length > 0 || this.rawIds().length > 0 },
+        { id: 'throw', label: `Throw (${this.satchel.length})`, nav: () => this.setMenu('throw'), needs: () => this.satchel.length > 0 },
+        { id: 'flee', label: 'Flee', act: () => this.doFlee(), needs: () => this.canFlee() },
       ];
       // Limit Break: one known = one button. More (Melee 10, 25, 40) = a menu of all of them.
       if (p.limit >= bal.limitMax) {
@@ -441,9 +445,9 @@ class BattleScene extends Phaser.Scene {
       items = FUP.run.dishStacks().map(st => {
         const d = st.dish, i = st.idx[0], pic = FUP.dishArt.key(d), art = pic && this.textures.exists(pic);
         const pre = (art ? '' : d.emoji + ' ') + (st.n > 1 ? `×${st.n} ` : '');
-        if (mode === 'eat') return { label: `${pre}${d.tier}\n${this.dishFx(d)}`, act: () => this.doEat(i), size: 13, icon: pic };
+        if (mode === 'eat') return { id: d.practice ? 'practice' : 'dish', label: `${pre}${d.tier}\n${this.dishFx(d)}`, act: () => this.doEat(i), size: 13, icon: pic };
         // No weakness hints (Jesus, v0.41): you find out by throwing it
-        return { label: `${pre}${d.tier}\n${d.element} ${d.throwDamage}`, act: () => this.withTarget(() => this.doThrow(i)), size: 13, icon: pic };
+        return { id: d.practice ? 'practice' : 'dish', label: `${pre}${d.tier}\n${d.element} ${d.throwDamage}`, act: () => this.withTarget(() => this.doThrow(i)), size: 13, icon: pic };
       });
       if (mode === 'eat' && this.rawIds().length) items.push({ label: `🌿 Raw from bag\n(${this.rawIds().length} kinds)`, nav: () => this.setMenu('eatRaw'), size: 13 });
       items.push({ label: '← Back', nav: () => this.setMenu('main'), size: 15, back: true });
@@ -453,7 +457,7 @@ class BattleScene extends Phaser.Scene {
       items = this.allSkills().map(k => {
         if (!this.skillKnown(k)) return { label: `🔒 ${k.name}\nMelee ${k.level}`, act: () => {}, needs: () => false, size: 13 };
         const cost = this.skillCost(k), ok = this.player.focus >= cost;
-        return { label: `${k.name} · ${cost} Focus\n${k.desc}`, act: () => this.useSkill(k), needs: () => this.skillReady(k), size: 11, hot: ok };
+        return { id: 'skill', label: `${k.name} · ${cost} Focus\n${k.desc}`, act: () => this.useSkill(k), needs: () => this.skillReady(k), size: 11, hot: ok };
       });
       items.push({ label: '← Back', nav: () => this.setMenu('main'), back: true, size: 15 });
     } else if (mode === 'helping') {
@@ -497,7 +501,7 @@ class BattleScene extends Phaser.Scene {
         : t && t.miniBoss && !t.noCharm ? `💕 Charm\n🔒 Rizz ${M.charmMiniBoss.level}` : '💕 Charm\nwon\'t work';
       items = [
         { label: charmLabel, act: () => this.withTarget(() => this.doRizz('charm')), needs: () => t && U.canCharm(t) && !t.fake, size: 15 },
-        { label: `🔥 Roast  ${pct('roast')}%\nATK down`, act: () => this.withTarget(() => this.doRizz('roast')), size: 15 },
+        { id: 'roast', label: `🔥 Roast  ${pct('roast')}%\nATK down`, act: () => this.withTarget(() => this.doRizz('roast')), size: 15 },
       ];
       // Sweet Talk (Rizz 10): it gives you one of its things. One try per enemy.
       const st = M.sweetTalk;
@@ -611,6 +615,7 @@ class BattleScene extends Phaser.Scene {
     p.resists = p.resists.filter(r => r.turns > 0);
     if (this.fever > 0 && !this.over) { this.fever--; if (this.fever === 0) this.endFever(); }
     if (!this.over) this.setMenu('main');
+    if (this.lesson) this.lessonActed(opts.cat);
   }
 
   // ---------- Player actions ----------
@@ -783,7 +788,7 @@ class BattleScene extends Phaser.Scene {
     if (this.noFleeTurns) { this.say('ambushNoFlee'); return; }
     if (!this.canFlee()) { this.say('godfatherNoFlee'); return; }
     this.act(() => {
-      if (FUP.unlocks.hasPerk('fleeAlways') || Math.random() < FUP.balance.fleeChance) {   // Smooth Exit perk
+      if (FUP.unlocks.hasPerk('fleeAlways') || this.lesson || Math.random() < FUP.balance.fleeChance) {   // the lesson's Flee always works   // Smooth Exit perk
         this.say('fleeWin');
         this.endBattle('fled', true);
       } else {
@@ -1172,6 +1177,7 @@ class BattleScene extends Phaser.Scene {
   endBattle(result, alreadySaid = false) {
     if (this.over) return;
     this.over = true;
+    if (this.lesson) this.lessonEnd();
     if (this.fever) this.endFever(true);
     this.setMenu('none');
     for (const e of this.enemies) if (!e.gone) e.tellText.setVisible(false);
@@ -1245,6 +1251,8 @@ class BattleScene extends Phaser.Scene {
         }
       }
       lines.push(`HP left: ${p.hp}/${p.maxHp}`);
+    } else if (result === 'fled' && run.battle && run.battle.lessonDone) {
+      lines.push(FUP.tutorialData.lesson.resultLine);   // Orientation Isle: the combat lesson ended (BattleLesson.js)
     } else if (result === 'fled') {
       const kept = [this.meleeXp && `+${this.meleeXp} Melee XP`, this.rizzXp && `+${this.rizzXp} Rizz XP`].filter(Boolean);
       lines.push(kept.length ? `You keep the XP you earned (${kept.join(', ')}).` : 'No XP.', 'No dignity. No ingredients.', `HP left: ${p.hp}/${p.maxHp}`);
@@ -1275,6 +1283,7 @@ class BattleScene extends Phaser.Scene {
     const colors = { win: c.good, lose: c.bad, charmed: FUP.look.hex('p2'), fled: c.dim, boss: c.accent };
     ui.shade(this, 0.7).setDepth(500);
     FUP.ui.panel(this, W / 2 - 250, 110, 500, 370, 'panel').setDepth(501);
+    if (result === 'fled' && run.battle && run.battle.lessonDone) titles.fled = 'LESSON DONE';
     ui.text(this, W / 2, 158, titles[result], result === 'boss' ? 40 : 52, colors[result], { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 6 }).setOrigin(0.5).setDepth(502);
     ui.text(this, W / 2, 300, lines.join('\n'), 18, c.ink, { align: 'center', lineSpacing: 7, wordWrap: { width: 460 } }).setOrigin(0.5).setDepth(502);
 
