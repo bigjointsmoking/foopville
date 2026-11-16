@@ -72,6 +72,12 @@ Object.assign(WorldScene.prototype, {
     this.tweens.add({ targets: this.tut.arrow, scale: 1.25, duration: 450, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.tut.edge = ui.text(this, 0, 0, '▲', 26, c.accent, { stroke: c.stroke, strokeThickness: 5 }).setOrigin(0.5).setScrollFactor(0).setDepth(10500);
     this.drawGoalCard();
+    // 📊 Skills (v0.71): the Skill Guide, under the goal card (the village has its own)
+    this.tut.guide = null;
+    FUP.progressUi.guideButton(this, 16, 132, 104, 32, { fixed: true,
+      canOpen: () => !this.leaving && !this.tut.guide,
+      onOpen: g => { this.tut.guide = g; this.leaving = true; FUP.tutorial.note('skills'); },
+      onClose: () => { this.tut.guide = null; this.leaving = false; } });
   },
 
   // ---------- The goal card (top left): step n/total, what to do, ⏭ Skip ----------
@@ -122,6 +128,9 @@ Object.assign(WorldScene.prototype, {
     if (!st) return null;
     if (st.kind === 'talk') return this.tut.tutors[st.tutor];
     if (st.at === 'pack') return { fixed: true, x: 345, y: this.scale.height - 56 };   // the 🎒 button
+    if (st.at === 'map') return { fixed: true, x: 424, y: this.scale.height - 56 };    // the 🗺️ button
+    if (st.at === 'skills') return { fixed: true, up: true, x: 68, y: 186 };            // 📊 Skills, under the card
+    if (st.at === 'salvage') { const q = FUP.salvage.spots(this.f.area)[0]; return q ? this.tiles.center(q.tx, q.ty) : null; }
     if (st.at === 'patch') return this.tut.patch;
     if (st.at === 'saw') return this.tut.saw;
     if (st.at === 'dummy') return this.tut.dummy;
@@ -134,7 +143,7 @@ Object.assign(WorldScene.prototype, {
     const t = this.tut, a = t.arrow, e = t.edge, to = this.tutorialTarget(), cam = this.cameras.main;
     if (!to) { a.setVisible(false); e.setVisible(false); return; }
     if (to.fixed) {   // a button on the HUD: the edge arrow points down at it
-      a.setVisible(false); e.setVisible(true).setPosition(to.x, to.y - 18).setRotation(Math.PI);
+      a.setVisible(false); e.setVisible(true).setPosition(to.x, to.y - 18).setRotation(to.up ? 0 : Math.PI);   // up = points up at a button above it
       return;
     }
     const top = to.sprite ? to.y - to.sprite.displayHeight * 0.8 - 18 : to.y - 26;

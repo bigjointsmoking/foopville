@@ -66,6 +66,7 @@ FUP.salvage = {
     this.state.done[this.key(region, i)] = FUP.clock.day();
     FUP.skills.addXp('building', k.xp, where);
     FUP.facts.add('salvaged');
+    if (FUP.tutorial) FUP.tutorial.note('salvage');   // Orientation Isle: "pry apart the shed"
     return { got, xp: k.xp };
   },
   // '+3 🪵  +1 🔩'

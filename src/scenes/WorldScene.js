@@ -538,6 +538,7 @@ class WorldScene extends Phaser.Scene {
   openMap() {
     if (this.leaving || this.pack || this.panel) return;
     this.leaving = true;
+    FUP.tutorial.note('map');   // Orientation Isle: "open the world map"
     this.pack = FUP.worldMapUi.open(this, () => { this.pack = null; this.leaving = false; });
   }
 

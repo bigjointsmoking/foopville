@@ -77,7 +77,9 @@ FUP.backpack = {
     G.slots.forEach((slot, i) => {
       const y = EY + 18 + i * 66, it = run.equipped[slot], selected = bp.sel && bp.sel.kind === 'worn' && bp.sel.slot === slot;
       const box = add(ui.slot(s, EX, y, 58, selected), 2);
+      const base = !it && slot === 'weapon' && FUP.weapons[run.weapon];   // no upgrade yet: your beginner weapon (always held)
       if (it) add(ui.sprite(s, EX + 29, y + 29, FUP.gear.spriteKey(it), it.emoji, 26, 2), 3);
+      else if (base) add(ui.sprite(s, EX + 29, y + 29, base.sprite, base.emoji, 26, 2), 3);
       else add(ui.text(s, EX + 29, y + 29, G.slotEmoji[slot], 22, c.dim).setOrigin(0.5).setAlpha(0.35), 3);
       add(ui.text(s, EX + 66, y + 20, G.slotNames[slot], 11, c.dim), 2);
       box.setInteractive({ useHandCursor: true }).on('pointerdown', () => s.time.delayedCall(1, () => { bp.sel = { kind: 'worn', slot }; bp.confirm = null; this.draw(bp); }));
@@ -150,7 +152,11 @@ FUP.backpack = {
     };
     if (sel.kind === 'worn') {
       const it = run.equipped[sel.slot];
-      if (!it) { title = FUP.gearData.slotNames[sel.slot]; lines = ['Nothing worn here.']; }
+      const base = sel.slot === 'weapon' && FUP.weapons[run.weapon];
+      if (!it && base) {   // your beginner weapon: picked in the creator, kept for life
+        title = base.name;
+        lines = ['Weapon · your beginner weapon (yours for life)', base.style, `Special: ${base.special.name} (${base.special.desc})`, 'The Blacksmith sells upgrades for it.'];
+      } else if (!it) { title = FUP.gearData.slotNames[sel.slot]; lines = ['Nothing worn here.']; }
       else {
         title = it.name; color = it.color || c.ink;
         const fx = FUP.gear.effectInfo(it);

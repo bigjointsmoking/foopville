@@ -43,6 +43,7 @@ FUP.salvageData = {
     tollroad:  [{ kind: 'cart', tx: 5, ty: 17 }, { kind: 'tree', tx: 35, ty: 16 }, { kind: 'cart', tx: 17, ty: 8 }],
     deepwoods: [{ kind: 'tree', tx: 5, ty: 8 }, { kind: 'cart', tx: 34, ty: 14 }, { kind: 'cart', tx: 20, ty: 23 }],
     docks:     [{ kind: 'wreck', tx: 5, ty: 11 }, { kind: 'wreck', tx: 28, ty: 11 }, { kind: 'wreck', tx: 37, ty: 11 }],
+    isle:      [{ kind: 'shed', tx: 35, ty: 12 }],   // Orientation Isle: Nell's practice shed (data/tutorial.js)
     marsh:     [{ kind: 'crate', tx: 6, ty: 16 }, { kind: 'crate', tx: 30, ty: 19 }, { kind: 'crate', tx: 44, ty: 22 }],
   },
 
