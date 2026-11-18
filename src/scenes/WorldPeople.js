@@ -28,6 +28,12 @@ Object.assign(WorldScene.prototype, {
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: 'Read', text: o.text });
       }
     }
+    // Special fishing spots (v0.78): a glint on the water
+    for (const sp of (FUP.fishData.specials || []).filter(s => s.region === this.f.area)) {
+      const c0 = at(sp.tx, sp.ty);
+      const g = this.add.text(c0.x, c0.y, '✨', { fontSize: '20px' }).setOrigin(0.5).setDepth(c0.y + 5);
+      this.tweens.add({ targets: g, alpha: { from: 0.35, to: 1 }, scale: { from: 0.8, to: 1.1 }, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
     // Fish traps (src/trapUi.js): rings on the trap squares, your traps, and their action spots
     this._trapViews = null; this.trapSig = null;
     if (this.feature('fishing')) {
@@ -63,7 +69,7 @@ Object.assign(WorldScene.prototype, {
     const T = this.tiles.size(), w = FUP.fishing.spotNearRegion(this.f.area, Math.floor(this.player.x / T), Math.floor(this.player.y / T));
     if (!w) return null;
     const c0 = this.tiles.center(w.tx, w.ty);
-    return { kind: 'fish', label: '🎣 Fish', spot: w.spot, x: c0.x, y: c0.y };
+    return { kind: 'fish', label: w.special ? '✨ Fish' : '🎣 Fish', spot: w.spot, x: c0.x, y: c0.y };
   },
 
   updateAction() {
@@ -101,9 +107,9 @@ Object.assign(WorldScene.prototype, {
 
   // Cast a line from the pier (src/fishingUi.js). Counts as a panel: walking stops.
   goFish(s) {
-    const locked = FUP.fishing.spotMissing(s.spot);   // the deep water: Fishing 26
+    const locked = FUP.fishing.spotMissing(s.spot);   // the deep water: Fishing 26; special spots (v0.78)
     if (locked.length) {
-      const line = Phaser.Utils.Array.GetRandom(FUP.narrator.deepLocked);
+      const line = Phaser.Utils.Array.GetRandom(FUP.narrator[FUP.fishData.spots[s.spot].special ? 'specialLocked' : 'deepLocked']);
       this.sayLine(`${line} (${locked.join(', ')})`);
       FUP.audio.sfx('error');
       return;

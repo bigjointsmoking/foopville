@@ -34,8 +34,16 @@ function boot() {
     if (!document.hidden && on.length && !on.some(k => still.includes(k))) FUP.clock.tick(dt);
   }, 250);
 }
+// Clear numbers: a font made only of the digits 0-9, taken from a bold font already on the device
+// (data/look.js digitFonts). If the device has none of them, the pixel font's digits are used.
 try {
-  document.fonts.load('20px "Pixelify Sans"').then(boot, boot);
+  const st = document.createElement('style');
+  st.textContent = '@font-face{font-family:"Fup Digits";font-weight:400 700;unicode-range:U+0030-0039;src:' +
+    FUP.look.digitFonts.map(n => `local("${n}")`).join(',') + ';}';
+  document.head.appendChild(st);
+} catch (err) { /* no digit font: the pixel digits it is */ }
+try {
+  Promise.all([document.fonts.load('20px "Pixelify Sans"'), document.fonts.load('20px "Fup Digits"', '0123456789').catch(() => null)]).then(boot, boot);
 } catch (err) {
   boot();
 }

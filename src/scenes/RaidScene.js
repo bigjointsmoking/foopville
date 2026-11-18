@@ -462,35 +462,13 @@ class RaidScene extends WorldScene {
     this.sporedText.setText(n ? `☠️ Spored x${n} (Poison at the start of your next fight)` : '');
   }
 
-  // In the raid you can eat while walking: click a dish (phones: tap to see it, tap again to eat)
-  drawSatchel() {
-    const parts = super.drawSatchel();
-    const touch = FUP.ui.isTouch(this);
-    // parts = pictures (and count labels) of each dish stack; this.satchelIdx = the satchel index each stack eats from
-    const pics = parts.filter(p => p.type !== 'Text');
-    (this.satchelIdx || []).forEach((idx, i) => {
-      const pic = pics[i], d = FUP.run.satchel[idx];
-      if (!pic || !d) return;
-      pic.setInteractive({ useHandCursor: true });
-      pic.on('pointerdown', () => {
-        if (this.leaving || this.falling) return;
-        if (touch && this.picked !== i) { this.picked = i; this.say('raidEatPick', { item: d.name }); return; }
-        this.picked = null;
-        this.eatDish(idx);
-      });
-    });
-    return parts;
-  }
-
+  // Eating while you walk lives in WorldScene now (v0.78). The raid adds: poison-resist food protects you from spores.
   eatDish(i) {
-    const r = FUP.run.eatAtCamp(i);
-    if (!r) return;
-    const res = (r.dish.resists || []).find(x => x.element === 'poison');
-    if (res) this.A.sporeResist = Math.max(this.A.sporeResist || 0, res.reduction);
-    this.floatText(r.change >= 0 ? `+${r.change}` : `${r.change}`, r.change >= 0 ? FUP.ui.colors.good : FUP.ui.colors.bad);
-    FUP.audio.sfx('eat');
-    this.say(res ? 'raidEatResist' : 'raidEat', { item: r.dish.name });
-    this.drawSatchel();
+    const d = FUP.run.satchel[i];
+    const res = d && (d.resists || []).find(x => x.element === 'poison');
+    const r = super.eatDish(i);
+    if (r && res) { this.A.sporeResist = Math.max(this.A.sporeResist || 0, res.reduction); this.say('raidEatResist', { item: r.dish.name }); }
+    return r;
   }
 
   // ---------- Every frame ----------

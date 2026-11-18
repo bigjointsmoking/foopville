@@ -20,10 +20,10 @@ FUP.toolData = {
     // The hammer (v0.57): placeables, stall upgrades and repairs cost fewer coins (Building XP still counts the full price)
     hammer: { name: 'Hammer', npc: 'carpenter', skill: 'building', tiers: [
       { name: 'Borrowed Hammer',  price: 0,    blurb: 'Planksworth wants it back. He will not get it back.' },
-      { name: 'Decent Hammer',    price: 300,  req: { skills: { building: 5 } },  buildCut: 0.05, blurb: 'Placeables and repairs cost 5% fewer coins.' },
-      { name: 'Good Hammer',      price: 1200, req: { skills: { building: 15 } }, buildCut: 0.10, blurb: 'Placeables and repairs cost 10% fewer coins.' },
-      { name: 'Hammer of Renown', price: 3600, req: { skills: { building: 25 } }, buildCut: 0.15, blurb: 'Placeables and repairs cost 15% fewer coins.' },
-      { name: 'The Persuader',    price: 9000, req: { skills: { building: 35 } }, buildCut: 0.20, blurb: 'Placeables and repairs cost 20% fewer coins. Nails just give up.' },
+      { name: 'Decent Hammer',    price: 900,  req: { skills: { building: 5 } },  buildCut: 0.05, blurb: 'Placeables and repairs cost 5% fewer coins.' },
+      { name: 'Good Hammer',      price: 3600, req: { skills: { building: 15 } }, buildCut: 0.10, blurb: 'Placeables and repairs cost 10% fewer coins.' },
+      { name: 'Hammer of Renown', price: 10800, req: { skills: { building: 25 } }, buildCut: 0.15, blurb: 'Placeables and repairs cost 15% fewer coins.' },
+      { name: 'The Persuader',    price: 27000, req: { skills: { building: 35 } }, buildCut: 0.20, blurb: 'Placeables and repairs cost 20% fewer coins. Nails just give up.' },
     ] },
     // The hoe (G2): a chance of +1 on every harvest (adds to the Green Thumb perk)
     hoe: { name: 'Hoe', npc: 'farmhand', skill: 'gardening', emoji: '⛏️', tiers: [

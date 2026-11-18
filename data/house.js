@@ -4,7 +4,7 @@
 // Each upgrade line is a list of tiers, bought in order with coins.
 // Tier 0 is what you start with (price 0). Rizz discounts and haggling apply.
 // Dying wipes the house like everything else.
-// ALL PRICES ARE PLACEHOLDERS for Jesus to tweak. (v0.41: all doubled. v0.43, Jesus "way more expensive": houses x10, stoves and pantries x4.)
+// ALL PRICES ARE PLACEHOLDERS for Jesus to tweak. (v0.41: all doubled. v0.43, Jesus "way more expensive": houses x10, stoves and pantries x4. v0.78, Jesus "too cheap": stoves and pantries x3 again, houses kept.)
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -25,16 +25,16 @@ FUP.houseData = {
   // canCook: false = this tier can't cook. PLACEHOLDER price for the Old Stove.
   stoves: [
     { name: 'No stove',      price: 0,   burnCut: 0, canCook: false, blurb: 'An empty corner where a stove should be. You can\'t cook at home.' },
-    { name: 'Old Stove',     price: 150, burnCut: 0,    blurb: 'Lets you cook at home. It works. Mostly. It has opinions.' },
-    { name: 'Iron Stove',    price: 960, burnCut: 0.05, blurb: '5% less chance to burn food.' },
-    { name: 'Chef\'s Range', price: 3200, burnCut: 0.10, blurb: '10% less chance to burn food.' },
+    { name: 'Old Stove',     price: 450, burnCut: 0,    blurb: 'Lets you cook at home. It works. Mostly. It has opinions.' },
+    { name: 'Iron Stove',    price: 2880, burnCut: 0.05, blurb: '5% less chance to burn food.' },
+    { name: 'Chef\'s Range', price: 9600, burnCut: 0.10, blurb: '10% less chance to burn food.' },
   ],
 
   // Pantry: keeps ingredients at home, on top of the 20 your bag holds.
   // Move things in and out at home (🗄️ Pantry). Garden harvests that don't fit in your bag go here.
   pantries: [
     { name: 'No pantry',     price: 0,   slots: 0,  blurb: 'Your bag is all you have.' },
-    { name: 'Pantry Shelf',  price: 800, slots: 40, blurb: 'Stores 40 ingredients at home.' },
-    { name: 'Big Pantry',    price: 2400, slots: 100, blurb: 'Stores 100 ingredients at home.' },
+    { name: 'Pantry Shelf',  price: 2400, slots: 40, blurb: 'Stores 40 ingredients at home.' },
+    { name: 'Big Pantry',    price: 7200, slots: 100, blurb: 'Stores 100 ingredients at home.' },
   ],
 };

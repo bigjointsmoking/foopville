@@ -478,17 +478,19 @@ class WorldScene extends Phaser.Scene {
     }
     pb.rect.setScrollFactor(0).setDepth(10001); pb.txt.setScrollFactor(0).setDepth(10002);
     this.bagText = pb.txt;
-    this.satchelText = fix(ui.text(this, 450, H - 35, 'Food:', 14, c.ink).setOrigin(0, 0.5));
+    this.satchelText = fix(ui.text(this, 456, H - 35, '🍴 Tap to eat:', 12, c.dim).setOrigin(0, 0.5));   // v0.78: was 'Food:' next to the map button (Jesus: looked like a food button)
     this.helpText = fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag anywhere to walk' : 'WASD / arrows / drag to walk', 12, c.dim).setOrigin(1, 0.5));
     this.drawSatchel();
     this.dayText = fix(ui.text(this, W - 20, 66, '', 13, c.dim, { backgroundColor: FUP.look.hex('k0') + 'cc', padding: { x: 8, y: 3 } }).setOrigin(1, 0));   // Day 3 ☀️ (data/clock.js)
     // Normal mode: your grave's timer
     this.graveText = fix(ui.text(this, W / 2, 66, '', 14, c.bad, { fontStyle: '700', backgroundColor: FUP.look.hex('k0') + 'cc', padding: { x: 8, y: 4 } }).setOrigin(0.5, 0));
+    this.tracker = FUP.questTracker.draw(this, 96);   // taken quests, top right (src/questTracker.js)
+    this.time.addEvent({ delay: 1000, loop: true, callback: () => this.tracker.refresh() });
     this.refreshHud();
   }
 
-  // Satchel pictures in the bottom bar (in the Forest it can't change while you walk:
-  // you eat in fights and at camp. The Raid lets you eat from it: see RaidScene.js).
+  // Satchel pictures in the bottom bar. v0.78 (Jesus): tap one to eat it while you walk, everywhere
+  // (phones: tap to see its name, tap again to eat). Before, only the raid allowed it.
   drawSatchel() {
     const ui = FUP.ui, H = this.scale.height;
     for (const o of this.satchelParts || []) o.destroy();
@@ -497,14 +499,40 @@ class WorldScene extends Phaser.Scene {
     // One picture per stack of the same dish, with how many (v0.41 backpack)
     const stacks = FUP.run.dishStacks(), n = stacks.length, step = Math.min(36, 300 / Math.max(1, n));
     this.satchelIdx = [];
+    const touch = FUP.ui.isTouch(this);
     stacks.forEach((st, i) => {
-      fix(ui.sprite(this, 540 + i * step, H - 35, FUP.dishArt.key(st.dish), st.dish.emoji, 18, 1.5));
-      if (st.n > 1) this.satchelParts.push(ui.text(this, 540 + i * step + 12, H - 24, String(st.n), 11, ui.colors.ink, { fontStyle: '700', stroke: ui.colors.stroke, strokeThickness: 3 }).setOrigin(1, 1).setScrollFactor(0).setDepth(10001));
+      const pic = fix(ui.sprite(this, 560 + i * step, H - 35, FUP.dishArt.key(st.dish), st.dish.emoji, 18, 1.5));
+      const idx = st.idx[0];
+      pic.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+        if (this.leaving || this.falling || this.pack) return;
+        if (touch && this.picked !== i) { this.picked = i; this.say('raidEatPick', { item: st.dish.name }); return; }
+        this.picked = null;
+        this.eatDish(idx);
+      });
+      if (st.n > 1) this.satchelParts.push(ui.text(this, 560 + i * step + 12, H - 24, String(st.n), 11, ui.colors.ink, { fontStyle: '700', stroke: ui.colors.stroke, strokeThickness: 3 }).setOrigin(1, 1).setScrollFactor(0).setDepth(10001));
       this.satchelIdx.push(st.idx[0]);
     });
     if (this.helpText) this.helpText.setVisible(n <= 3);
-    if (!FUP.run.satchel.length) fix(ui.text(this, 530, H - 35, 'no food', 14, ui.colors.dim).setOrigin(0, 0.5));
+    if (!FUP.run.satchel.length) fix(ui.text(this, 556, H - 35, 'no food', 14, ui.colors.dim).setOrigin(0, 0.5));
     return this.satchelParts;
+  }
+
+  // A number that floats up from you (+12 HP)
+  floatText(str, color) {
+    const t = FUP.ui.text(this, this.player.x, this.player.y - 30, str, 22, color, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 5 }).setOrigin(0.5).setDepth(7000);
+    this.tweens.add({ targets: t, y: t.y - 40, alpha: 0, duration: 900, onComplete: () => t.destroy() });
+  }
+
+  // Eat a dish from the bottom bar while you walk (the raid adds spore protection: RaidScene.js)
+  eatDish(i) {
+    const r = FUP.run.eatAtCamp(i);
+    if (!r) return null;
+    this.floatText(r.change >= 0 ? `+${r.change}` : `${r.change}`, r.change >= 0 ? FUP.ui.colors.good : FUP.ui.colors.bad);
+    FUP.audio.sfx('eat');
+    this.say('walkEat', { item: r.dish.name });
+    this.drawSatchel(); this.refreshHud();
+    FUP.save.write(!this.safe);
+    return r;
   }
 
   refreshHud() {
@@ -514,6 +542,7 @@ class WorldScene extends Phaser.Scene {
     this.hpBar.color(hp < max * 0.3 ? c.hpLow : c.hp);
     this.hpText.setText(`${hp}/${max}`);
     this.bagText.setText(`🎒 ${run.slotsUsed()}/${run.packMax()}  🪙 ${run.coins}`);
+    if (this.tracker) this.tracker.refresh();
     const s = Math.floor(this.f.time);
     this.timerText.setText(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`);
     if (this.graveText) this.graveText.setText(FUP.grave.hudText()).setVisible(FUP.grave.active());

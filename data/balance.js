@@ -80,7 +80,7 @@ FUP.balance = {
   },
 
   // Charming gives this share of the enemy's XP as Rizz XP.
-  charmXpShare: 1.8,   // was 0.6; tripled in v0.38 so Rizz levels as fast as the other skills
+  charmXpShare: 0.6,   // v0.78 (Jesus: Rizz levelled far too fast): 1.8 -> 0.6. (v0.38 had tripled it.)
 
   // Limit Breaks, unlocked by Melee level (blueprint 18.8). PLACEHOLDER numbers.
   // hits = how many hits, power = each hit's strength, healPct = heal this share of max HP first,

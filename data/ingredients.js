@@ -90,5 +90,12 @@ FUP.ingredients = {
   // Marsh fish (Fishing at the 4 F squares)
   mud_skipper:  { name: 'Mud Skipper', short: 'Skipper', emoji: '🐟', color: '#7a6a4a', rarity: 'Common', sell: 6, source: 'Fishing' },
   croaker:      { name: 'Off-Key Croaker', short: 'Croaker', emoji: '🐟', color: '#6a8a5a', rarity: 'Uncommon', sell: 7, source: 'Fishing' },
+  // Forest fish (v0.78, PLACEHOLDER names): the Forest's ponds, the Toll River, the Deep Woods pool, and special spots
+  speckled_trout: { name: 'Speckled Trout', short: 'Trout', emoji: '🐟', color: '#8a9a6a', rarity: 'Common', sell: 5, source: 'Fishing' },
+  golden_minnow:  { name: 'Golden Minnow', short: 'Minnow', emoji: '🐠', color: '#e8c04a', rarity: 'Uncommon', sell: 9, source: 'Fishing' },
+  petty_pike:     { name: 'Petty Pike', short: 'Pike', emoji: '🐟', color: '#6a7a4a', rarity: 'Uncommon', sell: 8, source: 'Fishing' },
+  gloomfin:       { name: 'Gloomfin', short: 'Gloomfin', emoji: '🐟', color: '#3a3a5a', rarity: 'Uncommon', sell: 10, source: 'Fishing' },
+  dodger_trout:   { name: 'Toll-Dodger Trout', short: 'Trout', emoji: '🐟', color: '#a07a4a', rarity: 'Rare', sell: 13, source: 'Fishing' },
+  moon_carp:      { name: 'Moon Carp', short: 'Carp', emoji: '🐡', color: '#c8d0e8', rarity: 'Rare', sell: 18, source: 'Fishing' },
   bog_eel:      { name: 'Bog Eel', short: 'Eel', emoji: '🐍', color: '#3a4a2a', rarity: 'Uncommon', sell: 9, source: 'Fishing' },
 };

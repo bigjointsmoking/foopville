@@ -32,7 +32,10 @@ FUP.look = {
   snapSprites: false,   // v0.64: off. The painted sprites keep their own shading (snapping flattened it)
 
   // ---------- Text ----------
-  font: '"Pixelify Sans", "Trebuchet MS", sans-serif',
+  // Numbers come from a clean bold font (Jesus, 2026-11-18: in the pixel font 5 looked like 0 or 8).
+  // "Fup Digits" covers only 0-9 (src/main.js makes it from fonts already on the device); letters stay pixel.
+  font: '"Fup Digits", "Pixelify Sans", "Trebuchet MS", sans-serif',
+  digitFonts: ['Verdana Bold', 'Verdana-Bold', 'Arial Bold', 'Arial-BoldMT', 'Helvetica Bold', 'Helvetica-Bold', 'Roboto Bold', 'Roboto-Bold', 'DejaVu Sans Bold'],
   text: { ink: 'k4', dim: 's3', accent: 'y2', good: 'g5', bad: 'r3', crit: 'y2', info: 'b4', dark: 'k0' },
   textStroke: 'k0',          // outline colour for big titles and floating numbers
 

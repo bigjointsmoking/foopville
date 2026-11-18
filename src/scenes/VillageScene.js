@@ -208,7 +208,7 @@ class VillageScene extends Phaser.Scene {
     for (const s of this.spots) {
       if (!s.sprite) continue;
       s.sprite.setInteractive({ useHandCursor: true });
-      s.sprite.on('pointerdown', () => { if (!this.panel) this.walkTo = s; });
+      s.sprite.on('pointerdown', () => { if (!this.panel && FUP.ui.tapToWalk(this)) this.walkTo = s; });
     }
     // Big round action button (bottom right): tap it instead of pressing E
     const W = this.scale.width, H = this.scale.height;
@@ -254,6 +254,7 @@ class VillageScene extends Phaser.Scene {
     this.questText = fix(ui.text(this, 450, H - 35, '', 14, c.ink).setOrigin(0, 0.5));
     fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag to walk · tap the button to talk' : 'Walk: WASD / drag · Talk: E or the button', 12, c.dim).setOrigin(1, 0.5));
     this.goalCard = FUP.goalCard.draw(this, 16, 104);   // first-day checklist (data/goals.js)
+    this.tracker = FUP.questTracker.draw(this, 130);   // taken quests, top right (src/questTracker.js)
     this.refreshHud();
     this.time.addEvent({ delay: 1000, loop: true, callback: () => this.refreshHud() });   // crops ripen while you walk
     this.time.addEvent({ delay: 250, loop: true, callback: () => this.refreshGrave() });
@@ -268,10 +269,11 @@ class VillageScene extends Phaser.Scene {
     this.bagText.setText(`🎒 Bag ${run.slotsUsed()}/${run.packMax()}`);
     if (this.farmText) this.refreshFarmHud();
     const ready = Q.activeIds().filter(id => Q.complete(id)).length;
-    this.questText.setText(`📜 Quests ${Q.activeIds().length}/${FUP.questData.maxActive}` + (ready ? `  ·  ${ready} ready to hand in!` : ''));
+    this.questText.setText(`📜 Quests ${Q.activeIds().length}` + (ready ? `  ·  ${ready} ready to hand in!` : ''));
     this.questText.setColor(ready ? c.good : c.ink);
     this.coinText.setText(`🪙 ${run.coins}`);
     if (this.goalCard) this.goalCard.refresh();
+    if (this.tracker) this.tracker.refresh();
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
     if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back

@@ -110,6 +110,16 @@ FUP.villagePanels = {
     // Long speeches (the Sir Foop legends) get smaller text so they fit
     const long = this.speech.length > 200;
     this.pText(48, 300, `"${this.speech}"`, long ? 11 : 14, c.ink, { fontStyle: 'italic', wordWrap: { width: 192 }, lineSpacing: long ? 2 : 4 });
+    // Side stories (v0.78): a step waiting with this villager = a 📜 button (one at a time, the first one)
+    const step = FUP.quests.stepsAt(this.panelId)[0];
+    if (step) {
+      this.pBtn(44, H - 110, 200, 30, `📜 ${step.name}`, () => {
+        const r = FUP.quests.doStep(step.id);
+        this.speech = r.line || this.speech;
+        if (r.coins) { FUP.audio.sfx('fanfare'); this.sayLine(`Side story done: ${r.done}. +${r.coins} coins.`); } else FUP.audio.sfx(r.ok ? 'select' : 'click');
+        if (this.refreshHud) this.refreshHud();
+      }, { hot: true, size: 12 });
+    }
     // Story Phase B: villagers with a legend can be asked about Sir Foop (talking is always free)
     if (FUP.village.hasLegend(this.panelId)) {
       this.pBtn(44, H - 74, 200, 30, '📜 Ask about Sir Foop', () => { this.speech = FUP.village.legendText(this.panelId); FUP.audio.sfx('select'); }, { size: 12 });
@@ -182,6 +192,14 @@ FUP.villagePanels = {
     let rows = [];
     if (this.panelTab === 'buy') {
       const full = run.freeSlots() <= 0;
+      for (const [id, s] of Object.entries(d.shopSnacks || {})) {   // ready-to-eat food first (v0.78)
+        const price = V.snackPrice(id), have = run.satchel.filter(x => x.name === s.name).length;
+        rows.push({
+          emoji: s.emoji, name: `${s.name}  (ready to eat)`, sub: `Heals ${s.heal} HP. Eat it from the food bar while you walk, or in a fight. You have ${have}.`,
+          btn: `${price} 🪙`, disabled: run.coins < price || !run.canAddDish(s.name, 'Snack'),
+          fn: () => { const r = V.buySnack(id); if (r === 'ok') { FUP.audio.sfx('coins'); this.talk('bought'); } else if (r === 'broke') this.talk('broke'); },
+        });
+      }
       for (const [id, base] of Object.entries(d.shopIngredients)) {
         const ing = FUP.ingredients[id], price = V.ingredientPrice(id);
         rows.push({
@@ -333,7 +351,7 @@ FUP.villagePanels = {
     const pp = P.plankPrice(), buyP = n => { if (P.buyPlanks(n)) { FUP.audio.sfx('coins'); this.talk('bought'); } else this.talk('broke'); };
     rows.unshift({
       emoji: '🪵', pic: FUP.ui.ingKey('plank'), name: `Plank  (you have ${FUP.mats.count('plank')})`,
-      sub: `Or find your own: scrap piles round the village and out in the world, or ${P.plankBark()} Bark each at the sawhorse.`,
+      sub: `Free: scrap piles, or saw ${P.plankBark()} Bark at the sawhorse.`,
       btn: `5 for ${pp * 5} 🪙`, disabled: run.coins < pp, fn: () => buyP(5), btn2: `1: ${pp}`, fn2: () => buyP(1),
     });
     // The hammer (data/tools.js): cheaper building
@@ -512,22 +530,32 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     this.pText(X, 520, `Pouch: ${G.seedTotal()} seeds. A harvest gives a seed back ${Math.round(G.seedBack() * 100)}% of the time.`, 12, c.dim);
   },
 
-  // ---------- Quest Board ----------
+  // ---------- Quest Board (v0.78: tabs per kind, data/quests.js kinds) ----------
   renderQuests(X, RW) {
-    const ui = FUP.ui, c = ui.colors, Q = FUP.quests;
+    const ui = FUP.ui, c = ui.colors, Q = FUP.quests, D = FUP.questData;
+    if (!this.panelTab || !D.kinds[this.panelTab]) this.panelTab = 'side';
+    const kind = this.panelTab;
     this.pText(X, 36, 'QUEST BOARD', 20, c.accent, { fontStyle: '700' });
-    this.pText(X, 64, `Taken: ${Q.activeIds().length}/${FUP.questData.maxActive}. Hand them in here. The board refills; done quests return later.`, 12, c.dim);
+    // Tabs: Side Stories / Challenges / Story
+    Object.entries(D.kinds).forEach(([k, K], i) => {
+      const n = Q.activeIds(k).length;
+      this.pBtn(X + i * 150, 62, 144, 28, `${K.name}${n ? ` (${n})` : ''}`, () => { this.panelTab = k; this.panelPage = 0; }, { hot: k === kind, size: 12 });
+    });
+    this.pText(X, 98, D.kinds[kind].blurb + (kind === 'story' ? '' : `  Taken: ${Q.activeIds(kind).length}/${D.maxActive}.`), 12, c.dim, { wordWrap: { width: RW - 10 } });
+    if (kind === 'story') { this.pText(X, 130, 'Nothing here yet. The village has a story. Nobody\'s told it properly.', 14, c.dim, { wordWrap: { width: RW - 10 } }); return; }
+    const side = kind === 'side';
+    const head = id => { const q = Q.def(id); return `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙` + (side && q.from ? `  ·  from ${Q.npcName(q.from)}` : ''); };
 
-    const active = Q.activeIds().map(id => {
+    const active = Q.activeIds(kind).map(id => {
       const q = Q.def(id), done = Q.complete(id);
       return {
-        name: `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙`, color: done ? c.good : c.ink, sub: `${q.text}\n${Q.progressText(id)}`, subColor: done ? c.good : c.info,
+        name: head(id), color: done ? c.good : c.ink, sub: `${q.text}\n▶ ${Q.progressText(id)}`, subColor: done ? c.good : c.info,
         btn: done ? 'Hand in' : null, hot: true,
         fn: () => { const coins = Q.handIn(id); if (coins) { FUP.audio.sfx('fanfare'); this.talk('done'); this.sayLine(`Quest done: ${q.name}. +${coins} coins.`); } },
         btn2: 'Drop', fn2: () => { Q.drop(id); },
       };
     });
-    let y = 90;
+    let y = 124;
     if (active.length) {
       this.pText(X, y, 'YOUR QUESTS', 12, c.dim, { fontStyle: '700' });
       const saved = this.panelPage; this.panelPage = 0;
@@ -535,15 +563,15 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
       this.panelPage = saved;
       y += 18 + active.length * 62 + 8;
     }
-    const avail = Q.available().map(id => {
+    const avail = Q.available(kind).map(id => {
       const q = Q.def(id);
       return {
-        name: `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙`, sub: q.text, subColor: c.dim,
-        btn: 'Take', disabled: !Q.canTake(),
-        fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.talk('taken'); } else this.talk('tooMany'); },
+        name: head(id), sub: q.text, subColor: c.dim,
+        btn: 'Take', disabled: !Q.canTake(kind),
+        fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.talk('taken'); if (side && q.from) this.sayLine(`Taken: ${q.name}. Go and see ${Q.npcName(Q.step(id).talk || Q.step(id).to || q.from)}.`); } else this.talk('tooMany'); },
       };
     });
-    if (!avail.length) { this.pText(X, y, active.length ? '' : 'The board is empty. You did everything. Show-off.', 14, c.dim); return; }
+    if (!avail.length) { this.pText(X, y, active.length ? '' : 'Nothing on this tab right now. Level something and come back.', 14, c.dim); return; }
     this.pText(X, y, 'ON THE BOARD', 12, c.dim, { fontStyle: '700' });
     const room = Math.max(1, Math.floor((520 - y - 18 - 30) / 54));
     this.pRows(avail, X, y + 18, RW, room, 54);

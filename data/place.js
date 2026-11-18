@@ -30,30 +30,30 @@ FUP.placeData = {
 
   // kind: 'building' (needs a building slot) | 'furniture' (any free square of your room's floor) | 'ground' (any free square)
   // w, h = size in squares. solid = you can't walk through it. cost / req: the shared format (src/systems/req.js).
-  // PLACEHOLDER prices.
+  // PLACEHOLDER prices. (v0.78, Jesus "too cheap": every Carpenter coin price x3; Market curios unchanged.)
   items: {
     // max: how many you can own in total. stall: true = it works as a food stall (data/stall.js).
     food_stall: { name: 'Food Stall', emoji: '🏪', kind: 'building', w: 3, h: 2, solid: true, zones: ['plot'], max: 1,
-                  cost: { coins: 600, items: { plank: 8 } }, req: { skills: { building: 1 } }, stall: true, blurb: 'Sells your dishes while you are out getting hurt.' },
-    bench:      { name: 'Bench', emoji: '🪑', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], cost: { coins: 120 }, blurb: 'Somewhere to sit and regret things.' },
-    flower_bed: { name: 'Flower Bed', emoji: '🌷', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], cost: { coins: 30 }, blurb: 'Flowers. They ask for nothing. Yet.' },
+                  cost: { coins: 1800, items: { plank: 8 } }, req: { skills: { building: 1 } }, stall: true, blurb: 'Sells your dishes while you are out getting hurt.' },
+    bench:      { name: 'Bench', emoji: '🪑', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], cost: { coins: 360 }, blurb: 'Somewhere to sit and regret things.' },
+    flower_bed: { name: 'Flower Bed', emoji: '🌷', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], cost: { coins: 90 }, blurb: 'Flowers. They ask for nothing. Yet.' },
     // Ground things for your plot and the farm (v0.57). free: true = costs nothing with the Building Mastery perk (freeGround)
-    path:       { name: 'Dirt Path',  emoji: '🟫', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], cost: { coins: 10 }, free: true, blurb: 'Dirt, but organised.' },
-    fence:      { name: 'Fence',      emoji: '🪵', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 3 } },  cost: { coins: 15 }, free: true, blurb: 'Keeps things in. Or out. Depends on the things.' },
-    signpost:   { name: 'Signpost',   emoji: '🪧', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 5 } },  cost: { coins: 60 }, blurb: 'It points. Nobody knows where.' },
-    hedge:      { name: 'Hedge',      emoji: '🌳', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 7 } },  cost: { coins: 25 }, free: true, blurb: 'A fence that grows. Ambitious.' },
-    lantern:    { name: 'Lantern',    emoji: '🏮', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 9 } },  cost: { coins: 80 }, blurb: 'Light for your late-night farming regrets.' },
-    stone_path: { name: 'Stone Path', emoji: '⬜', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], req: { skills: { building: 12 } }, cost: { coins: 20 }, blurb: 'A path that means business.' },
+    path:       { name: 'Dirt Path',  emoji: '🟫', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], cost: { coins: 30 }, free: true, blurb: 'Dirt, but organised.' },
+    fence:      { name: 'Fence',      emoji: '🪵', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 3 } },  cost: { coins: 45 }, free: true, blurb: 'Keeps things in. Or out. Depends on the things.' },
+    signpost:   { name: 'Signpost',   emoji: '🪧', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 5 } },  cost: { coins: 180 }, blurb: 'It points. Nobody knows where.' },
+    hedge:      { name: 'Hedge',      emoji: '🌳', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 7 } },  cost: { coins: 75 }, free: true, blurb: 'A fence that grows. Ambitious.' },
+    lantern:    { name: 'Lantern',    emoji: '🏮', kind: 'ground', w: 1, h: 1, solid: true,  zones: ['plot', 'farm'], req: { skills: { building: 9 } },  cost: { coins: 240 }, blurb: 'Light for your late-night farming regrets.' },
+    stone_path: { name: 'Stone Path', emoji: '⬜', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], req: { skills: { building: 12 } }, cost: { coins: 60 }, blurb: 'A path that means business.' },
     // Furniture for your room (purely for looks). solid = you walk round it (rugs you walk on).
     // flat: true = lies on the floor; one other (not flat) thing can stand on it (a table on a rug)
     // act: what happens when you walk up and press the button: say = a narrator line (data/narrator.js), bed = works like your bed
-    table:      { name: 'Table',        emoji: '🍽️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], act: { label: '🍽️ Sit down', say: 'furnTable' }, cost: { coins: 200 }, blurb: 'Eat at it. Or under it. No judgement.' },
-    chair:      { name: 'Chair',        emoji: '💺', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '💺 Sit', say: 'furnChair' }, cost: { coins: 80 }, blurb: 'For sitting. Revolutionary.' },
-    plant:      { name: 'Potted Plant', emoji: '🪴', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '🪴 Look', say: 'furnPlant' }, cost: { coins: 60 }, blurb: 'The only crop you won\'t eat.' },
-    rug:        { name: 'Rug',          emoji: '🟥', kind: 'furniture', w: 2, h: 2, flat: true, zones: ['home'], req: { skills: { building: 4 } },  cost: { coins: 150 }, blurb: 'Ties the room together.' },
-    bookshelf:  { name: 'Bookshelf',    emoji: '📚', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 6 } },  act: { label: '📚 Read', say: 'furnBooks' }, cost: { coins: 300, items: { plank: 4 } }, blurb: 'Books you will absolutely read. Someday.' },
-    fireplace:  { name: 'Fireplace',    emoji: '🔥', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 15 } }, act: { label: '🔥 Warm up', say: 'furnFire' }, cost: { coins: 900, items: { plank: 10 } }, blurb: 'Cosy. Do not cook in it. You have a stove.' },
-    fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 1200, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
+    table:      { name: 'Table',        emoji: '🍽️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], act: { label: '🍽️ Sit down', say: 'furnTable' }, cost: { coins: 600 }, blurb: 'Eat at it. Or under it. No judgement.' },
+    chair:      { name: 'Chair',        emoji: '💺', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '💺 Sit', say: 'furnChair' }, cost: { coins: 240 }, blurb: 'For sitting. Revolutionary.' },
+    plant:      { name: 'Potted Plant', emoji: '🪴', kind: 'furniture', w: 1, h: 1, solid: true, zones: ['home'], act: { label: '🪴 Look', say: 'furnPlant' }, cost: { coins: 180 }, blurb: 'The only crop you won\'t eat.' },
+    rug:        { name: 'Rug',          emoji: '🟥', kind: 'furniture', w: 2, h: 2, flat: true, zones: ['home'], req: { skills: { building: 4 } },  cost: { coins: 450 }, blurb: 'Ties the room together.' },
+    bookshelf:  { name: 'Bookshelf',    emoji: '📚', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 6 } },  act: { label: '📚 Read', say: 'furnBooks' }, cost: { coins: 900, items: { plank: 4 } }, blurb: 'Books you will absolutely read. Someday.' },
+    fireplace:  { name: 'Fireplace',    emoji: '🔥', kind: 'furniture', w: 2, h: 1, solid: true, zones: ['home'], req: { skills: { building: 15 } }, act: { label: '🔥 Warm up', say: 'furnFire' }, cost: { coins: 2700, items: { plank: 10 } }, blurb: 'Cosy. Do not cook in it. You have a stove.' },
+    fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 3600, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
     // Boss trophies (G1): only from boss chase drops (data/gear.js bossDrops). noShop = never sold anywhere.
     golden_perch:  { name: 'Golden Perch', emoji: '🏆', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'The Godfather sat here. Now you do. Well, a pigeon does.' },
     framed_warning: { name: 'Framed Last Warning', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'You broke the warning. Then you framed it.' },
@@ -73,7 +73,7 @@ FUP.placeData = {
   },
 
   // ---------- Building skill ----------
-  xp: { plank: 6, perCoin: 0.1, firstPlace: 20 },   // v0.70: perCoin 0.25 -> 0.1 (most Building XP now comes from salvage and commissions)   // XP per plank sawn / per coin of a thing's listed price / first time you place a kind of thing
+  xp: { plank: 6, perCoin: 0.1 / 3, firstPlace: 20 },   // v0.78: perCoin 0.1 -> 0.033 so tripled prices don't triple the XP;   // v0.70: perCoin 0.25 -> 0.1 (most Building XP now comes from salvage and commissions)   // XP per plank sawn / per coin of a thing's listed price / first time you place a kind of thing
   stallNoRoom: 'Your backpack can\'t hold the stall\'s dishes. Make room, then take it back.',   // v0.72: nothing goes to storage by itself
   plankBark: 3,       // Bark per plank at the sawhorse (Tidy Saw perk: 2)
   sawSeconds: 1.0,    // seconds of sawing per plank

@@ -59,7 +59,7 @@ FUP.worldData.areas.marsh = {
     leechLawyer:    [{ w: 1, foes: ['leechLawyer'] }, { w: 1, foes: ['leechLawyer', 'mosquitoIntern'] }],
     filingFrog:     [{ w: 1, foes: ['leechLawyer', 'filingFrog'] }, { w: 1, foes: ['mosquitoIntern', 'mosquitoIntern', 'filingFrog'] }],
   },
-  fish: { F: 'marsh' },
+  fish: { F: 'marsh', '~': 'marsh' },   // v0.78: all marsh water
   objects: [
     { kind: 'sign', tx: 44, ty: 13, text: 'OFFICE OF THE BOG NOTARY. Closed. Take a number. There are no numbers.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },

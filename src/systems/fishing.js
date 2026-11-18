@@ -31,6 +31,10 @@ FUP.fishing = {
   // turned into a spot by the region's `fish` letters (data/region_docks.js). Spots without fish yet are skipped.
   spotNearRegion(id, tx, ty) {
     const W = FUP.world, letters = (W.area(id) || {}).fish || {};
+    // A special spot in reach (v0.78): yours if your Fishing is high enough; locked ones only when nothing else is near
+    const sp = (FUP.fishData.specials || []).filter(s => s.region === id && Math.abs(s.tx - tx) <= 1 && Math.abs(s.ty - ty) <= 1);
+    const open = sp.find(s => !this.spotMissing(s.spot).length);
+    if (open) return { spot: open.spot, tx: open.tx, ty: open.ty, special: true };
     let best = null;
     for (let y = ty - 1; y <= ty + 1; y++) for (let x = tx - 1; x <= tx + 1; x++) {
       const spot = letters[W.tile(id, x, y)];
@@ -38,6 +42,7 @@ FUP.fishing = {
       const d = Math.abs(x - tx) + Math.abs(y - ty);
       if (!best || d < best.d) best = { spot, tx: x, ty: y, d };
     }
+    if (!best && sp.length) return { spot: sp[0].spot, tx: sp[0].tx, ty: sp[0].ty, special: true };
     return best ? { spot: best.spot, tx: best.tx, ty: best.ty } : null;
   },
 

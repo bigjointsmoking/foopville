@@ -196,8 +196,9 @@ window.FUP = window.FUP || {};
       const base = scene.add.circle(0, 0, R, num(S.shade), 0.3).setStrokeStyle(3, ink, 0.5).setScrollFactor(0).setDepth(15000).setVisible(false);
       const knob = scene.add.circle(0, 0, 22, ink, 0.6).setScrollFactor(0).setDepth(15001).setVisible(false);
       const j = { dx: 0, dy: 0, id: null };
+      // Only buttons and bars fixed on the screen block it: a drag that starts on a villager or a sign still walks (v0.78, phones)
       const down = (p, over) => {
-        if (j.id !== null || (over && over.length) || !allow()) return;
+        if (j.id !== null || (over && over.some(o => o.scrollFactorX === 0)) || !allow()) return;
         j.id = p.id; j.ox = p.x; j.oy = p.y;
         base.setPosition(p.x, p.y).setVisible(true); knob.setPosition(p.x, p.y).setVisible(true);
       };
@@ -221,6 +222,9 @@ window.FUP = window.FUP || {};
 
     // True on phones/tablets (touch screen).
     isTouch(scene) { return !!scene.sys.game.device.input.touch; },
+    // Tap a villager or sign to walk there: mouse only. On phones a touch is usually the start of a drag,
+    // and walking off by itself felt broken (Jesus, 2026-11-18). Phones use the round action button.
+    tapToWalk(scene) { return !this.isTouch(scene); },
 
     // The fill picture for a bar: the colour with a lighter strip on top.
     barKey(scene, color, w, h) {

@@ -43,7 +43,7 @@ FUP.worldData.areas.isle = {
         '~~~~~~~~~~~~~~~~~bbbbbb~~~~~~~~~~~~~~~~~',
         '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
   ],
-  fish: { F: 'isle' },          // map letter → fishing spot (data/fishing.js)
+  fish: { F: 'isle', '~': 'isle' },          // map letter → fishing spot (data/fishing.js)
   npcs: [], objects: [],        // the tutors are drawn by WorldTutorial.js (data/tutorial.js tutors)
   landmarks: [],
   sand: { rows: [18, 20] },     // beach rows by the sea

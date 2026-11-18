@@ -43,7 +43,7 @@ FUP.village = {
   sellPrice(base) {
     let mult = 1 + this.rizzCut() + FUP.unlocks.perkSum('sellBonus');   // Bargain Hunter perk
     if (this.haggled() === 'win') mult += FUP.villageData.haggle.winDiscount;
-    return Math.max(1, Math.round(base * mult));
+    return Math.max(1, Math.round(base * mult * FUP.villageData.sellMult));   // v0.78: everything sells for 50% more
   },
 
   haggleChance() {
@@ -77,7 +77,22 @@ FUP.village = {
   },
 
   // ---------- Selling (to the Shopkeeper) ----------
-  gearSellPrice(item) { return this.sellPrice(item.sell); },
+  // Ready-made food (v0.78): 'ok' | 'broke' | 'full'
+  snackPrice(id) { return this.buyPrice(FUP.villageData.shopSnacks[id].price, 'shop'); },
+  buySnack(id) {
+    const s = FUP.villageData.shopSnacks[id], price = this.snackPrice(id), run = FUP.run;
+    if (run.coins < price) return 'broke';
+    if (!run.canAddDish(s.name, 'Snack')) return 'full';
+    run.coins -= price;
+    run.satchel.push({ name: s.name, emoji: s.emoji, tier: 'Snack', sprite: null, heal: s.heal, buffs: [], resists: [], throwDamage: s.throwDamage, element: 'blunt', sell: s.sell });
+    return 'ok';
+  },
+  // Never sell something back for more than 90% of what the shop charges for it right now (v0.78: no buy-low-sell-high loop)
+  resaleCap(price, buyPrice) { return buyPrice ? Math.max(1, Math.min(price, Math.floor(buyPrice * FUP.villageData.resaleCap))) : price; },
+  gearSellPrice(item) {
+    const sold = FUP.villageData.smithStock.includes(item.key) || FUP.villageData.shopTrinkets.includes(item.key);
+    return this.resaleCap(this.sellPrice(item.sell), sold && FUP.gearData.items[item.key] ? this.gearPrice(item.key) : 0);
+  },
   sellGear(item) { const p = this.gearSellPrice(item); FUP.run.sell(item, p); this.sold(); return p; },
   sold() { if (FUP.tutorial) FUP.tutorial.note('sell'); if (FUP.facts && !(FUP.tutorial && FUP.tutorial.active())) FUP.facts.add('did:sell'); },   // Orientation Isle: "sell something"
 
@@ -97,7 +112,7 @@ FUP.village = {
     return p;
   },
 
-  ingredientSellPrice(id) { const ing = FUP.ingredients[id]; return this.sellPrice(ing.sell || FUP.villageData.ingredientSellPrice[ing.rarity] || 1); },   // each ingredient has its own price (v0.40)
+  ingredientSellPrice(id) { const ing = FUP.ingredients[id]; return this.resaleCap(this.sellPrice(ing.sell || FUP.villageData.ingredientSellPrice[ing.rarity] || 1), FUP.villageData.shopIngredients[id] ? this.ingredientPrice(id) : 0); },   // each ingredient has its own price (v0.40)
   sellIngredient(id) {
     if (FUP.run.bagCount(id) <= 0) return 0;
     const p = this.ingredientSellPrice(id);

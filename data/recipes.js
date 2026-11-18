@@ -67,6 +67,13 @@ FUP.recipeData = {
     // The Soggy Marsh (W2). Croakberry Jam: sugar is retired, so grumpleberry instead (placeholder)
     { level: 18, name: 'Croakberry Jam',        ids: ['croakberry', 'croakberry', 'grumpleberry'],             method: 'boil',  xp: 90, heal: 40, throw: 8, sell: 18 },
     { level: 24, name: 'Croaker on a Stick',    ids: ['croaker', 'croakberry'],                                method: 'grill', xp: 128, heal: 46, buffs: [{ stat: 'def', pct: 0.10, turns: 3 }], throw: 10, sell: 19 },   // placeholder: no croaker dish was designed
+    // Forest fish dishes (v0.78, PLACEHOLDERS: names and numbers to tune)
+    { level: 14, name: 'Grilled Trout',         ids: ['speckled_trout', 'rock_salt'],                          method: 'grill', xp: 70, heal: 28, throw: 8, sell: 12 },
+    { level: 20, name: 'Golden Minnow Fry',     ids: ['golden_minnow', 'grumpleberry'],                        method: 'fry',   xp: 95, heal: 34, buffs: [{ stat: 'spd', pct: 0.08, turns: 3 }], throw: 9, sell: 17 },
+    { level: 21, name: 'Pike Pie',              ids: ['petty_pike', 'bark'],                                   method: 'bake',  xp: 105, heal: 38, throw: 12, sell: 16 },
+    { level: 26, name: 'Gloomfin Stew',         ids: ['gloomfin', 'glowcap_mushroom'],                         method: 'boil',  xp: 140, heal: 44, resists: [{ element: 'poison', amount: 0.30, turns: 4 }], throw: 10, sell: 22 },
+    { level: 30, name: 'Dodger Trout Roast',    ids: ['dodger_trout', 'ember_pepper'],                         method: 'grill', xp: 165, heal: 48, buffs: [{ stat: 'atk', pct: 0.12, turns: 3 }], element: 'fire', throw: 24, sell: 26 },
+    { level: 35, name: 'Moonlit Carp',          ids: ['moon_carp', 'marsh_mint'],                              method: 'boil',  xp: 200, heal: 60, buffs: [{ stat: 'def', pct: 0.12, turns: 3 }], throw: 12, sell: 34 },
     { level: 26, name: 'Mint Mudcake',          ids: ['mudroot', 'marsh_mint'],                                method: 'bake',  xp: 148, heal: 48, buffs: [{ stat: 'spd', pct: 0.15, turns: 4 }], throw: 10, sell: 27 },
     { level: 30, name: 'Bog Chowder',           ids: ['mud_skipper', 'mudroot', 'marsh_mint'],                 method: 'boil',  xp: 168, heal: 60, resists: [{ element: 'poison', amount: 0.40, turns: 5 }], throw: 12, sell: 37 },
     { level: 35, name: 'Eel Surprise',          ids: ['bog_eel', 'bog_truffle'],                               method: 'fry',   xp: 202, heal: 60, buffs: [{ stat: 'atk', pct: 0.20, turns: 4 }, { stat: 'def', pct: 0.20, turns: 4 }], throw: 20, sell: 62, secret: true,
@@ -106,6 +113,7 @@ FUP.recipeData = {
     // Raw fish: 2 + its Fishing level / 3
     mudminnow: { heal: 2 }, grumpy_guppy: { heal: 3 }, pond_perch: { heal: 4 }, sulking_carp: { heal: 5 }, whiskered_catfish: { heal: 6 }, salty_sardine: { heal: 5 },
     mud_skipper: { heal: 7 }, croaker: { heal: 8 }, bog_eel: { heal: 10 },
+    speckled_trout: { heal: 5 }, golden_minnow: { heal: 5 }, petty_pike: { heal: 7 }, gloomfin: { heal: 8 }, dodger_trout: { heal: 8 }, moon_carp: { heal: 11 },   // v0.78 Forest fish
     // The Soggy Marsh (W2)
     croakberry: { heal: 8 }, mudroot: { heal: 6 }, marsh_mint: { buff: { stat: 'spd', pct: 0.08, turns: 3 } }, bog_truffle: { heal: 28 },
     dock_herring: { heal: 7 }, regret_snapper: { heal: 8 }, bashful_flounder: { heal: 9 }, sarcastic_mackerel: { heal: 11 }, grudge_tuna: { heal: 12 }, letter_opener: { heal: 13 },

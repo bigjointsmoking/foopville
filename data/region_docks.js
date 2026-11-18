@@ -41,7 +41,7 @@ FUP.worldData.areas.docks = {
         '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
   ],
   // Map letter → fishing spot in data/fishing.js (stand within 1 square of it, corners count)
-  fish: { F: 'pier', D: 'deep' },
+  fish: { F: 'pier', D: 'deep', '~': 'pier' },   // v0.78: all water
   // Villagers who live here (their windows are the same as in the village: data/village.js npcs)
   npcs: [{ id: 'fishmonger', tx: 24, ty: 7 }],
   // Things on the map: trap = a trap square (fish traps arrive in phase V1), sign = read it

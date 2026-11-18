@@ -63,8 +63,23 @@ FUP.backpack = {
     add(ui.panel(s, PX, PY, PW, PH, 'panel'), 1);
     add(ui.text(s, PX + 20, PY + 14, { pack: '🎒 BACKPACK', store: '🏠 STORAGE AT HOME', wardrobe: '🎩 WARDROBE' }[bp.tab], 22, c.accent, { fontStyle: '700' }), 2);
     // Your name + title (G2), then this tab's info line (kept left so the tab buttons fit on narrow screens)
-    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}   ·   Materials: ${FUP.mats.text()}` : bp.tab === 'store' ? 'Spare gear and food.' : 'Hats and titles. No stats, all style.';
-    add(ui.text(s, PX + 20, PY + 42, `${FUP.cosmetics.nameLine()}   ·   ${info}`, 13, c.ink, { fontStyle: '700' }), 2);
+    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}   ·   Materials:` : bp.tab === 'store' ? 'Spare gear and food.' : 'Hats and titles. No stats, all style.';
+    const infoT = add(ui.text(s, PX + 20, PY + 42, `${FUP.cosmetics.nameLine()}   ·   ${info}`, 13, c.ink, { fontStyle: '700' }), 2);
+    // Materials (v0.78, Jesus): each one is a chip; tap it to see what it is
+    if (bp.tab === 'pack') {
+      let mx = infoT.x + infoT.width + 8;
+      const mats = FUP.mats.list();
+      if (!mats.length) add(ui.text(s, mx, PY + 42, 'none', 13, c.dim, { fontStyle: '700' }), 2);
+      for (const m of mats) {
+        const chip = add(ui.text(s, mx, PY + 42, `${m.emoji} ${m.n}`, 13, bp.matTip === m.id ? c.accent : c.ink, { fontStyle: '700' }), 2);
+        chip.setInteractive({ useHandCursor: true }).on('pointerdown', () => { bp.matTip = bp.matTip === m.id ? null : m.id; this.draw(bp); });
+        if (bp.matTip === m.id) {
+          const M = FUP.salvageData.materials[m.id];
+          add(ui.tooltip(s, Math.min(chip.x, PX + PW - 290), PY + 62, `${M.emoji} ${M.name} x${m.n}\n${M.blurb}\nFor repairs and building. Doesn't take backpack space.`, { size: 13 }), 6);
+        }
+        mx += chip.width + 12;
+      }
+    }
     btn(PX + PW - 110, PY + 10, 94, 32, 'Close', () => bp.destroy(), { hot: true, size: 15 });
     if (bp.opts.home) btn(PX + PW - 204, PY + 10, 90, 32, '🏠 Storage', () => { bp.tab = 'store'; bp.sel = null; }, { hot: bp.tab === 'store' });
     if (bp.opts.home || bp.tab === 'wardrobe') btn(PX + PW - 300, PY + 10, 90, 32, '🎒 Pack', () => { bp.tab = 'pack'; bp.sel = null; }, { hot: bp.tab === 'pack' });

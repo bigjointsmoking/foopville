@@ -306,6 +306,8 @@ FUP.villageData = {
     'burlap_sack', 'padded_vest', 'tunic', 'waistcoat', 'bark_armor', 'duelist_coat', 'velvet_jacket', 'plate_armor', 'harness', 'suit',
     'trousers', 'kneepads', 'shorts', 'slacks', 'shin_guards', 'tights', 'dance_shoes', 'greaves', 'leggings', 'breeches'],
   shopTrinkets: ['lucky_acorn', 'mood_ring', 'lunchbox'],
+  // Ready-to-eat food (v0.78, Jesus: easier healing). Goes in your food like a dish. Name, heal and price are PLACEHOLDERS.
+  shopSnacks: { travel_bread: { name: 'Travel Bread', emoji: '🥖', heal: 14, price: 15, sell: 2, throwDamage: 3 } },
   // Ingredients for sale: id -> price in coins (PLACEHOLDER prices; doubled in v0.43).
   shopIngredients: { rock_salt: 8, grumpleberry: 10, glowcap_mushroom: 12, bark: 8, dragons_sneeze_chili: 20, spore_b_gone_moss: 24 },
   ingredientSellPrice: { Common: 2, Uncommon: 5, Rare: 12 },  // fallback only: each ingredient has its own `sell` price in data/ingredients.js (v0.40)
@@ -313,6 +315,8 @@ FUP.villageData = {
   // ---------- Haggling (blueprint 10) ----------
   // Always on: every Rizz level = 1% off what you buy and 1% more for what you sell, up to 30%.
   fishBonus: 1.2,   // Gill pays this much more for raw fish than the Shopkeeper (+0.1 from his Rizz 20 secret)
+  sellMult: 1.5,   // v0.78 (Jesus: selling paid too little): every sell price x this
+  resaleCap: 0.9,  // ...but never more than this share of what the shop sells the same thing for
   rizzDiscountPerLevel: 0.01,
   rizzDiscountMax: 0.30,
   // PLACEHOLDER: the Haggle button at the Shopkeeper. One try per visit to the village.
@@ -321,7 +325,7 @@ FUP.villageData = {
     perLevel: 0.03,
     winDiscount: 0.15,        // extra 15% off (and 15% more when selling) for this visit
     failMarkup: 0.10,         // prices 10% higher for this visit
-    xp: 45,                   // Rizz XP for trying (win or lose). Was 15; tripled in v0.38.
+    xp: 15,                   // Rizz XP for trying (win or lose). v0.78: 45 -> 15 (Jesus: Rizz too fast).
   },
 
   // ---------- Chef Marrowbone's secret-recipe riddles (Refinement Phase 2) ----------

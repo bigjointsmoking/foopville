@@ -19,7 +19,7 @@ Object.assign(VillageScene.prototype, {
       const icon = FUP.ui.text(this, c.x + 13, c.y - 9, '', 13, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(5200);
       this.tweens.add({ targets: icon, y: c.y - 13, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       soil.setInteractive({ useHandCursor: true });
-      soil.on('pointerdown', () => { if (!this.panel && !this.busy) this.walkTo = this.patchSpot(q); });
+      soil.on('pointerdown', () => { if (!this.panel && !this.busy && FUP.ui.tapToWalk(this)) this.walkTo = this.patchSpot(q); });
       this.farmViews[q.key] = { q, soil, crop, icon, sig: '' };
     }
     // A sign over each farm plot: its name, and the price while it's for sale

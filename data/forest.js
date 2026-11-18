@@ -39,7 +39,7 @@ FUP.forestData = {
   areas: [
     // ---------- Area 1: sunny birch wood, the gentle warm-up ----------
     {
-      id: 'edge', name: 'Forest Edge',
+      id: 'edge', fish: { '~': 'edgePond' }, name: 'Forest Edge',
       enemiesPerRun: 5,      // enemy spots used per trip (of 10 "e" on the map)
       ingredientsPerRun: 8,  // ingredient spots used per trip (of 16 "i")
       enemyTypes: { squirrel: 1 },             // squirrels only here (blueprint 18.6)
@@ -85,7 +85,7 @@ FUP.forestData = {
     },
     // ---------- Area 2: autumn, mud, a river and one rickety bridge ----------
     {
-      id: 'tollroad', name: 'Goblin Toll Road',
+      id: 'tollroad', fish: { '~': 'tollRiver' }, name: 'Goblin Toll Road',
       enemiesPerRun: 6,      // of 12
       ingredientsPerRun: 8,  // of 16
       enemyTypes: { squirrel: 5, goblin: 3, pigeon: 2 },   // weights (PLACEHOLDER mix)
@@ -133,7 +133,7 @@ FUP.forestData = {
     },
     // ---------- Area 3: dark, huge old trees, glowing mushrooms. The hole is here ----------
     {
-      id: 'deepwoods', name: 'Deep Woods',
+      id: 'deepwoods', fish: { '~': 'darkPool' }, name: 'Deep Woods',
       enemiesPerRun: 8,      // of 15
       ingredientsPerRun: 10, // of 20
       enemyTypes: { squirrel: 3, goblin: 2, pigeon: 4 },   // weights (PLACEHOLDER mix)
@@ -162,8 +162,8 @@ FUP.forestData = {
         '#........#..#e...i#e.......#..........i#.....###',
         '#........#i.#.....#........#...........#.....###',
         '#######..####..####..#..C..#..#############..###',
-        '#...........#..#....i......#.....#..#......e.###',
-        '#...........#..#.H.........#.....#i.#........###',
+        '#...........#..#....i......#.....#..#......e.~~#',
+        '#...........#..#.H.........#.....#i.#........~~#',
         '#..#..####..#..#######..#..####..#..#..#########',
         '#.S#...e.#e.#......e.#e....#........#e..e....###',
         '#..#.....#..#........#.....#........#........###',
@@ -211,7 +211,7 @@ FUP.forestData = {
     // He asks for this share of the coins you carry. Better Rizz = smaller toll (blueprint 18.8).
     payByRizz: [{ level: 1, pay: 0.20 }, { level: 15, pay: 0.15 }, { level: 30, pay: 0.10 }, { level: 46, pay: 0 }],   // 46 = Living Legend (v0.38)
     haggledShare: 0.5,   // a good Rizz talks it down to half of that
-    haggleRizzXp: 45,    // Rizz XP for a good haggle (was 15; tripled in v0.38, PLACEHOLDER)
+    haggleRizzXp: 15,    // Rizz XP for a good haggle (v0.78: 45 -> 15, Jesus: Rizz too fast; PLACEHOLDER)
     bridgeTouch: 52,     // pixels: the bridge goblin blocks both plank columns
   },
   // --- Revenge rule (blueprint 18.2): kill this many pigeons in one trip and the Godfather comes ---

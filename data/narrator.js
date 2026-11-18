@@ -219,6 +219,7 @@ FUP.narrator = {
     'The Compost Bin made {item} worms. Free bait, mildly disgusting.',
     'Your rot has produced {item} worms. Gill would be proud.',
   ],
+  specialLocked: ['Something big glints under the water. It ignores you. Come back with more Fishing.', 'The fish here have standards. You do not meet them yet.'],
   deepLocked: [
     'The deep water laughs at your little rod.',
     'Out here the fish are big and you are not. Not yet.',
@@ -295,6 +296,7 @@ FUP.narrator = {
   raidFall: ['The floor gave up. So did your dignity. Back to the start.', 'You fell through the floor. The floor below was not softer.'],
   raidPipe: ['A pipe swings into you. It was there first.', 'Clang. That was a pipe. And your face.'],
   raidEatPick: ['{item}. Tap it again to eat it.'],
+  walkEat: ['You eat {item} on the move. Very busy. Very important.', '{item}, eaten standing up. Fine dining.'],
   raidEat: ['You eat {item} on the move. Very busy. Very important.', '{item}, eaten standing in a basement. Fine dining.'],
   raidEatResist: ['{item}. Your insides feel spore-proof for this room.'],
   officeEnter: ['The Guardian\'s Hall. It looks up from its desk. "No visitors. That includes you."', 'Its hall. Carpet, a desk, a portrait of itself. It\'s waiting for you.'],

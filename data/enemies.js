@@ -128,7 +128,7 @@ FUP.enemies = {
   // rally: every pigeon in the fight gets the buff (Godfather included).
   pigeon: {
     name: 'Pigeon With a Grudge', emoji: '🐦', size: 72, sprite: 'pigeon', mapSprite: 'pigeon_map',
-    maxHp: 15, atk: 3.5, def: 1, spd: 16, resolve: 0.20, pigeon: true,   // v0.41: HP 10 -> 15 (Jesus: too easy)   // v0.39: was 14 HP / 5 ATK
+    maxHp: 15, atk: 2.6, def: 1, spd: 16, resolve: 0.20, pigeon: true,   // v0.78: ATK 3.5 -> 2.6 (Jesus: pigeons hurt, not enough healing)   // v0.41: HP 10 -> 15 (Jesus: too easy)   // v0.39: was 14 HP / 5 ATK
     xp: 15, coins: 3, boss: false, weak: 'fire', resists: [],   // v0.40: coins 2 -> 3
     moves: [
       { name: 'Peck', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },

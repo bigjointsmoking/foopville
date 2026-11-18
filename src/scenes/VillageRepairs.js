@@ -19,7 +19,7 @@ Object.assign(VillageScene.prototype, {
     const bp = M.center(D.boardSpot.tx, D.boardSpot.ty);
     if (!this.boardSprite || !this.boardSprite.active) {
       this.boardSprite = ui.sprite(this, bp.x, bp.y + 14, 'vil_board', '📋', 30).setOrigin(0.5, 1).setDepth(bp.y + 14).setTint(0xd8c8a0);
-      this.boardSprite.setInteractive({ useHandCursor: true }).on('pointerdown', () => { if (!this.panel && !this.busy) this.walkTo = this.spots.find(s => s.kind === 'repairBoard'); });
+      this.boardSprite.setInteractive({ useHandCursor: true }).on('pointerdown', () => { if (!this.panel && !this.busy && FUP.ui.tapToWalk(this)) this.walkTo = this.spots.find(s => s.kind === 'repairBoard'); });
       ui.text(this, bp.x, bp.y + 14 - this.boardSprite.displayHeight - 2, 'REPAIRS', 11, c.accent, { fontStyle: '700', stroke: c.stroke, strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(5000);
     }
     this.spots.push({ id: 'repairBoard', kind: 'repairBoard', repair: true, x: bp.x, y: bp.y, sprite: this.boardSprite, label: '📋 Repairs' });
