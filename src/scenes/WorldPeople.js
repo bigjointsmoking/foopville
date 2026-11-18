@@ -28,6 +28,15 @@ Object.assign(WorldScene.prototype, {
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
       }
     }
+    // The old shrine (v0.82): after The Bowl, feed the Guardian a dish here (src/systems/shrine.js)
+    const SH = FUP.raidData.shrine;
+    if (SH && SH.region === this.f.area) {
+      const c0 = at(SH.tx, SH.ty);
+      this.add.text(c0.x, c0.y, '🕯️', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
+      ui.text(this, c0.x, c0.y - 22, 'SHRINE', 10, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this.spots.push({ kind: 'shrine', x: c0.x, y: c0.y, label: 'Shrine' });
+      this.solid.push({ tx: SH.tx, ty: SH.ty });
+    }
     // Quests (v0.79): 🔍 search spots and ❗ / 📜 over villagers out here (redrawn by refreshQuestMarks)
     this._qSig = null; this._qMarks = []; this._guests = [];
     this.refreshQuestMarks(true);
@@ -65,6 +74,35 @@ Object.assign(WorldScene.prototype, {
     if (this.placeQuestFoes) this.placeQuestFoes();
     FUP.questUi.marks(this, this.f.area, center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
     this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots(this.f.area, center));
+  },
+
+  // The shrine window (v0.82): pick a dish to leave, and the Guardian comes up to fight
+  openShrine() {
+    const S = FUP.shrine, L = S.data().lines, o = S.open();
+    if (!o.ok) { this.sayLine(o.why); FUP.audio.sfx('click'); return; }
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, list = S.dishes();
+    const g = [], add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+    const close = () => { g.forEach(x => x.destroy()); this.panel = null; };
+    this.panel = { destroy: close };   // walking stops while it's open
+    const h = 150 + (list.length + 1) * 46;
+    add(ui.shade(this, 0.6));
+    add(ui.panel(this, W / 2 - 260, H / 2 - h / 2, 520, h, 'panel'), 1);
+    add(ui.text(this, W / 2, H / 2 - h / 2 + 16, '🕯️ The Old Shrine', 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 - h / 2 + 46, L.ask + '\nMore stars, better loot. Once a day. It\'s the full Guardian.', 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
+    const btn = (k, label, fn, hot) => { const b = ui.button(this, W / 2 - 230, H / 2 - h / 2 + 110 + k * 46, 460, 38, label, fn, { size: 14, hot }); [b.rect, b.txt].forEach(x => add(x, 3)); b.txt.setDepth(Z + 4); };
+    list.forEach((e, k) => btn(k, `${e.dish.emoji} ${e.dish.name}  ${'★'.repeat(e.stars)}${'☆'.repeat(5 - e.stars)}${e.n > 1 ? '  ×' + e.n : ''}`, () => {
+      const stars = S.feed(k);
+      close();
+      this.sayLine(L.summon);
+      this.saveHere();
+      this.leaving = true;
+      FUP.run.battle = { index: -1, type: 'guardian', result: null, shrine: true, stars, dropTier: FUP.raidData.dropTier };
+      FUP.audio.sfx('encounter');
+      FUP.fx.shake(this, 'boss');
+      this.cameras.main.fadeOut(900, 30, 0, 40);
+      this.time.delayedCall(930, () => this.scene.start('Battle', { enemies: ['guardian'] }));
+    }, k === 0));
+    btn(list.length, 'Not now', close, false);
   },
 
   // Villagers out here for a quest step (FUP.quests.guestsIn): Pip at the pier, the Keeper in the Forest Edge
@@ -126,6 +164,7 @@ Object.assign(WorldScene.prototype, {
     if (s.tut) { this.tutorUse(s); return; }   // tutors, the farm patch, sawhorse, dummy (WorldTutorial.js)
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
+    if (s.kind === 'shrine') { this.openShrine(); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }
     if (s.kind === 'salvage') {

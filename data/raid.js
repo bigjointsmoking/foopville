@@ -24,6 +24,25 @@ window.FUP = window.FUP || {};
 FUP.raidData = {
   tileSize: 40,
   dropTier: 3,             // random gear drops use shop items up to tier 3 (G1)
+
+  // ---------- The shrine (story Phase C, v0.82; Jesus 2026-11-18) ----------
+  // After The Bowl, leave a cooked dish at the old shrine in the Forest Edge and the Guardian comes up
+  // to fight you there: the full boss, no raid. Once per day. More stars on the dish = better extra loot.
+  // Rules: src/systems/shrine.js. All numbers PLACEHOLDERS.
+  shrine: {
+    region: 'edge', tx: 4, ty: 13,
+    needQuest: 'theBowl',
+    coinsPerStar: 30,                       // extra coins: 30 per star
+    matsPerStar: 1, mats: ['plank', 'nails', 'stone'],   // building materials: 1 per star, random
+    gearAtStars: 4,                         // 4-5 stars: one extra gear roll (Rare or better)
+    lines: {
+      locked: 'A mossy little shrine. Someone leaves a bowl here in the evenings. For the Quiet One, apparently.',
+      fed: 'The bowl is still licked clean from today. Come back tomorrow. It\'s full. Allegedly.',
+      noFood: 'The bowl is empty and so are your pockets. Cook something first.',
+      ask: 'You set down the bowl. Something far below goes very quiet. Which dish?',
+      summon: 'The ground shudders. The bowl is snatched down a crack. Then the crack gets bigger.',
+    },
+  },
   mult: 1.4,               // raid enemies: HP / ATK / DEF and their XP + coins x1.4 (not the Guardian)
   level: 14,               // Melee level the raid is meant for (enemy scaling, v0.41); the Guardian uses his own (15)
   order: ['fight', 'hazard', 'fight', 'hazard'],

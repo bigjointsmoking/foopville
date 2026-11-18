@@ -389,6 +389,7 @@ FUP.narrator = {
   // ---------- Fight tricks (Refinement Phase 3) ----------
   perfectBlock: ['Perfect block. The {enemy} hit a wall, and the wall hit back.', 'You read that like a book. A short book. With pictures.'],
   riposte: ['Riposte! The {enemy} walked right into it. As planned. Allegedly.'],
+  shrineWin: ['The Guardian sinks back into the ground, full. You get the feeling it\'ll be hungry again tomorrow.'],
   ledgerUp: ['The {enemy} raises his ledger. Hitting paperwork is futile.'],
   chaseDrop: ['It dropped. Act casual.', 'The rare one. Nobody will believe you.', 'A boss drop. Try not to sell it for soup money.'],
   // The Soggy Marsh (W2)

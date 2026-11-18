@@ -68,6 +68,7 @@ class WorldScene extends Phaser.Scene {
     const b = FUP.run.battle;
     FUP.run.battle = null;
     if (b && b.tutorial) { this.tutorialAfterFight(b); return; }   // the training dummy (WorldTutorial.js)
+    if (b && b.shrine) { this.say(b.result === 'win' ? 'shrineWin' : 'forestAfterFlee'); return; }   // the Guardian at the shrine (v0.82)
     if (!b) {
       if (this.safe) { this.greetSafe(); return; }
       if (this.arrive.from === 'campfire') this.say('forestFromCampfire');

@@ -1283,10 +1283,11 @@ class BattleScene extends Phaser.Scene {
 
     // Beat the Guardian: the run is over. Show the run summary too.
     let summary = null;
+    const shrine = !!(run.battle && run.battle.shrine);   // fed at the Forest Edge shrine (v0.82): the trip goes on
     if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
-      summary = run.finishRun();
-      lines.unshift(`RUN TIME: ${fmt(summary.time)}`);
+      if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));
+      else { summary = run.finishRun(); lines.unshift(`RUN TIME: ${fmt(summary.time)}`); }
     }
     if (!survived && run.isHardcore()) FUP.save.wipe();   // hardcore: this life is over, the save goes with it
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away
@@ -1304,6 +1305,7 @@ class BattleScene extends Phaser.Scene {
     let label, go;
     if (!survived && run.isHardcore()) { label = 'New life'; go = () => this.scene.start('Start'); }
     else if (!survived) { label = '🏠 Wake up at home'; go = () => this.scene.start('Village', { from: 'respawn' }); }
+    else if (shrine) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }   // the shrine (v0.82)
     else if (result === 'boss') { label = '🛝 Exit Chute'; go = () => this.exitChute(); }
     else if (run.battle && run.battle.tutorial) { label = '🏝️ Back to the island'; go = () => this.scene.start('World', { from: 'tutorialFight' }); }   // Orientation Isle (v0.62)
     else if (run.forest && run.forest.raid && !this.isBossFight) { label = '🚪 Back to the basement'; go = () => this.scene.start('Raid', {}); }
