@@ -17,7 +17,8 @@ FUP.questUi = {
     if (r.choices) { this.choices(scene, id, r.line, onDone); return; }
     if (r.reward) { this.complete(scene, r.reward, r.done); onDone(); return; }
     if (r.coins && scene.sayLine) scene.sayLine(`${r.line ? r.line + '  ' : ''}(Done: ${r.done}. +${r.coins} coins.)`);
-    if (r.ok && !r.coins) { const next = FUP.quests.state.active[id] && FUP.quests.stepText(id); if (next) this.toast(scene, `📜 ${FUP.quests.def(id).name}: ${next}`); }
+    const news = FUP.quests.takeNews();   // things a step handed you (seeds, the jar, the bowl)
+    if (r.ok && !r.coins) { const next = FUP.quests.state.active[id] && FUP.quests.stepText(id); if (next || news.length) this.toast(scene, [...news, next ? `📜 ${FUP.quests.def(id).name}: ${next}` : ''].filter(Boolean).join('\n')); }
     FUP.audio.sfx(r.coins ? 'fanfare' : r.ok ? 'select' : 'click');
     onDone();
   },

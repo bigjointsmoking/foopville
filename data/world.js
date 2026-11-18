@@ -43,7 +43,7 @@ FUP.worldData = {
                  links: {} },
     // East of the village over the repaired bridge (W2). Map in data/region_marsh.js
     marsh:     { name: 'Soggy Marsh', kind: 'danger', scene: 'World', box: { col: 1, row: 3 }, band: [15, 22], dropTier: 3,
-                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'village', edge: 'E' } } },
+                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'], links: { W: { to: 'village', edge: 'E' } } },
   },
 
   // Maps for regions that aren't Forest areas: each data/region_<id>.js file adds its own. Forest regions use data/forest.js.

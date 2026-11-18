@@ -166,6 +166,8 @@ class RaidScene extends WorldScene {
         }
       }
     }
+    // The KEEP FED sign by its feeding spot (story Phase C, v0.82). Spot is a PLACEHOLDER.
+    if (office) { const p = R.center(3, 4); ui.text(this, p.x, p.y, '🪧\nKEEP FED', 11, FUP.ui.colors.ink, { fontStyle: '700', align: 'center', stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(p.y + 5); }
     // The Guardian's desk (the "d" squares)
     const desk = R.find('d');
     if (desk.length) {

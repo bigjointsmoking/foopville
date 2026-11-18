@@ -1291,6 +1291,7 @@ class BattleScene extends Phaser.Scene {
     if (!survived && run.isHardcore()) FUP.save.wipe();   // hardcore: this life is over, the save goes with it
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away
     else if (this.questNews.length) lines.push(`📜 Quest done: ${this.questNews.join(', ')}!`);
+    if (survived) lines.push(...FUP.quests.takeNews().slice(0, 3));   // what a quest step said or handed you (v0.82: the Guardian's last words, the bowl)
 
     const titles = { win: 'VICTORY', lose: this.isBossFight ? 'SHOWN THE DOOR' : 'YOU DIED', charmed: 'CHARMED', fled: 'ESCAPED', boss: 'GUARDIAN DEFEATED' };
     const colors = { win: c.good, lose: c.bad, charmed: FUP.look.hex('p2'), fled: c.dim, boss: c.accent };

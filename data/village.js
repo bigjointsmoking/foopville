@@ -119,11 +119,32 @@ FUP.villageData = {
       ],
       legend: "My grandmother used to say that when the dragon flew off, she wasn't roaring. She was sobbing. Like a little one who'd had her toy taken. Nobody believed her. Said it was the wind in the pass. But Grandmother was there on the hill that day, or her mother was, and she never changed her story.",
       noRizzSecrets: true,   // no Rizz 10/20/30 secrets: his Rizz reward is the legend (Jesus, 2026-11-18: leave it that way)
-      legendRizz: 10, legendQuest: null,   // guarded: tells it only at Rizz 10 or while his quest is taken (the quest comes in story Phase C)
+      legendRizz: 10, legendQuest: 'theBowl',   // guarded: tells it only at Rizz 10 or while his quest is taken (the quest comes in story Phase C)
       brushOff: ['Foop? He\'s the one on the plinth. That\'s all I know.', 'Old stories are for people I know. I don\'t know you yet.'],
       reacts: [   // PLACEHOLDER lines (see the Quest Board Keeper)
         { fact: 'clue:bowl', line: "So something does eat it. Grandmother would be pleased. Or frightened. Hard to tell with her." },
         { fact: 'clue:ledgerPage', line: "Another name, eh? Grandmother never said one. She'd have liked to know." },
+      ],
+    },
+    // Story Phase C (v0.82, Jesus: "a banker or a money guy"). Name, spot, look and lines are PLACEHOLDERS.
+    banker: {
+      name: 'Mr. Tally the Moneylender', spot: { tx: 28, ty: 7 }, sprite: 'npc_shop_map', portrait: 'npc_shop', tint: 0xb8c8a0, emoji: '💰',
+      noRizzSecrets: true,   // no Rizz 10/20/30 secrets yet (PLACEHOLDER: ask Jesus if they should have some)
+      greet: [
+        'Forty-one coins in the village fund. I counted. Twice. Out loud.',
+        'Money comes in. Money goes out. Mostly out. Nobody knows where to.',
+        'Don\'t lean on the counter. It\'s holding up the counting.',
+      ],
+    },
+    // The Bog Notary (v0.82): lives in the Soggy Marsh (data/region_marsh.js npcs), outside his office. No fight yet:
+    // his boss quest comes later, with the town to the east (Jesus, 2026-11-18). PLACEHOLDER look: a tinted villager.
+    notary: {
+      name: 'The Bog Notary', sprite: 'npc_quest_map', portrait: 'npc_quest', tint: 0x8ab060, emoji: '🐸',
+      noRizzSecrets: true,   // no Rizz 10/20/30 secrets yet (PLACEHOLDER: ask Jesus if they should have some)
+      greet: [
+        'Form?',
+        'Next. There is no next. Form?',
+        'Stamped in triplicate or not at all. Mostly not at all.',
       ],
     },
     smith: {
@@ -242,7 +263,7 @@ FUP.villageData = {
         { fact: 'clue:ledgerPage', line: "Someone painted over a name. Told you. Nobody here likes the bits that don't fit." },
       ],
       legend: "Everyone's got a story about Foop. Funny, nobody's got a dragon. No body, no bones, no scorch marks that couldn't be a house fire. A man walks back alone from the worst day this village ever had and says he did it all himself? I'd say he made it up. Just my opinion. Plants don't grow either, most years.",
-      legendRizz: 20, legendQuest: null,   // guarded: tells it only at Rizz 20 or while his quest is taken (the quest comes in story Phase C)
+      legendRizz: 20, legendQuest: 'deadPlot',   // guarded: tells it only at Rizz 20 or while his quest is taken (the quest comes in story Phase C)
       brushOff: ['Sir Foop? Lovely statue. Want some seeds?', 'Old stories don\'t grow anything. Seeds do. Buying?'],   // PLACEHOLDER lines
       greet: [
         'Seeds! Tiny, cheap, full of potential. Like you, minus the potential.',
@@ -357,6 +378,8 @@ FUP.villageData = {
     // The village sign by the north gate (story, 2026-11-17): repainted, an older word scratched underneath that nobody can read.
     // Spot and wording are PLACEHOLDERS. Picture: the plain signpost until it gets its own art.
     { sprite: 'deco_signpost', tx: 13, ty: 2, text: 'FOOPVILLE, in thick, proud paint. Under it, faint scratches of some other word. You can\'t make it out.' },
+    // Pip's old plot (story Phase C, v0.82): burned black, nothing grows. Stays dead (a later quest fixes it).
+    { sprite: 'deco_scorch', tx: 53, ty: 55 }, { sprite: 'deco_scorch', tx: 54, ty: 55 }, { sprite: 'deco_scorch', tx: 53, ty: 56 }, { sprite: 'deco_scorch', tx: 54, ty: 56 },
     { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light flickers in the Deep Woods. Something down there is still awake." },
     { sprite: 'prop_flag', tx: 32, ty: 10 },
     { sprite: 'prop_bench', tx: 29, ty: 11, solid: true },

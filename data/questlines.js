@@ -361,4 +361,74 @@ Object.assign(FUP.questData.quests, {
         say: 'Filed. Under "done". My first one. Thank you, witness.',
         sayIf: { self: 'I picked them. ME. I\'m posting more. For you, obviously. I\'m retired now.', pep: 'I picked them. ME. Here. For the speech. Don\'t tell anyone I needed one.' } },
     ] },
+
+  // ================= v0.82: THE STORY, Phase C (claude/CLAUDE_CODE_HANDOFF.md) =================
+  // kind 'story': posted on the board's Story tab in a villager's name; take it there, then go and see them.
+  // Gated only by how far you've got (first trip, the East Bridge), never by other quests.
+  // Spell pieces (fragment) are kept even if you die (data/spell.js). Clues are facts 'clue:<id>' (villagers react).
+  // All lines, numbers and spots are PLACEHOLDERS for Jesus.
+
+  deadPlot: { kind: 'story', from: 'seeds', difficulty: 'medium', length: 'short', name: 'Pip\'s Dead Plot',
+    req: { facts: { 'region:edge': 1 } },   // posted after your first trip out of the village
+    text: 'Pip had a plot at the east end of the farm once. Nothing grows there now. Not even weeds.',
+    reward: { coins: 80, xp: { gardening: 80 }, seeds: { heartroot: 3 }, fact: 'clue:ash' },
+    afterGreet: ['That jar\'s under my stall. Lid on. Don\'t ask me to open it.', 'Plants don\'t grow there. Plants grow here. Buy some.'],
+    steps: [
+      { talk: 'seeds', log: 'Pip\'s old plot, at the east end of the farm, is dead. He wants a sample. In a jar. With a lid.',
+        say: 'My old plot. East end of the farm, past the last field. Nothing\'s grown there in years. Bring me some of the dirt. In a jar. With a lid. I\'m not touching it.' },
+      { search: { region: 'village', tx: 53, ty: 55, name: 'Pip\'s old plot' }, log: 'The plot is burned black. You sealed a jar of the ash. It sparkles.',
+        say: 'Black ash, fine as flour. You scoop some into a jar and screw the lid on tight. It sparkles. Ash shouldn\'t sparkle.',
+        give: { items: { ash_jar: 1 } } },
+      { bring: { ash_jar: 1 }, to: 'seeds', log: 'Pip held the jar up to the light and went pale.',
+        say: 'He holds it up to the light. Goes pale. "That\'s no house fire. I don\'t know what that is." He puts it under the stall. "Here. Seeds. Good ones. Go away."' },
+    ] },
+
+  tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
+    req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
+    text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',
+    reward: { coins: 220, xp: { melee: 200, rizz: 60 }, gearDrop: { tier: 2, rarity: 'Uncommon' }, fragment: true, fact: 'clue:ledgerPage' },
+    afterGreet: ['An older name. Under ours. I\'ve stopped counting. ...No I haven\'t. Forty-one.', 'Somebody\'s getting rich. It still isn\'t us.'],
+    steps: [
+      { talk: 'banker', log: 'Mr. Tally wants the goblins\' old ledger pages. Where does all the toll money go?',
+        say: 'Somebody\'s getting rich off that road. It isn\'t us. I\'d know. I count. The goblins write it all down. Bring me their ledgers. Rip them if you have to. Especially if you have to.' },
+      { event: 'ledger', count: 3, goal: 'Rip 3 goblin ledgers on the Goblin Toll Road (throw food or use a skill when he raises it)', log: 'Three goblin ledgers, ripped and stuffed in your pocket.' },
+      { talk: 'banker', log: 'The oldest page has the village\'s name on it. An older one, scratched out, under "Foopville".',
+        say: 'Tolls, tolls, tolls... Wait. This one\'s old. The village is named here. Only it isn\'t "Foopville". Something else, scratched out. "Foopville" is written over it. In newer ink.' },
+    ] },
+
+  theBowl: { kind: 'story', from: 'oldtimer', difficulty: 'medium', length: 'long', name: 'The Bowl',
+    req: { skills: { melee: 9 } },   // the Deep Woods is Lv 9-13
+    text: 'Every evening someone leaves a bowl at the old shrine in the Forest Edge, "for the Quiet One". Lately it comes back empty.',
+    reward: { coins: 300, xp: { melee: 300 }, gearDrop: { tier: 1, rarity: 'Rare' }, fragment: true, fact: 'clue:bowl', keyRing: { storehouse: 'The Old Key' } },
+    afterGreet: ['I put the bowl out again last night. Empty by morning. Good.', 'The Quiet One. Grandmother would be pleased. Or frightened. Hard to tell with her.'],
+    steps: [
+      { talk: 'oldtimer', log: 'The bowl left at the Forest Edge shrine for "the Quiet One" comes back licked clean. The Old-timer wants to know who\'s eating.',
+        say: 'Every evening somebody leaves a bowl at the old shrine in the Forest Edge. For the Quiet One, Grandmother said. Lately it comes back empty. Licked clean. Go and look.' },
+      { search: { region: 'edge', tx: 4, ty: 14, name: 'the old shrine' }, log: 'At the shrine: an empty bowl and big, careful tracks heading east.',
+        say: 'A mossy little shrine. The bowl is gone. Big tracks lead east, toward the Toll Road. Careful tracks. Polite, almost.' },
+      { search: { region: 'tollroad', tx: 6, ty: 19, name: 'the tracks' }, log: 'The tracks cross the Toll Road and head for the Deep Woods.',
+        say: 'The same tracks, crossing the road. The goblins have drawn a little fence around them. Nobody pays a toll on these.' },
+      { event: 'holeDown', goal: 'Follow the tracks (🐾) to the hole in the Deep Woods and climb down', log: 'The tracks ended at a hole. You climbed down.' },
+      { event: 'boss', goal: 'Beat the Guardian at the bottom of the Old Storehouse',
+        say: 'By its feeding spot, a worn sign: KEEP FED. Its last words: "Visitor logged. Please close the door." In the crumbs: a bowl, and an old key.',
+        log: 'You beat the Guardian. By its feeding spot: a KEEP FED sign, the bowl, and an old key.',
+        give: { items: { old_bowl: 1, old_key: 1 } } },
+      { bring: { old_bowl: 1, old_key: 1 }, to: 'oldtimer', log: 'Back to the Old-timer with the bowl.',
+        again: { event: 'boss', items: { old_bowl: 1, old_key: 1 }, say: 'The bowl and the key are back by the feeding spot. Of course they are.' },
+        say: 'He turns the bowl over. "Grandmother\'s mark. So something down there was eating it. All these years." He keeps the bowl. "I\'ll put it back out. Somebody should." The key he gives back. "That\'s yours. Don\'t ask me what it opens."' },
+    ] },
+
+  oldAccounts: { kind: 'story', from: 'shop', difficulty: 'medium', length: 'medium', name: 'The Old Accounts',
+    req: { facts: { 'repair:east_bridge': 1 } },   // the Marsh is open
+    text: 'The old shopkeepers kept odd books. Payments to somebody, for something. The Bog Notary files a copy of everything.',
+    reward: { coins: 260, xp: { rizz: 150 }, fragment: true, fact: 'clue:paymentLedger' },
+    afterGreet: ['Gold paid for quiet. Hm. I\'d have charged more.', 'The old books are back under the counter. Where old books belong.'],
+    steps: [
+      { talk: 'shop', log: 'The old shopkeepers paid someone, every year, for years. The Bog Notary in the Marsh files a copy of everything.',
+        say: 'The old books. Payments, every year, to "R". For years. No idea who. The Bog Notary in the Marsh files a copy of everything. He\'ll want forms. Three, stamped. He always wants three.' },
+      { bring: { stamped_form: 3 }, to: 'notary', goal: 'Bring 3 Stamped Forms to the Bog Notary (Soggy Marsh, east end)', log: 'The Notary took your three forms and, very slowly, opened his office.',
+        say: 'Three forms. Stamped. ...Correctly. Nobody does it correctly. He opens a drawer, sighs, and copies a page out by hand. "Payments. To the Resident. For quiet. No names. Filed." He hands it over like it hurts.' },
+      { talk: 'shop', log: 'You brought the copied ledger to the Shopkeeper. Gold, paid to "the Resident", for "quiet".',
+        say: 'No names. Just "the Resident". Gold paid for quiet. Every year. ...The old shopkeepers kept odd books. Don\'t let it keep you up. It\'s keeping me up.' },
+    ] },
 });

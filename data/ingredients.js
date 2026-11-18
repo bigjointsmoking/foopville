@@ -48,6 +48,10 @@ FUP.ingredients = {
   dragons_sneeze_chili: {
     name: "Dragon's Sneeze Chili", short: 'Chili', emoji: '🌶️', color: '#d8312a', rarity: 'Uncommon', sell: 6, source: 'Forest', price: 6, element: 'fire',
   },
+  // v0.82 story quest items (source 'Quest': can't be eaten, cooked or sold for much). Carried in your bag: lost at the grave like anything else.
+  ash_jar:  { name: 'Sealed Jar of Ash', short: 'Ash Jar', emoji: '🫙', color: '#3a3a3a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Ash from Pip\'s old plot, lid screwed tight. It sparkles. Ash shouldn\'t sparkle.' },
+  old_bowl: { name: 'Licked-Clean Bowl', short: 'Bowl', emoji: '🥣', color: '#a87a4a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A wooden bowl with a little mark on the bottom. Found by the Guardian\'s feeding spot.' },
+  old_key:  { name: 'Old Key', short: 'Old Key', emoji: '🗝️', color: '#c8a84a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Heavy, plain, older than the village. It opens something down there.' },
   // v0.81 quest crops (data/garden.js): Bitterroot from Grandmother's Soup, Sea Kale from Never Seen the Sea
   bitterroot: { name: 'Bitterroot', short: 'Bitterroot', emoji: '🫚', color: '#8a6a3a', rarity: 'Uncommon', sell: 5, source: 'Farm' },
   sea_kale:   { name: 'Sea Kale', short: 'Sea Kale', emoji: '🥬', color: '#5a9a8a', rarity: 'Common', sell: 6, source: 'Farm' },

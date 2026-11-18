@@ -61,9 +61,9 @@ FUP.backpack = {
     add(ui.shade(s, 0.72));
     const PX = 40, PY = 36, PW = W - 80, PH = H - 72;
     add(ui.panel(s, PX, PY, PW, PH, 'panel'), 1);
-    add(ui.text(s, PX + 20, PY + 14, { pack: '🎒 BACKPACK', store: '🏠 STORAGE AT HOME', wardrobe: '🎩 WARDROBE' }[bp.tab], 22, c.accent, { fontStyle: '700' }), 2);
+    add(ui.text(s, PX + 20, PY + 14, { pack: '🎒 BACKPACK', store: '🏠 STORAGE AT HOME', wardrobe: '🎩 WARDROBE', spell: '✨ THE SPELL' }[bp.tab], 22, c.accent, { fontStyle: '700' }), 2);
     // Your name + title (G2), then this tab's info line (kept left so the tab buttons fit on narrow screens)
-    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}   ·   Materials:` : bp.tab === 'store' ? 'Spare gear and food.' : 'Hats and titles. No stats, all style.';
+    const info = bp.tab === 'pack' ? `${run.slotsUsed()} / ${run.packMax()} slots   ·   🪙 ${run.coins}   ·   Materials:` : bp.tab === 'store' ? 'Spare gear and food.' : bp.tab === 'spell' ? `Pieces found: ${FUP.spell.count()}/${FUP.spell.size()}` : 'Hats and titles. No stats, all style.';
     const infoT = add(ui.text(s, PX + 20, PY + 42, `${FUP.cosmetics.nameLine()}   ·   ${info}`, 13, c.ink, { fontStyle: '700' }), 2);
     // Materials (v0.78, Jesus): each one is a chip; tap it to see what it is
     if (bp.tab === 'pack') {
@@ -82,9 +82,11 @@ FUP.backpack = {
     }
     btn(PX + PW - 110, PY + 10, 94, 32, 'Close', () => bp.destroy(), { hot: true, size: 15 });
     if (bp.opts.home) btn(PX + PW - 204, PY + 10, 90, 32, '🏠 Storage', () => { bp.tab = 'store'; bp.sel = null; }, { hot: bp.tab === 'store' });
-    if (bp.opts.home || bp.tab === 'wardrobe') btn(PX + PW - 300, PY + 10, 90, 32, '🎒 Pack', () => { bp.tab = 'pack'; bp.sel = null; }, { hot: bp.tab === 'pack' });
+    if (bp.opts.home || bp.tab === 'wardrobe' || bp.tab === 'spell') btn(PX + PW - 300, PY + 10, 90, 32, '🎒 Pack', () => { bp.tab = 'pack'; bp.sel = null; }, { hot: bp.tab === 'pack' });
     btn(PX + PW - 410, PY + 10, 104, 32, '🎩 Wardrobe', () => { bp.tab = 'wardrobe'; bp.sel = null; }, { hot: bp.tab === 'wardrobe' });
+    btn(PX + PW - 500, PY + 10, 84, 32, '✨ Spell', () => { bp.tab = 'spell'; bp.sel = null; }, { hot: bp.tab === 'spell' });
     if (bp.tab === 'wardrobe') { this.drawWardrobe(bp, add, btn, PX, PY, PW); return; }
+    if (bp.tab === 'spell') { this.drawSpell(bp, add, PX, PY, PW); return; }
 
     // ----- Left: what you're wearing -----
     const G = FUP.gearData, EX = PX + 20, EY = PY + 60;
@@ -122,6 +124,23 @@ FUP.backpack = {
   },
 
   // ---------- Wardrobe (G2): hats and titles, data/cosmetics.js ----------
+  // The spell page (story Phase C, v0.82): 7 slots that fill as you find pieces of lost magic (data/spell.js)
+  drawSpell(bp, add, PX, PY, PW) {
+    const s = bp.scene, ui = FUP.ui, c = ui.colors, D = FUP.spellData, slots = FUP.spell.slots();
+    add(ui.text(s, PX + PW / 2, PY + 80, D.title, 22, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+    add(ui.text(s, PX + PW / 2, PY + 112, D.blurb, 13, c.dim, { fontStyle: 'italic', align: 'center', wordWrap: { width: PW - 120 } }).setOrigin(0.5, 0), 2);
+    const size = 86, gap = 14, n = slots.length, x0 = PX + PW / 2 - (n * size + (n - 1) * gap) / 2, y0 = PY + 170;
+    slots.forEach((sl, i) => {
+      const x = x0 + i * (size + gap);
+      add(ui.slot(s, x, y0, size, sl.found), 2);
+      if (sl.found) add(ui.text(s, x + size / 2, y0 + size / 2, `✨\n${sl.word}`, 13, c.accent, { fontStyle: '700', align: 'center', stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5), 3);
+      else add(ui.text(s, x + size / 2, y0 + size / 2, '?', 26, c.dim).setOrigin(0.5).setAlpha(0.4), 3);
+    });
+    const n0 = FUP.spell.count();
+    add(ui.text(s, PX + PW / 2, y0 + size + 30, n0 ? D.lines[Math.min(n0, D.lines.length) - 1] : 'Empty. The old stories in the village might fill it. Somebody should ask around.', 14, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: PW - 160 } }).setOrigin(0.5, 0), 2);
+    add(ui.text(s, PX + PW / 2, y0 + size + 100, 'Pieces stay with you even if you die. The spell does nothing until it\'s whole.', 12, c.dim, { align: 'center' }).setOrigin(0.5, 0), 2);
+  },
+
   drawWardrobe(bp, add, btn, PX, PY, PW) {
     const s = bp.scene, ui = FUP.ui, c = ui.colors, C = FUP.cosmetics, D = FUP.cosmeticData;
     const redrawHat = () => {   // the hat on the map / in the fight changes straight away

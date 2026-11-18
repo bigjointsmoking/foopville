@@ -141,7 +141,7 @@ FUP.villagePanels = {
 
     const X = 270, RW = W - 40 - X;
     if (out) { this.renderAway(X, RW); return; }
-    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer })[this.panelId].call(this, X, RW);
+    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary })[this.panelId].call(this, X, RW);
   },
 
   // ---------- A villager out of the village for a quest: no shop out here ----------
@@ -149,6 +149,18 @@ FUP.villagePanels = {
     const c = FUP.ui.colors, n = FUP.villageData.npcs[this.panelId];
     this.pText(X, 36, n.name.toUpperCase(), 20, c.accent, { fontStyle: '700' });
     this.pText(X, 64, 'Out of the village today. Whatever they sell is back home.', 12, c.dim, { wordWrap: { width: RW - 20 } });
+  },
+
+  // ---------- Mr. Tally and the Bog Notary (v0.82): no shops, just story ----------
+  renderBanker(X, RW) {
+    const c = FUP.ui.colors;
+    this.pText(X, 36, 'THE COUNTING HOUSE', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'Mr. Tally counts the village\'s money. There isn\'t much. He counts it anyway, out loud, twice a day.', 12, c.dim, { wordWrap: { width: RW - 20 } });
+  },
+  renderNotary(X, RW) {
+    const c = FUP.ui.colors;
+    this.pText(X, 36, 'OFFICE OF THE BOG NOTARY', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'A large, damp toad behind a small, damp desk. Nothing gets in or out of the Marsh without the right form. Nobody has the right form.', 12, c.dim, { wordWrap: { width: RW - 20 } });
   },
 
   // ---------- The Old-timer: no shop, just the bench and the statue ----------
@@ -561,8 +573,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
       this.pBtn(X + i * 128, 62, 122, 28, `${K.name}${n ? ` (${n})` : ''}`, () => { this.panelTab = k; this.panelPage = 0; }, { hot: k === kind, size: 12 });
     });
     this.pText(X, 98, D.kinds[kind].blurb + (kind === 'story' || kind === 'quest' ? '' : `  Taken: ${Q.activeIds(kind).length}/${D.maxActive}.`), 12, c.dim, { wordWrap: { width: kind === 'quest' ? 350 : RW - 10 } });
-    if (kind === 'story') { this.pText(X, 130, 'Nothing here yet. The village has a story. Nobody\'s told it properly.', 14, c.dim, { wordWrap: { width: RW - 10 } }); return; }
-    if (kind === 'quest') { this.renderQuestTab(X, RW); return; }
+    if (kind === 'quest' || kind === 'story') { this.renderQuestTab(X, RW, kind); return; }
     const side = kind === 'side';
     const head = id => { const q = Q.def(id); return `${Q.label(id)}  ·  ${q.name}  ·  ${Q.coins(id)} 🪙` + (side && q.from ? `  ·  from ${Q.npcName(q.from)}` : ''); };
 
@@ -598,23 +609,25 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
   },
 
   // The Quests tab (v0.79, RuneScape-style): every villager quest with its Requirements; yours first, with the journal
-  renderQuestTab(X, RW) {
-    const c = FUP.ui.colors, Q = FUP.quests, D = FUP.questData;
-    const all = Object.keys(D.quests).filter(id => Q.isQuest(id));
+  // (v0.82) the Story tab too: the same list, but story quests only start here (no ❗ over the villager)
+  renderQuestTab(X, RW, kind = 'quest') {
+    const c = FUP.ui.colors, Q = FUP.quests, D = FUP.questData, story = kind === 'story';
+    const all = Object.keys(D.quests).filter(id => Q.kind(id) === kind);
     const doneN = all.filter(id => Q.done(id)).length;
     const lenText = id => (D.lengths || {})[Q.def(id).length] || '';
-    const rows = Q.activeIds('quest').map(id => {
+    const rows = Q.activeIds(kind).map(id => {
       const q = Q.def(id), j = Q.journal(id);
       return { name: `▶ ${q.name}  ·  ${Q.label(id)}  ·  from ${Q.npcName(q.from)}`, color: c.accent, sub: `${j.slice(-2).join(' ')}\nNext: ${Q.stepText(id)}`, subColor: c.info,
         btn2: 'Drop', fn2: () => Q.drop(id) };
-    }).concat(Q.available('quest').map(id => {
+    }).concat(Q.available(kind).map(id => {
       const q = Q.def(id), miss = FUP.req.missing(q.req);
+      if (story && miss.length) return null;   // story posts only go up once they fit (first trip, the bridge...)
       return { name: `${q.name}  ·  ${Q.label(id)}  ·  ${lenText(id)}  ·  from ${Q.npcName(q.from)}`, color: miss.length ? c.dim : c.ink,
-        sub: `${q.text}\n${miss.length ? 'Needs: ' + miss.join(', ') : 'Requirements: none you lack. Or talk to ' + Q.npcName(q.from) + ' (❗).'}`, subColor: miss.length ? c.bad : c.dim,
-        btn: 'Start', disabled: !!miss.length, fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.sayLine(`Started: ${q.name}. ${Q.stepText(id)}.`); } } };
-    }));
+        sub: `${q.text}\n${miss.length ? 'Needs: ' + miss.join(', ') : story ? `Posted by ${Q.npcName(q.from)}. Take it here, then go and see them.` : 'Requirements: none you lack. Or talk to ' + Q.npcName(q.from) + ' (❗).'}`, subColor: miss.length ? c.bad : c.dim,
+        btn: story ? 'Take' : 'Start', disabled: !!miss.length, fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.sayLine(`Started: ${q.name}. ${Q.stepText(id)}.`); } } };
+    }).filter(Boolean));
     this.pText(X + 360, 98, `Completed: ${doneN}/${all.length}`, 12, c.good, { fontStyle: '700' });
-    if (!rows.length) { this.pText(X, 130, 'You\'ve done every quest there is. For now.', 14, c.dim); return; }
+    if (!rows.length) { this.pText(X, 130, story ? (doneN ? 'Nothing new posted. The story waits for you to go further.' : 'Nothing posted yet. Go out into the world a bit. The village will talk.') : 'You\'ve done every quest there is. For now.', 14, c.dim, { wordWrap: { width: RW - 10 } }); return; }
     this.pRows(rows, X, 124, RW, 6, 64);
   },
 

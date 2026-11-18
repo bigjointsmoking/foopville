@@ -279,6 +279,11 @@ class WorldScene extends Phaser.Scene {
     if (!h) return;
     this.holePos = FUP.forest.center(h.tx, h.ty);
     this.holeSprite = FUP.ui.sprite(this, this.holePos.x, this.holePos.y, 'hole', '🕳️', 30).setDepth(this.holePos.y - 10).setVisible(false);
+    // The Bowl (v0.82): while it wants you down the hole, the tracks show where it is (above the fog, like your grave)
+    if (FUP.quests.waitingFor('holeDown')) {
+      const t = this.add.text(this.holePos.x, this.holePos.y - 30, '🐾', { fontSize: '24px' }).setOrigin(0.5).setDepth(7000);
+      this.tweens.add({ targets: t, y: t.y - 8, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
     this.holeArmed = true;
   }
 
@@ -307,6 +312,7 @@ class WorldScene extends Phaser.Scene {
     btn(W / 2 - 205, '🕳️ Climb down', () => {
       close();
       this.say('holeClimb');
+      FUP.quests.event('holeDown');   // The Bowl (v0.82)
       FUP.audio.sfx('encounter');
       this.cameras.main.fadeOut(700, 0, 0, 0);
       // Down into the Old Storehouse (blueprint 18.6): 4 rooms, then his Office
