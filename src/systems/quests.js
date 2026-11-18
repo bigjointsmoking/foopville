@@ -20,7 +20,11 @@ FUP.quests = {
 
   def(id) { return FUP.questData.quests[id]; },
   kind(id) { const q = this.def(id); return (q && q.kind) || 'challenge'; },
-  isSide(id) { return this.kind(id) === 'side'; },
+  // Side stories (errands) and Quests both work in steps
+  isSide(id) { const k = this.kind(id); return k === 'side' || k === 'quest'; },
+  isQuest(id) { return this.kind(id) === 'quest'; },
+  done(id) { return FUP.facts.has('quest:' + id); },
+  coins(id) { const r = this.def(id).reward; return typeof r === 'number' ? r : (r && r.coins) || 0; },
   // 'Easy' / 'Medium' / 'Hard' for the board
   label(id) { const q = this.def(id); return (q && FUP.questData.difficulties[q.difficulty]) || ''; },
   // Do you have the skill levels this quest needs?
@@ -32,20 +36,27 @@ FUP.quests = {
   refill(rng = Math.random) {
     const s = this.state, D = FUP.questData;
     s.board = s.board.filter(id => this.def(id) && !s.active[id]);
-    for (const kind of Object.keys(D.boardSize)) {
+    for (const kind of Object.keys(D.boardSize)) {   // (Quests aren't random: they're all listed, see available)
       const pool = Object.keys(D.quests).filter(id => this.kind(id) === kind && this.fits(id) && !s.active[id] && !s.board.includes(id) && !s.rest[id]);
       while (s.board.filter(id => this.kind(id) === kind).length < D.boardSize[kind] && pool.length) s.board.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
     }
   },
   // On the board right now (kind = only that kind).
-  available(kind = null) { this.refill(); return this.state.board.filter(id => !kind || this.kind(id) === kind); },
+  available(kind = null) {
+    // Quests (v0.79): every one you haven't done or taken, Requirements met or not (the board shows what's missing)
+    if (kind === 'quest') return Object.keys(FUP.questData.quests).filter(id => this.isQuest(id) && !this.state.active[id] && !this.done(id));
+    this.refill(); return this.state.board.filter(id => !kind || this.kind(id) === kind);
+  },
+  // Quests you could start right now with this villager (the ❗ over their head)
+  startsAt(npc) { return this.available('quest').filter(id => this.def(id).from === npc && this.fits(id)); },
   activeIds(kind = null) { return Object.keys(this.state.active).filter(id => this.def(id) && (!kind || this.kind(id) === kind)); },
   // maxActive is per kind: side stories don't crowd out challenges
-  canTake(kind = 'challenge') { return this.activeIds(kind).length < FUP.questData.maxActive; },
+  canTake(kind = 'challenge') { return kind === 'quest' || this.activeIds(kind).length < FUP.questData.maxActive; },
 
   take(id) {
-    if (!this.canTake(this.kind(id)) || this.state.active[id] || !this.state.board.includes(id)) return false;
-    this.state.active[id] = { n: 0, done: false, step: 0 };
+    if (!this.canTake(this.kind(id)) || this.state.active[id]) return false;
+    if (this.isQuest(id) ? (this.done(id) || !this.fits(id)) : !this.state.board.includes(id)) return false;
+    this.state.active[id] = { n: 0, done: false, step: 0, flags: {}, talked: {}, log: [] };
     if (FUP.facts) FUP.facts.add('did:quest');   // first-day goals (data/goals.js)
     this.state.board = this.state.board.filter(b => b !== id);
     this.refill();
@@ -54,6 +65,7 @@ FUP.quests = {
   // Drop a taken quest: it goes back on the board if there's room.
   drop(id) {
     delete this.state.active[id];
+    if (this.isQuest(id)) return;   // quests go back to the list by themselves
     if (this.available(this.kind(id)).length < FUP.questData.boardSize[this.kind(id)]) this.state.board.push(id);
   },
 
@@ -85,8 +97,9 @@ FUP.quests = {
   },
   // Done: pay, count it, let it rest. Returns the coins.
   finish(id) {
-    const q = this.def(id);
+    const q = this.def(id), s = this.state.active[id] || {};
     delete this.state.active[id];
+    if (this.isQuest(id)) return this.payQuest(id, q, s);
     // It rests for a while; every other quest's rest gets shorter
     for (const r of Object.keys(this.state.rest)) if (--this.state.rest[r] <= 0) delete this.state.rest[r];
     this.state.rest[id] = FUP.questData.restAfter;
@@ -102,15 +115,36 @@ FUP.quests = {
     for (const id of this.activeIds('challenge')) if (this.def(id).goal.perRun && !this.state.active[id].done) this.state.active[id].n = 0;
   },
 
+  // A Quest is done for good: coins, XP in the skills it used, and a bonus for the choices you made
+  payQuest(id, q, s) {
+    const r = q.reward || {}, got = [];
+    FUP.run.coins += r.coins || 0;
+    for (const [sk, x] of Object.entries(r.xp || {})) if (FUP.skills.addXp) { FUP.skills.addXp(sk, x); got.push(`+${x} ${FUP.skillData && FUP.skillData.skills[sk] ? FUP.skillData.skills[sk].name : sk} XP`); }
+    const give = b => {
+      if (b.gear && FUP.gear) { const it = FUP.gear.fromShop(b.gear); if (FUP.run.addGear(it)) got.push(`${it.emoji} ${it.name} (in your backpack)`); else { FUP.house.state.gear = FUP.house.state.gear || []; FUP.house.state.gear.push(it); got.push(`${it.emoji} ${it.name} (sent home: backpack full)`); } }
+      if (b.place && FUP.place) { FUP.place.state.owned[b.place] = (FUP.place.state.owned[b.place] || 0) + 1; const P = FUP.placeData.items[b.place]; got.push(`${P.emoji} ${P.name} (place it with 🔨 Build)`); }
+    };
+    give(r);
+    const lines = [];
+    for (const b of r.bonus || []) if ((s.flags || {})[b.flag]) { give(b); if (b.line) lines.push(b.line); }
+    FUP.facts.add(`quest:${id}`);
+    this.lastReward = { id, coins: r.coins || 0, got, lines };
+    return r.coins || 0;
+  },
+
   // ---------- Side stories: steps ----------
   // step(id) = the step you're on: { talk: npc } | { bring: { item: n }, to: npc } | { event, count, match }
   step(id) { const q = this.def(id), s = this.state.active[id]; return q && s && q.steps ? q.steps[s.step || 0] || null : null; },
+  regionName(r) { return r === 'village' ? 'the village' : FUP.world && FUP.world.region(r) ? FUP.world.region(r).name : r; },
   npcName(npc) { const n = FUP.villageData.npcs[npc]; return n ? n.name.replace(/^The /, 'the ') : npc; },
   have(item) { return FUP.run.bagCount(item); },
   // What the tracker and the board say about where you are
   stepText(id) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return '';
+    if (st.search) return `Search ${st.search.name} (${this.regionName(st.search.region)})` + (st.when === 'night' ? ' at night 🌙' : '');
+    if (st.fight && !st.goal) return `Find ${st.fight.name} (${this.regionName(st.fight.region)})`;
+    if (st.talkAll) { const left = Object.keys(st.talkAll).filter(k => !s.talked[k]).map(k => this.npcName(k)); return `${st.goal}  (left: ${left.join(', ')})`; }
     if (st.goal) return st.goal + (st.bring ? '  (' + Object.entries(st.bring).map(([k, n]) => `${Math.min(this.have(k), n)}/${n}`).join(', ') + ')' : st.count > 1 ? `  (${s.n}/${st.count})` : '');
     if (st.talk) return `Talk to ${this.npcName(st.talk)}`;
     if (st.bring) return `Bring ${Object.entries(st.bring).map(([k, n]) => `${n} ${FUP.ingredients[k].name}`).join(' and ')} to ${this.npcName(st.to)}`;
@@ -118,27 +152,77 @@ FUP.quests = {
   },
   // Side-story steps waiting at this villager: [{ id, name, label }]
   stepsAt(npc) {
-    return this.activeIds('side').filter(id => { const st = this.step(id); return st && (st.talk === npc || (st.bring && st.to === npc)); })
-      .map(id => ({ id, name: this.def(id).name }));
+    return this.activeIds().filter(id => this.isSide(id)).filter(id => {
+      const st = this.step(id), s = this.state.active[id];
+      return st && (st.talk === npc || (st.bring && st.to === npc) || (st.talkAll && st.talkAll[npc] && !s.talked[npc]));
+    }).map(id => ({ id, name: this.def(id).name }));
+  },
+  // 🔍 spots on this map for your quests: [{ id, tx, ty, name }]
+  searchesIn(region) {
+    return this.activeIds().filter(id => { const st = this.step(id); return st && st.search && st.search.region === region; })
+      .map(id => ({ id, ...this.step(id).search }));
+  },
+  // Quest enemies waiting on this map: [{ id, tx, ty, enemy, group, name }]
+  foesIn(region) {
+    return this.activeIds().filter(id => { const st = this.step(id); return st && st.fight && st.fight.region === region; })
+      .map(id => ({ id, ...this.step(id).fight }));
+  },
+  // You beat (or charmed) a quest enemy
+  foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, '') : null; },
+  // Search a 🔍 spot. Returns like doStep (maybe with choices).
+  doSearch(id) {
+    const st = this.step(id);
+    if (!st || !st.search) return { ok: false, line: '' };
+    if (st.when && FUP.clock && FUP.clock.phase().id !== st.when) return { ok: false, line: st.notYet || 'Nothing here. Not now, anyway.' };
+    if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
+    return this.advance(id, st.say || '');
+  },
+  // The choices on this step, with whether you can pick each (Rizz)
+  choiceList(id) {
+    return (this.step(id).choices || []).map((c, i) => ({ i, label: c.label + (c.rizz ? ` (Rizz ${c.rizz})` : ''), ok: !c.rizz || FUP.skills.level('rizz') >= c.rizz }));
+  },
+  // Pick choice i on the current step
+  choose(id, i) {
+    const st = this.step(id), s = this.state.active[id], c = st && st.choices && st.choices[i];
+    if (!c || (c.rizz && FUP.skills.level('rizz') < c.rizz)) return { ok: false, line: '' };
+    if (c.retry) return { ok: false, line: c.say || '', retry: true };
+    if (c.flag) s.flags[c.flag] = true;
+    return this.advance(id, c.say || '');
+  },
+  // The journal: what's happened so far, then where you are now
+  journal(id) {
+    const s = this.state.active[id], st = this.step(id);
+    if (!s) return [];
+    return [...(s.log || []), st && st.log ? st.log : null].filter(Boolean);
   },
   // Do the step at a villager. Returns { line, coins (when the story ends), ok }.
-  doStep(id) {
+  doStep(id, npc = null) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return { line: '', ok: false };
+    if (st.talkAll) {   // talk to each of them, any order
+      if (!npc || !st.talkAll[npc] || s.talked[npc]) return { ok: false, line: '' };
+      s.talked[npc] = true;
+      if (Object.keys(st.talkAll).every(k => s.talked[k])) { const r = this.advance(id, st.talkAll[npc]); return r; }
+      return { ok: true, line: st.talkAll[npc] };
+    }
+    if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
+    if (st.sayIf) for (const [flag, line] of Object.entries(st.sayIf)) if ((s.flags || {})[flag]) { st._say = line; }
     if (st.bring) {
       const short = Object.entries(st.bring).filter(([k, n]) => this.have(k) < n);
       if (short.length) return { ok: false, line: st.notYet || `Bring me ${short.map(([k, n]) => `${n} ${FUP.ingredients[k].name}`).join(' and ')}. You have ${short.map(([k, n]) => this.have(k)).join(' and ')}.` };
       for (const [k, n] of Object.entries(st.bring)) FUP.run.takeFromBag(Array(n).fill(k));
     }
-    return this.advance(id, st.say || '');
+    const line = st._say || st.say || ''; delete st._say;
+    return this.advance(id, line);
   },
   // Next step (or the end of the story: paid by the villager)
   advance(id, line) {
-    const q = this.def(id), s = this.state.active[id];
-    s.step = (s.step || 0) + 1; s.n = 0;
+    const q = this.def(id), s = this.state.active[id], st = this.step(id);
+    if (st && st.log) (s.log = s.log || []).push(st.log);
+    s.step = (s.step || 0) + 1; s.n = 0; s.talked = {};
     if (s.step < q.steps.length) return { ok: true, line };
     const coins = this.finish(id);
-    return { ok: true, line, coins, done: q.name };
+    return { ok: true, line, coins, done: q.name, reward: this.isQuest(id) ? this.lastReward : null };
   },
 
   // Something happened. Returns the names of quests it just finished (so the screen can cheer).
@@ -148,7 +232,7 @@ FUP.quests = {
     if (type === 'campfire') data = { ...data, kills: this.runKills };
     if (type === 'boss' || type === 'kill' || type === 'charm') data = { weapon: FUP.run.weapon, ...data };
     const finished = [];
-    for (const id of this.activeIds('side')) {   // side-story steps like "defeat 5 squirrels"
+    for (const id of this.activeIds().filter(x => this.isSide(x))) {   // side-story / quest steps like "defeat 5 squirrels"
       const st = this.step(id), s = this.state.active[id];
       if (!st || st.event !== type || !this.matches(st.match, data)) continue;
       if (++s.n >= (st.count || 1)) { const r = this.advance(id, ''); if (r.done) finished.push(r.done); }

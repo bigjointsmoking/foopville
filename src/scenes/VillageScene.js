@@ -253,6 +253,7 @@ class VillageScene extends Phaser.Scene {
     this.bagText = pb.txt;
     this.questText = fix(ui.text(this, 450, H - 35, '', 14, c.ink).setOrigin(0, 0.5));
     fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag to walk · tap the button to talk' : 'Walk: WASD / drag · Talk: E or the button', 12, c.dim).setOrigin(1, 0.5));
+    this._qSig = null; this._qMarks = [];   // quest markers (reset: Phaser reuses this screen)
     this.goalCard = FUP.goalCard.draw(this, 16, 104);   // first-day checklist (data/goals.js)
     this.tracker = FUP.questTracker.draw(this, 130);   // taken quests, top right (src/questTracker.js)
     this.refreshHud();
@@ -274,6 +275,7 @@ class VillageScene extends Phaser.Scene {
     this.coinText.setText(`🪙 ${run.coins}`);
     if (this.goalCard) this.goalCard.refresh();
     if (this.tracker) this.tracker.refresh();
+    this.refreshQuestMarks();
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
     if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back
@@ -447,7 +449,18 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
     if (s.kind === 'salvage') { FUP.salvageUi.use(this, s, () => { this.refreshSalvage(); this.refreshHud(); }); return; }
     if (s.kind === 'commission') { this.openCommission(s); return; }
+    if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => { this.refreshQuestMarks(true); this.refreshHud(); }); return; }
     this.openPanel(s.id);   // villagers, and objects like the Compost Bin
+  }
+
+  // Quests (v0.79): 🔍 search spots, ❗ / 📜 over villagers. Redrawn only when something changed.
+  refreshQuestMarks(force = false) {
+    const sig = FUP.questUi.signature('village');
+    if (!force && sig === this._qSig) return;
+    this._qSig = sig;
+    const center = (tx, ty) => FUP.villageMap.center(tx, ty);
+    FUP.questUi.marks(this, 'village', center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
+    this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots('village', center));
   }
 
   // Scrap piles (v0.70): draw them and their action spots again (one was emptied, or a new day)

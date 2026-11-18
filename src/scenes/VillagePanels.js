@@ -11,7 +11,9 @@ FUP.villagePanels = {
     this.panelTab = id === 'shop' ? 'buy' : id === 'carpenter' ? 'house' : null;
     this.panelPage = 0;
     const n = FUP.villageData.npcs[id], obj = (FUP.villageData.objects || {})[id];
-    this.speech = n ? Phaser.Utils.Array.GetRandom(n.greet) : obj ? Phaser.Utils.Array.GetRandom(obj.greet) : '';
+    // Finished one of their quests? Their new lines join the old ones (v0.79: the world remembers)
+    const after = n ? Object.entries(FUP.questData.quests).filter(([qid, q]) => q.from === id && q.afterGreet && FUP.quests.done(qid)).flatMap(([, q]) => q.afterGreet) : [];
+    this.speech = n ? Phaser.Utils.Array.GetRandom(after.length && Math.random() < 0.6 ? after : n.greet) : obj ? Phaser.Utils.Array.GetRandom(obj.greet) : '';
     if (id === 'quest' && !FUP.quests.available().length && !FUP.quests.activeIds().length) this.speech = n.empty[0];
     if (id === 'carpenter' && FUP.house.LINES.every(l => !FUP.house.next(l))) this.speech = n.maxed[0];
     if (id === 'farmhand' && Object.keys(FUP.gardenData.farmPlots).every(ch => FUP.garden.owns(ch))) this.speech = n.maxed[0];
@@ -111,13 +113,20 @@ FUP.villagePanels = {
     const long = this.speech.length > 200;
     this.pText(48, 300, `"${this.speech}"`, long ? 11 : 14, c.ink, { fontStyle: 'italic', wordWrap: { width: 192 }, lineSpacing: long ? 2 : 4 });
     // Side stories (v0.78): a step waiting with this villager = a 📜 button (one at a time, the first one)
-    const step = FUP.quests.stepsAt(this.panelId)[0];
+    // (v0.79) or a Quest they can give you (❗): start it here, RuneScape-style
+    const step = FUP.quests.stepsAt(this.panelId)[0], start = !step && FUP.quests.startsAt(this.panelId)[0];
+    const redraw = () => { if (this.panel) this.renderPanel(); if (this.refreshHud) this.refreshHud(); };
     if (step) {
       this.pBtn(44, H - 110, 200, 30, `📜 ${step.name}`, () => {
-        const r = FUP.quests.doStep(step.id);
-        this.speech = r.line || this.speech;
-        if (r.coins) { FUP.audio.sfx('fanfare'); this.sayLine(`Side story done: ${r.done}. +${r.coins} coins.`); } else FUP.audio.sfx(r.ok ? 'select' : 'click');
-        if (this.refreshHud) this.refreshHud();
+        const r = FUP.questUi.step(this, step.id, this.panelId, redraw);
+        if (r && r.line) this.speech = r.line;
+      }, { hot: true, size: 12 });
+    } else if (start) {
+      this.pBtn(44, H - 110, 200, 30, `❗ Quest: ${FUP.quests.def(start).name}`, () => {
+        if (!FUP.quests.take(start)) return;
+        FUP.audio.sfx('select');
+        const st = FUP.quests.step(start);
+        if (st && st.talk === this.panelId) { const r = FUP.questUi.step(this, start, this.panelId, redraw); if (r && r.line) this.speech = r.line; }
       }, { hot: true, size: 12 });
     }
     // Story Phase B: villagers with a legend can be asked about Sir Foop (talking is always free)
@@ -533,18 +542,19 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
   // ---------- Quest Board (v0.78: tabs per kind, data/quests.js kinds) ----------
   renderQuests(X, RW) {
     const ui = FUP.ui, c = ui.colors, Q = FUP.quests, D = FUP.questData;
-    if (!this.panelTab || !D.kinds[this.panelTab]) this.panelTab = 'side';
+    if (!this.panelTab || !D.kinds[this.panelTab]) this.panelTab = 'quest';
     const kind = this.panelTab;
     this.pText(X, 36, 'QUEST BOARD', 20, c.accent, { fontStyle: '700' });
     // Tabs: Side Stories / Challenges / Story
     Object.entries(D.kinds).forEach(([k, K], i) => {
       const n = Q.activeIds(k).length;
-      this.pBtn(X + i * 150, 62, 144, 28, `${K.name}${n ? ` (${n})` : ''}`, () => { this.panelTab = k; this.panelPage = 0; }, { hot: k === kind, size: 12 });
+      this.pBtn(X + i * 128, 62, 122, 28, `${K.name}${n ? ` (${n})` : ''}`, () => { this.panelTab = k; this.panelPage = 0; }, { hot: k === kind, size: 12 });
     });
-    this.pText(X, 98, D.kinds[kind].blurb + (kind === 'story' ? '' : `  Taken: ${Q.activeIds(kind).length}/${D.maxActive}.`), 12, c.dim, { wordWrap: { width: RW - 10 } });
+    this.pText(X, 98, D.kinds[kind].blurb + (kind === 'story' || kind === 'quest' ? '' : `  Taken: ${Q.activeIds(kind).length}/${D.maxActive}.`), 12, c.dim, { wordWrap: { width: kind === 'quest' ? 350 : RW - 10 } });
     if (kind === 'story') { this.pText(X, 130, 'Nothing here yet. The village has a story. Nobody\'s told it properly.', 14, c.dim, { wordWrap: { width: RW - 10 } }); return; }
+    if (kind === 'quest') { this.renderQuestTab(X, RW); return; }
     const side = kind === 'side';
-    const head = id => { const q = Q.def(id); return `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙` + (side && q.from ? `  ·  from ${Q.npcName(q.from)}` : ''); };
+    const head = id => { const q = Q.def(id); return `${Q.label(id)}  ·  ${q.name}  ·  ${Q.coins(id)} 🪙` + (side && q.from ? `  ·  from ${Q.npcName(q.from)}` : ''); };
 
     const active = Q.activeIds(kind).map(id => {
       const q = Q.def(id), done = Q.complete(id);
@@ -575,6 +585,27 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     this.pText(X, y, 'ON THE BOARD', 12, c.dim, { fontStyle: '700' });
     const room = Math.max(1, Math.floor((520 - y - 18 - 30) / 54));
     this.pRows(avail, X, y + 18, RW, room, 54);
+  },
+
+  // The Quests tab (v0.79, RuneScape-style): every villager quest with its Requirements; yours first, with the journal
+  renderQuestTab(X, RW) {
+    const c = FUP.ui.colors, Q = FUP.quests, D = FUP.questData;
+    const all = Object.keys(D.quests).filter(id => Q.isQuest(id));
+    const doneN = all.filter(id => Q.done(id)).length;
+    const lenText = id => (D.lengths || {})[Q.def(id).length] || '';
+    const rows = Q.activeIds('quest').map(id => {
+      const q = Q.def(id), j = Q.journal(id);
+      return { name: `▶ ${q.name}  ·  ${Q.label(id)}  ·  from ${Q.npcName(q.from)}`, color: c.accent, sub: `${j.slice(-2).join(' ')}\nNext: ${Q.stepText(id)}`, subColor: c.info,
+        btn2: 'Drop', fn2: () => Q.drop(id) };
+    }).concat(Q.available('quest').map(id => {
+      const q = Q.def(id), miss = FUP.req.missing(q.req);
+      return { name: `${q.name}  ·  ${Q.label(id)}  ·  ${lenText(id)}  ·  from ${Q.npcName(q.from)}`, color: miss.length ? c.dim : c.ink,
+        sub: `${q.text}\n${miss.length ? 'Needs: ' + miss.join(', ') : 'Requirements: none you lack. Or talk to ' + Q.npcName(q.from) + ' (❗).'}`, subColor: miss.length ? c.bad : c.dim,
+        btn: 'Start', disabled: !!miss.length, fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.sayLine(`Started: ${q.name}. ${Q.stepText(id)}.`); } } };
+    }));
+    this.pText(X + 360, 98, `Completed: ${doneN}/${all.length}`, 12, c.good, { fontStyle: '700' });
+    if (!rows.length) { this.pText(X, 130, 'You\'ve done every quest there is. For now.', 14, c.dim); return; }
+    this.pRows(rows, X, 124, RW, 6, 64);
   },
 
   // ---------- The gate: ready to go? ----------

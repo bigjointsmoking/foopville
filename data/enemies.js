@@ -126,6 +126,20 @@ FUP.enemies = {
   // Always in flocks (data/forest.js `flock`). pigeon: true = counts as a pigeon for
   // Coo Menacingly, the revenge rule and Pigeon Diplomacy.
   // rally: every pigeon in the fight gets the buff (Godfather included).
+  // Quest enemy (v0.79, The Jerky Bandit): a big squirrel full of the Chef's jerky. Placed on the map by the quest only.
+  nutsy: {
+    name: 'Nutsy, the Jerky Bandit', emoji: '🐿️', size: 130, sprite: 'squirrel', mapSprite: 'squirrel_map',
+    maxHp: 40, atk: 6.5, def: 2, spd: 15, resolve: 0.25,
+    xp: 70, coins: 15, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Jerky-Fuelled Nibble', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Acorn Barrage', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Snack Heist', type: 'steal', power: 0.5, tell: '🎒', tellText: 'Eyeing your snacks', weight: 2 },
+    ],
+    signature: { id: 'hoarder',
+      eatMove: { name: 'Snack Time', type: 'eatStolen', tell: '🍽️', tellText: 'Eating YOUR snack (hit it!)' } },
+  },
+
   pigeon: {
     name: 'Pigeon With a Grudge', emoji: '🐦', size: 72, sprite: 'pigeon', mapSprite: 'pigeon_map',
     maxHp: 15, atk: 2.6, def: 1, spd: 16, resolve: 0.20, pigeon: true,   // v0.78: ATK 3.5 -> 2.6 (Jesus: pigeons hurt, not enough healing)   // v0.41: HP 10 -> 15 (Jesus: too easy)   // v0.39: was 14 HP / 5 ATK

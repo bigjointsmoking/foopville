@@ -28,6 +28,9 @@ Object.assign(WorldScene.prototype, {
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: 'Read', text: o.text });
       }
     }
+    // Quests (v0.79): 🔍 search spots and ❗ / 📜 over villagers out here (redrawn by refreshQuestMarks)
+    this._qSig = null; this._qMarks = [];
+    this.refreshQuestMarks(true);
     // Special fishing spots (v0.78): a glint on the water
     for (const sp of (FUP.fishData.specials || []).filter(s => s.region === this.f.area)) {
       const c0 = at(sp.tx, sp.ty);
@@ -50,6 +53,16 @@ Object.assign(WorldScene.prototype, {
     this.actBtn.on('pointerdown', () => { FUP.audio.sfx('click'); this.time.delayedCall(1, () => this.interact()); });
     this.actText = ui.text(this, W - 70, H - 120, '', 15, c.ink, { fontStyle: '700', align: 'center', wordWrap: { width: 76 } }).setOrigin(0.5).setScrollFactor(0).setDepth(16001).setVisible(false);
     this.prompt = ui.text(this, 0, 0, '', 13, c.accent, { fontStyle: '700', backgroundColor: FUP.look.hex('k0'), padding: { x: 6, y: 3 } }).setOrigin(0.5, 1).setDepth(6000).setVisible(false);
+  },
+
+  // Quest markers and 🔍 spots on this map; cheap to call every second
+  refreshQuestMarks(force = false) {
+    const sig = FUP.questUi.signature(this.f.area);
+    if (!force && sig === this._qSig) return;
+    this._qSig = sig;
+    const center = (tx, ty) => this.tiles.center(tx, ty);
+    FUP.questUi.marks(this, this.f.area, center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
+    this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots(this.f.area, center));
   },
 
   // Villagers stand on their square: you walk around them
@@ -94,6 +107,7 @@ Object.assign(WorldScene.prototype, {
     if (s.tut) { this.tutorUse(s); return; }   // tutors, the farm patch, sawhorse, dummy (WorldTutorial.js)
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
+    if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }
     if (s.kind === 'salvage') {
       FUP.salvageUi.use(this, s, () => {

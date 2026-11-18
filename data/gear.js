@@ -74,6 +74,8 @@ FUP.gearData = {
 
     // ----- Trinkets (no tier rules) -----
     lucky_acorn: { slot: 'trinket', tier: 1, name: 'Lucky Acorn', emoji: '🌰', stats: { crit: 0.03 }, price: 360 },
+    // Quest rewards (v0.79, data/questlines.js): never sold anywhere. quest: true
+    acorn_charm: { slot: 'trinket', tier: 1, quest: true, name: 'Acorn Charm', emoji: '🐿️', stats: {}, effect: 'acornLuck', price: 0, sell: 20 },
     mood_ring:   { slot: 'trinket', tier: 1, name: 'Mood Ring', emoji: '💍', stats: { rizz: 0.10 }, price: 540 },
     lunchbox:    { slot: 'trinket', tier: 1, name: 'Lunchbox', emoji: '🍱', stats: { satchel: 3 }, price: 900 },
 
@@ -94,6 +96,7 @@ FUP.gearData = {
 
   // ---------- Special powers on chase items (design/gear.md 5) ----------
   effects: {
+    acornLuck: { name: 'Squirrel Friend', text: '+5% chance a squirrel leaves an extra ingredient.', chance: 0.05 },   // The Jerky Bandit (Nutsy's thank-you)
     pigeonDiplomacy: { name: 'Pigeon Diplomacy', text: 'Pigeons start every fight with -50% ATK.', atk: 0.5 },
     coinGuard:       { name: "Guardian's Spare Key", text: 'Immune to Feeding Time.' },
     thorns:          { name: 'Spore Cloak', text: 'Whoever hits you takes 20% of that damage.', share: 0.2 },   // never finishes off a boss

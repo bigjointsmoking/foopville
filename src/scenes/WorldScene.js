@@ -79,6 +79,11 @@ class WorldScene extends Phaser.Scene {
     if (b.result === 'win' || b.result === 'charmed') {
       enemy.alive = false;
       if (this.enemySprites[b.index]) this.enemySprites[b.index].destroy();
+      if (enemy.questFoe) {   // a quest enemy: the quest moves on (v0.79)
+        const r = FUP.quests.foeBeaten(enemy.questFoe);
+        this.time.delayedCall(400, () => FUP.questUi.result(this, enemy.questFoe, r, () => this.refreshQuestMarks(true)));
+        return;
+      }
       this.say(b.result === 'win' ? (FUP.narrator['forestAfterWin_' + enemy.type] ? 'forestAfterWin_' + enemy.type : 'forestAfterWin') : 'forestAfterCharm');
     } else if (b.result === 'fled') {
       this.f.graceUntil = this.f.time + FUP.forestData.fleeGraceSeconds;
@@ -241,6 +246,12 @@ class WorldScene extends Phaser.Scene {
       return s;
     });
 
+    // Quest enemies (v0.79, data/questlines.js): put on the map while their quest step waits for them
+    for (const f of FUP.quests.foesIn(this.f.area)) {
+      if (A.enemies.some(e => e.questFoe === f.id && e.alive)) continue;
+      const c0 = FUP.forest.center(f.tx, f.ty);
+      A.enemies.push({ type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id });
+    }
     this.enemySprites = A.enemies.map(e => e.alive ? this.enemySprite(e) : null);
 
     this.player = FUP.ui.sprite(this, A.player.x, A.player.y, FUP.looks.key('hero_map'), '🧍', 30).setOrigin(0.5, 0.72).setDepth(A.player.y + 16);
@@ -485,7 +496,7 @@ class WorldScene extends Phaser.Scene {
     // Normal mode: your grave's timer
     this.graveText = fix(ui.text(this, W / 2, 66, '', 14, c.bad, { fontStyle: '700', backgroundColor: FUP.look.hex('k0') + 'cc', padding: { x: 8, y: 4 } }).setOrigin(0.5, 0));
     this.tracker = FUP.questTracker.draw(this, 96);   // taken quests, top right (src/questTracker.js)
-    this.time.addEvent({ delay: 1000, loop: true, callback: () => this.tracker.refresh() });
+    this.time.addEvent({ delay: 1000, loop: true, callback: () => { this.tracker.refresh(); if (this.refreshQuestMarks) this.refreshQuestMarks(); } });
     this.refreshHud();
   }
 

@@ -65,6 +65,9 @@ FUP.placeData = {
     rain_barrel: { name: 'Rain Barrel', emoji: '🛢️', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { building: 8 } },
                    cost: { items: { plank: 6, nails: 3, stone: 1 } }, helper: { kind: 'barrel', radius: 2, water: 6 },
                    blurb: 'Waters thirsty crops within 2 squares by itself, 6 times a day. Lazy farming, built properly.' },
+    // Quest rewards (v0.79): never sold. source: 'quest'
+    crow_scarecrow: { name: 'Crow-proof Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], noShop: true, source: 'quest',
+                   helper: { kind: 'scarecrow', radius: 5, chance: 0.35 }, blurb: 'Crops within 5 squares: 35% chance of one extra at harvest. The crows have filed a complaint.' },
     // Only from the repaired Market (source: 'market': hidden from the Carpenter's Build tab)
     gnome:         { name: 'Judgemental Gnome', emoji: '🧙', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 400 }, source: 'market', blurb: 'It has seen what you plant.' },
     weathervane:   { name: 'Weathervane', emoji: '🐓', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 600 }, source: 'market', blurb: 'Points at the wind. The wind ignores it.' },

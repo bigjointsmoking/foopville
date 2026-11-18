@@ -17,8 +17,8 @@ FUP.gear = {
       uid: this._uid++, key, slot: d.slot,
       name: d.names ? d.names[FUP.run.weapon] : d.name,
       emoji: d.emoji, stats: { ...d.stats },
-      rarity: d.chase ? 'Legendary' : d.starter ? 'Starter' : 'Shop', color: d.chase ? '#f0d06a' : '#f1ead2',
-      sell: d.chase ? FUP.gearData.chaseSell : Math.floor((d.price || 0) * FUP.gearData.sellShare),
+      rarity: d.chase ? 'Legendary' : d.starter ? 'Starter' : d.quest ? 'Quest' : 'Shop', color: d.chase ? '#f0d06a' : d.quest ? '#9ad0f0' : '#f1ead2',
+      sell: d.chase ? FUP.gearData.chaseSell : d.quest ? (d.sell || 1) : Math.floor((d.price || 0) * FUP.gearData.sellShare),
       tier: d.tier || 1, effect: d.effect || null,
     };
   },
@@ -39,7 +39,7 @@ FUP.gear = {
     for (const r of pool) { if (roll < r.chance) { rarity = r; break; } roll -= r.chance; }
 
     // Base item: any shop item of a random slot (not the free starter pants)
-    const keys = Object.keys(G.items).filter(k => { const d = G.items[k]; return !d.starter && !d.chase && (d.tier || 1) <= dropTier; });
+    const keys = Object.keys(G.items).filter(k => { const d = G.items[k]; return !d.starter && !d.chase && !d.quest && (d.tier || 1) <= dropTier; });   // quest rewards never drop
     const item = this.fromShop(keys[Math.floor(rng() * keys.length)]);
     item.rarity = rarity.name; item.color = rarity.color; item.sell = rarity.sell;
 

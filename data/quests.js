@@ -37,7 +37,8 @@ FUP.questData = {
   boardSize: { side: 4, challenge: 4 },   // quests offered on each tab of the board
   // Board tabs (v0.78, Jesus: keep the old quests, add story-like side quests, keep it organized)
   kinds: {
-    side:      { name: 'Side Stories', tag: 'SIDE',      blurb: 'Little jobs for villagers. Take one, then go talk to them.' },
+    quest:     { name: 'Quests',       tag: 'QUEST',     blurb: 'Villagers\' own stories. Check the Requirements. Or talk to anyone with a ❗.' },
+    side:      { name: 'Errands',      tag: 'ERRAND',    blurb: 'Quick odd jobs for coins. Take one, then go see who asked.' },
     challenge: { name: 'Challenges',   tag: 'CHALLENGE', blurb: 'Prove yourself. Do it, then hand it in here.' },
     story:     { name: 'Story',        tag: 'STORY',     blurb: 'The main story starts here soon.' },
   },
@@ -143,11 +144,11 @@ FUP.questData = {
       text: 'Beat the Mushroom Guardian in under 18 minutes (run timer). The door won\'t wait.',
       goal: { event: 'boss', count: 1, match: { maxTime: 1080 } },
     },
-    // ================= SIDE STORIES (v0.78, PLACEHOLDER text) =================
-    jerkyForge: { kind: 'side', from: 'smith', difficulty: 'easy', name: 'Jerky for the Forge', reward: 70,
-      text: 'The Blacksmith wants 5 Squirrel Jerky. He says it\'s for the forge. It is not for the forge.',
+    // ================= ERRANDS (kind 'side': v0.78 side stories, renamed in v0.79; givers fixed so the ask fits who they are) =================
+    forgeFuel: { kind: 'side', from: 'smith', difficulty: 'easy', name: 'Forge Fuel', reward: 70,
+      text: 'The Blacksmith burns Bark to keep the forge hot. He\'s out. He\'s cold. He\'s cranky. Bring 6.',
       steps: [
-        { bring: { squirrel_jerky: 5 }, to: 'smith', say: 'Five. Good. The forge thanks you. I mean I do. Don\'t make it weird.' },
+        { bring: { bark: 6 }, to: 'smith', say: 'Good. Dry. Burns hot. Like my temper. Here.' },
       ] },
     pipLetter: { kind: 'side', from: 'seeds', difficulty: 'easy', name: 'A Letter for Hollis', reward: 60,
       text: 'Pip needs a letter carried to Hollis on the farm. It\'s about turnips. It\'s always about turnips.',
@@ -164,13 +165,6 @@ FUP.questData = {
       text: 'The Shopkeeper has a customer who wants 3 Grumpy Guppies. The village pond has plenty. Attitude included.',
       steps: [
         { bring: { grumpy_guppy: 3 }, to: 'shop', say: 'Still flapping. Perfect. My customer likes them judgmental.' },
-      ] },
-    lostHat: { kind: 'side', from: 'farmhand', difficulty: 'easy', name: "Hollis's Lost Hat", reward: 60,
-      text: 'Hollis lost his hat. He thinks someone in the village has it. He has suspicions. Several.',
-      steps: [
-        { talk: 'farmhand', say: 'My hat. Straw, brim, smells like hay. Ask the Shopkeeper. She sells everything. Even hats she didn\'t buy.' },
-        { talk: 'shop', say: 'Hollis\'s hat? I sold it to him. Twice. Tell him it\'s on the scarecrow. It always is.' },
-        { talk: 'farmhand', say: 'On the scarecrow. Again. He looked better in it anyway. Thanks.' },
       ] },
     berryTasting: { kind: 'side', from: 'chef', difficulty: 'easy', name: 'A Matter of Taste', reward: 70,
       text: 'Chef Marrowbone needs 6 Grumpleberries for "research". The research is eating them.',
@@ -197,10 +191,10 @@ FUP.questData = {
         { event: 'cook', count: 3, goal: 'Cook 3 dishes' },
         { talk: 'chef', say: 'Three dishes and nobody died? Acceptable. Barely. Take this before I change my mind.' },
       ] },
-    chiliHeat: { kind: 'side', from: 'smith', difficulty: 'medium', name: 'Hot Enough', reward: 160,
-      text: 'The Blacksmith wants 4 Dragon\'s Sneeze Chilies. For the forge. Or his lunch. Unclear.',
+    chiliHeat: { kind: 'side', from: 'chef', difficulty: 'medium', name: 'Hot Enough', reward: 160,
+      text: 'Marrowbone wants 4 Dragon\'s Sneeze Chilies for a dish he refuses to name. It will hurt someone.',
       steps: [
-        { bring: { dragons_sneeze_chili: 4 }, to: 'smith', say: 'Now THAT is heat. The forge approves. My eyes don\'t.' },
+        { bring: { dragons_sneeze_chili: 4 }, to: 'chef', say: 'Four. Glorious. Someone at the next banquet is going to cry. Probably me.' },
       ] },
     roofPigeons: { kind: 'side', from: 'carpenter', difficulty: 'medium', name: 'Pigeons on the Roof', reward: 170,
       text: 'Pigeons keep landing on Planksworth\'s roof and judging his joinery. Drive off 6 of them.',

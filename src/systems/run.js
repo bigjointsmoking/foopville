@@ -217,6 +217,8 @@ FUP.run = {
   loot(enemyKey, rng = Math.random) {
     const found = [];
     for (const [id, chance] of (FUP.runData.drops[enemyKey] || [])) if (rng() < chance) found.push(id);
+    // Acorn Charm (The Jerky Bandit): squirrels sometimes leave an extra Forest ingredient
+    if (enemyKey === 'squirrel' && FUP.gear && FUP.gear.has && FUP.gear.has('acornLuck') && rng() < FUP.gearData.effects.acornLuck.chance) found.push(this.rollIngredient(rng));
     const kept = [], lost = [];
     for (const id of found) (this.addToBag(id) ? kept : lost).push(id);
     return { kept, lost };
