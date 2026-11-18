@@ -118,7 +118,7 @@ FUP.villageData = {
         'You\'re new. Everyone\'s new, to me.',
       ],
       legend: "My grandmother used to say that when the dragon flew off, she wasn't roaring. She was sobbing. Like a little one who'd had her toy taken. Nobody believed her. Said it was the wind in the pass. But Grandmother was there on the hill that day, or her mother was, and she never changed her story.",
-      noRizzSecrets: true,   // no Rizz 10/20/30 secrets: his Rizz reward is the legend (ask Jesus if he should get some)
+      noRizzSecrets: true,   // no Rizz 10/20/30 secrets: his Rizz reward is the legend (Jesus, 2026-11-18: leave it that way)
       legendRizz: 10, legendQuest: null,   // guarded: tells it only at Rizz 10 or while his quest is taken (the quest comes in story Phase C)
       brushOff: ['Foop? He\'s the one on the plinth. That\'s all I know.', 'Old stories are for people I know. I don\'t know you yet.'],
       reacts: [   // PLACEHOLDER lines (see the Quest Board Keeper)
