@@ -10,6 +10,8 @@ window.FUP = window.FUP || {};
 
 FUP.toolData = {
   lines: {
+    // Quest-only tools (v0.80): never sold. Once you own one it replaces that line's shop tool (it's better).
+    // (kept outside `lines` so the shop never offers it)
     rod: { name: 'Fishing Rod', npc: 'fishmonger', skill: 'fishing', tiers: [
       { name: 'Twig Rod',       price: 0,    blurb: 'A stick with a string. It works, technically.' },
       { name: 'Decent Rod',     price: 300,  req: { skills: { fishing: 5 } },  rodZone: 10, biteCut: 0.05, blurb: 'Bigger catch zone. Bites a little sooner.' },
@@ -41,5 +43,8 @@ FUP.toolData = {
       { name: 'Brass Can',     price: 3000, req: { skills: { gardening: 20 } }, canBonus: 15, blurb: 'Holds 15 more waterings.' },
       { name: 'The Reservoir', price: 7500, req: { skills: { gardening: 30 } }, canBonus: 20, blurb: 'Holds 20 more waterings. Your arms disagree.' },
     ] },
+  },
+  questTools: {
+    gills_rod: { line: 'rod', name: "Gill's Old Rod", rodZone: 45, biteCut: 0.22, blurb: 'Gill\'s own rod, from before he hated everything. Better than anything for sale.' },
   },
 };

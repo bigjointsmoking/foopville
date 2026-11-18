@@ -97,5 +97,6 @@ FUP.ingredients = {
   gloomfin:       { name: 'Gloomfin', short: 'Gloomfin', emoji: '🐟', color: '#3a3a5a', rarity: 'Uncommon', sell: 10, source: 'Fishing' },
   dodger_trout:   { name: 'Toll-Dodger Trout', short: 'Trout', emoji: '🐟', color: '#a07a4a', rarity: 'Rare', sell: 13, source: 'Fishing' },
   moon_carp:      { name: 'Moon Carp', short: 'Carp', emoji: '🐡', color: '#c8d0e8', rarity: 'Rare', sell: 18, source: 'Fishing' },
+  old_gnarl:    { name: 'Old Gnarl', short: 'Gnarl', emoji: '🐉', color: '#5a6a4a', rarity: 'Rare', sell: 1, source: 'Quest' },   // The One That Got Away: Gill wants it
   bog_eel:      { name: 'Bog Eel', short: 'Eel', emoji: '🐍', color: '#3a4a2a', rarity: 'Uncommon', sell: 9, source: 'Fishing' },
 };

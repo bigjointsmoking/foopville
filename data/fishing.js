@@ -50,6 +50,7 @@ FUP.fishData = {
     petty_pike:         { level: 14, xp: 10, speed: 140, dart: 0.9, range: 0.6 },
     gloomfin:           { level: 18, xp: 13, speed: 160, dart: 0.9, range: 0.6 },
     dodger_trout:       { level: 18, xp: 14, speed: 190, dart: 0.7, range: 0.6 },
+    old_gnarl:          { level: 20, xp: 80, speed: 270, dart: 0.5, range: 0.95, quest: true },   // The One That Got Away (Gill): only while the quest wants it
     moon_carp:          { level: 26, xp: 20, speed: 170, dart: 1.2, range: 0.85 },
   },
 

@@ -54,7 +54,8 @@ FUP.fishing = {
   catchable(spotId) {
     const spot = FUP.fishData.spots[spotId];
     if (spot.req && this.spotMissing(spotId).length) return [];
-    const list = Object.entries(spot.fish).filter(([id]) => FUP.fishData.fish[id].level <= this.level() && FUP.run.canAddIng(id));
+    const fish = { ...spot.fish, ...(FUP.quests && FUP.quests.questFish ? FUP.quests.questFish(spotId) : {}) };   // a quest's fish (v0.80)
+    const list = Object.entries(fish).filter(([id]) => FUP.fishData.fish[id].level <= this.level() && FUP.run.canAddIng(id));
     const top = (this.baitData() || {}).topWeight;
     if (!top) return list;
     const best = list.map(([id]) => id).sort((a, b) => FUP.fishData.fish[b].level - FUP.fishData.fish[a].level).slice(0, 2);

@@ -122,6 +122,9 @@ FUP.quests = {
     for (const [sk, x] of Object.entries(r.xp || {})) if (FUP.skills.addXp) { FUP.skills.addXp(sk, x); got.push(`+${x} ${FUP.skillData && FUP.skillData.skills[sk] ? FUP.skillData.skills[sk].name : sk} XP`); }
     const give = b => {
       if (b.gear && FUP.gear) { const it = FUP.gear.fromShop(b.gear); if (FUP.run.addGear(it)) got.push(`${it.emoji} ${it.name} (in your backpack)`); else { FUP.house.state.gear = FUP.house.state.gear || []; FUP.house.state.gear.push(it); got.push(`${it.emoji} ${it.name} (sent home: backpack full)`); } }
+      if (b.hat && FUP.cosmetics) { FUP.cosmetics.own(b.hat); const h = FUP.cosmeticData.hats[b.hat]; got.push(`${h.emoji} ${h.name} (a hat: Wardrobe)`); }
+      if (b.recipe && FUP.cooking) { FUP.cooking.cookbook.discovered[b.recipe] = true; got.push(`📖 Recipe: ${b.recipe}`); }
+      if (b.tool && FUP.tools) { FUP.tools.giveQuestTool(b.tool); got.push(`🎣 ${FUP.toolData.questTools[b.tool].name}`); }
       if (b.place && FUP.place) { FUP.place.state.owned[b.place] = (FUP.place.state.owned[b.place] || 0) + 1; const P = FUP.placeData.items[b.place]; got.push(`${P.emoji} ${P.name} (place it with 🔨 Build)`); }
     };
     give(r);
@@ -166,6 +169,15 @@ FUP.quests = {
   foesIn(region) {
     return this.activeIds().filter(id => { const st = this.step(id); return st && st.fight && st.fight.region === region; })
       .map(id => ({ id, ...this.step(id).fight }));
+  },
+  // Fish a quest wants from this spot right now (step: { event: 'fish', catchAt: spot, match: { id }, when })
+  questFish(spot) {
+    const out = {};
+    for (const id of this.activeIds()) {
+      const st = this.step(id);
+      if (st && st.event === 'fish' && st.catchAt === spot && (!st.when || !FUP.clock || FUP.clock.phase().id === st.when)) out[st.match.id] = st.weight || 4;
+    }
+    return out;
   },
   // You beat (or charmed) a quest enemy
   foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, '') : null; },
@@ -250,6 +262,7 @@ FUP.quests = {
     if (!m) return true;
     const tiers = FUP.cookingData.tiers.map(t => t.id);
     if (m.enemy && data.enemy !== m.enemy) return false;
+    if (m.id && data.id !== m.id) return false;   // a particular fish (v0.80)
     if (m.element && data.element !== m.element) return false;
     if (m.weapon && data.weapon !== m.weapon) return false;
     if (m.minTier && tiers.indexOf(data.tier) < tiers.indexOf(m.minTier)) return false;

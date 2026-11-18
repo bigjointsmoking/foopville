@@ -5,13 +5,16 @@
 window.FUP = window.FUP || {};
 
 FUP.tools = {
-  state: { rod: 0, hammer: 0, hoe: 0, can: 0 },   // tier owned per line
-  reset() { this.state = { rod: 0, hammer: 0, hoe: 0, can: 0 }; },
+  state: { rod: 0, hammer: 0, hoe: 0, can: 0, quest: {} },   // tier owned per line; quest = quest-only tools you own
+  reset() { this.state = { rod: 0, hammer: 0, hoe: 0, can: 0, quest: {} }; },
+  // A quest tool for this line you own (data/tools.js questTools), or null
+  questTool(id) { const Q = FUP.toolData.questTools || {}; const k = Object.keys(Q).find(k => Q[k].line === id && (this.state.quest || {})[k]); return k ? Q[k] : null; },
+  giveQuestTool(key) { this.state.quest = this.state.quest || {}; this.state.quest[key] = true; },
 
   line(id) { return FUP.toolData.lines[id]; },
   tier(id) { return this.state[id] || 0; },
-  current(id) { return this.line(id).tiers[this.tier(id)]; },
-  next(id) { return this.line(id).tiers[this.tier(id) + 1] || null; },
+  current(id) { return this.questTool(id) || this.line(id).tiers[this.tier(id)]; },
+  next(id) { return this.questTool(id) ? null : this.line(id).tiers[this.tier(id) + 1] || null; },   // nothing in the shop beats a quest tool
   // What the next tier costs (the seller's Rizz discount and haggling apply)
   price(id) { const n = this.next(id); return n ? FUP.req.coinPrice({ coins: n.price }, { npc: this.line(id).npc }) : 0; },
   // 'ok' · 'max' · 'locked' (level too low) · 'broke'

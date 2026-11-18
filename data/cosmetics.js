@@ -14,6 +14,7 @@ FUP.cosmeticData = {
     chef_hat:     { name: "Chef's Hat", emoji: '👨‍🍳', price: 1500, blurb: 'Marrowbone would like a word.' },
     tiny_crown:   { name: 'Tiny Crown', emoji: '👑', price: 5000, blurb: 'Rules over a very small kingdom. Your head.' },
     don_fedora:   { name: "The Don's Fedora", emoji: '🎩', blurb: 'Dropped by the Pigeon Godfather. Still smells of breadcrumbs.' },
+    golden_toque: { name: 'Golden Toque', emoji: '👨‍🍳', blurb: 'From The Critic. Marrowbone says you didn\'t earn it. He gave it anyway.' },   // quest reward (v0.80): no price = never sold
     guardian_cap: { name: "Guardian's Cap", emoji: '🍄', blurb: 'Dropped by the Mushroom Guardian. Still warm.' },
   },
   titles: {

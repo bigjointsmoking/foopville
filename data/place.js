@@ -68,6 +68,7 @@ FUP.placeData = {
     // Quest rewards (v0.79): never sold. source: 'quest'
     crow_scarecrow: { name: 'Crow-proof Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], noShop: true, source: 'quest',
                    helper: { kind: 'scarecrow', radius: 5, chance: 0.35 }, blurb: 'Crops within 5 squares: 35% chance of one extra at harvest. The crows have filed a complaint.' },
+    model_bridge: { name: 'Model Bridge', emoji: '🌉', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'quest', blurb: 'Planksworth\'s bridge, small enough to never fall down. He checks on it.' },
     // Only from the repaired Market (source: 'market': hidden from the Carpenter's Build tab)
     gnome:         { name: 'Judgemental Gnome', emoji: '🧙', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 400 }, source: 'market', blurb: 'It has seen what you plant.' },
     weathervane:   { name: 'Weathervane', emoji: '🐓', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], cost: { coins: 600 }, source: 'market', blurb: 'Points at the wind. The wind ignores it.' },

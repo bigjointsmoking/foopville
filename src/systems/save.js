@@ -231,7 +231,7 @@ FUP.save = {
 
   S.register('tools', {
     get: () => FUP.tools.state,
-    set(d) { FUP.tools.state = { rod: d.rod || 0, hammer: d.hammer || 0, hoe: d.hoe || 0, can: d.can || 0 }; },
+    set(d) { FUP.tools.state = { rod: d.rod || 0, hammer: d.hammer || 0, hoe: d.hoe || 0, can: d.can || 0, quest: { ...(d.quest || {}) } }; },
     reset: () => FUP.tools.reset(),
   });
 

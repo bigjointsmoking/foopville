@@ -75,6 +75,7 @@ FUP.gearData = {
     // ----- Trinkets (no tier rules) -----
     lucky_acorn: { slot: 'trinket', tier: 1, name: 'Lucky Acorn', emoji: '🌰', stats: { crit: 0.03 }, price: 360 },
     // Quest rewards (v0.79, data/questlines.js): never sold anywhere. quest: true
+    spoon_charm: { slot: 'trinket', tier: 1, quest: true, name: 'Spoon of Unusual Quality', emoji: '🥄', stats: { heal: 0.10 }, price: 0, sell: 30 },   // Spoons (Blacksmith): food heals 10% more
     acorn_charm: { slot: 'trinket', tier: 1, quest: true, name: 'Acorn Charm', emoji: '🐿️', stats: {}, effect: 'acornLuck', price: 0, sell: 20 },
     mood_ring:   { slot: 'trinket', tier: 1, name: 'Mood Ring', emoji: '💍', stats: { rizz: 0.10 }, price: 540 },
     lunchbox:    { slot: 'trinket', tier: 1, name: 'Lunchbox', emoji: '🍱', stats: { satchel: 3 }, price: 900 },

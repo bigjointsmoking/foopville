@@ -113,7 +113,7 @@ FUP.recipeData = {
     // Raw fish: 2 + its Fishing level / 3
     mudminnow: { heal: 2 }, grumpy_guppy: { heal: 3 }, pond_perch: { heal: 4 }, sulking_carp: { heal: 5 }, whiskered_catfish: { heal: 6 }, salty_sardine: { heal: 5 },
     mud_skipper: { heal: 7 }, croaker: { heal: 8 }, bog_eel: { heal: 10 },
-    speckled_trout: { heal: 5 }, golden_minnow: { heal: 5 }, petty_pike: { heal: 7 }, gloomfin: { heal: 8 }, dodger_trout: { heal: 8 }, moon_carp: { heal: 11 },   // v0.78 Forest fish
+    old_gnarl: { heal: 9 }, speckled_trout: { heal: 5 }, golden_minnow: { heal: 5 }, petty_pike: { heal: 7 }, gloomfin: { heal: 8 }, dodger_trout: { heal: 8 }, moon_carp: { heal: 11 },   // v0.78 Forest fish
     // The Soggy Marsh (W2)
     croakberry: { heal: 8 }, mudroot: { heal: 6 }, marsh_mint: { buff: { stat: 'spd', pct: 0.08, turns: 3 } }, bog_truffle: { heal: 28 },
     dock_herring: { heal: 7 }, regret_snapper: { heal: 8 }, bashful_flounder: { heal: 9 }, sarcastic_mackerel: { heal: 11 }, grudge_tuna: { heal: 12 }, letter_opener: { heal: 13 },
