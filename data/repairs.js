@@ -6,6 +6,8 @@
 //   ruinTint:    palette colour the building picture is tinted while ruined
 //   ruinEmoji:   drawn on each site square while ruined
 //   clutter:     weeds and rocks around the ruin (gone once repaired)
+//   ruinPicture: a painted ruin drawn over the site while ruined (story: the village was crushed AND burned), instead of ruinEmoji
+//   scorch:      burn marks on the ground around the ruin (gone once repaired)
 //   blockWhenRuined: the site squares can't be walked on until repaired
 //   mapWhenDone: map squares that change once repaired ('=' = path)
 //   block:       the site squares can't be walked on, ruined or repaired (a building)
@@ -33,10 +35,12 @@ FUP.repairData = {
       clutter: [{ tx: 58, ty: 38, emoji: '🪨' }, { tx: 59, ty: 41, emoji: '🌿' }, { tx: 60, ty: 41, emoji: '🪵' }] },
     { id: 'cart_stop', name: 'The Cart Stop', emoji: '🛒', req: { facts: { 'repair:south_road': 1 }, skills: { building: 8 } }, cost: { coins: 2000, items: { plank: 10 } }, unlocks: 'Paid rides to places you\'ve been.', soon: true },
     { id: 'market', name: 'The Market', emoji: '🏬', req: { facts: { 'repair:east_bridge': 1 }, skills: { building: 10 } }, cost: { coins: 6000, items: { plank: 30 } }, unlocks: 'New offers every day. Your stall sells faster.',
-      site: { tx: 40, ty: 28, w: 6, h: 2, talk: { tx: 42, ty: 30 } }, ruinEmoji: '🏚️', doneEmoji: '🏬', block: true,
+      site: { tx: 40, ty: 28, w: 6, h: 2, talk: { tx: 42, ty: 30 } }, ruinEmoji: '🏚️', ruinPicture: 'ruin_crushed', doneEmoji: '🏬', block: true,
+      scorch: [{ tx: 39, ty: 27 }, { tx: 47, ty: 29 }],
       clutter: [{ tx: 39, ty: 29, emoji: '🪨' }, { tx: 46, ty: 28, emoji: '🌿' }, { tx: 44, ty: 30, emoji: '🪵' }] },
     { id: 'windmill', name: 'The Windmill', emoji: '🌬️', req: { facts: { 'repair:market': 1 }, skills: { building: 14 } }, cost: { coins: 9000, items: { plank: 40 } }, unlocks: 'Flour, and what you can bake with it.',
-      site: { tx: 48, ty: 2, w: 3, h: 2, talk: { tx: 49, ty: 4 } }, ruinEmoji: '🏚️', doneEmoji: '🌬️', block: true,
+      site: { tx: 48, ty: 2, w: 3, h: 2, talk: { tx: 49, ty: 4 } }, ruinEmoji: '🏚️', ruinPicture: 'ruin_burned', doneEmoji: '🌬️', block: true,
+      scorch: [{ tx: 47, ty: 4 }, { tx: 51, ty: 4 }, { tx: 46, ty: 2 }],
       clutter: [{ tx: 47, ty: 3, emoji: '🌿' }, { tx: 51, ty: 3, emoji: '🪨' }, { tx: 50, ty: 4, emoji: '🌿' }] },
     { id: 'fountain', name: 'The Fountain', emoji: '⛲', req: { facts: { 'repair:well': 1, 'repair:south_road': 1, 'repair:east_bridge': 1, 'repair:cart_stop': 1, 'repair:market': 1, 'repair:windmill': 1 }, skills: { building: 20 } },
       cost: { coins: 9000, items: { plank: 30 } }, unlocks: 'A title, a bigger quest board, and respect. Possibly.', soon: true },

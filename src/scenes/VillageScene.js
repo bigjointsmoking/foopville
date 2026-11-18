@@ -171,6 +171,7 @@ class VillageScene extends Phaser.Scene {
       if (!n.spot) continue;   // lives in another region (Gill: the Docks)
       const p = M.center(n.spot.tx, n.spot.ty);
       const s = FUP.anim.sprite(this, p.x, p.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(p.y + 14);
+      if (n.tint && s.setTint) s.setTint(n.tint);   // placeholder looks (the Old-timer)
       this.tweens.add({ targets: s, scaleY: s.scaleY * 1.04, duration: 900 + Math.random() * 400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       ui.text(this, p.x, p.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
       this.spots.push({ id, kind: 'npc', x: p.x, y: p.y, sprite: s, label: 'Talk' });

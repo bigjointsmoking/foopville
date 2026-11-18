@@ -5,6 +5,25 @@
 window.FUP = window.FUP || {};
 
 FUP.village = {
+  // ---------- The Sir Foop legends (story Phase B) ----------
+  // Does this villager have a legend to tell?
+  hasLegend(npc) { const n = FUP.villageData.npcs[npc]; return !!(n && n.legend); },
+  // Will they tell it? Guarded villagers (legendRizz) only at that Rizz, or while their quest is taken.
+  willTell(npc) {
+    const n = FUP.villageData.npcs[npc];
+    if (!n || !n.legend) return false;
+    if (!n.legendRizz) return true;
+    const onQuest = !!(n.legendQuest && FUP.quests.state.active[n.legendQuest]);
+    return onQuest || FUP.skills.level('rizz') >= n.legendRizz;
+  },
+  // What they say when you ask: the legend plus a reaction for every clue you've found, or a brush-off
+  legendText(npc) {
+    const n = FUP.villageData.npcs[npc];
+    if (!this.willTell(npc)) return Phaser.Utils.Array.GetRandom(n.brushOff || ['Not now.']);
+    const extra = (n.reacts || []).filter(r => FUP.facts.has(r.fact)).map(r => r.line);
+    return [n.legend, ...extra].join('\n\n');
+  },
+
   // Always-on Rizz discount (blueprint 10): 1% per level, up to 30%.
   rizzCut() {
     const d = FUP.villageData;

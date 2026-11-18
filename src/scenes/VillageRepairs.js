@@ -30,8 +30,16 @@ Object.assign(VillageScene.prototype, {
       if (pic) { if (done || !r.ruinTint) pic.clearTint(); else pic.setTint(FUP.look.num(r.ruinTint)); }
       const talk = M.center(s.talk.tx, s.talk.ty);
       if (!done) {
+        // A painted ruin (crushed or burned) fitted over the whole site; else an emoji per square
+        const painted = r.ruinPicture && this.textures.exists(r.ruinPicture);
+        if (painted) {
+          const T = FUP.villageData.tileSize, mid = M.center(s.tx + (s.w - 1) / 2, s.ty + (s.h - 1) / 2);
+          const img = keep(this.add.image(mid.x, mid.y + T * s.h / 2, r.ruinPicture).setOrigin(0.5, 0.82).setDepth(mid.y + T * s.h / 2));
+          img.setScale((s.w + 0.6) * T / img.width);
+        }
+        for (const k of r.scorch || []) { const p = M.center(k.tx, k.ty); keep(ui.sprite(this, p.x, p.y, 'deco_scorch', '', 1).setDepth(1)); }
         for (let ty = s.ty; ty < s.ty + s.h; ty++) for (let tx = s.tx; tx < s.tx + s.w; tx++) {
-          if (!r.ruinEmoji) continue;
+          if (!r.ruinEmoji || painted) continue;
           const p = M.center(tx, ty);
           keep(this.add.text(p.x, p.y, r.ruinEmoji, { fontSize: '24px' }).setOrigin(0.5).setDepth(p.y + 20));
         }

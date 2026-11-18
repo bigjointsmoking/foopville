@@ -104,15 +104,29 @@ FUP.villagePanels = {
     this.pAdd(FUP.ui.panel(this, 20, 20, W - 40, H - 40, 'panel'));
     // Left: who you're talking to, and what they just said
     this.pAdd(FUP.ui.panel(this, 36, 36, 216, H - 72, 'inset'));
-    this.pAdd(FUP.anim.sprite(this, 144, 170, n.portrait, 'idle', n.emoji, 80, 3)).setOrigin(0.5, 0.7);
+    const face = this.pAdd(FUP.anim.sprite(this, 144, 170, n.portrait, 'idle', n.emoji, 80, 3)).setOrigin(0.5, 0.7);
+    if (n.tint && face.setTint) face.setTint(n.tint);   // placeholder looks (the Old-timer)
     this.pText(144, 262, n.name, 16, c.accent, { fontStyle: '700', align: 'center', wordWrap: { width: 200 } }).setOrigin(0.5, 0);
-    this.pText(48, 300, `"${this.speech}"`, 14, c.ink, { fontStyle: 'italic', wordWrap: { width: 192 }, lineSpacing: 4 });
+    // Long speeches (the Sir Foop legends) get smaller text so they fit
+    const long = this.speech.length > 200;
+    this.pText(48, 300, `"${this.speech}"`, long ? 11 : 14, c.ink, { fontStyle: 'italic', wordWrap: { width: 192 }, lineSpacing: long ? 2 : 4 });
+    // Story Phase B: villagers with a legend can be asked about Sir Foop (talking is always free)
+    if (FUP.village.hasLegend(this.panelId)) {
+      this.pBtn(44, H - 74, 200, 30, '📜 Ask about Sir Foop', () => { this.speech = FUP.village.legendText(this.panelId); FUP.audio.sfx('select'); }, { size: 12 });
+    }
     // Top right: coins and Close
     this.pText(W - 44, 72, `🪙 ${FUP.run.coins}`, 16, c.accent, { fontStyle: '700' }).setOrigin(1, 0);
     this.pBtn(W - 136, 32, 96, 34, 'Close', () => this.closePanel(), { hot: true, size: 15 });
 
     const X = 270, RW = W - 40 - X;
-    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger })[this.panelId].call(this, X, RW);
+    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer })[this.panelId].call(this, X, RW);
+  },
+
+  // ---------- The Old-timer: no shop, just the bench and the statue ----------
+  renderOldtimer(X, RW) {
+    const c = FUP.ui.colors;
+    this.pText(X, 36, 'THE OLD-TIMER', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'Sits on the bench by the statue most days. Watches the village. Doesn\'t sell anything.', 12, c.dim, { wordWrap: { width: RW - 20 } });
   },
 
   // ---------- Blacksmith: weapon upgrades and armor ----------

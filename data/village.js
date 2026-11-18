@@ -1,5 +1,7 @@
 // ============================================================
-// VILLAGE — Foopville: the map, the four villagers, and their shops.
+// VILLAGE — Foopville: the map, the villagers, and their shops.
+// legend = the villager's version of the Sir Foop story ("Ask about Sir Foop" in their window, story Phase B).
+// legendRizz / legendQuest = guarded: only at that Rizz or while that quest is taken, else a brushOff line.
 //
 // MAP KEY (each character is one square):
 //   #  tree (can't walk through)     .  grass       =  path
@@ -107,8 +109,26 @@ FUP.villageData = {
 
   // The villagers. `spot` = where they stand. `sprite` = map picture, `portrait` = big picture.
   npcs: {
+    // New in story Phase B (2026-11-17). Name, look and lines are PLACEHOLDERS (tinted villager picture, like the island tutors).
+    oldtimer: {
+      name: 'The Old-timer', spot: { tx: 15, ty: 28 }, sprite: 'npc_smith_map', portrait: 'npc_smith', tint: 0xc8bca8, emoji: '👴',
+      greet: [
+        'Sit, sit. The bench is free. Everything else costs.',
+        'Lovely statue. I come up here to look at it. It never looks back.',
+        'You\'re new. Everyone\'s new, to me.',
+      ],
+      legend: "My grandmother used to say that when the dragon flew off, she wasn't roaring. She was sobbing. Like a little one who'd had her toy taken. Nobody believed her. Said it was the wind in the pass. But Grandmother was there on the hill that day, or her mother was, and she never changed her story.",
+      noRizzSecrets: true,   // no Rizz 10/20/30 secrets: his Rizz reward is the legend (ask Jesus if he should get some)
+      legendRizz: 10, legendQuest: null,   // guarded: tells it only at Rizz 10 or while his quest is taken (the quest comes in story Phase C)
+      brushOff: ['Foop? He\'s the one on the plinth. That\'s all I know.', 'Old stories are for people I know. I don\'t know you yet.'],
+      reacts: [   // PLACEHOLDER lines (see the Quest Board Keeper)
+        { fact: 'clue:bowl', line: "So something does eat it. Grandmother would be pleased. Or frightened. Hard to tell with her." },
+        { fact: 'clue:ledgerPage', line: "Another name, eh? Grandmother never said one. She'd have liked to know." },
+      ],
+    },
     smith: {
       name: 'The Blacksmith', spot: { tx: 3, ty: 5 }, sprite: 'npc_smith_map', portrait: 'npc_smith', emoji: '🔨',
+      legend: "My family's told it for generations. Foop carried the great blade out to meet her. Heavy as a boulder, it was, and nobody else could lift it. Forged right here in this village, they say, though the records got lost. He dragged it all the way up that hill himself. One swing and the dragon was done. Best steel this village ever made.",
       greet: [
         'You again. Still alive? Huh. Must be the armor.',
         'Weapons and armor. No refunds. No hugs.',
@@ -140,6 +160,12 @@ FUP.villageData = {
     },
     shop: {
       name: 'The Shopkeeper', spot: { tx: 24, ty: 5 }, sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '🪙',
+      reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
+        { fact: 'clue:ledgerPage', line: "An older name under ours? Paperwork gets messy. Don't let it keep you up." },
+        { fact: 'clue:paymentLedger', line: "No names. Just 'the Resident'. The old shopkeepers kept odd books." },
+        { fact: 'clue:ash', line: "Ash that sparkles? Wipe your boots before you come in." },
+      ],
+      legend: "Oh, everyone knows the story. The dragon came down, great and terrible, and Sir Foop walked out to meet her. Alone. Not a tremble. They fought, the two of them, and when the dust settled he was the one standing. That's how the old shopkeepers always told it. Never a flinch, they said. Good man.",
       greet: [
         'Welcome, welcome! Everything is for sale. Including me, at the right price. Kidding. Mostly.',
         'Ah, my favorite customer! Don\'t tell the others. There are no others.',
@@ -178,6 +204,7 @@ FUP.villageData = {
     },
     carpenter: {
       name: 'Planksworth the Carpenter', spot: { tx: 12, ty: 15 }, sprite: 'npc_carpenter_map', portrait: 'npc_carpenter', emoji: '🪚',
+      legend: "Fighting? Please. Foop was clever. Everyone forgets that. The story goes he had the carpenters raise a great trap overnight, a pit under a false floor, perfectly level. When the dragon stomped in, down she went. Best timber work this village ever did, and nobody even knows who built it. Typical.",
       greet: [
         'Your house? I\'ve seen sheds with more ambition.',
         'I build houses. Land, stoves, shelves. Not friendships. Those cost extra.',
@@ -210,6 +237,13 @@ FUP.villageData = {
     },
     seeds: {
       name: 'Pip the Seed Seller', spot: { tx: 18, ty: 38 }, sprite: 'npc_seeds_map', portrait: 'npc_seeds', emoji: '🌰',
+      reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
+        { fact: 'clue:ash', line: "That's no house fire. I don't know what that is. Put the lid back on." },
+        { fact: 'clue:ledgerPage', line: "Someone painted over a name. Told you. Nobody here likes the bits that don't fit." },
+      ],
+      legend: "Everyone's got a story about Foop. Funny, nobody's got a dragon. No body, no bones, no scorch marks that couldn't be a house fire. A man walks back alone from the worst day this village ever had and says he did it all himself? I'd say he made it up. Just my opinion. Plants don't grow either, most years.",
+      legendRizz: 20, legendQuest: null,   // guarded: tells it only at Rizz 20 or while his quest is taken (the quest comes in story Phase C)
+      brushOff: ['Sir Foop? Lovely statue. Want some seeds?', 'Old stories don\'t grow anything. Seeds do. Buying?'],   // PLACEHOLDER lines
       greet: [
         'Seeds! Tiny, cheap, full of potential. Like you, minus the potential.',
         'Every great farm starts with one seed. And then about four hundred more.',
@@ -225,6 +259,12 @@ FUP.villageData = {
     },
     quest: {
       name: 'The Quest Board Keeper', spot: { tx: 20, ty: 9 }, sprite: 'npc_quest_map', portrait: 'npc_quest', emoji: '📜',
+      reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
+        { fact: 'clue:ledgerPage', line: "A scratched-out NAME? On an OFFICIAL page? Somebody should complain. Not me." },
+        { fact: 'clue:paymentLedger', line: "Gold paid for QUIET? This board has never been quiet. Not once." },
+        { fact: 'clue:bowl', line: "You went DOWN there? For a BOWL? I'll file it under 'odd'." },
+      ],
+      legend: "Folk always argue over the details, but the old board records agree on one thing: the roar. Foop let out a war cry so loud the whole valley shook. The dragon flinched. The sky went dark and she breathed fire, and he roared again and cut straight through it. Nobody's ever matched that shout since, though plenty have tried.",
       greet: [
         'A HERO! At LAST! The village is in GRAVE danger! Well. Mild inconvenience.',
         'Destiny calls! It wants some mushrooms picked up.',
@@ -310,6 +350,9 @@ FUP.villageData = {
   // Things that give the hills and the farm a purpose (v0.67). sprite, square, solid = blocks walking,
   // text = walk up and read it (narrator bar). Pictures: art/fupville_art.py (prop_*, deco_*).
   props: [
+    // The village sign by the north gate (story, 2026-11-17): repainted, an older word scratched underneath that nobody can read.
+    // Spot and wording are PLACEHOLDERS. Picture: the plain signpost until it gets its own art.
+    { sprite: 'deco_signpost', tx: 13, ty: 2, text: 'FOOPVILLE, in thick, proud paint. Under it, faint scratches of some other word. You can\'t make it out.' },
     { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light flickers in the Deep Woods. Something down there is still awake." },
     { sprite: 'prop_flag', tx: 32, ty: 10 },
     { sprite: 'prop_bench', tx: 29, ty: 11, solid: true },
@@ -322,7 +365,8 @@ FUP.villageData = {
     { sprite: 'prop_beehive', tx: 2, ty: 28, solid: true },
     { sprite: 'prop_beehive', tx: 8, ty: 28, solid: true },
     { sprite: 'deco_signpost', tx: 6, ty: 28, text: "Hollis's Orchard. The apples are for looking at. Hollis counts them every night. Twice." },
-    { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'Sir Reginald Foop, founder of Foopville. He got lost, it got dark, he gave up and built a house. Visionary.' },
+    // Plaque wording: the draft from the story chats (2026-11-17). PLACEHOLDER: the final wording is still open.
+    { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL."' },
     { sprite: 'prop_bench', tx: 15, ty: 27, solid: true },
     { sprite: 'prop_bench', tx: 19, ty: 27, solid: true },
     { sprite: 'prop_flowerbed', tx: 15, ty: 29 },
