@@ -65,6 +65,9 @@ FUP.gardenData = {
     spore_b_gone_moss:    { level: 10, growSeconds: 20 * 60, plantXp: 20, harvestXp: 65, seedPrice: 10 },
     ember_pepper:         { level: 15, growSeconds: 25 * 60, plantXp: 30, harvestXp: 100, seedPrice: 15 },
     heartroot:            { level: 20, growSeconds: 40 * 60, plantXp: 40, harvestXp: 150, seedPrice: 25 },
+    // v0.81 quest crops: shop false = Pip never sells it (Grandmother's Soup gives the seeds); req = sold once it's met
+    bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 10, harvestXp: 30,  seedPrice: 5, shop: false },
+    sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 14, harvestXp: 45,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },
   },
 
   // ---------- Seeds ----------

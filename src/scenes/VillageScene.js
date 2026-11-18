@@ -173,8 +173,8 @@ class VillageScene extends Phaser.Scene {
       const s = FUP.anim.sprite(this, p.x, p.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(p.y + 14);
       if (n.tint && s.setTint) s.setTint(n.tint);   // placeholder looks (the Old-timer)
       this.tweens.add({ targets: s, scaleY: s.scaleY * 1.04, duration: 900 + Math.random() * 400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-      ui.text(this, p.x, p.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
-      this.spots.push({ id, kind: 'npc', x: p.x, y: p.y, sprite: s, label: 'Talk' });
+      const tag = ui.text(this, p.x, p.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this.spots.push({ id, kind: 'npc', x: p.x, y: p.y, sprite: s, tag, label: 'Talk' });
     }
     // The Compost Bin next to the Cottage (v0.41)
     {
@@ -253,7 +253,7 @@ class VillageScene extends Phaser.Scene {
     this.bagText = pb.txt;
     this.questText = fix(ui.text(this, 450, H - 35, '', 14, c.ink).setOrigin(0, 0.5));
     fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag to walk · tap the button to talk' : 'Walk: WASD / drag · Talk: E or the button', 12, c.dim).setOrigin(1, 0.5));
-    this._qSig = null; this._qMarks = [];   // quest markers (reset: Phaser reuses this screen)
+    this._qSig = null; this._qMarks = []; this._awaySpots = [];   // quest markers + villagers away on a quest (reset: Phaser reuses this screen)
     this.goalCard = FUP.goalCard.draw(this, 16, 104);   // first-day checklist (data/goals.js)
     this.tracker = FUP.questTracker.draw(this, 130);   // taken quests, top right (src/questTracker.js)
     this.refreshHud();
@@ -459,6 +459,11 @@ class VillageScene extends Phaser.Scene {
     if (!force && sig === this._qSig) return;
     this._qSig = sig;
     const center = (tx, ty) => FUP.villageMap.center(tx, ty);
+    // Villagers out of the village for a quest (Pip at the Docks...): hidden until they're back
+    const all = (this.spots || []).concat(this._awaySpots || []);
+    this._awaySpots = all.filter(s => s.kind === 'npc' && FUP.quests.away(s.id));
+    this.spots = all.filter(s => !this._awaySpots.includes(s));
+    for (const s of all) if (s.kind === 'npc') { const on = !this._awaySpots.includes(s); s.sprite.setVisible(on); if (s.tag) s.tag.setVisible(on); }
     FUP.questUi.marks(this, 'village', center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
     this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots('village', center));
   }

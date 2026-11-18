@@ -114,7 +114,9 @@ FUP.villagePanels = {
     this.pText(48, 300, `"${this.speech}"`, long ? 11 : 14, c.ink, { fontStyle: 'italic', wordWrap: { width: 192 }, lineSpacing: long ? 2 : 4 });
     // Side stories (v0.78): a step waiting with this villager = a 📜 button (one at a time, the first one)
     // (v0.79) or a Quest they can give you (❗): start it here, RuneScape-style
-    const step = FUP.quests.stepsAt(this.panelId)[0], start = !step && FUP.quests.startsAt(this.panelId)[0];
+    const here = this.scene.key === 'Village' ? 'village' : this.f.area;
+    const out = here !== 'village' && !((this.info && this.info.npcs) || []).some(p => p.id === this.panelId);   // a villager out here for a quest
+    const step = FUP.quests.stepsAt(this.panelId, here)[0], start = !out && !step && FUP.quests.startsAt(this.panelId)[0];
     const redraw = () => { if (this.panel) this.renderPanel(); if (this.refreshHud) this.refreshHud(); };
     if (step) {
       this.pBtn(44, H - 110, 200, 30, `📜 ${step.name}`, () => {
@@ -138,7 +140,15 @@ FUP.villagePanels = {
     this.pBtn(W - 136, 32, 96, 34, 'Close', () => this.closePanel(), { hot: true, size: 15 });
 
     const X = 270, RW = W - 40 - X;
+    if (out) { this.renderAway(X, RW); return; }
     ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer })[this.panelId].call(this, X, RW);
+  },
+
+  // ---------- A villager out of the village for a quest: no shop out here ----------
+  renderAway(X, RW) {
+    const c = FUP.ui.colors, n = FUP.villageData.npcs[this.panelId];
+    this.pText(X, 36, n.name.toUpperCase(), 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'Out of the village today. Whatever they sell is back home.', 12, c.dim, { wordWrap: { width: RW - 20 } });
   },
 
   // ---------- The Old-timer: no shop, just the bench and the statue ----------
@@ -523,7 +533,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     const ui = FUP.ui, c = ui.colors, G = FUP.garden, D = FUP.gardenData, run = FUP.run;
     this.pText(X, 36, 'SEEDS', 20, c.accent, { fontStyle: '700' });
     this.pText(X, 64, `${this.priceNote()}  Seeds go in your seed pouch (no bag space).`, 12, c.dim);
-    const rows = Object.entries(D.crops).map(([id, crop]) => {
+    const rows = Object.entries(D.crops).filter(([id, crop]) => crop.shop !== false && FUP.req.met(crop.req)).map(([id, crop]) => {   // (quest crops: Bitterroot never, Sea Kale after Pip's quest)
       const ing = FUP.ingredients[id], price = G.seedPrice(id), ok = G.canGrow(id);
       const buy = n => () => { const got = G.buySeeds(id, n); if (got) { FUP.audio.sfx('coins'); this.talk('bought'); } else this.talk('broke'); };
       return {

@@ -37,7 +37,9 @@ FUP.questUi = {
     const close = () => { g.forEach(o => o.destroy()); scene.questCard = null; };
     scene.questCard = { close };
     const list = FUP.quests.choiceList(id);
-    const h = 150 + list.length * 46;
+    const st = FUP.quests.step(id), tasting = !!(st && st.taste && !FUP.quests.state.active[id].tasted);   // Grandmother's Soup: pick a bowl, or not now
+    if (!list.length) { onDone(); return; }   // (no bowls left to taste)
+    const h = 150 + (list.length + (tasting ? 1 : 0)) * 46;
     add(ui.shade(scene, 0.6));
     add(ui.panel(scene, W / 2 - 260, H / 2 - h / 2, 520, h, 'panel'), 1);
     add(ui.text(scene, W / 2, H / 2 - h / 2 + 16, `📜 ${q.name}`, 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
@@ -46,13 +48,17 @@ FUP.questUi = {
       const b = ui.button(scene, W / 2 - 230, H / 2 - h / 2 + 110 + k * 46, 460, 38, ch.label, () => {
         const r = FUP.quests.choose(id, ch.i);
         close();
-        if (r.retry) { if (scene.sayLine) scene.sayLine(r.line); FUP.audio.sfx('error'); this.choices(scene, id, r.line, onDone); return; }
+        if (r.retry) { if (scene.sayLine) scene.sayLine(r.line); FUP.audio.sfx('error'); FUP.save.write(); this.choices(scene, id, r.line, onDone); return; }
         FUP.save.write();
         this.result(scene, id, r, onDone);
       }, { size: 14, hot: k === 0 });
       [b.rect, b.txt].forEach(o => add(o, 3)); b.txt.setDepth(Z + 4);
       if (!ch.ok) b.setEnabled(false);
     });
+    if (tasting) {
+      const b = ui.button(scene, W / 2 - 230, H / 2 - h / 2 + 110 + list.length * 46, 460, 38, 'Not now', () => { close(); onDone(); }, { size: 14 });
+      [b.rect, b.txt].forEach(o => add(o, 3)); b.txt.setDepth(Z + 4);
+    }
   },
 
   // QUEST COMPLETE: what you got
@@ -106,7 +112,7 @@ FUP.questUi = {
     }
     for (const n of npcs) {
       if (!n.sprite) continue;
-      const mark = FUP.quests.stepsAt(n.id).length ? '📜' : FUP.quests.startsAt(n.id).length ? '❗' : null;
+      const mark = FUP.quests.stepsAt(n.id, region).length ? '📜' : FUP.quests.startsAt(n.id).length ? '❗' : null;
       if (!mark) continue;
       const m = scene.add.text(n.sprite.x, n.sprite.y - n.sprite.displayHeight * 0.8 - 18, mark, { fontSize: '20px' }).setOrigin(0.5, 1).setDepth(5001);
       scene.tweens.add({ targets: m, scale: 1.15, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });

@@ -28,6 +28,7 @@ class WorldScene extends Phaser.Scene {
     if (this.arrive.from === 'campfire') this.A.player = F.besideCampfire();
     this.leaving = false;
     this.pack = null;           // backpack screen (reset: Phaser reuses this screen)
+    this.enemySprites = null;   // drawn in drawThings; quest foes join them (placeQuestFoes)
     this.panel = null; this.panelId = null;   // a villager's window (WorldPeople.js)
     this.campfireArmed = this.arrive.from !== 'campfire'; // walk away from the fire before it opens again
     this.worldW = F.width() * T;
@@ -246,16 +247,24 @@ class WorldScene extends Phaser.Scene {
       return s;
     });
 
-    // Quest enemies (v0.79, data/questlines.js): put on the map while their quest step waits for them
-    for (const f of FUP.quests.foesIn(this.f.area)) {
-      if (A.enemies.some(e => e.questFoe === f.id && e.alive)) continue;
-      const c0 = FUP.forest.center(f.tx, f.ty);
-      A.enemies.push({ type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id });
-    }
     this.enemySprites = A.enemies.map(e => e.alive ? this.enemySprite(e) : null);
+    this.placeQuestFoes();
 
     this.player = FUP.ui.sprite(this, A.player.x, A.player.y, FUP.looks.key('hero_map'), '🧍', 30).setOrigin(0.5, 0.72).setDepth(A.player.y + 16);
     this.hat = FUP.cosmetics.attachHat(this, this.player, 'map');   // your hat, if you wear one (G2)
+  }
+
+  // Quest enemies (v0.79, data/questlines.js): put on the map while their quest step waits for them.
+  // Also called when quests change while you're here (v0.81: the Keeper's squirrel appears after you talk to him).
+  placeQuestFoes() {
+    const A = this.A;
+    if (!A || !this.enemySprites) return;
+    for (const f of FUP.quests.foesIn(this.f.area)) {
+      if (A.enemies.some(e => e.questFoe === f.id && e.alive)) continue;
+      const c0 = FUP.forest.center(f.tx, f.ty);
+      const e = { type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id };
+      A.enemies.push(e); this.enemySprites.push(this.enemySprite(e));
+    }
   }
 
   enemySprite(e) {

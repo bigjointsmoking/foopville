@@ -29,7 +29,7 @@ Object.assign(WorldScene.prototype, {
       }
     }
     // Quests (v0.79): 🔍 search spots and ❗ / 📜 over villagers out here (redrawn by refreshQuestMarks)
-    this._qSig = null; this._qMarks = [];
+    this._qSig = null; this._qMarks = []; this._guests = [];
     this.refreshQuestMarks(true);
     // Special fishing spots (v0.78): a glint on the water
     for (const sp of (FUP.fishData.specials || []).filter(s => s.region === this.f.area)) {
@@ -61,8 +61,27 @@ Object.assign(WorldScene.prototype, {
     if (!force && sig === this._qSig) return;
     this._qSig = sig;
     const center = (tx, ty) => this.tiles.center(tx, ty);
+    this.drawGuests();
+    if (this.placeQuestFoes) this.placeQuestFoes();
     FUP.questUi.marks(this, this.f.area, center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
     this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots(this.f.area, center));
+  },
+
+  // Villagers out here for a quest step (FUP.quests.guestsIn): Pip at the pier, the Keeper in the Forest Edge
+  drawGuests() {
+    const ui = FUP.ui, c = ui.colors, home = (this.info.npcs || []).map(p => p.id);
+    (this._guests || []).forEach(o => o.destroy()); this._guests = [];
+    this.spots = (this.spots || []).filter(s => !s.guest);
+    for (const g of FUP.quests.guestsIn(this.f.area)) {
+      const n = FUP.villageData.npcs[g.npc];
+      if (!n || home.includes(g.npc) || this.spots.some(s => s.guest && s.id === g.npc)) continue;
+      const c0 = this.tiles.center(g.tx, g.ty);
+      const s = FUP.anim.sprite(this, c0.x, c0.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(c0.y + 14);
+      if (n.tint && s.setTint) s.setTint(n.tint);
+      const tag = ui.text(this, c0.x, c0.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this._guests.push(s, tag);
+      this.spots.push({ kind: 'npc', id: g.npc, guest: true, x: c0.x, y: c0.y, sprite: s, label: 'Talk' });
+    }
   },
 
   // Villagers stand on their square: you walk around them

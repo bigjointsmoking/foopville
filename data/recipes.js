@@ -98,6 +98,13 @@ FUP.recipeData = {
       riddle: 'Two kinds of fire and one sour face, simmered until your nose runs faster than you do.' },
     { level: 44, name: 'Door Slammer',       ids: ['heartroot', 'spore_b_gone_moss', 'dragons_sneeze_chili', 'ember_pepper'], method: 'fry', xp: 272, heal: 60, resists: [{ element: 'poison', amount: 0.60, turns: 6 }], element: 'fire', throw: 70, sell: 75, secret: true,
       riddle: 'A beating root, the anti-spore moss, and both fires of the field. Fried. Serve it to a guardian.' },
+
+    // ---------- v0.81: quest recipes ----------
+    // noRiddle = Marrowbone doesn't sell it. Grandmother's Soup: the Old-timer's quest (Bitterroot only comes from it).
+    { level: 10, name: "Grandmother's Soup", ids: ['grumpleberry', 'tear_jerk_onion', 'bitterroot'], method: 'boil', xp: 60, heal: 50, buffs: [{ stat: 'def', pct: 0.10, turns: 3 }], throw: 10, sell: 18, secret: true, noRiddle: true,
+      hint: 'A family recipe. The Old-timer remembers how it tasted.' },
+    // Sea Kale: Pip sells the seeds after Never Seen the Sea
+    { level: 12, name: 'Sea Kale Broth',    ids: ['sea_kale', 'salty_sardine'], method: 'boil', xp: 64, heal: 34, throw: 10, sell: 17 },
   ],
 
   // ---------- Burnt junk ----------

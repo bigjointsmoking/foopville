@@ -48,6 +48,9 @@ FUP.ingredients = {
   dragons_sneeze_chili: {
     name: "Dragon's Sneeze Chili", short: 'Chili', emoji: '🌶️', color: '#d8312a', rarity: 'Uncommon', sell: 6, source: 'Forest', price: 6, element: 'fire',
   },
+  // v0.81 quest crops (data/garden.js): Bitterroot from Grandmother's Soup, Sea Kale from Never Seen the Sea
+  bitterroot: { name: 'Bitterroot', short: 'Bitterroot', emoji: '🫚', color: '#8a6a3a', rarity: 'Uncommon', sell: 5, source: 'Farm' },
+  sea_kale:   { name: 'Sea Kale', short: 'Sea Kale', emoji: '🥬', color: '#5a9a8a', rarity: 'Common', sell: 6, source: 'Farm' },
   grumpy_lemon: { // back 2026-11-09 as a farm-only crop (data/garden.js)
     name: 'Grumpy Lemon', short: 'Lemon', emoji: '🍋', rarity: 'Common', sell: 7, source: 'Farm', price: 5,
   },

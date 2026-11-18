@@ -38,8 +38,13 @@ FUP.quests = {
     s.board = s.board.filter(id => this.def(id) && !s.active[id]);
     for (const kind of Object.keys(D.boardSize)) {   // (Quests aren't random: they're all listed, see available)
       const pool = Object.keys(D.quests).filter(id => this.kind(id) === kind && this.fits(id) && !s.active[id] && !s.board.includes(id) && !s.rest[id]);
-      while (s.board.filter(id => this.kind(id) === kind).length < D.boardSize[kind] && pool.length) s.board.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+      while (s.board.filter(id => this.kind(id) === kind).length < this.boardSize(kind) && pool.length) s.board.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
     }
+  },
+  // How many of a kind the board shows (His First Quest can add one: data/quests.js boardPerk)
+  boardSize(kind) {
+    const D = FUP.questData, p = D.boardPerk;
+    return D.boardSize[kind] + (p && p.kind === kind && FUP.facts.has(p.fact) ? p.extra : 0);
   },
   // On the board right now (kind = only that kind).
   available(kind = null) {
@@ -66,7 +71,7 @@ FUP.quests = {
   drop(id) {
     delete this.state.active[id];
     if (this.isQuest(id)) return;   // quests go back to the list by themselves
-    if (this.available(this.kind(id)).length < FUP.questData.boardSize[this.kind(id)]) this.state.board.push(id);
+    if (this.available(this.kind(id)).length < this.boardSize(this.kind(id))) this.state.board.push(id);
   },
 
   // Is it ready to hand in?
@@ -118,21 +123,33 @@ FUP.quests = {
   // A Quest is done for good: coins, XP in the skills it used, and a bonus for the choices you made
   payQuest(id, q, s) {
     const r = q.reward || {}, got = [];
-    FUP.run.coins += r.coins || 0;
+    let coins = (r.coins || 0) + (r.cut ? Math.round((s.earned || 0) * r.cut) : 0);   // Clearing Out: her cut of what you got
+    for (const b of r.bonus || []) if ((s.flags || {})[b.flag] && b.coins) coins += b.coins;
+    FUP.run.coins += coins;
     for (const [sk, x] of Object.entries(r.xp || {})) if (FUP.skills.addXp) { FUP.skills.addXp(sk, x); got.push(`+${x} ${FUP.skillData && FUP.skillData.skills[sk] ? FUP.skillData.skills[sk].name : sk} XP`); }
     const give = b => {
       if (b.gear && FUP.gear) { const it = FUP.gear.fromShop(b.gear); if (FUP.run.addGear(it)) got.push(`${it.emoji} ${it.name} (in your backpack)`); else { FUP.house.state.gear = FUP.house.state.gear || []; FUP.house.state.gear.push(it); got.push(`${it.emoji} ${it.name} (sent home: backpack full)`); } }
       if (b.hat && FUP.cosmetics) { FUP.cosmetics.own(b.hat); const h = FUP.cosmeticData.hats[b.hat]; got.push(`${h.emoji} ${h.name} (a hat: Wardrobe)`); }
       if (b.recipe && FUP.cooking) { FUP.cooking.cookbook.discovered[b.recipe] = true; got.push(`📖 Recipe: ${b.recipe}`); }
       if (b.tool && FUP.tools) { FUP.tools.giveQuestTool(b.tool); got.push(`🎣 ${FUP.toolData.questTools[b.tool].name}`); }
+      this.grant(b, got);
       if (b.place && FUP.place) { FUP.place.state.owned[b.place] = (FUP.place.state.owned[b.place] || 0) + 1; const P = FUP.placeData.items[b.place]; got.push(`${P.emoji} ${P.name} (place it with 🔨 Build)`); }
     };
     give(r);
     const lines = [];
     for (const b of r.bonus || []) if ((s.flags || {})[b.flag]) { give(b); if (b.line) lines.push(b.line); }
     FUP.facts.add(`quest:${id}`);
-    this.lastReward = { id, coins: r.coins || 0, got, lines };
-    return r.coins || 0;
+    this.lastReward = { id, coins, got, lines };
+    return coins;
+  },
+  // Rewards that a step can hand over too: seeds for the seed pouch, a fact (perks, titles)
+  grant(b, got = []) {
+    for (const [k, n] of Object.entries(b.seeds || {})) { FUP.garden.state.seeds[k] = FUP.garden.seedCount(k) + n; got.push(`🌱 ${n} ${FUP.ingredients[k].name} seeds (seed pouch)`); }
+    if (b.fact) FUP.facts.add(b.fact);
+    if (b.title && FUP.cosmeticData.titles[b.title]) got.push(`🏷️ Title: "${FUP.cosmeticData.titles[b.title].text}" (Wardrobe)`);
+    if (b.perk) got.push(b.perk);
+    if (b.renameRecipe && FUP.cooking) { const nm = b.renameRecipe.to.replace('{hero}', (FUP.run.hero && FUP.run.hero.name) || 'Your'); FUP.cooking.cookbook.names = FUP.cooking.cookbook.names || {}; FUP.cooking.cookbook.names[b.renameRecipe.from] = nm; got.push(`📖 It's called "${nm}" in your recipe book`); }
+    return got;
   },
 
   // ---------- Side stories: steps ----------
@@ -145,6 +162,8 @@ FUP.quests = {
   stepText(id) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return '';
+    if (st.taste) return st.goal || `Bring ${this.npcName(st.taste)} a bowl to taste`;
+    if (st.guest && st.talk) return `Meet ${this.npcName(st.talk)} (${this.regionName(st.guest.region)})`;
     if (st.search) return `Search ${st.search.name} (${this.regionName(st.search.region)})` + (st.when === 'night' ? ' at night 🌙' : '');
     if (st.fight && !st.goal) return `Find ${st.fight.name} (${this.regionName(st.fight.region)})`;
     if (st.talkAll) { const left = Object.keys(st.talkAll).filter(k => !s.talked[k]).map(k => this.npcName(k)); return `${st.goal}  (left: ${left.join(', ')})`; }
@@ -154,12 +173,24 @@ FUP.quests = {
     return '';
   },
   // Side-story steps waiting at this villager: [{ id, name, label }]
-  stepsAt(npc) {
+  // region (optional): a step where they meet you somewhere else (step.guest) only counts there
+  stepsAt(npc, region = null) {
     return this.activeIds().filter(id => this.isSide(id)).filter(id => {
       const st = this.step(id), s = this.state.active[id];
-      return st && (st.talk === npc || (st.bring && st.to === npc) || (st.talkAll && st.talkAll[npc] && !s.talked[npc]));
+      if (st && st.guest && region && st.guest.region !== region) return false;
+      return st && (st.talk === npc || st.taste === npc || (st.bring && st.to === npc) || (st.talkAll && st.talkAll[npc] && !s.talked[npc]));
     }).map(id => ({ id, name: this.def(id).name }));
   },
+  // Villagers out of the village for a quest step (step.guest = { region, tx, ty }): [{ id, npc, tx, ty }]
+  guestsIn(region) {
+    return this.activeIds().map(id => ({ id, st: this.step(id) })).filter(o => o.st && o.st.guest && o.st.guest.region === region)
+      .map(o => ({ id: o.id, npc: o.st.talk || o.st.taste || o.st.guest.npc, tx: o.st.guest.tx, ty: o.st.guest.ty }));
+  },
+  // Is this villager away from home right now (so the village doesn't draw them)?
+  away(npc) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && st.guest.region !== 'village' && (st.talk || st.taste || st.guest.npc) === npc; }); },
+  // A step waiting at this villager, but they're somewhere else today (a guest step)
+  elsewhere(npc, region) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.guest.npc) === npc && st.guest.region !== region; }); },
+
   // 🔍 spots on this map for your quests: [{ id, tx, ty, name }]
   searchesIn(region) {
     return this.activeIds().filter(id => { const st = this.step(id); return st && st.search && st.search.region === region; })
@@ -191,15 +222,44 @@ FUP.quests = {
   },
   // The choices on this step, with whether you can pick each (Rizz)
   choiceList(id) {
-    return (this.step(id).choices || []).map((c, i) => ({ i, label: c.label + (c.rizz ? ` (Rizz ${c.rizz})` : ''), ok: !c.rizz || FUP.skills.level('rizz') >= c.rizz }));
+    const st = this.step(id), s = this.state.active[id];
+    if (st.taste && !s.tasted) return this.bowls().map((g, i) => ({ i, label: `${g.dish.emoji} ${g.dish.name} (${(g.dish.ids || []).map(k => FUP.ingredients[k].short || FUP.ingredients[k].name).join(', ')})${g.n > 1 ? ' ×' + g.n : ''}`, ok: true }));
+    return (st.choices || []).map((c, i) => ({ i, label: c.label + (c.rizz ? ` (Rizz ${c.rizz})` : ''), ok: !c.rizz || FUP.skills.level('rizz') >= c.rizz }));
   },
   // Pick choice i on the current step
   choose(id, i) {
-    const st = this.step(id), s = this.state.active[id], c = st && st.choices && st.choices[i];
+    const st = this.step(id), s = this.state.active[id];
+    if (st && st.taste && !s.tasted) return this.taste(id, i);
+    const c = st && st.choices && st.choices[i];
     if (!c || (c.rizz && FUP.skills.level('rizz') < c.rizz)) return { ok: false, line: '' };
     if (c.retry) return { ok: false, line: c.say || '', retry: true };
     if (c.flag) s.flags[c.flag] = true;
+    if (c.earn) s.earned = (s.earned || 0) + c.earn;   // Clearing Out: what this buyer paid
     return this.advance(id, c.say || '');
+  },
+  // Grandmother's Soup: they taste dish stack i from your satchel (it's eaten). The step's `rules`, in order:
+  //   { burnt } { notMethod } { has: [ids] } { missing: id } { extra: [allowed ids] } {} = always; first that fits says its line.
+  //   pass: true = right: the step goes on (or shows the step's choices, if it has any)
+  // Your dishes for tasting, grouped by what's in them (experiments all share one name): [{ dish, idx, n }]
+  bowls() {
+    const groups = {};
+    FUP.run.satchel.forEach((d, k) => { const key = [d.name, d.tier, d.method, (d.ids || []).slice().sort().join('+')].join('|'); (groups[key] = groups[key] || { dish: d, idx: [], n: 0 }).idx.push(k); groups[key].n++; });
+    return Object.values(groups).slice(0, 8);   // the card fits 8
+  },
+  taste(id, i) {
+    const st = this.step(id), s = this.state.active[id], g = this.bowls()[i];
+    if (!g) return { ok: false, line: '' };
+    const d = g.dish, ids = d.ids || [];
+    const rule = (st.rules || []).find(r =>
+      (r.burnt === undefined || !!d.burnt === r.burnt) &&
+      (!r.notMethod || d.method !== r.notMethod) &&
+      (!r.has || r.has.some(k => ids.includes(k))) &&
+      (!r.missing || !ids.includes(r.missing)) &&
+      (!r.extra || ids.some(k => !r.extra.includes(k)))) || { say: '' };
+    FUP.run.satchel.splice(g.idx[0], 1);   // a spoonful. Then the whole bowl.
+    if (!rule.pass) return { ok: false, line: rule.say, retry: true };
+    if (st.choices) { s.tasted = true; return { ok: true, line: st.say || rule.say, choices: this.choiceList(id) }; }
+    return this.advance(id, rule.say);
   },
   // The journal: what's happened so far, then where you are now
   journal(id) {
@@ -217,6 +277,11 @@ FUP.quests = {
       if (Object.keys(st.talkAll).every(k => s.talked[k])) { const r = this.advance(id, st.talkAll[npc]); return r; }
       return { ok: true, line: st.talkAll[npc] };
     }
+    if (st.taste) {
+      if (s.tasted) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
+      if (!FUP.run.satchel.length) return { ok: false, line: st.empty || 'Bring me a bowl of something. Cook first.' };
+      return { ok: true, line: st.ask || 'Which bowl?', choices: this.choiceList(id) };
+    }
     if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
     if (st.sayIf) for (const [flag, line] of Object.entries(st.sayIf)) if ((s.flags || {})[flag]) { st._say = line; }
     if (st.bring) {
@@ -231,7 +296,8 @@ FUP.quests = {
   advance(id, line) {
     const q = this.def(id), s = this.state.active[id], st = this.step(id);
     if (st && st.log) (s.log = s.log || []).push(st.log);
-    s.step = (s.step || 0) + 1; s.n = 0; s.talked = {};
+    if (st && st.give) this.grant(st.give);   // a step can hand you something (Pip's root seeds)
+    s.step = (s.step || 0) + 1; s.n = 0; s.talked = {}; s.tasted = false;
     if (s.step < q.steps.length) return { ok: true, line };
     const coins = this.finish(id);
     return { ok: true, line, coins, done: q.name, reward: this.isQuest(id) ? this.lastReward : null };

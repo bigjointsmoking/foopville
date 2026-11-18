@@ -51,7 +51,7 @@ FUP.village = {
     return Math.min(0.95, h.baseChance + h.perLevel * FUP.skills.level('rizz') + (FUP.gear.totals().rizz || 0));
   },
   // Haggler perk (Rizz 27): one retry per visit after a failed haggle.
-  canRetryHaggle() { return FUP.run.haggle === 'fail' && !FUP.run.haggleRetried && FUP.unlocks.hasPerk('haggleRetry'); },
+  canRetryHaggle() { return FUP.run.haggle === 'fail' && !FUP.run.haggleRetried && (FUP.unlocks.hasPerk('haggleRetry') || FUP.facts.has('perk:keptSign')); },   // (or the sign you kept: Clearing Out)
   // One try per visit. Returns { won, levels } or null if already tried.
   tryHaggle(rng = Math.random) {
     if (this.haggled() && !this.canRetryHaggle()) return null;
@@ -151,7 +151,7 @@ FUP.village = {
   // Secret recipes you haven't discovered or bought a riddle for yet, lowest level first.
   riddlesForSale() {
     const cb = FUP.cooking.cookbook;
-    return FUP.recipeData.list.filter(r => r.secret && !cb.discovered[r.name] && !cb.riddles[r.name]).sort((a, b) => a.level - b.level);
+    return FUP.recipeData.list.filter(r => r.secret && !r.noRiddle && !cb.discovered[r.name] && !cb.riddles[r.name]).sort((a, b) => a.level - b.level);
   },
   // Rizz 20+: Marrowbone charges half (data/village.js riddleHalfPriceRizz)
   riddlePrice(r) {

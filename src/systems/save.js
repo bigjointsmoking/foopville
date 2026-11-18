@@ -123,7 +123,7 @@ FUP.save = {
 
   S.register('cookbook', {
     get: () => FUP.cooking.cookbook,
-    set(d) { FUP.cooking.cookbook = { discovered: { ...(d.discovered || {}) }, riddles: { ...(d.riddles || {}) }, cooked: { ...(d.cooked || {}) } }; },
+    set(d) { FUP.cooking.cookbook = { discovered: { ...(d.discovered || {}) }, riddles: { ...(d.riddles || {}) }, cooked: { ...(d.cooked || {}) }, names: { ...(d.names || {}) } }; },
     reset: () => FUP.cooking.resetCookbook(),
   });
 

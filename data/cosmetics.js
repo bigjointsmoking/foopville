@@ -21,6 +21,7 @@ FUP.cosmeticData = {
     gatecrasher:   { text: 'the Gatecrasher', req: { facts: { 'boss:guardian': 1 } } },
     squirrel_bane: { text: "Squirrel's Bane", req: { facts: { 'kill:squirrel': 100 } } },
     pigeon_friend: { text: 'Friend of Pigeons', req: { facts: { 'boss:godfather': 5 } } },
+    witness:       { text: 'the Witness', req: { facts: { 'title:witness': 1 } } },   // His First Quest (v0.81)
   },
   // Where the hat sits: pixels above the hero's middle, and its size (map / fight)
   hatOffset: { map: -20, battle: -44 }, hatSize: { map: 22, battle: 44 },

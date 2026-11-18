@@ -530,7 +530,7 @@ class CookScene extends Phaser.Scene {
     const pv = FUP.cooking.preview(this.picked, this.method, level);
     if (pv.kind === 'recipe') {
       const r = pv.recipe, n = pv.stars;
-      g.add(ui.text(this, X + 12, 346, `📜 ${r.name.toUpperCase()}`, 15, c.good, { fontStyle: '700' }));
+      g.add(ui.text(this, X + 12, 346, `📜 ${FUP.cooking.title(r.name).toUpperCase()}`, 15, c.good, { fontStyle: '700' }));
       g.add(ui.text(this, X + 12, 370, `${'★'.repeat(n)}${'☆'.repeat(5 - n)} ${pv.tier.name.toUpperCase()}`, 15, pv.tier.color, { fontStyle: '700' }));
       g.add(ui.text(this, X + 12, 396, FUP.cooking.fxText(pv.fx), 13, c.ink, { wordWrap: { width: W - 24 }, lineSpacing: 2 }));
       g.add(ui.text(this, X + 12, 452, `+${pv.xp} Cooking XP   ·   sells for ${pv.sell} 🪙`, 13, c.accent, { fontStyle: '700' }));
@@ -713,12 +713,12 @@ class CookScene extends Phaser.Scene {
       g.add(ui.text(this, 62, y + 4, `Lv ${r.level}`, 15, st === 'known' ? c.accent : c.dim, { fontStyle: '700' }));
       if (st === 'secret') {
         g.add(ui.text(this, 130, y, '🔮 ??? Secret recipe', 15, c.dim, { fontStyle: '700' }));
-        g.add(ui.text(this, 130, y + 19, cb.riddles[r.name] ? `"${r.riddle}"` : 'Find it by experimenting, or buy a riddle from Chef Marrowbone.', 11, cb.riddles[r.name] ? c.info : c.dim, { fontStyle: 'italic', wordWrap: { width: 700 }, maxLines: 1 }));
+        g.add(ui.text(this, 130, y + 19, cb.riddles[r.name] ? `"${r.riddle}"` : r.noRiddle ? (r.hint || 'Nobody sells this one.') : 'Find it by experimenting, or buy a riddle from Chef Marrowbone.', 11, cb.riddles[r.name] ? c.info : c.dim, { fontStyle: 'italic', wordWrap: { width: 700 }, maxLines: 1 }));
         return;
       }
       const shownStars = C.recipeStars(r, level);
       const fx = C.effects(r, shownStars), m = FUP.cookingData.methods[r.method];
-      g.add(ui.text(this, 130, y, (r.secret ? '🔮 ' : '') + r.name, 15, st === 'known' ? c.ink : c.dim, { fontStyle: '700' }));
+      g.add(ui.text(this, 130, y, (r.secret ? '🔮 ' : '') + FUP.cooking.title(r.name), 15, st === 'known' ? c.ink : c.dim, { fontStyle: '700' }));
       const times = cb.cooked[r.name] ? `  ·  cooked ${cb.cooked[r.name]}x` : '';
       g.add(ui.text(this, 130, y + 19, (st === 'known' ? '★'.repeat(shownStars) + '☆'.repeat(5 - shownStars) + '  ' : '') + C.fxText(fx) + `  ·  ${r.xp} XP` + times, 11, st === 'known' ? c.info : c.dim, { wordWrap: { width: 300 }, maxLines: 1 }));
       // Ingredients and method

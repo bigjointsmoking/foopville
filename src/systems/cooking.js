@@ -18,7 +18,9 @@ FUP.cooking = {
 
   // A recipe's id for facts: 'Berry Skewer' -> 'berry_skewer'
   recipeId(recipe) { return recipe.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); },
-  resetCookbook() { this.cookbook = { discovered: {}, riddles: {}, cooked: {} }; },
+  resetCookbook() { this.cookbook = { discovered: {}, riddles: {}, cooked: {}, names: {} }; },
+  // A recipe's name in your book (Grandmother's Soup can end up named after you: v0.81)
+  title(name) { return (this.cookbook.names && this.cookbook.names[name]) || name; },
 
   // ---------- Recipes ----------
   // The same ingredients in any order, plus the method, as one key.
@@ -202,7 +204,7 @@ FUP.cooking = {
         xp = recipe.xp * (discovered ? d.discoveryXpMult : 1);
         this.cookbook.cooked[recipe.name] = (this.cookbook.cooked[recipe.name] || 0) + 1;
       }
-      name = burnt ? J.burntName.replace('{dish}', recipe.name) : recipe.name;
+      name = burnt ? J.burntName.replace('{dish}', this.title(recipe.name)) : this.title(recipe.name);
     } else {
       name = J.name;   // an experiment that wasn't a secret recipe
     }

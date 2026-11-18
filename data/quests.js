@@ -35,6 +35,7 @@ window.FUP = window.FUP || {};
 FUP.questData = {
   maxActive: 3,   // quests you can have taken at once, PER KIND (3 side stories + 3 challenges)
   boardSize: { side: 4, challenge: 4 },   // quests offered on each tab of the board
+  boardPerk: { kind: 'side', fact: 'perk:boardPlus', extra: 1 },   // His First Quest (v0.81): the Keeper posts one more errand
   // Board tabs (v0.78, Jesus: keep the old quests, add story-like side quests, keep it organized)
   kinds: {
     quest:     { name: 'Quests',       tag: 'QUEST',     blurb: 'Villagers\' own stories. Check the Requirements. Or talk to anyone with a ❗.' },
@@ -202,13 +203,7 @@ FUP.questData = {
         { event: 'kill', count: 6, match: { enemy: 'pigeon' }, goal: 'Defeat 6 Pigeons With a Grudge' },
         { talk: 'carpenter', say: 'The roof is quiet. My joinery is unjudged. Finally.' },
       ] },
-    oldSoup: { kind: 'side', from: 'oldtimer', difficulty: 'medium', name: "Grandmother's Soup", reward: 150,
-      text: 'The Old-timer misses a soup his grandmother made. He thinks Marrowbone might know it.',
-      steps: [
-        { talk: 'oldtimer', say: 'Glowcaps, she used. Lots of them. Ask the chef. He pretends to know everything.' },
-        { bring: { glowcap_mushroom: 4 }, to: 'chef', say: 'Glowcap soup. It\'s just glowcaps. Don\'t tell him that. Here, take him this bowl.' },
-        { talk: 'oldtimer', say: 'Hm. Not quite hers. Close, though. Thank you. Really.' },
-      ] },
+    // oldSoup retired in v0.81: Grandmother's Soup is a full Quest now (data/questlines.js)
     herringRun: { kind: 'side', from: 'fishmonger', difficulty: 'medium', name: 'Catch of the Day', reward: 170, req: { facts: { 'repair:south_road': 1 } },
       text: 'Gill on the Docks is short on Dock Herring. Catch 4. Gill will act like it\'s nothing.',
       steps: [
