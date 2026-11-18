@@ -62,7 +62,7 @@ FUP.gear = {
 
   // Everything you're wearing, added up. Missing stats count as 0.
   totals() {
-    const t = { atk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, rentLess: 0, satchel: 0, effects: [] };
+    const t = { atk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, stealLess: 0, satchel: 0, effects: [] };
     const eq = (FUP.run && FUP.run.equipped) || {};
     for (const slot of FUP.gearData.slots) {
       const it = eq[slot];
@@ -86,22 +86,19 @@ FUP.gear = {
   effectOf(it) {
     if (it.effect) return it.effect;
     const old = it.unique && it.unique.id;
-    return old === 'spareKey' ? 'rentImmune' : old === 'pigeonDiplomacy' ? 'pigeonDiplomacy' : null;
+    return old === 'spareKey' ? 'coinGuard' : old === 'pigeonDiplomacy' ? 'pigeonDiplomacy' : null;
   },
   // { name, text } of an item's special power, or null (for the backpack / shop lines)
   effectInfo(it) { const id = this.effectOf(it); return id ? FUP.gearData.effects[id] || null : null; },
 
   // ---------- Boss chase drops (data/gear.js bossDrops) ----------
   rowId(row) { return row.key || row.hat || row.place; },
-  dryKey(boss, row) { return `dry:${boss}:${this.rowId(row)}`; },
   rowName(row) { return row.key ? FUP.gearData.items[row.key].name : row.hat ? FUP.cosmeticData.hats[row.hat].name : FUP.placeData.items[row.place].name; },
   // Roll every row for this boss. Returns [{ id, name, emoji, gear (item or null), place (id or null), lost }]
   rollChase(bossKey, rng = Math.random) {
     const out = [];
     for (const row of FUP.gearData.bossDrops[bossKey] || []) {
-      const dk = this.dryKey(bossKey, row), dry = FUP.facts.get(dk);
-      if (!(rng() < row.rate || dry + 1 >= row.pity)) { FUP.facts.add(dk); continue; }
-      FUP.facts.set(dk, 0);
+      if (!(rng() < row.rate)) continue;   // plain random chance, no pity
       const id = this.rowId(row);
       FUP.facts.add('drop:' + id);
       if (row.hat) {
@@ -120,11 +117,11 @@ FUP.gear = {
     }
     return out;
   },
-  // For screens: [{ name, rateText: '1 in 8', dry, pity, found }]
+  // For screens: [{ name, rateText: '1 in 8', found }]
   chaseInfo(bossKey) {
     return (FUP.gearData.bossDrops[bossKey] || []).map(row => ({
       name: this.rowName(row), rateText: `1 in ${Math.round(1 / row.rate)}`,
-      dry: FUP.facts.get(this.dryKey(bossKey, row)), pity: row.pity, found: FUP.facts.get('drop:' + this.rowId(row)),
+      found: FUP.facts.get('drop:' + this.rowId(row)),
     }));
   },
 
@@ -134,8 +131,8 @@ FUP.gear = {
     const it = typeof itemOrKey === 'string' ? { ...FUP.gearData.items[itemOrKey], stats: FUP.gearData.items[itemOrKey].stats } : itemOrKey;
     const worn = FUP.run.equipped[it.slot];
     const a = it.stats || {}, b = (worn && worn.stats) || {};
-    const names = { atk: 'ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', rentLess: 'less rent', satchel: 'backpack slots' };
-    const pct = k => ['spd', 'crit', 'rizz', 'heal', 'resistPoison', 'resistFire', 'rentLess'].includes(k);
+    const names = { atk: 'ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', stealLess: 'less coin lost', satchel: 'backpack slots' };
+    const pct = k => ['spd', 'crit', 'rizz', 'heal', 'resistPoison', 'resistFire', 'stealLess'].includes(k);
     const diffs = [];
     for (const k of Object.keys(names)) {
       const d = Math.round(((a[k] || 0) - (b[k] || 0)) * 1000) / 1000;
@@ -168,7 +165,7 @@ FUP.gear = {
     if (stats.heal) out.push(`${pct(stats.heal)} food healing`);
     if (stats.resistPoison) out.push(`Poison resist ${Math.round(stats.resistPoison * 100)}%`);
     if (stats.resistFire) out.push(`Fire resist ${Math.round(stats.resistFire * 100)}%`);
-    if (stats.rentLess) out.push(`${Math.round(stats.rentLess * 100)}% less rent`);
+    if (stats.stealLess) out.push(`${Math.round(stats.stealLess * 100)}% less coin lost`);
     if (stats.satchel) out.push(`+${stats.satchel} backpack slot${stats.satchel === 1 ? '' : 's'}`);
     return out.join(' · ');
   },

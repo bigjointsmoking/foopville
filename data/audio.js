@@ -186,7 +186,7 @@ FUP.audioData = {
       drums: { vol: 0.45, notes: 'k h s h k k s h | k h s h k k s h | k h s h k k s h | k h s h k s s s' },
     },
 
-    // The Mushroom Landlord: ominous and fast. Dm - Bb - Gm - A
+    // The Mushroom Guardian: ominous and fast. Dm - Bb - Gm - A
     boss: {
       bpm: 150,
       lead: { wave: 'sawtooth', vol: 0.15, notes:

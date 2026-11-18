@@ -1,5 +1,5 @@
 // ============================================================
-// RAID RULES — the Landlord's Basement (data/raid.js). No drawing here.
+// RAID RULES — the Old Storehouse (data/raid.js). No drawing here.
 // Which rooms you get this trip, what's in the room you're in, and
 // "can I stand here?". The raid lives inside the Forest trip
 // (FUP.run.forest.raid), so the run timer keeps going.
@@ -7,7 +7,7 @@
 window.FUP = window.FUP || {};
 
 FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
-  current: 'lobby',
+  current: 'entry',
   OPEN: '#kd<', LOCKED: '#kd<>',   // solid letters while the door ahead is open / locked
 
   // Lock or unlock the ">" door (the screen calls this as enemies go down)
@@ -50,8 +50,8 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
     for (const [ch, type] of Object.entries(d.enemyLetters)) {
       for (const s of this.find(ch)) enemies.push(FUP.forest.makeEnemy(type, s, a, rng));
     }
-    // The Landlord at his desk: he waits for you
-    for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy('landlord', s, a, rng), still: true, landlord: true, touch: d.landlordTouch });
+    // The Guardian at his desk: he waits for you
+    for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy('guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
     const amb = this.find('A')[0];
     return {
       id: this.current, kind: a.kind,
@@ -110,7 +110,7 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
     }
     for (const ch of '>tsmA123xL') for (const s of this.find(ch)) if (!seen.has(s.tx + ',' + s.ty)) problems.push(`${a.name}: "${ch}" at ${s.tx},${s.ty} can't be reached`);
     if (a.kind !== 'office' && this.find('>').length !== 1) problems.push(`${a.name}: needs exactly one ">" exit`);
-    if (a.kind === 'office' && this.find('L').length !== 1) problems.push(`${a.name}: needs the Landlord "L"`);
+    if (a.kind === 'office' && this.find('L').length !== 1) problems.push(`${a.name}: needs the Guardian "L"`);
     if (a.kind === 'fight' && !Object.keys(FUP.raidData.enemyLetters).some(ch => this.find(ch).length)) problems.push(`${a.name}: a fight room with no enemies`);
     if (this.blockedTile(start.tx, start.ty - 1)) problems.push(`${a.name}: the square inside the "<" door is blocked`);
     if (a.hazard === 'vents' && !'123'.split('').every(ch => this.find(ch).length)) problems.push(`${a.name}: needs vents in groups 1, 2 and 3`);

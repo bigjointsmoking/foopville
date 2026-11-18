@@ -3,7 +3,7 @@
 // Blueprint 18.6. A trip goes: Foopville gate → Forest Edge → Goblin Toll
 // Road → Deep Woods. Each area is a maze with its own look, enemies,
 // ingredients and a campfire. Somewhere in the Deep Woods is a hidden hole:
-// the Landlord is at the bottom. Walk into an exit to change area.
+// the Guardian is at the bottom. Walk into an exit to change area.
 //
 // MAP KEY (each character is one square):
 //   #  tree (can't walk through)     .  grass       =  dirt path
@@ -144,9 +144,9 @@ FUP.forestData = {
       coinMult: 1.9,
       level: 11,
       trees: { tree_dark: 5, tree_spruce_dark: 4, tree_dead: 1 },
-      decorations: { deco_glowshroom: 0.05, deco_fern: 0.12, deco_shroom: 0.03, deco_log: 0.02, deco_stump: 0.01, deco_rentsign: 0.006 },
+      decorations: { deco_glowshroom: 0.05, deco_fern: 0.12, deco_shroom: 0.03, deco_log: 0.02, deco_stump: 0.01, deco_oldsign: 0.006 },
       landmarks: [['deco_glowshroom', 35, 17], ['deco_glowshroom', 37, 17], ['deco_glowshroom', 35, 19], ['deco_glowshroom', 37, 19],
-        ['deco_rentsign', 14, 1], ['deco_rentsign', 31, 13], ['deco_rentsign', 20, 22]],
+        ['deco_oldsign', 14, 1], ['deco_oldsign', 31, 13], ['deco_oldsign', 20, 22]],
       ground: { ...FUP.look.mood('deepWoods'), treeShade: 0.5 },     // colours: data/look.js
       light: FUP.look.mood('deepWoods').light,
       weather: 'fireflies',

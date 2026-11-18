@@ -13,7 +13,7 @@ FUP.run = {
   hp: null,      // your health between fights (null = full)
   limit: 0,      // your Limit bar between fights (0-100)
   runs: 0,       // Forest runs finished this life
-  coins: 0,      // carried coins (the Landlord wants them)
+  coins: 0,      // carried coins (the Guardian wants them)
   forest: null,  // the Forest you're walking right now (null = not on a run)
   battle: null,  // which Forest enemy you're fighting, and how it ended
   equipped: {},  // gear you're wearing: { weapon, head, body, legs, trinket } (null = empty)
@@ -232,7 +232,7 @@ FUP.run = {
   },
 
   // Called when you finish at the campfire. Returns a summary for the screen.
-  // Walk home from the campfire without fighting the Landlord. The trip ends,
+  // Walk home from the campfire without fighting the Guardian. The trip ends,
   // but you keep your bag, satchel, coins and gear. Doesn't count as a finished run.
   retreat() {
     this.forest = null;

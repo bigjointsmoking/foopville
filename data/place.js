@@ -56,7 +56,7 @@ FUP.placeData = {
     fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 1200, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
     // Boss trophies (G1): only from boss chase drops (data/gear.js bossDrops). noShop = never sold anywhere.
     golden_perch:  { name: 'Golden Perch', emoji: '🏆', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'The Godfather sat here. Now you do. Well, a pigeon does.' },
-    framed_notice: { name: 'Framed Final Notice', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'Evicted the evictor. Framed it.' },
+    framed_warning: { name: 'Framed Last Warning', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'You broke the warning. Then you framed it.' },
     // Farm helpers (v0.70): put them near your patches. helper.kind = what they do (src/systems/garden.js), radius in squares.
     //   scarecrow: chance of one extra crop at harvest · barrel: waters thirsty crops by itself, `water` times a day
     scarecrow:   { name: 'Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { building: 4 } },

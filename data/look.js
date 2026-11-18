@@ -148,7 +148,7 @@ FUP.look = {
     moon: { x: 790, y: 92, r: 34, color: 'k4', shade: 's3' },
     mountainsFar: 'b2', mountainsNear: 'k1',
     dragon: { x: 132, y: 300, scale: 2, driftX: 20, driftY: 12, driftMs: 7000 },
-    landlord: { x: 700, y: 470, scale: 3, shade: 'p2', alpha: 1 },   // shade = dusk colour laid over him
+    guardian: { x: 700, y: 470, scale: 3, shade: 'p2', alpha: 1 },   // shade = dusk colour laid over him
     treeRow: ['tree_dark', 'tree_spruce_dark', 'tree_dead'],
     ground: { grass: ['g1', 'g2'], path: ['k2', 's1', 's2'], pathEdge: 'k1' },
     lampGlow: 'y2', smoke: 's3', fireflies: 18, fireflyColor: 'y2',

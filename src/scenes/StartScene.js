@@ -1,6 +1,6 @@
 // ============================================================
 // START SCREEN — the title. Foopville at dusk in front of the dark
-// Forest, the Mushroom Landlord looming behind the trees and a dragon
+// Forest, the Mushroom Guardian looming behind the trees and a dragon
 // in the sky. Continue your saved life, or start a new one
 // (which opens the character creator).
 // Colours and positions: data/look.js (title).
@@ -15,16 +15,16 @@ class StartScene extends Phaser.Scene {
     this.retired = FUP.save.retireOld();   // a save from before version 2: gone, the narrator says so once
     this.saved = FUP.save.summary();
 
-    // ---------- Back to front: sky, dragon, mountains, Landlord, Forest, village ----------
+    // ---------- Back to front: sky, dragon, mountains, Guardian, Forest, village ----------
     this.add.image(0, 0, this.paintSky(W, H)).setOrigin(0).setScale(2).setDepth(-50);
     this.twinkle(W);
 
     const D = TT.dragon;
-    const dragon = FUP.anim.sprite(this, D.x, D.y, 'title_dragon', 'idle', '🐉', 120, D.scale).setDepth(-38);   // in front of the mountains, behind the Landlord
+    const dragon = FUP.anim.sprite(this, D.x, D.y, 'title_dragon', 'idle', '🐉', 120, D.scale).setDepth(-38);   // in front of the mountains, behind the Guardian
     this.tweens.add({ targets: dragon, x: D.x + D.driftX, y: D.y - D.driftY, duration: D.driftMs, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     this.add.image(0, 0, this.paintMountains(W, H)).setOrigin(0).setScale(2).setDepth(-40);
-    this.drawLandlord();
+    this.drawGuardian();
 
     // The dark Forest: two rows of trees along the horizon
     const keys = TT.treeRow.filter(k => this.textures.exists(k));
@@ -136,11 +136,11 @@ class StartScene extends Phaser.Scene {
     }
   }
 
-  // The Landlord, huge and dusky behind the trees, slowly breathing
-  drawLandlord() {
-    const LL = FUP.look.title.landlord;
-    if (!this.textures.exists('landlord')) return;
-    const s = this.add.image(LL.x, LL.y, 'landlord').setOrigin(0.5, 1).setScale(FUP.ui.artScale(LL.scale)).setFlipX(true).setDepth(-35).setAlpha(LL.alpha);
+  // The Guardian, huge and dusky behind the trees, slowly breathing
+  drawGuardian() {
+    const LL = FUP.look.title.guardian;
+    if (!this.textures.exists('guardian')) return;
+    const s = this.add.image(LL.x, LL.y, 'guardian').setOrigin(0.5, 1).setScale(FUP.ui.artScale(LL.scale)).setFlipX(true).setDepth(-35).setAlpha(LL.alpha);
     s.setTint(FUP.look.num(LL.shade));   // darkened into the dusk, still recognisably him
     this.tweens.add({ targets: s, scaleY: FUP.ui.artScale(LL.scale) * 1.02, duration: 2400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   }

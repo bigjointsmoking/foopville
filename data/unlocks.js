@@ -22,7 +22,7 @@ FUP.unlockData = {
         goblin: [{ coins: 20 }],
         pigeon: ['grumpleberry', 'glowcap_mushroom'],
         godfather: ['heartroot', { coins: 40 }],
-        tenantShroom: ['glowcap_mushroom'],
+        strayShroom: ['glowcap_mushroom'],
         sporeBouncer: ['spore_b_gone_moss'],
         moldAccountant: [{ coins: 25 }],
         mosquitoIntern: ['croakberry'], leechLawyer: [{ coins: 30 }], filingFrog: ['stamped_form'],

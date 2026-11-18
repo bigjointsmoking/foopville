@@ -5,7 +5,7 @@
 // you want to go. Walk off the map through a gap in its edge (a glowing sign)
 // to reach the next region (data/world.js, src/systems/world.js). Each area has a campfire, its
 // own trees, light and weather, and fog of war. A hidden hole in the Deep
-// Woods leads down into the Landlord's Basement (RaidScene.js).
+// Woods leads down into the Old Storehouse (RaidScene.js).
 // Everything on the map lives in FUP.run.forest (one entry per region),
 // so leaving for a fight or the campfire puts you exactly where you were.
 // ============================================================
@@ -190,7 +190,7 @@ class WorldScene extends Phaser.Scene {
       }
     }
 
-    // Landmarks: fixed pictures on fixed squares (signposts, stump circles, FOR RENT signs...)
+    // Landmarks: fixed pictures on fixed squares (signposts, stump circles, old signs...)
     for (const [key, tx, ty] of this.info.landmarks || []) {
       const x = tx * T + T / 2, y = ty * T + T * 0.85;
       ui.sprite(this, x, y, key, '', 14).setOrigin(0.5, 1).setDepth(y);
@@ -278,7 +278,7 @@ class WorldScene extends Phaser.Scene {
     fix(FUP.ui.shade(this, 0.7));
     fix(FUP.ui.panel(this, W / 2 - 250, 170, 500, 250, 'panel'));
     fix(ui.text(this, W / 2, 200, 'Climb down? There\'s no coming back.', 22, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0));
-    fix(ui.text(this, W / 2, 245, 'The Landlord\'s Basement is down there: 4 rooms, then his Office.\nNo campfire, no heading home, no running from him.\nWhat\'s in your satchel is what you\'ve got.', 14, c.ink, { align: 'center', lineSpacing: 5 }).setOrigin(0.5, 0));
+    fix(ui.text(this, W / 2, 245, 'The Old Storehouse is down there: 4 rooms, then the Guardian\'s Hall.\nNo campfire, no heading home, no running from it.\nWhat\'s in your satchel is what you\'ve got.', 14, c.ink, { align: 'center', lineSpacing: 5 }).setOrigin(0.5, 0));
     const close = () => parts.forEach(p => p.destroy());
     const btn = (x, label, fn, hot) => {
       const b = ui.button(this, x, 340, 190, 48, label, fn, { size: 18, hot });
@@ -289,7 +289,7 @@ class WorldScene extends Phaser.Scene {
       this.say('holeClimb');
       FUP.audio.sfx('encounter');
       this.cameras.main.fadeOut(700, 0, 0, 0);
-      // Down into the Landlord's Basement (blueprint 18.6): 4 rooms, then his Office
+      // Down into the Old Storehouse (blueprint 18.6): 4 rooms, then his Office
       this.time.delayedCall(720, () => { FUP.raid.start(this.f); this.scene.start('Raid', {}); });
     }, true);
     btn(W / 2 + 15, 'Not yet', () => { close(); this.leaving = false; this.holeArmed = false; this.say('holeNotYet'); });
@@ -692,8 +692,8 @@ class WorldScene extends Phaser.Scene {
     const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 20000;
     const run = FUP.run, T = FUP.forestData.toll, e = this.A.enemies[index], data = FUP.enemies.goblin;
     const g = FUP.gear.totals();
-    // "of the Tax-Exempt" gear cuts the toll too (rentLess)
-    const cost = share => run.coins > 0 ? Math.max(1, Math.ceil(run.coins * share * (1 - (g.rentLess || 0)))) : 0;
+    // "of the Tax-Exempt" gear cuts the toll too (stealLess)
+    const cost = share => run.coins > 0 ? Math.max(1, Math.ceil(run.coins * share * (1 - (g.stealLess || 0)))) : 0;
     const share = FUP.unlocks.tollShare();   // smaller toll at Rizz 15 and 30 (data/forest.js payByRizz)
     const pay = cost(share), haggled = cost(share * T.haggledShare);
     const chance = FUP.combat.rizzChance('charm', FUP.skills.level('rizz'), FUP.weapons[run.weapon], data, g.rizz);

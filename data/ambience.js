@@ -262,7 +262,7 @@ FUP.ambienceData = {
   // silhouette onto the ground, away from the sun. Through the day the sun swings across: long shadows
   // to the west at dawn, short ones at noon, long ones to the east at dusk; they fade at night.
   sunShadow: {
-    keys: ['tree_', 'vil_', 'bush', 'rock', 'deco_stump', 'deco_log', 'deco_scarecrow', 'deco_haybale', 'deco_signpost', 'deco_rentsign',
+    keys: ['tree_', 'vil_', 'bush', 'rock', 'deco_stump', 'deco_log', 'deco_scarecrow', 'deco_haybale', 'deco_signpost', 'deco_oldsign',
            'amb_bush', 'amb_bigbush', 'amb_berrybush', 'amb_rock', 'amb_toadstool', 'raid_desk', 'grave', 'campfire', 'prop_', 'field_corn'],
     alpha: 0.36,
     angle: [55, -55],         // degrees: dawn → dusk (0 = straight down the screen)

@@ -1,6 +1,6 @@
 // ============================================================
 // FACTS — names for the counters the game keeps (src/systems/facts.js).
-// A fact is "prefix:id" with a number, like 'boss:landlord': 2.
+// A fact is "prefix:id" with a number, like 'boss:guardian': 2.
 // These names show up when something is locked ("Repair the Well").
 // ============================================================
 window.FUP = window.FUP || {};

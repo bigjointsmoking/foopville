@@ -1,9 +1,9 @@
 // ============================================================
 // BATTLE SCREEN — Active Time Battle, one or more enemies.
 // Time never stops: every gauge fills every frame, even while you pick.
-// Tap an enemy to target it. The boss (Mushroom Landlord) has phases,
-// summons minions, poisons you, takes rent and casts Fever Dream.
-// Start it with: this.scene.start('Battle', { enemies: ['landlord'] })
+// Tap an enemy to target it. The boss (Mushroom Guardian) has phases,
+// summons minions, poisons you, takes your coins and casts Fever Dream.
+// Start it with: this.scene.start('Battle', { enemies: ['guardian'] })
 //            or: this.scene.start('Battle', { enemy: 'squirrel' })
 // ============================================================
 
@@ -12,7 +12,7 @@ const BATTLE_SLOTS = {
   normal: [[650, 285], [510, 335], [810, 335], [540, 205], [800, 205]],
   boss: [660, 290],
   minions: [[505, 340], [830, 345], [520, 200], [835, 205]],
-  fever: [[640, 290], [460, 275], [790, 270]], // the real Landlord and 2 fakes get shuffled into these
+  fever: [[640, 290], [460, 275], [790, 270]], // the real Guardian and 2 fakes get shuffled into these
 };
 
 class BattleScene extends Phaser.Scene {
@@ -68,7 +68,7 @@ class BattleScene extends Phaser.Scene {
     this.isBossFight = this.enemyKeys.some(k => FUP.enemies[k].boss);
     this.isMiniBoss = this.enemyKeys.some(k => FUP.enemies[k].miniBoss);   // the Pigeon Godfather
     const rb = FUP.run.battle || {};
-    this.inRaid = !!(FUP.run.forest && FUP.run.forest.raid);   // the Landlord's Basement (RaidScene.js)
+    this.inRaid = !!(FUP.run.forest && FUP.run.forest.raid);   // the Old Storehouse (RaidScene.js)
     this.noFleeTurns = rb.noFleeTurns || 0;                     // a raid ambush: no running on your first turn
 
     this.drawBackground();
@@ -204,7 +204,7 @@ class BattleScene extends Phaser.Scene {
     return key;
   }
 
-  // Raid fights happen in the Landlord's Basement: brick walls, a plank floor, pipes
+  // Raid fights happen in the Old Storehouse: brick walls, a plank floor, pipes
   drawBasement() {
     const W = this.scale.width, C = FUP.raidData.colors, office = this.isBossFight;
     this.add.rectangle(0, 0, W, 420, office ? C.office : C.wall).setOrigin(0);
@@ -241,7 +241,7 @@ class BattleScene extends Phaser.Scene {
     e.key = key;
     // Deeper Forest areas: tougher enemies, more XP and coins (area multiplier, data/forest.js)
     const rb = FUP.run.battle || {}, mult = rb.mult;
-    // Raid enemies can be worth more than usual (Tenant Shrooms you meet, not the ones the boss calls)
+    // Raid enemies can be worth more than usual (Stray Shroom you meet, not the ones the boss calls)
     if (rb.raid) Object.assign(e, (FUP.raidData.raidEnemy || {})[key] || {});
     if (mult && mult !== 1 && !e.boss) {
       for (const k of ['maxHp', 'atk', 'def', 'xp']) if (e[k]) e[k] = Math.round(e[k] * mult);
@@ -333,7 +333,7 @@ class BattleScene extends Phaser.Scene {
 
     // Boss phase banner
     this.phaseText = ui.text(this, 660, 86, '', 15, FUP.look.hex('p2'), { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4 }).setOrigin(0.5).setDepth(401);
-    // The Landlord's Final Notice countdown (BattleSkills.js), top left so it doesn't hide his tells
+    // The Guardian's Last Warning countdown (BattleSkills.js), top left so it doesn't hide his tells
     this.noticeLabel = ui.text(this, 24, 84, '', 15, c.crit, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4, wordWrap: { width: 330 } }).setDepth(401);
 
     // Bottom panel
@@ -380,7 +380,7 @@ class BattleScene extends Phaser.Scene {
     this.buffText.setText(status.join('  ·  '));
     this.guardIcon.setVisible(p.defending);
 
-    // Fakes copy the real Landlord so you can't tell them apart.
+    // Fakes copy the real Guardian so you can't tell them apart.
     const boss = this.boss();
     const t = this.target();
     for (const e of this.enemies) {
@@ -792,7 +792,7 @@ class BattleScene extends Phaser.Scene {
     }, { cat: 'rizz' });
   }
 
-  // No running from the Landlord or the Pigeon Godfather.
+  // No running from the Guardian or the Pigeon Godfather.
   canFlee() { return !this.boss() && !this.liveReal().some(o => o.noFlee) && !this.noFleeTurns; }
 
   doFlee() {
@@ -913,7 +913,7 @@ class BattleScene extends Phaser.Scene {
     if (how === 'killed' && !e.fake) { FUP.facts.add(`kill:${e.key}`); if (e.boss || e.miniBoss) FUP.facts.add(`boss:${e.key}`); }
     if (how === 'killed' && e.xp) { this.meleeXp += e.xp; FUP.skills.addXp('melee', e.xp, at); }
     if (how === 'charmed' && e.xp) { const x = Math.round(e.xp * FUP.balance.charmXpShare * FUP.unlocks.perkBest('charmXpMult', 1)); this.rizzXp += x; FUP.skills.addXp('rizz', x, at); }
-    // Quests count kills and charms (not the fake Landlords from the Fever Dream)
+    // Quests count kills and charms (not the fake Guardians from the Fever Dream)
     if (!e.fake && (how === 'killed' || how === 'charmed')) this.questNews.push(...FUP.quests.event(how === 'killed' ? 'kill' : 'charm', { enemy: e.key }));
     e.view.disableInteractive();
     e.tellText.setVisible(false);
@@ -923,7 +923,7 @@ class BattleScene extends Phaser.Scene {
       if (how === 'killed') { this.time.delayedCall(450, () => FUP.fx.burst(this, e.view.x, e.view.y, 'poof')); FUP.fx.shake(this, 'kill'); }
     }
 
-    // Boss down: the fever breaks and the tenants run.
+    // Boss down: the fever breaks and the strays run.
     if (e.boss && !e.fake) {
       if (this.fever) this.endFever(true);
       for (const o of this.live()) this.removeEnemy(o, 'flee');
@@ -962,11 +962,11 @@ class BattleScene extends Phaser.Scene {
     }
     const b = e.bossRules, n = e.turnInPhase + 1, N = b.notice;
     const minions = this.liveReal().filter(o => o.minion).length;
-    if (e.notice && e.notice.left <= 1) e.nextMove = N.evict;                       // Final Notice runs out: EVICTION
+    if (e.notice && e.notice.left <= 1) e.nextMove = N.slam;                        // Last Warning runs out: DOOR SLAM
     else if (n === b.feverOnTurn && !e.feverUsed[e.phase]) e.nextMove = b.special.fever;
     else if (N && n >= N.onTurn && !e.noticeUsed[e.phase] && !e.notice) e.nextMove = N.serve;
     else if (e.phase === 0 && n % b.summonEvery === 0 && minions < b.maxMinions) e.nextMove = b.special.summon;
-    else if (e.phase === 2 && n % b.rentEvery === 0) e.nextMove = b.special.rent;
+    else if (e.phase === 2 && n % b.feedEvery === 0) e.nextMove = b.special.feed;
     else FUP.combat.planEnemyMove(e);
   }
 
@@ -996,9 +996,9 @@ class BattleScene extends Phaser.Scene {
     this.moveCallout(e, m.name);
 
     if (this.actSignature(e, m)) {
-      // handled: ledger, stance, audit, formation, bodyguard, eating your snack, Final Notice
+      // handled: ledger, stance, audit, formation, bodyguard, eating your snack, Last Warning
     } else if (m.type === 'attack' || m.type === 'steal') {
-      const landed = this.strike(e, m.power, m.power >= 1.5, !!m.eviction);   // Perfect Block / Riposte can stop it
+      const landed = this.strike(e, m.power, m.power >= 1.5, !!m.slam);   // Perfect Block / Riposte can stop it
       if (landed && m.poison && !this.over) this.addPoison(m.poison);
       if (m.type === 'steal' && landed && !this.over) {
         if (this.satchel.length) {
@@ -1037,7 +1037,7 @@ class BattleScene extends Phaser.Scene {
     } else if (m.type === 'lateFee') {
       // Moss Goblin: a light hit, and he helps himself to some of your coins
       const landed = this.strike(e, m.power, false);
-      const take = landed && FUP.run.coins > 0 ? Math.max(1, Math.floor(FUP.run.coins * m.steal * (1 - (p.rentLess || 0)))) : 0;
+      const take = landed && FUP.run.coins > 0 ? Math.max(1, Math.floor(FUP.run.coins * m.steal * (1 - (p.stealLess || 0)))) : 0;
       if (!this.over && landed) {
         if (take > 0) {
           FUP.run.coins -= take;
@@ -1053,17 +1053,17 @@ class BattleScene extends Phaser.Scene {
         this.popup(o.view, m.label.toUpperCase(), 'info');
       }
       this.say('pigeonRally');
-    } else if (m.type === 'rent') {
+    } else if (m.type === 'feed') {
       this.strike(e, m.power, false);
-      const keyHolder = (p.effects || []).includes('rentImmune');   // the Master Key: no rent
-      const take = keyHolder ? 0 : Math.floor(FUP.run.coins * e.bossRules.rentTake * (1 - (p.rentLess || 0)));
+      const keyHolder = (p.effects || []).includes('coinGuard');   // the Master Key: no Feeding Time
+      const take = keyHolder ? 0 : Math.floor(FUP.run.coins * e.bossRules.feedTake * (1 - (p.stealLess || 0)));
       if (take > 0) {
         FUP.run.coins -= take;
         this.popup(this.playerSprite, `-${take} 🪙`, 'bad', -40);
-        this.say('bossRent', { item: take });
+        this.say('bossFeed', { item: take });
         FUP.audio.sfx('coins');
       } else {
-        this.say('bossRentBroke');
+        this.say('bossFeedBroke');
       }
     } else if (m.type === 'fever') {
       this.startFever(e);
@@ -1071,7 +1071,7 @@ class BattleScene extends Phaser.Scene {
 
     e.movesDone++;
     if (e.boss && !this.over) {
-      this.bossTurnEnd(e, m);   // Tenants pay rent, the Final Notice counts down
+      this.bossTurnEnd(e, m);   // Strays share spores (heal it), the Last Warning counts down
       e.turnInPhase++;
       if (e.phase === 1) this.addPoison(e.bossRules.poisonPerTurn); // Spore Season
     }
@@ -1141,7 +1141,7 @@ class BattleScene extends Phaser.Scene {
     if (!silent) this.say('feverEnd');
   }
 
-  // A fake Landlord vanishes. If you hit it, you wasted your turn.
+  // A fake Guardian vanishes. If you hit it, you wasted your turn.
   popFake(e, quiet = false) {
     if (e.gone) return;
     e.gone = true;
@@ -1186,7 +1186,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   // ---------- End of fight ----------
-  // result: 'win' | 'charmed' | 'fled' | 'lose' | 'boss' (beat the Landlord)
+  // result: 'win' | 'charmed' | 'fled' | 'lose' | 'boss' (beat the Guardian)
   endBattle(result, alreadySaid = false) {
     if (this.over) return;
     this.over = true;
@@ -1243,7 +1243,7 @@ class BattleScene extends Phaser.Scene {
       if (kept.length) lines.push(`Dropped: ${show(kept)}`);
       if (this.sweetGifts.length) lines.push(`🍬 Sweet-talked: ${this.sweetGifts.join(' ')}`);
       if (lost.length) lines.push(`Backpack full. Left behind: ${show(lost)}`);
-      // Gear drops (normal enemies sometimes, the Landlord always)
+      // Gear drops (normal enemies sometimes, the Guardian always)
       for (const e of this.killed) {
         if (e.noGear) continue;   // the training dummy drops nothing
         const chance = (run.battle && run.battle.gearChanceMult) || 1;   // a raid ambush: x2
@@ -1251,7 +1251,7 @@ class BattleScene extends Phaser.Scene {
         const item = FUP.gear.rollDrop(!!(e.boss || e.gearMin), Math.random, e.gearMin, chance, tier);   // Godfather: always Rare+
         // Drops go in your backpack (v0.41); no room = left behind
         if (item) { if (run.addGear(item)) { lines.push(`🎁 ${item.rarity} gear: ${item.name} (in your backpack)`); this.gotGear = true; } else lines.push(`🎁 ${item.rarity} ${item.name} dropped, but your backpack is full. Left behind.`); }
-        // Boss chase drops (G1, data/gear.js bossDrops): each row rolls on its own, with pity
+        // Boss chase drops (G1, data/gear.js bossDrops): each row rolls on its own, plain chance
         if ((e.boss || e.miniBoss) && FUP.gearData.bossDrops[e.key]) {
           const got = FUP.gear.rollChase(e.key);
           for (const d of got) {
@@ -1259,8 +1259,8 @@ class BattleScene extends Phaser.Scene {
             if (d.gear) this.gotGear = true;
           }
           if (got.length) { this.time.delayedCall(200, () => { this.bigMoment('RARE DROP!', FUP.ui.colors.accent); this.say('chaseDrop'); FUP.audio.sfx('fanfare'); }); }
-          // Nothing hidden: what this boss can drop, and how long you've gone without each
-          lines.push('Rare drops: ' + FUP.gear.chaseInfo(e.key).map(c => `${c.name} ${c.rateText} (dry ${c.dry}/${c.pity})`).join(' · '));
+          // Nothing hidden: what this boss can drop and the odds of each (✓ = you've had it before)
+          lines.push('Rare drops: ' + FUP.gear.chaseInfo(e.key).map(c => `${c.name} ${c.rateText}${c.found ? ' ✓' : ''}`).join(' · '));
         }
       }
       lines.push(`HP left: ${p.hp}/${p.maxHp}`);
@@ -1281,7 +1281,7 @@ class BattleScene extends Phaser.Scene {
         'You wake up at home with full HP.');
     }
 
-    // Beat the Landlord: the run is over. Show the run summary too.
+    // Beat the Guardian: the run is over. Show the run summary too.
     let summary = null;
     if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
@@ -1292,7 +1292,7 @@ class BattleScene extends Phaser.Scene {
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away
     else if (this.questNews.length) lines.push(`📜 Quest done: ${this.questNews.join(', ')}!`);
 
-    const titles = { win: 'VICTORY', lose: this.isBossFight ? 'EVICTED' : 'YOU DIED', charmed: 'CHARMED', fled: 'ESCAPED', boss: 'LANDLORD EVICTED' };
+    const titles = { win: 'VICTORY', lose: this.isBossFight ? 'SHOWN THE DOOR' : 'YOU DIED', charmed: 'CHARMED', fled: 'ESCAPED', boss: 'GUARDIAN DEFEATED' };
     const colors = { win: c.good, lose: c.bad, charmed: FUP.look.hex('p2'), fled: c.dim, boss: c.accent };
     ui.shade(this, 0.7).setDepth(500);
     FUP.ui.panel(this, W / 2 - 250, 110, 500, 370, 'panel').setDepth(501);
@@ -1303,7 +1303,7 @@ class BattleScene extends Phaser.Scene {
     let label, go;
     if (!survived && run.isHardcore()) { label = 'New life'; go = () => this.scene.start('Start'); }
     else if (!survived) { label = '🏠 Wake up at home'; go = () => this.scene.start('Village', { from: 'respawn' }); }
-    else if (result === 'boss') { label = '🛝 Eviction Chute'; go = () => this.evictionChute(); }
+    else if (result === 'boss') { label = '🛝 Exit Chute'; go = () => this.exitChute(); }
     else if (run.battle && run.battle.tutorial) { label = '🏝️ Back to the island'; go = () => this.scene.start('World', { from: 'tutorialFight' }); }   // Orientation Isle (v0.62)
     else if (run.forest && run.forest.raid && !this.isBossFight) { label = '🚪 Back to the basement'; go = () => this.scene.start('Raid', {}); }
     else if (run.forest && !this.isBossFight) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }
@@ -1313,8 +1313,8 @@ class BattleScene extends Phaser.Scene {
     next.rect.setDepth(502); next.txt.setDepth(503);
   }
 
-  // The Landlord is down: a chute opens under his desk and you slide all the way home (blueprint 18.6).
-  evictionChute() {
+  // The Guardian is down: a chute opens under his desk and you slide all the way home (blueprint 18.6).
+  exitChute() {
     if (this.sliding) return;
     this.sliding = true;
     const W = this.scale.width, H = this.scale.height, ui = FUP.ui;
@@ -1324,7 +1324,7 @@ class BattleScene extends Phaser.Scene {
     tube.lineStyle(70, FUP.look.num('w3')); tube.lineBetween(-40, 80, W + 40, H - 60);
     tube.lineStyle(56, FUP.look.num('k1')); tube.lineBetween(-40, 80, W + 40, H - 60);
     const hero = ui.sprite(this, -20, 70, FUP.looks.key('hero_map'), '🧍', 40).setDepth(902).setAngle(30).setScale(FUP.ui.artScale(FUP.ui.pixelScale * 1.4));
-    ui.text(this, W / 2, 60, 'THE EVICTION CHUTE', 30, ui.colors.accent, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 6 }).setOrigin(0.5).setDepth(903);
+    ui.text(this, W / 2, 60, 'THE EXIT CHUTE', 30, ui.colors.accent, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 6 }).setOrigin(0.5).setDepth(903);
     const line = Phaser.Utils.Array.GetRandom(FUP.narrator.chuteSlide);
     ui.text(this, W / 2, H - 40, line, 17, ui.colors.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: W - 80 } }).setOrigin(0.5).setDepth(903);
     FUP.audio.sfx('flee');
@@ -1345,7 +1345,7 @@ class BattleScene extends Phaser.Scene {
     const fallback = (this.target() || this.enemies[0] || {}).name || 'enemy';
     const who = vars.enemy || fallback;
     const line = Phaser.Utils.Array.GetRandom(lines)
-      .replace(/\b([Tt]he) \{enemy\}/g, (m, t) => who.startsWith('The ') ? `${t} ${who.slice(4)}` : `${t} ${who}`)   // no "The The Mushroom Landlord"
+      .replace(/\b([Tt]he) \{enemy\}/g, (m, t) => who.startsWith('The ') ? `${t} ${who.slice(4)}` : `${t} ${who}`)   // no "The The Mushroom Guardian"
       .replace(/\{enemy\}/g, who)
       .replace(/\{item\}/g, vars.item !== undefined ? vars.item : 'snack');
     this.narratorText.setText(line);

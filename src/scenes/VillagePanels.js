@@ -507,7 +507,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     const active = Q.activeIds().map(id => {
       const q = Q.def(id), done = Q.complete(id);
       return {
-        name: `${q.name}  ·  ${q.reward} 🪙`, color: done ? c.good : c.ink, sub: `${q.text}\n${Q.progressText(id)}`, subColor: done ? c.good : c.info,
+        name: `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙`, color: done ? c.good : c.ink, sub: `${q.text}\n${Q.progressText(id)}`, subColor: done ? c.good : c.info,
         btn: done ? 'Hand in' : null, hot: true,
         fn: () => { const coins = Q.handIn(id); if (coins) { FUP.audio.sfx('fanfare'); this.talk('done'); this.sayLine(`Quest done: ${q.name}. +${coins} coins.`); } },
         btn2: 'Drop', fn2: () => { Q.drop(id); },
@@ -524,7 +524,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     const avail = Q.available().map(id => {
       const q = Q.def(id);
       return {
-        name: `${q.name}  ·  ${q.reward} 🪙`, sub: q.text, subColor: c.dim,
+        name: `${Q.label(id)}  ·  ${q.name}  ·  ${q.reward} 🪙`, sub: q.text, subColor: c.dim,
         btn: 'Take', disabled: !Q.canTake(),
         fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.talk('taken'); } else this.talk('tooMany'); },
       };

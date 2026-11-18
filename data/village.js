@@ -171,7 +171,7 @@ FUP.villageData = {
       allKnown: ['You\'ve heard every riddle I have. Now go cook them. Badly, I assume.'],
       broke: ['Knowledge costs money. Ignorance is free, as you\'ve proven.'],
       rizz: [
-        { level: 10, line: 'Fire hurts mushrooms. The Landlord is a mushroom. Do the maths. I\'ll wait.' },
+        { level: 10, line: 'Fire hurts mushrooms. The Guardian is a mushroom. Do the maths. I\'ll wait.' },
         { level: 20, line: 'Half price lessons. Watching you cook is payment enough. Painful payment.' },
         { level: 30, line: 'Take this Heartroot. Cook something worthy of it. You won\'t. Try anyway.', gift: { ingredient: 'heartroot', count: 1 } },
       ],
@@ -310,7 +310,7 @@ FUP.villageData = {
   // Things that give the hills and the farm a purpose (v0.67). sprite, square, solid = blocks walking,
   // text = walk up and read it (narrator bar). Pictures: art/fupville_art.py (prop_*, deco_*).
   props: [
-    { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light is on in the Landlord's basement. He's up late, counting your rent." },
+    { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light flickers in the Deep Woods. Something down there is still awake." },
     { sprite: 'prop_flag', tx: 32, ty: 10 },
     { sprite: 'prop_bench', tx: 29, ty: 11, solid: true },
     { sprite: 'prop_flowerbed', tx: 29, ty: 13 },

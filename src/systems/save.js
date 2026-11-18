@@ -19,6 +19,12 @@ FUP.save = {
   KEY: 'foopville_save_v2',
   VERSION: 2,
   OLD_KEYS: ['fupville_save_v1'],   // saves from before version 2: deleted, not converted
+  // v0.75 (Jesus, 2026-11-17): the boss and its things got new code names. Saves from before
+  // are converted when read, so nobody loses a boss kill, hat, title, trophy or raid spot.
+  RENAMES: [['Landlord-Proof Helm', 'Spore-Proof Helm'], ["Landlord's Bane", "Guardian's Bane"], ['Eviction Notice', 'Door Slammer'],
+    ['landlord_s_bane', 'guardian_s_bane'], ['eviction_notice', 'door_slammer'], ['landlord_cap', 'guardian_cap'], ['framed_notice', 'framed_warning'], ['tenantShroom', 'strayShroom'],
+    ['landlord', 'guardian'], ['evicted', 'gatecrasher'], ['rentImmune', 'coinGuard'], ['rentLess', 'stealLess'],
+    ['lobby', 'entry'], ['unit2b', 'storeroom']],
   parts: {},
 
   register(name, part) { this.parts[name] = part; },
@@ -41,10 +47,16 @@ FUP.save = {
     try { localStorage.setItem(this.KEY, JSON.stringify(data)); return true; } catch (e) { return false; }
   },
 
+  // Old code names -> new ones, only as whole names in the save text ("landlord", "boss:landlord")
+  convert(raw) {
+    for (const [from, to] of this.RENAMES) raw = raw.replace(new RegExp(`(["':])${from}(?=")`, 'g'), `$1${to}`);
+    return raw;
+  },
+
   read() {
     try {
       const raw = localStorage.getItem(this.KEY);
-      const data = raw && JSON.parse(raw);
+      const data = raw && JSON.parse(this.convert(raw));
       return data && data.v === this.VERSION && data.parts && data.parts.run ? data : null;
     } catch (e) { return null; }
   },

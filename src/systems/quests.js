@@ -16,6 +16,8 @@ FUP.quests = {
   reset() { this.state = { active: {}, board: [], rest: {} }; this.runKills = 0; },
 
   def(id) { return FUP.questData.quests[id]; },
+  // 'Easy' / 'Medium' / 'Hard' for the board
+  label(id) { const q = this.def(id); return (q && FUP.questData.difficulties[q.difficulty]) || ''; },
   // Do you have the skill levels this quest needs?
   fits(id) {
     return FUP.req.met(this.def(id).req);

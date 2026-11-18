@@ -23,7 +23,7 @@ FUP.balance = {
   weaknessMultiplier: 1.5,   // thrown dish of the element an enemy is weak to
   resistMultiplier: 0.5,     // ...or one it resists
 
-  // --- Poison (the Landlord's Spore Season, Tenant Shrooms) ---
+  // --- Poison (the Guardian's Spore Season, Stray Shroom) ---
   poisonPerStack: 0.02,      // each stack hurts 2% of your max HP at the start of each of your turns
   poisonMaxStacks: 5,        // PLACEHOLDER cap so Phase 2 isn't a guaranteed death sentence
 
@@ -41,7 +41,7 @@ FUP.balance = {
   focus: { max: 100, perAttack: 30, perHit: 15, perBlock: 25, special: 30 },
 
   // --- Enemies scale with you (v0.41, Jesus: "make them a bit harder / scale slightly") ---
-  // For every Melee level you are above the area's level (data/forest.js `level`, raid 14, Landlord 15),
+  // For every Melee level you are above the area's level (data/forest.js `level`, raid 14, Guardian 15),
   // enemies get +perLevel HP and ATK, up to +max.
   enemyScale: { perLevel: 0.05, max: 1.0 },
   // --- Money (v0.41, Jesus: coins were too easy) ---
@@ -52,7 +52,7 @@ FUP.balance = {
   enemyStartSpread: 15,      // each extra enemy starts with its turn bar this much further back
 
   // --- Reading tells (Refinement Phase 3, Jesus 2026-11-09) ---
-  // Defend, then get hit by a heavy move (power >= minPower, or EVICTION): take 0 damage,
+  // Defend, then get hit by a heavy move (power >= minPower, or DOOR SLAM): take 0 damage,
   // counter-attack (x counterPower) and gain `limit` Limit.
   perfectBlock: { minPower: 1.5, counterPower: 1.0, limit: 15 },
   fleeChance: 0.5,

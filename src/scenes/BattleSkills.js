@@ -144,7 +144,7 @@ Object.assign(BattleScene.prototype, {
     return m;
   },
 
-  // Every bit of damage an enemy takes goes through here (counts toward contesting the Final Notice).
+  // Every bit of damage an enemy takes goes through here (counts toward contesting the Last Warning).
   applyDamage(e, amount) {
     e.hp = Math.max(this.lesson ? 1 : 0, e.hp - amount);   // the lesson's dummy never falls over
     const n = e.notice;
@@ -300,7 +300,7 @@ Object.assign(BattleScene.prototype, {
         const N = e.bossRules.notice;
         e.noticeUsed[e.phase] = true;
         e.notice = { left: N.countdown, need: Math.round(e.maxHp * N.contestPct), dealt: 0 };
-        this.bigMoment('📜 FINAL NOTICE', FUP.look.hex('p2'));
+        this.bigMoment('📜 LAST WARNING', FUP.look.hex('p2'));
         this.say('noticeServe');
         return true;
       }
@@ -308,21 +308,21 @@ Object.assign(BattleScene.prototype, {
     return false;
   },
 
-  // End of the Landlord's turn: Tenants pay rent (heal him), the Final Notice counts down.
+  // End of the Guardian's turn: Strays share spores (heal it), the Last Warning counts down.
   bossTurnEnd(e, m) {
-    const tenants = this.liveReal().filter(o => o.signature && o.signature.id === 'rent');
-    if (tenants.length && e.hp > 0) {
-      const heal = Math.min(e.maxHp - e.hp, Math.round(e.maxHp * tenants[0].signature.healPct * tenants.length));
-      if (heal > 0) { e.hp += heal; this.popup(e.view, `+${heal} 💸 rent`, 'good', -60); }
+    const strays = this.liveReal().filter(o => o.signature && o.signature.id === 'share');
+    if (strays.length && e.hp > 0) {
+      const heal = Math.min(e.maxHp - e.hp, Math.round(e.maxHp * strays[0].signature.healPct * strays.length));
+      if (heal > 0) { e.hp += heal; this.popup(e.view, `+${heal} 🍄 shared`, 'good', -60); }
     }
-    if (m.eviction) e.notice = null;
+    if (m.slam) e.notice = null;
     else if (e.notice && m.type !== 'notice') e.notice.left--;
   },
 
   // An enemy hit on you. Riposte and Perfect Block can turn it around. Returns true if it landed.
-  strike(e, power, heavy, eviction = false) {
+  strike(e, power, heavy, slam = false) {
     const p = this.player, PB = FUP.balance.perfectBlock;
-    if (eviction) e.notice = null;   // the notice is used up (a counter-hit now doesn't "contest" it)
+    if (slam) e.notice = null;   // the notice is used up (a counter-hit now doesn't "contest" it)
     if (p.riposte) {
       const mult = p.riposte;
       p.riposte = 0;
@@ -332,7 +332,7 @@ Object.assign(BattleScene.prototype, {
       this.hitEnemy(e, mult, 150, false, { kind: 'counter' });
       return false;
     }
-    if (p.defending && (power >= PB.minPower || eviction)) {
+    if (p.defending && (power >= PB.minPower || slam)) {
       this.bigMoment('PERFECT BLOCK!');
       this.questNews.push(...FUP.quests.event('perfectBlock'));
       this.popup(this.playerSprite, 'BLOCKED', 'good');
@@ -344,7 +344,7 @@ Object.assign(BattleScene.prototype, {
       return false;
     }
     const dealt = FUP.combat.damage(e, p, power);
-    this.hurtPlayer(dealt, heavy || eviction);
+    this.hurtPlayer(dealt, heavy || slam);
     // Spore Cloak (the Mycelium Mantle, G2): whoever hits you takes a share back. Never kills a boss.
     const th = (p.effects || []).includes('thorns') && FUP.gearData.effects.thorns;
     if (th && !this.over && e.hp > 0 && !e.gone) {
@@ -361,7 +361,7 @@ Object.assign(BattleScene.prototype, {
       const heal = Math.min(e.maxHp - e.hp, Math.round(dealt.amount * e.signature.healShare));
       if (heal > 0) { e.hp += heal; this.popup(e.view, '+' + heal + ' BILLED', 'good', -40); this.say('billable', { enemy: e.name }); }
     }
-    if ((heavy || eviction) && !this.over) { this.frozenFor = FUP.look.feel.hitStopMs / 1000; }
+    if ((heavy || slam) && !this.over) { this.frozenFor = FUP.look.feel.hitStopMs / 1000; }
     return true;
   },
 
@@ -386,11 +386,11 @@ Object.assign(BattleScene.prototype, {
     if (e.stolen) f.push(`🎒 has your ${e.stolen.name}`);
     if (e.burn) f.push('🔥');
     if (e.formation) f.push('📣');
-    if (e.signature && e.signature.id === 'rent' && this.boss()) f.push('💸');
+    if (e.signature && e.signature.id === 'share' && this.boss()) f.push('💸');
     return f.join(' ');
   },
   noticeText(b) {
     const n = b && b.notice;
-    return n ? `📜 FINAL NOTICE: EVICTION in ${n.left} · contest it: ${Math.min(n.dealt, n.need)}/${n.need} damage` : '';
+    return n ? `📜 LAST WARNING: DOOR SLAM in ${n.left} · break it: ${Math.min(n.dealt, n.need)}/${n.need} damage` : '';
   },
 });

@@ -60,7 +60,7 @@ FUP.recipeData = {
     { level: 37, name: 'Mackerel Skewer',       ids: ['sarcastic_mackerel', 'dragons_sneeze_chili', 'grumpy_lemon'], method: 'grill', xp: 214, heal: 64, buffs: [{ stat: 'spd', pct: 0.20, turns: 4 }], throw: 26, sell: 35 },
     { level: 39, name: 'Fortress Stew',         ids: ['bark', 'bark', 'squirrel_jerky', 'rock_salt'],          method: 'boil',  xp: 224, buffs: [{ stat: 'def', pct: 0.35, turns: 4 }], throw: 22, sell: 16 },
     { level: 40, name: 'Tuna Steak',            ids: ['grudge_tuna', 'ember_pepper', 'rock_salt'],             method: 'grill', xp: 232, heal: 90, buffs: [{ stat: 'atk', pct: 0.20, turns: 4 }], throw: 28, sell: 38 },
-    { level: 42, name: "Landlord's Bane",       ids: ['spore_b_gone_moss', 'spore_b_gone_moss', 'ember_pepper', 'rock_salt'], method: 'bake', xp: 248, resists: [{ element: 'poison', amount: 0.60, turns: 6 }], element: 'fire', throw: 45, sell: 46 },
+    { level: 42, name: "Guardian's Bane",       ids: ['spore_b_gone_moss', 'spore_b_gone_moss', 'ember_pepper', 'rock_salt'], method: 'bake', xp: 248, resists: [{ element: 'poison', amount: 0.60, turns: 6 }], element: 'fire', throw: 45, sell: 46 },
     { level: 43, name: 'Letter Opener Feast',   ids: ['letter_opener', 'heartroot', 'grumpy_lemon'],           method: 'bake',  xp: 256, heal: 110, buffs: [{ stat: 'def', pct: 0.20, turns: 5 }], throw: 30, sell: 66 },
     { level: 45, name: "Dragon's Breakfast",    ids: ['ember_pepper', 'dragons_sneeze_chili', 'heartroot', 'rock_salt'], method: 'fry', xp: 280, heal: 50, buffs: [{ stat: 'atk', pct: 0.30, turns: 4 }], element: 'fire', throw: 60, sell: 66 },
     { level: 48, name: 'Royal Heartroot Roast', ids: ['heartroot', 'heartroot', 'grumpleberry', 'rock_salt'],  method: 'grill', xp: 320, heal: 120, throw: 30, sell: 78 },
@@ -89,8 +89,8 @@ FUP.recipeData = {
       riddle: 'The moss that hates spores, the mushroom that glows, and a berry that hates everyone. Baked.' },
     { level: 38, name: 'Sneeze Tonic',       ids: ['dragons_sneeze_chili', 'ember_pepper', 'grumpy_lemon'], method: 'boil', xp: 220, buffs: [{ stat: 'spd', pct: 0.25, turns: 4 }], resists: [{ element: 'fire', amount: 0.40, turns: 5 }], throw: 24, sell: 38, secret: true,
       riddle: 'Two kinds of fire and one sour face, simmered until your nose runs faster than you do.' },
-    { level: 44, name: 'Eviction Notice',    ids: ['heartroot', 'spore_b_gone_moss', 'dragons_sneeze_chili', 'ember_pepper'], method: 'fry', xp: 272, heal: 60, resists: [{ element: 'poison', amount: 0.60, turns: 6 }], element: 'fire', throw: 70, sell: 75, secret: true,
-      riddle: 'A beating root, the anti-spore moss, and both fires of the field. Fried. Serve it to a landlord.' },
+    { level: 44, name: 'Door Slammer',       ids: ['heartroot', 'spore_b_gone_moss', 'dragons_sneeze_chili', 'ember_pepper'], method: 'fry', xp: 272, heal: 60, resists: [{ element: 'poison', amount: 0.60, turns: 6 }], element: 'fire', throw: 70, sell: 75, secret: true,
+      riddle: 'A beating root, the anti-spore moss, and both fires of the field. Fried. Serve it to a guardian.' },
   ],
 
   // ---------- Burnt junk ----------

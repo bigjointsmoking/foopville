@@ -1,7 +1,7 @@
 // ============================================================
-// RAID — the Landlord's Basement (blueprint 18.6, data/raid.js).
+// RAID — the Old Storehouse (blueprint 18.6, data/raid.js).
 // You came down the hole in the Deep Woods. 4 rooms, one at a time:
-// fight → hazard → fight → hazard, then the Landlord's Office.
+// fight → hazard → fight → hazard, then the Guardian's Hall.
 //   Fight rooms: the door behind you slams, the door ahead stays locked
 //                until everyone in the room is beaten or charmed.
 //   Hazard rooms: spore vents, crumbling floor or swinging steam pipes.
@@ -166,7 +166,7 @@ class RaidScene extends WorldScene {
         }
       }
     }
-    // The Landlord's desk (the "d" squares)
+    // The Guardian's desk (the "d" squares)
     const desk = R.find('d');
     if (desk.length) {
       const cx = desk.reduce((sum, s) => sum + R.center(s.tx, s.ty).x, 0) / desk.length, cy = R.center(desk[0].tx, desk[0].ty).y;
@@ -196,7 +196,7 @@ class RaidScene extends WorldScene {
     this.exitDoor = this.add.rectangle(c.x, c.y, T * 0.9, T, C.door).setStrokeStyle(3, C.clutterEdge).setDepth(c.y);
     this.exitLamp = this.add.circle(c.x, c.y - 4, 6, C.doorLocked).setDepth(c.y + 1);
     const next = this.raid.rooms[this.raid.index + 1];
-    const label = next === 'office' ? "The Landlord's Office ↑" : 'Next room ↑';
+    const label = next === 'office' ? "The Guardian's Hall ↑" : 'Next room ↑';
     this.exitText = FUP.ui.text(this, c.x, c.y + 30, '', 13, FUP.ui.colors.ink, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4 }).setOrigin(0.5).setDepth(5000);
     this.exitLabel = label;
     this.showDoor(R.locked(this.A));
@@ -244,8 +244,8 @@ class RaidScene extends WorldScene {
   }
 
   enemySprite(e) {
-    if (!e.landlord) return super.enemySprite(e);
-    const data = FUP.enemies.landlord;
+    if (!e.guardian) return super.enemySprite(e);
+    const data = FUP.enemies.guardian;
     return FUP.ui.sprite(this, e.x, e.y, data.mapSprite, data.emoji, 52).setOrigin(0.5, 0.8).setDepth(e.y + 16);
   }
 
@@ -262,13 +262,13 @@ class RaidScene extends WorldScene {
     this.saveHere();   // closed during the fight = back here (v0.73)
     this.leaving = true;
     const e = this.A.enemies[index], D = FUP.raidData;
-    if (e.landlord) {
+    if (e.guardian) {
       // The Section 12 fight, unchanged (no raid multiplier)
-      FUP.run.battle = { index, type: 'landlord', result: null, office: true, dropTier: FUP.raidData.dropTier };
+      FUP.run.battle = { index, type: 'guardian', result: null, office: true, dropTier: FUP.raidData.dropTier };
       this.say('officeFight');
       FUP.audio.sfx('encounter');
       this.cameras.main.fadeOut(650, 30, 0, 40);
-      this.time.delayedCall(680, () => this.scene.start('Battle', { enemies: ['landlord'] }));
+      this.time.delayedCall(680, () => this.scene.start('Battle', { enemies: ['guardian'] }));
       return;
     }
     FUP.run.battle = { index, type: e.type, result: null, mult: D.mult, raid: true, areaLevel: D.level, dropTier: FUP.raidData.dropTier };

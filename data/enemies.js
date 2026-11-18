@@ -13,9 +13,9 @@
 // spd     = only matters for SPD buffs now. Every fighter gets a turn every
 //           balance.turnSeconds, so enemies are never faster than you.
 // Balance (v0.39, approved by Jesus 2026-11-10): each area is tuned for the Melee level you'll have there
-// on a first trip: Forest Edge 1-5, Toll Road 5-9, Deep Woods 9-13, raid 13-15, Landlord ~15.
+// on a first trip: Forest Edge 1-5, Toll Road 5-9, Deep Woods 9-13, raid 13-15, Guardian ~15.
 // Pressing only Attack (no food, no blocks) you should lose about: squirrel 15%, pigeon flock 25%,
-// goblin 30%, raid enemies 5-40%, the Godfather ~100% and the Landlord ~110% (those two need food and skills).
+// goblin 30%, raid enemies 5-40%, the Godfather ~100% and the Guardian ~110% (those two need food and skills).
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -49,57 +49,57 @@ FUP.enemies = {
     ],
   },
 
-  // Summoned by the Landlord in Phase 1. Blueprint 18.2.
-  tenantShroom: {
-    name: 'Tenant Shroom', emoji: '🍄', size: 64, sprite: 'tenant', mapSprite: 'tenant_map',
+  // Summoned by the Guardian in Phase 1. Blueprint 18.2.
+  strayShroom: {
+    name: 'Stray Shroom', emoji: '🍄', size: 64, sprite: 'stray', mapSprite: 'stray_map',
     maxHp: 18, atk: 6, def: 2, spd: 9, resolve: 0, noCharm: true,
     xp: 0, coins: 0, boss: false, minion: true, weak: 'fire', resists: ['poison'],
     moves: [
       { name: 'Spore Puff', type: 'attack', power: 0.8, poison: 1, tell: '☠️', tellText: 'Spore Puff', weight: 1 },
     ],
-    // Paying Rent: every living Tenant heals the Landlord healPct of his max HP on each of his turns.
-    signature: { id: 'rent', healPct: 0.03 },
+    // Sharing Spores: every living Stray Shroom heals the Guardian healPct of its max HP on each of its turns.
+    signature: { id: 'share', healPct: 0.03 },
   },
 
   // THE BOSS. Blueprint section 12 + 18.2.
   // maxHp: the blueprint says 300. PLACEHOLDER 180 until gear exists,
   // because at Melee level 1 with no gear your hits only do ~3-4 damage.
-  landlord: {
-    name: 'The Mushroom Landlord', emoji: '🍄', hat: '🎩', size: 150, sprite: 'landlord', mapSprite: 'landlord_map',
+  guardian: {
+    name: 'The Mushroom Guardian', emoji: '🍄', hat: '🎩', size: 150, sprite: 'guardian', mapSprite: 'guardian_map',
     maxHp: 180, atk: 11, def: 6, spd: 11, resolve: 0.50, noCharm: true, level: 15,   // level: for enemy scaling (v0.41)   // v0.39: ATK was 12
     xp: 300, coins: 150, boss: true, weak: 'fire', resists: ['poison'],
     // His everyday moves. PLACEHOLDER names and numbers (the blueprint only names his phase moves).
     moves: [
-      { name: 'Eviction Notice', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
-      { name: 'Rent Hike', type: 'attack', power: 1.7, tell: '💥', tellText: 'Heavy hit', weight: 2 },
-      { name: 'Property Inspection', type: 'buff', stat: 'def', mult: 1.3, turns: 2, label: 'Inspecting',
+      { name: 'Cap Slam', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Heavy Stomp', type: 'attack', power: 1.7, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Hold the Door', type: 'buff', stat: 'def', mult: 1.3, turns: 2, label: 'Bracing',
         tell: '🛡️', tellText: 'Raising DEF', weight: 1 },
     ],
     bossRules: {
       // He moves to the next phase when his HP drops below `below` (0.66 = 66%).
       phases: [
-        { name: 'Open House',   below: 1.00 },
+        { name: 'Call the Strays', below: 1.00 },
         { name: 'Spore Season', below: 0.66 },
-        { name: "Rent's Due",   below: 0.33 },
+        { name: 'Feeding Time', below: 0.33 },
       ],
-      // Phase 1: summon a Tenant Shroom every 3 of his turns (max 3 on the field).
-      summonEvery: 3, maxMinions: 3, minion: 'tenantShroom',
+      // Phase 1: summon a Stray Shroom every 3 of his turns (max 3 on the field).
+      summonEvery: 3, maxMinions: 3, minion: 'strayShroom',
       // Phase 2: you gain 1 Poison stack every one of his turns.
       poisonPerTurn: 1,
-      // Phase 3: every 3 of his turns he takes 10% of your coins (and hits you).
-      rentEvery: 3, rentTake: 0.10,
+      // Phase 3: every 3 of its turns it takes 10% of your coins (and hits you).
+      feedEvery: 3, feedTake: 0.10,
       // Fever Dream: once per phase, on his 2nd turn in that phase. Lasts 3 of YOUR turns.
       feverOnTurn: 2, feverTurns: 3, fakes: 2,
-      // Final Notice (Refinement Phase 3): once per phase, on his `onTurn`-th turn he serves it.
-      // After `countdown` of his moves: EVICTION, a x3 hit. Deal `contestPct` of his max HP
-      // before then to Contest it (cancelled, and his turn bar drops to `contestGauge`).
+      // Last Warning (Refinement Phase 3): once per phase, on its `onTurn`-th turn it gives it.
+      // After `countdown` of its moves: DOOR SLAM, a x3 hit. Deal `contestPct` of its max HP
+      // before then to break it (cancelled, and his turn bar drops to `contestGauge`).
       // Or Defend as it lands (Perfect Block).
       notice: { onTurn: 4, countdown: 3, contestPct: 0.15, contestGauge: -50,
-        serve: { name: 'Final Notice', type: 'notice', tell: '📜', tellText: 'Serving a Final Notice' },
-        evict: { name: 'EVICTION', type: 'attack', power: 3.0, eviction: true, tell: '💥', tellText: 'EVICTION! (Defend!)' } },
+        serve: { name: 'Last Warning', type: 'notice', tell: '📜', tellText: 'Giving a Last Warning' },
+        slam: { name: 'DOOR SLAM', type: 'attack', power: 3.0, slam: true, tell: '💥', tellText: 'DOOR SLAM! (Defend!)' } },
       special: {
-        summon: { name: 'Open House', type: 'summon', tell: '🍄', tellText: 'Calling tenants' },
-        rent:   { name: "Rent's Due", type: 'rent', power: 0.8, tell: '💰', tellText: 'Collecting rent' },
+        summon: { name: 'Call the Strays', type: 'summon', tell: '🍄', tellText: 'Calling strays' },
+        feed:   { name: 'Feeding Time', type: 'feed', power: 0.8, tell: '💰', tellText: 'Wants feeding' },
         fever:  { name: 'Fever Dream', type: 'fever', tell: '🌀', tellText: 'Something is wrong' },
       },
     },
@@ -142,7 +142,7 @@ FUP.enemies = {
       move: { name: 'Formation!', type: 'formation', tell: '📣', tellText: 'Formation! (take me out)' } },
   },
 
-  // ---------- Raid enemies: the Landlord's Basement (blueprint 18.6) ----------
+  // ---------- Raid enemies: the Old Storehouse (blueprint 18.6) ----------
   // Stats before the raid multiplier (data/raid.js `mult`).
   sporeBouncer: {
     name: 'Spore Bouncer', emoji: '🍄', size: 120, sprite: 'bouncer', mapSprite: 'bouncer_map',

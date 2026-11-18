@@ -22,7 +22,7 @@ FUP.combat = {
       critMult: perk('critMult', 0), guardMult: perk('defendMult', 0),
       rizzBonus: g.rizz, healBonus: g.heal,
       gearResist: { poison: g.resistPoison, fire: g.resistFire },
-      rentLess: g.rentLess, effects: g.effects,   // effects: chase items' special powers (data/gear.js)
+      stealLess: g.stealLess, effects: g.effects,   // effects: chase items' special powers (data/gear.js)
       gauge: FUP.balance.playerStartGauge + sum('startGauge'), limit: sum('startLimit'), buffs: [], defending: false,
     };
   },

@@ -4,7 +4,7 @@
 //                step back into your room (HouseScene). Saves after every change.
 //   'campfire' = a campfire in one of the 3 Forest areas. Cook, Rest once
 //                per campfire (+30% HP), change gear, go back into the Forest
-//                or head home. The Landlord is no longer here: he's at the
+//                or head home. The Guardian is no longer here: he's at the
 //                bottom of a hidden hole in the Deep Woods (WorldScene).
 //                The run timer keeps going here.
 // Every dish you cook goes into your satchel for the next fight.
@@ -360,7 +360,7 @@ class CookScene extends Phaser.Scene {
     if (p.gearResist.poison) stats.push(`Poison resist ${Math.round(p.gearResist.poison * 100)}%`);
     add(ui.text(this, 40, 410, 'YOUR STATS', 14, c.dim, { fontStyle: '700' }));
     add(ui.text(this, 40, 430, stats.join('   ·   '), 15, c.ink, { fontStyle: '700', wordWrap: { width: 400 } }));
-    add(ui.text(this, 40, 470, 'More DEF = enemies hit you for less.\nThe Landlord hits hard: armor helps a lot.', 12, c.dim, { lineSpacing: 3 }));
+    add(ui.text(this, 40, 470, 'More DEF = enemies hit you for less.\nThe Guardian hits hard: armor helps a lot.', 12, c.dim, { lineSpacing: 3 }));
 
     // ----- Right: shop or your stuff -----
     const X = 460, RW = W - 40 - X;
@@ -378,7 +378,7 @@ class CookScene extends Phaser.Scene {
         btn(X + RW - 84, y + 2, 84, 28, `${d.price} 🪙`, () => { if (run.buy(k)) { FUP.audio.sfx('coins'); this.say('gearBuy'); } }, { disabled: run.coins < d.price });
       });
     } else {
-      if (!run.stash.length) add(ui.text(this, X, y0 + 4, 'Nothing spare. Buy something in the village, or beat\nenemies for drops (the Landlord always drops something good).', 13, c.dim, { lineSpacing: 4 }));
+      if (!run.stash.length) add(ui.text(this, X, y0 + 4, 'Nothing spare. Buy something in the village, or beat\nenemies for drops (the Guardian always drops something good).', 13, c.dim, { lineSpacing: 4 }));
       run.stash.forEach((it, i) => {
         if (i > 11) return;
         const y = y0 + i * rowH;
@@ -566,7 +566,7 @@ class CookScene extends Phaser.Scene {
     }
   }
 
-  // Campfire: back into the Forest, walk home, or (last campfire only) fight the Landlord.
+  // Campfire: back into the Forest, walk home, or (last campfire only) fight the Guardian.
   openLeaveChoice() {
     if (this.leaving || this.choice) return;
     this.hideDishTip();
@@ -582,7 +582,7 @@ class CookScene extends Phaser.Scene {
       b.rect.setDepth(Z + 2); b.txt.setDepth(Z + 3); g.addMultiple([b.rect, b.txt]);
       add(ui.text(this, W / 2, y + 58, desc, 13, c.dim, { align: 'center', wordWrap: { width: 500 } }).setOrigin(0.5, 0));
     };
-    const next = hole ? 'Somewhere in these woods there\'s a hole. The Landlord is at the bottom.\nIt moves every trip.' : on ? `The way on to ${FUP.world.region(on.to).name} is out there somewhere.\nYou start next to the fire.` : 'You start next to the fire.';
+    const next = hole ? 'Somewhere in these woods there\'s a hole. The Guardian is at the bottom.\nIt moves every trip.' : on ? `The way on to ${FUP.world.region(on.to).name} is out there somewhere.\nYou start next to the fire.` : 'You start next to the fire.';
     option(170, '🌲 Back into the Forest', next, () => this.leave('forest'), true);
     option(290, '🏘️ Walk back to Foopville', 'The trip ends safely. You keep your bag, satchel, coins and gear,\nso you can hand in quests and shop. Next trip, the Forest starts fresh.', () => this.leave('home'));
     const stay = ui.button(this, W / 2 - 90, 420, 180, 40, 'Stay here', () => this.closeLeaveChoice(), { size: 16 });
@@ -612,7 +612,7 @@ class CookScene extends Phaser.Scene {
     if (this.mode === 'campfire') {
       this.say('campfireLeave');
       this.cameras.main.fadeOut(600, 30, 0, 40);
-      this.time.delayedCall(650, () => this.scene.start('Battle', { enemies: ['landlord'] }));
+      this.time.delayedCall(650, () => this.scene.start('Battle', { enemies: ['guardian'] }));
       return;
     }
     // Home: step back from the stove into your room (HouseScene, v0.68)

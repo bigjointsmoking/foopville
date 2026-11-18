@@ -2,7 +2,7 @@
 // COSMETICS — hats and titles (phase G2). No stats: they're just for showing off.
 //   hats:   drawn on your hero's head on the map and in fights. price = sold by the Shopkeeper (Hats tab);
 //           no price = boss drop only (data/gear.js bossDrops `hat` rows).
-//   titles: free once their `req` is met (facts: data/facts.js). Shown after your name: "Pib the Evicted".
+//   titles: free once their `req` is met (facts: data/facts.js). Shown after your name: "Pib the Gatecrasher".
 // Change them in the 🎒 backpack, Wardrobe tab. Rules: src/systems/cosmetics.js.
 // Kept on a Normal death; Hardcore wipes them.
 // ============================================================
@@ -14,10 +14,10 @@ FUP.cosmeticData = {
     chef_hat:     { name: "Chef's Hat", emoji: '👨‍🍳', price: 1500, blurb: 'Marrowbone would like a word.' },
     tiny_crown:   { name: 'Tiny Crown', emoji: '👑', price: 5000, blurb: 'Rules over a very small kingdom. Your head.' },
     don_fedora:   { name: "The Don's Fedora", emoji: '🎩', blurb: 'Dropped by the Pigeon Godfather. Still smells of breadcrumbs.' },
-    landlord_cap: { name: "Landlord's Cap", emoji: '🍄', blurb: 'Dropped by the Mushroom Landlord. Rent not included.' },
+    guardian_cap: { name: "Guardian's Cap", emoji: '🍄', blurb: 'Dropped by the Mushroom Guardian. Still warm.' },
   },
   titles: {
-    evicted:       { text: 'the Evicted', req: { facts: { 'boss:landlord': 1 } } },
+    gatecrasher:   { text: 'the Gatecrasher', req: { facts: { 'boss:guardian': 1 } } },
     squirrel_bane: { text: "Squirrel's Bane", req: { facts: { 'kill:squirrel': 100 } } },
     pigeon_friend: { text: 'Friend of Pigeons', req: { facts: { 'boss:godfather': 5 } } },
   },

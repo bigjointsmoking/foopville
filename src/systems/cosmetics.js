@@ -5,7 +5,7 @@
 //   buy(id)                   'ok' | 'owned' | 'broke' (the Shopkeeper, Rizz discount applies)
 //   wear('hat' | 'title', id) id = null takes it off
 //   titles()                  ids of titles you've unlocked
-//   nameLine()                "Pib the Evicted"
+//   nameLine()                "Pib the Gatecrasher"
 //   attachHat(scene, sprite, mode)  draws the worn hat on a hero sprite ('map' or 'battle')
 // ============================================================
 window.FUP = window.FUP || {};

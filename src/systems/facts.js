@@ -1,6 +1,6 @@
 // ============================================================
 // FACTS — one store of counters: things you've done this life.
-// 'kill:squirrel': 14, 'boss:landlord': 2, 'quest:pie_day': 1 ...
+// 'kill:squirrel': 14, 'boss:guardian': 2, 'quest:pie_day': 1 ...
 // Requirements (src/systems/req.js) read them. Names in data/facts.js.
 // Normal death keeps them. A new life wipes them.
 // ============================================================
@@ -22,7 +22,7 @@ FUP.facts = {
   // fn(key, newValue) is called whenever a fact changes
   onFact(fn) { this.listeners.push(fn); },
 
-  // A readable name: 'boss:landlord' -> 'Beat The Mushroom Landlord'
+  // A readable name: 'boss:guardian' -> 'Beat The Mushroom Guardian'
   label(key) {
     const D = FUP.factData || { labels: {}, prefixes: {} };
     if (D.labels[key]) return D.labels[key];
