@@ -28,6 +28,12 @@ FUP.runData = {
     hardcore: { name: 'Hardcore', emoji: '💀', blurb: 'One life. Die and everything is deleted: levels, coins, gear, house, farm.' },
   },
   defaultMode: 'normal',   // highlighted first in the creator
+  // The card when you pick Hardcore (Jesus, 2026-11-18). Wording is a PLACEHOLDER.
+  hardcoreWarning: {
+    title: 'HARDCORE: ARE YOU SURE?',
+    text: 'One death deletes everything: levels, coins, gear, house, farm. No grave, no second try.\nNew to Foopville? Start on Normal.',
+    normal: 'Stay on Normal', keep: 'Yes, Hardcore',
+  },
 
   // Normal mode's grave: where your stuff waits after you die.
   grave: {

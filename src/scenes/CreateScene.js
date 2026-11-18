@@ -143,6 +143,21 @@ class CreateScene extends Phaser.Scene {
   }
 
   // ---------- Step 2: weapon ----------
+  // Picking Hardcore asks first (Jesus, 2026-11-18): new players should start on Normal. Text in data/run.js hardcoreWarning.
+  confirmHardcore(onYes) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, T = FUP.runData.hardcoreWarning;
+    const g = this.modeCard = this.add.group(), add = o => { g.add(o); o.setDepth(30000); return o; };
+    const close = () => { g.destroy(true); this.modeCard = null; };
+    add(ui.shade(this, 0.7));
+    add(ui.panel(this, W / 2 - 230, H / 2 - 110, 460, 220, 'panel'));
+    add(ui.text(this, W / 2, H / 2 - 84, T.title, 22, c.bad, { fontStyle: '700' }).setOrigin(0.5));
+    add(ui.text(this, W / 2, H / 2 - 52, T.text, 15, c.ink, { align: 'center', lineSpacing: 4, wordWrap: { width: 410 } }).setOrigin(0.5, 0));
+    const a = ui.button(this, W / 2 - 205, H / 2 + 48, 195, 40, T.normal, () => close(), { hot: true, size: 15 });
+    const b = ui.button(this, W / 2 + 10, H / 2 + 48, 195, 40, T.keep, () => { close(); onYes(); }, { size: 15 });
+    for (const o of [a.rect, a.txt, b.rect, b.txt]) add(o);
+    a.txt.setDepth(30001); b.txt.setDepth(30001);
+  }
+
   drawWeapons() {
     const ui = FUP.ui, c = ui.colors, W = this.scale.width;
     if (this.group) this.group.destroy(true);
@@ -158,9 +173,9 @@ class CreateScene extends Phaser.Scene {
     modes.forEach((id, i) => {
       const M = FUP.runData.modes[id], on = this.mode === id;
       const b = ui.button(this, W / 2 - 205 + i * 210, 412, 200, 38, `${on ? '✔ ' : ''}${M.emoji} ${M.name}`, () => {
-        if (this.mode === id) return;
-        this.mode = id;
-        this.time.delayedCall(1, () => { this.drawWeapons(); this.modeLine.setText(FUP.narrator[id === 'hardcore' ? 'modePickHardcore' : 'modePickNormal'][0]); });
+        if (this.mode === id || this.modeCard) return;
+        const pick = () => { this.mode = id; this.time.delayedCall(1, () => { this.drawWeapons(); this.modeLine.setText(FUP.narrator[id === 'hardcore' ? 'modePickHardcore' : 'modePickNormal'][0]); }); };
+        if (id === 'hardcore') this.confirmHardcore(pick); else pick();
       }, { hot: on, size: 17 });
       g.addMultiple([b.rect, b.txt]);
     });

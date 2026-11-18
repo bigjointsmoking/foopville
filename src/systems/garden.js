@@ -164,6 +164,7 @@ FUP.garden = {
     });
     if (useCompost) { p.need = Math.round(p.need * (1 - G.compost.growFaster)); p.yield += G.compost.bonusYield; p.composted = true; }
     p.left = p.yield;
+    if (FUP.facts) FUP.facts.add('did:plant');   // first-day goals (data/goals.js)
     this.xp(G.crops[id].plantXp, where);
     return { id, composted: useCompost };
   },

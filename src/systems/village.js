@@ -79,7 +79,7 @@ FUP.village = {
   // ---------- Selling (to the Shopkeeper) ----------
   gearSellPrice(item) { return this.sellPrice(item.sell); },
   sellGear(item) { const p = this.gearSellPrice(item); FUP.run.sell(item, p); this.sold(); return p; },
-  sold() { if (FUP.tutorial) FUP.tutorial.note('sell'); },   // Orientation Isle: "sell something"
+  sold() { if (FUP.tutorial) FUP.tutorial.note('sell'); if (FUP.facts && !(FUP.tutorial && FUP.tutorial.active())) FUP.facts.add('did:sell'); },   // Orientation Isle: "sell something"
 
   // A dish's plain price (no Rizz bonus, no haggling): food stalls use this
   dishBasePrice(dish) {

@@ -37,6 +37,7 @@ FUP.quests = {
   take(id) {
     if (!this.canTake() || this.state.active[id] || !this.state.board.includes(id)) return false;
     this.state.active[id] = { n: 0, done: false };
+    if (FUP.facts) FUP.facts.add('did:quest');   // first-day goals (data/goals.js)
     this.state.board = this.state.board.filter(b => b !== id);
     this.refill();
     return true;

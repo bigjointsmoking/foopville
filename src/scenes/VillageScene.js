@@ -253,6 +253,7 @@ class VillageScene extends Phaser.Scene {
     this.bagText = pb.txt;
     this.questText = fix(ui.text(this, 450, H - 35, '', 14, c.ink).setOrigin(0, 0.5));
     fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag to walk · tap the button to talk' : 'Walk: WASD / drag · Talk: E or the button', 12, c.dim).setOrigin(1, 0.5));
+    this.goalCard = FUP.goalCard.draw(this, 16, 104);   // first-day checklist (data/goals.js)
     this.refreshHud();
     this.time.addEvent({ delay: 1000, loop: true, callback: () => this.refreshHud() });   // crops ripen while you walk
     this.time.addEvent({ delay: 250, loop: true, callback: () => this.refreshGrave() });
@@ -270,6 +271,7 @@ class VillageScene extends Phaser.Scene {
     this.questText.setText(`📜 Quests ${Q.activeIds().length}/${FUP.questData.maxActive}` + (ready ? `  ·  ${ready} ready to hand in!` : ''));
     this.questText.setColor(ready ? c.good : c.ink);
     this.coinText.setText(`🪙 ${run.coins}`);
+    if (this.goalCard) this.goalCard.refresh();
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
     if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back
