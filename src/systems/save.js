@@ -24,7 +24,7 @@ FUP.save = {
   RENAMES: [['Landlord-Proof Helm', 'Spore-Proof Helm'], ["Landlord's Bane", "Guardian's Bane"], ['Eviction Notice', 'Door Slammer'],
     ['landlord_s_bane', 'guardian_s_bane'], ['eviction_notice', 'door_slammer'], ['landlord_cap', 'guardian_cap'], ['framed_notice', 'framed_warning'], ['tenantShroom', 'strayShroom'],
     ['landlord', 'guardian'], ['evicted', 'gatecrasher'], ['rentImmune', 'coinGuard'], ['rentLess', 'stealLess'],
-    ['lobby', 'entry'], ['unit2b', 'storeroom']],
+    ['lobby', 'entry'], ['unit2b', 'storeroom'], ['speedrun', 'noRest']],   // speedrun: Rush Job became No Naps (E1b)
   parts: {},
 
   register(name, part) { this.parts[name] = part; },
@@ -69,7 +69,7 @@ FUP.save = {
     const lv = id => (skills[id] || { level: 1 }).level;
     // The 4 highest built skills (ties: list order)
     const levels = FUP.skills.list().filter(id => FUP.skills.built(id)).map(id => ({ id, level: lv(id) })).sort((a, b) => b.level - a.level).slice(0, 4);
-    return { name: hero.name || 'You', runs: run.runs || 0, coins: run.coins || 0,
+    return { name: hero.name || 'You', runs: run.runs || 0, day: (d.parts.clock && d.parts.clock.day) || 1, coins: run.coins || 0,
       weapon: run.weapon, mode: hero.mode, look: hero.look, levels,
       title: (() => { const t = (d.parts.cosmetics || {}).title, T = FUP.cosmeticData && FUP.cosmeticData.titles[t]; return T ? T.text : ''; })() };
   },
@@ -218,7 +218,7 @@ FUP.save = {
     get: () => FUP.world.state,
     set(d, all) {
       const W = FUP.world;
-      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) } };   // (old saves' `respawn` is dropped: E1a)
+      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) }, pigeonKills: (d.pigeonKills || []).slice() };   // (old saves' `respawn` is dropped: E1a)
       if (W.region(d.region) && (W.safe(d.region) || (all && all.onRun && all.parts.trip))) W.state.region = d.region;   // mid-trip with the trip saved: still out there (v0.73)
     },
     reset: () => FUP.world.reset(),

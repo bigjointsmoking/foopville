@@ -12,13 +12,13 @@
 //   goal            what counts:
 //     { fetch: 'glowcap_mushroom', count: 3 }   have these in your bag when you hand in (they're taken)
 //     { event: 'kill', count: 5, match: {...} } happen this many times after you take the quest
-//     perRun: true                               ...all within ONE trip to the Forest
+//     perDay: true                               ...all within ONE game day (E1b; was perRun = one trip)
 //   match (optional) only events like this count:
 //     enemy: 'squirrel'     which enemy
 //     minTier: 'delicious'  a cooked dish at least this good (delicious = 3 stars)
 //     element: 'Fire'       a cooked dish of this element
 //     method: 'bake'        a dish cooked this way
-//     maxTime: 1080         seconds (a run finished in this time or less)
+//     noRest: true          no campfire Rest since you left Foopville (E1b)
 //     maxKills: 0           kills this run, or fewer
 //     area: 3               which Forest area (3 = Deep Woods)
 // SIDE STORIES (kind: 'side', v0.78): from = the villager who posts it, steps = what you do, in order:
@@ -76,8 +76,8 @@ FUP.questData = {
     },
     charmer: {
       difficulty: 'medium', name: 'Smooth Operator', reward: 120,
-      text: 'Charm 3 enemies in a single trip to the Forest. Love is a battlefield. Literally.',
-      goal: { event: 'charm', count: 3, perRun: true },
+      text: 'Charm 3 enemies in a single day. Love is a battlefield. Literally.',
+      goal: { event: 'charm', count: 3, perDay: true },
     },
     blocks: {
       difficulty: 'medium', name: 'Read the Room', reward: 120,
@@ -96,7 +96,7 @@ FUP.questData = {
     },
     pacifist: {
       difficulty: 'hard', name: 'Conflict Avoidance', reward: 140,
-      text: 'Reach the Deep Woods campfire (the third one) without defeating a single enemy. Charming and running away are fine.',
+      text: 'Reach the Deep Woods campfire (the third one) without defeating a single enemy since you left Foopville. Charming and running away are fine.',
       goal: { event: 'campfire', count: 1, match: { maxKills: 0, area: 3 } },
     },
 
@@ -140,10 +140,10 @@ FUP.questData = {
       text: "Break the Mushroom Guardian's 📜 Last Warning: hit it hard enough before the DOOR SLAM lands. Paperwork fights back.",
       goal: { event: 'notice', count: 1 },
     },
-    speedrun: {
-      difficulty: 'hard', name: 'Rush Job', reward: 300,
-      text: 'Beat the Mushroom Guardian in under 18 minutes (run timer). The door won\'t wait.',
-      goal: { event: 'boss', count: 1, match: { maxTime: 1080 } },
+    noRest: {   // E1b (Jesus 2026-11-19): replaces Rush Job (18 minutes on the trip timer); old saves renamed in save.js
+      difficulty: 'hard', name: 'No Naps', reward: 300,
+      text: 'Beat the Mushroom Guardian without resting at a campfire since you left Foopville. Sleep is for the victorious.',
+      goal: { event: 'boss', count: 1, match: { noRest: true } },
     },
     // ================= ERRANDS (kind 'side': v0.78 side stories, renamed in v0.79; givers fixed so the ask fits who they are) =================
     forgeFuel: { kind: 'side', from: 'smith', difficulty: 'easy', name: 'Forge Fuel', reward: 70,

@@ -118,9 +118,9 @@ FUP.tutorialData = {
     { kind: 'talk', tutor: 'scout', goal: 'Talk to Scout Wanda on the path',
       pages: [
         'Lost already? Good, that\'s my job. Foopville is safe. Everywhere else, something wants to eat you. North gate: the Forest Edge (Lv 1-5), then east to the Goblin Toll Road (5-9) and the Deep Woods (9-13). That\'s the Melee level you want first.',
-        'Leaving the village starts a trip. Enemies chase you if they spot you; touch one and you fight. Fog hides what you haven\'t seen. Grab ingredients. Walk out the way you came, or "Walk back" at a campfire, and you keep everything.',
-        { normal: 'Die on a trip and your things drop in a grave right there. You wake up at home with 15 minutes of play to go and fetch them.',
-          hardcore: 'Die on a trip and that\'s the end: new life, new name, back to this island. Know when to walk home.' },
+        'Outside the village, enemies chase you if they spot you; touch one and you fight. Fog hides what you haven\'t seen. Grab ingredients; beaten enemies and picked ingredients come back after a while. Walk out the way you came, or "Walk back" at a campfire, and you keep everything.',
+        { normal: 'Die out there and your things drop in a grave right there. You wake up at home with 15 minutes of play to go and fetch them.',
+          hardcore: 'Die out there and that\'s the end: new life, new name, back to this island. Know when to walk home.' },
         'Deeper means better loot, worse company, secrets and bosses. The South Road (🪨) to the Docks and the East Bridge (🌉) to the Soggy Marsh need repairs; locked places show as ??? on the map. Open the 🗺️ world map now: bottom button, or M.',
       ],
       again: 'The 🗺️ button at the bottom. Open it. Maps work better when you look at them. Then: north gate, Forest, campfires, walk home.' },

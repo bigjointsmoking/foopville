@@ -1320,7 +1320,7 @@ class BattleScene extends Phaser.Scene {
     else if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
       if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));
-      else { summary = run.finishRun(); lines.unshift(`RUN TIME: ${fmt(summary.time)}`); }
+      else summary = run.finishRun();   // (no RUN TIME line since E1b: no run feel)
     }
     if (!survived && run.isHardcore()) FUP.save.wipe();   // hardcore: this life is over, the save goes with it
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away

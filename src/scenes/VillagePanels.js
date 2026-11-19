@@ -657,7 +657,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
       `📜 Quests taken: ${FUP.quests.activeIds().length}`,
     ];
     this.pText(px + 40, py + 70, lines.join('\n'), 16, c.ink, { lineSpacing: 10 });
-    this.pText(W / 2, py + 210, 'The run timer starts when you step through.', 13, c.dim).setOrigin(0.5, 0);
+    this.pText(W / 2, py + 210, 'The Forest Edge is just through the gate.', 13, c.dim).setOrigin(0.5, 0);
     this.pBtn(px + 40, py + 250, 200, 44, '🌲 Let\'s go', () => this.enterForest(), { hot: true, size: 18 });
     this.pBtn(px + 260, py + 250, 200, 44, 'Not yet', () => this.closePanel(), { size: 18 });
   },

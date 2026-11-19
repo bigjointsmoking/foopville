@@ -42,7 +42,7 @@ class CookScene extends Phaser.Scene {
 
     // Campfire extras: the run timer and the Rest button
     if (this.mode === 'campfire') {
-      this.timerText = ui.text(this, W - 222, 38, '', 18, c.accent, { fontStyle: '700' }).setOrigin(1, 0.5);
+      this.timerText = ui.text(this, W - 222, 38, '', 18, c.accent, { fontStyle: '700' }).setOrigin(1, 0.5).setVisible(false);   // hidden since E1b: no run feel
       this.restBtn = ui.button(this, W - 168, 20, 144, 36, `😴 Rest +${Math.round(FUP.forestData.restHealPercent * 100)}%`, () => this.rest(), { size: 15 });
       this.restLabel = null;
       this.refreshRest();
@@ -105,6 +105,7 @@ class CookScene extends Phaser.Scene {
     const f = FUP.run.forest;
     if (!f || FUP.world.restWait(f.area, this.campArea())) return;
     this.campArea().restedAt = FUP.clock.now();
+    f.rested = true;   // the No Naps quest: rested since you left Foopville (E1b)
     const max = FUP.run.maxHp();
     FUP.run.hp = Math.min(max, FUP.run.currentHp() + Math.round(max * FUP.forestData.restHealPercent));
     this.refreshRest();
@@ -598,7 +599,7 @@ class CookScene extends Phaser.Scene {
     };
     const next = hole ? 'Somewhere in these woods there\'s a hole. The Guardian is at the bottom.\nOnce you find it, it stays put.' : on ? `The way on to ${FUP.world.region(on.to).name} is out there somewhere.\nYou start next to the fire.` : 'You start next to the fire.';
     option(170, '🌲 Back into the Forest', next, () => this.leave('forest'), true);
-    option(290, '🏘️ Walk back to Foopville', 'The trip ends safely. You keep your bag, satchel, coins and gear,\nso you can hand in quests and shop. The Forest stays as you left it.', () => this.leave('home'));
+    option(290, '🏘️ Walk back to Foopville', 'Head home safely. You keep your bag, satchel, coins and gear,\nso you can hand in quests and shop. The Forest stays as you left it.', () => this.leave('home'));
     const stay = ui.button(this, W / 2 - 90, 420, 180, 40, 'Stay here', () => this.closeLeaveChoice(), { size: 16 });
     stay.rect.setDepth(Z + 2); stay.txt.setDepth(Z + 3); g.addMultiple([stay.rect, stay.txt]);
   }

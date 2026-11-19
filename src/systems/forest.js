@@ -141,6 +141,19 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     return null;
   },
 
+  // Revenge rule, the count (E1b): note pigeon kills (play time). True = enough within the window
+  // and no Godfather is out there already. The list lives in FUP.world.state (saved with the world).
+  notePigeons(n, now = FUP.clock.now()) {
+    const W = FUP.world.state, d = FUP.forestData;
+    if (this.godfatherAlive()) { W.pigeonKills = []; return false; }   // kills while he's out don't count toward the next one
+    W.pigeonKills = (W.pigeonKills || []).filter(t => now - t < d.revengeSeconds);
+    for (let k = 0; k < n; k++) W.pigeonKills.push(now);
+    if (W.pigeonKills.length < d.revengeKills) return false;
+    W.pigeonKills = [];
+    return true;
+  },
+  godfatherAlive() { return Object.values(FUP.world.regions).some(A => A.enemies.some(e => e.godfather && e.alive)); },
+
   // Revenge rule (blueprint 18.2 + 18.6): the Pigeon Godfather appears in the Godfather area
   // (the Deep Woods), on the trail between you and its campfire. If you've already reached that
   // campfire, on the trail from the campfire to the nearest possible hole spot.

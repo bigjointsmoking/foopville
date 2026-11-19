@@ -54,7 +54,7 @@ class StartScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, alpha: 1, scale: logo.type === 'Image' ? FUP.ui.artScale(LG.scale) : LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.98', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v0.99', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);
@@ -202,7 +202,7 @@ class StartScene extends Phaser.Scene {
     if (s) {
       btn(W / 2 - 160, 268, 320, 56, `▶ Continue as ${s.name}${s.title ? ' ' + s.title : ''}`, () => this.continueLife(), { hot: true, size: 21 });
       const M = FUP.runData.modes[s.mode] || FUP.runData.modes.hardcore;
-      g.add(ui.text(this, W / 2, 334, `${M.emoji} ${M.name} · ${s.runs} run${s.runs === 1 ? '' : 's'} survived · 🪙 ${s.coins}\n${s.levels.map(l => `${FUP.skillData.skills[l.id].emoji} ${FUP.skillData.skills[l.id].name} ${l.level}`).join(' · ')}`,
+      g.add(ui.text(this, W / 2, 334, `${M.emoji} ${M.name} · Day ${s.day} · 🪙 ${s.coins}\n${s.levels.map(l => `${FUP.skillData.skills[l.id].emoji} ${FUP.skillData.skills[l.id].name} ${l.level}`).join(' · ')}`,
         14, c.ink, { align: 'center', lineSpacing: 4, stroke: c.stroke, strokeThickness: 4 }).setOrigin(0.5, 0).setDepth(20));
       btn(W / 2 - 90, 384, 180, 36, 'New life', () => this.confirmNew(), { size: 16 });
     } else {

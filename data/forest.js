@@ -232,8 +232,9 @@ FUP.forestData = {
     haggleRizzXp: 15,    // Rizz XP for a good haggle (v0.78: 45 -> 15, Jesus: Rizz too fast; PLACEHOLDER)
     bridgeTouch: 52,     // pixels: the bridge goblin blocks both plank columns
   },
-  // --- Revenge rule (blueprint 18.2): kill this many pigeons in one trip and the Godfather comes ---
+  // --- Revenge rule (blueprint 18.2): kill this many pigeons within revengeSeconds of play and the Godfather comes ---
   revengeKills: 5,
+  revengeSeconds: 600,   // 10 min (E1b, Jesus 2026-11-19; was "in one trip"). He then stays until beaten.
   godfatherTouch: 40,    // pixels: he blocks the trail
 
   restHealPercent: 0.30, // Rest heals 30% of max HP; then that campfire waits (data/world.js respawn.rest, E1a)

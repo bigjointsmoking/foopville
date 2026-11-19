@@ -251,7 +251,7 @@ FUP.narrator = {
   modePickNormal: ['Normal. Dying is just an expensive nap.'],
   modePickHardcore: ['Hardcore. One life. Bold, for someone who trips over roots.'],
 
-  villageLostRun: ['You wake up at home with no memory of your last trip. Your bag came back. Your dignity is still out there.'],
+  villageLostRun: ['You wake up at home with no memory of how you got here. Your bag came back. Your dignity is still out there.'],
   startWounded: ['You walked into this fight half dead. Bold plan. Eat something.'],
   // ---------- Forest ({item} = an ingredient's name) ----------
   forestStart: [

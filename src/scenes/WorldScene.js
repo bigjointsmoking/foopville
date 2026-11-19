@@ -101,9 +101,8 @@ class WorldScene extends Phaser.Scene {
   // ---------- Revenge rule (blueprint 18.2): too many dead pigeons and the Godfather comes ----------
   // The count is hidden (Jesus, 2026-11-09): no counter, no warnings. He just shows up.
   checkRevenge(kills) {
-    const f = this.f, d = FUP.forestData;
-    f.pigeonKills = (f.pigeonKills || 0) + kills;
-    if (f.godfatherSpawned || f.pigeonKills < d.revengeKills) return;
+    const f = this.f;
+    if (!kills || !FUP.forest.notePigeons(kills)) return;   // 5 within 10 min of play (E1b, data/forest.js)
     const i = FUP.forest.spawnGodfather(f);
     if (!i) return;
     this.time.delayedCall(1800, () => this.say('godfatherArrives'));

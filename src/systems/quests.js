@@ -93,7 +93,7 @@ FUP.quests = {
     if (this.isSide(id)) return this.stepText(id);
     if (this.complete(id)) return 'Done! Hand it in.';
     if (q.goal.fetch) return `In your bag: ${Math.min(FUP.run.bagCount(q.goal.fetch), q.goal.count)}/${q.goal.count}`;
-    if (q.goal.count > 1) return `${s.n}/${q.goal.count}` + (q.goal.perRun ? ' this trip' : '');
+    if (q.goal.count > 1) return `${this.todayN(id)}/${q.goal.count}` + (q.goal.perDay ? ' today' : '');
     return 'Not yet';
   },
 
@@ -118,10 +118,14 @@ FUP.quests = {
     return q.reward;
   },
 
-  // A new trip to the Forest: "in one trip" quests start counting again.
-  startRun() {
-    this.runKills = 0;
-    for (const id of this.activeIds('challenge')) if (this.def(id).goal.perRun && !this.state.active[id].done) this.state.active[id].n = 0;
+  // You left Foopville for somewhere dangerous: "since you left Foopville" counts start again.
+  startRun() { this.runKills = 0; },
+  // A "perDay" quest's count only holds for the day it was made (E1b; a new day starts it again)
+  todayN(id) {
+    const q = this.def(id), s = this.state.active[id];
+    if (!s || !q.goal.perDay || s.done || !FUP.clock) return s ? s.n : 0;
+    if (s.day !== FUP.clock.day()) { s.n = 0; s.day = FUP.clock.day(); }
+    return s.n;
   },
 
   // A Quest is done for good: coins, XP in the skills it used, and a bonus for the choices you made
@@ -330,6 +334,7 @@ FUP.quests = {
     if (FUP.tutorial) FUP.tutorial.note(type);   // Orientation Isle listens too (fish, cook...)
     if (type === 'kill') this.runKills++;
     if (type === 'campfire') data = { ...data, kills: this.runKills };
+    if (type === 'boss') data = { rested: !!(FUP.run.forest && FUP.run.forest.rested), ...data };   // No Naps (E1b)
     if (type === 'boss' || type === 'kill' || type === 'charm') data = { weapon: FUP.run.weapon, ...data };
     const finished = [];
     for (const id of this.activeIds().filter(x => this.isSide(x))) {   // lost a quest item? the same thing hands it over again (The Bowl: beat the Guardian again)
@@ -346,6 +351,7 @@ FUP.quests = {
     for (const id of this.activeIds('challenge')) {
       const q = this.def(id), s = this.state.active[id];
       if (s.done || q.goal.event !== type || !this.matches(q.goal.match, data)) continue;
+      this.todayN(id);   // a new day? a "perDay" count starts again first
       s.n++;
       if (s.n >= q.goal.count) { s.done = true; finished.push(q.name); }
     }
@@ -361,6 +367,7 @@ FUP.quests = {
     if (m.weapon && data.weapon !== m.weapon) return false;
     if (m.minTier && tiers.indexOf(data.tier) < tiers.indexOf(m.minTier)) return false;
     if (m.maxTime !== undefined && !(data.time <= m.maxTime)) return false;
+    if (m.noRest && data.rested) return false;
     if (m.maxKills !== undefined && !(data.kills <= m.maxKills)) return false;
     if (m.area !== undefined && data.area !== m.area) return false;
     if (m.method && data.method !== m.method) return false;
