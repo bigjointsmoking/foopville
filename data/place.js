@@ -73,6 +73,12 @@ FUP.placeData = {
     hedge:       { name: 'Hedge', emoji: '🌳', sprite: 'bush', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 3 } },
                    cost: { coins: 60 }, helper: { kind: 'hedge', radius: 1 },
                    blurb: 'Crops right next to it dry out half as fast. A wall that grows. Ambitious.' },
+    // Farming 2.0 F-C (v0.91, Jesus): the sprinkler waters the 8 squares around it whenever a crop there is
+    // thirsty, until its tank is empty. You refill it with your watering can (it starts empty). No XP for
+    // its watering. Cost, level and tank size are PLACEHOLDERS.
+    sprinkler:   { name: 'Sprinkler', emoji: '⛲', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 10, building: 8 } },
+                   cost: { items: { brass: 2, plank: 4, nails: 2 } }, helper: { kind: 'sprinkler', radius: 1, tank: 12 },
+                   blurb: 'Waters the 8 squares around it, 12 times per fill. You fill it. With your can. Progress.' },
     // Quest rewards (v0.79): never sold. source: 'quest'
     crow_scarecrow: { name: 'Crow-proof Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], noShop: true, source: 'quest',
                    helper: { kind: 'scarecrow', radius: 5, chance: 0.35 }, blurb: 'Crops within 5 squares: 35% chance of one extra at harvest. The crows have filed a complaint.' },

@@ -333,26 +333,43 @@ FUP.garden = {
       const it = FUP.place.item(p.item), z = FUP.place.zone(p.zone);
       if (!it || !it.helper || it.helper.kind !== kind || !z || z.where.region !== 'village') continue;
       const hx = z.where.tx + p.tx, hy = z.where.ty + p.ty;
-      if (Math.max(Math.abs(hx - tx), Math.abs(hy - ty)) <= it.helper.radius && (kind !== 'barrel' || this.barrelLeft(p) > 0)) return { p, def: it.helper };
+      if (Math.max(Math.abs(hx - tx), Math.abs(hy - ty)) <= it.helper.radius && (kind !== 'barrel' || this.barrelLeft(p) > 0) && (kind !== 'sprinkler' || (p.tank || 0) > 0)) return { p, def: it.helper };
     }
     return null;
   },
   // Waterings a rain barrel has left today (it refills every morning)
   barrelLeft(p) { const it = FUP.place.item(p.item), today = FUP.clock ? FUP.clock.day() : 1; return it.helper.water - (p.usedDay === today ? p.used || 0 : 0); },
-  // Thirsty crops next to a barrel get watered (no XP: the barrel did it). Returns true if any were.
+  // Thirsty crops next to a barrel (or a sprinkler with water in it, F-C) get watered
+  // (no XP: it did it, not you). The barrel goes first. Returns true if any were.
   barrelWater() {
     let any = false;
     for (const [key, p] of Object.entries(this.state.patches)) {
       if (p.s !== 'crop' || p.wet || p.dead || p.stage >= FUP.gardenData.stages) continue;
-      const [tx, ty] = key.split(',').map(Number), h = this.helperNear(tx, ty, 'barrel');
+      const [tx, ty] = key.split(',').map(Number), h = this.helperNear(tx, ty, 'barrel') || this.helperNear(tx, ty, 'sprinkler');
       if (!h) continue;
-      const today = FUP.clock ? FUP.clock.day() : 1;
-      if (h.p.usedDay !== today) { h.p.usedDay = today; h.p.used = 0; }
-      h.p.used++;
+      if (h.def.kind === 'sprinkler') h.p.tank--;
+      else {
+        const today = FUP.clock ? FUP.clock.day() : 1;
+        if (h.p.usedDay !== today) { h.p.usedDay = today; h.p.used = 0; }
+        h.p.used++;
+      }
       p.wet = true; p.dry = 0; p.wilt = false;
       any = true;
     }
     return any;
+  },
+
+  // ---------- Sprinklers (F-C, v0.91) ----------
+  sprinklerTank(p) { return p.tank || 0; },
+  sprinklerMax(p) { return FUP.place.item(p.item).helper.tank; },
+  // Pour your watering can into a sprinkler: 'empty' (your can) / 'full' (the tank) / number poured
+  fillSprinkler(p) {
+    const room = this.sprinklerMax(p) - this.sprinklerTank(p);
+    if (room <= 0) return 'full';
+    if (this.state.can <= 0) return 'empty';
+    const n = Math.min(room, this.state.can);
+    this.state.can -= n; p.tank = this.sprinklerTank(p) + n;
+    return n;
   },
 
   // One patch, dt seconds later (dt can be hours if the game was closed: away = true).

@@ -363,6 +363,18 @@ class VillageScene extends Phaser.Scene {
     if (!hit(s.x, s.y + my)) s.y += my;
   }
 
+  // A sprinkler right next to you (F-C, v0.91): fill it from your can. Or null.
+  sprinklerSpot() {
+    for (const p of FUP.place.state.placed) {
+      const it = FUP.place.item(p.item), z = FUP.place.zone(p.zone);
+      if (!it || !it.helper || it.helper.kind !== 'sprinkler' || !z || z.where.region !== 'village') continue;
+      const T = FUP.villageData.tileSize, b = FUP.buildUi.box(p, T);
+      const dx = Math.max(b.x - this.player.x, 0, this.player.x - (b.x + b.w)), dy = Math.max(b.y - this.player.y, 0, this.player.y - (b.y + b.h));
+      if (Math.hypot(dx, dy) < 30) return { kind: 'sprinkler', p, label: `⛲ Fill (${FUP.garden.sprinklerTank(p)}/${FUP.garden.sprinklerMax(p)})`, x: b.x + b.w / 2, y: b.y + 10 };
+    }
+    return null;
+  }
+
   // The thing you're standing next to (or null).
   nearest() {
     let best = null, bestD = FUP.villageData.interactDistance;
@@ -371,6 +383,8 @@ class VillageScene extends Phaser.Scene {
       if (dist < bestD && (!s.reach || dist < s.reach)) { best = s; bestD = dist; }   // reach: trap squares only count when you're on them
     }
     const f = this.nearestFarm();   // a patch under your feet wins over everything
+    const spr = this.sprinklerSpot();   // ...except that standing on grass next to a sprinkler, Fill beats Till
+    if (spr && (!f || f.spot.kind === 'till')) return spr;
     if (f && (f.dist < bestD || f.dist === 0 || !best)) return f.spot;
     if (best) return best;
     // Your food stall, if you're standing right next to it
@@ -444,6 +458,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'fish') { this.goFish(s); return; }
     if (s.kind === 'saw') { this.sawPlank(s); return; }
     if (s.kind === 'stall') { this.openStall(s.uid); return; }
+    if (s.kind === 'sprinkler') { this.fillSprinkler(s); return; }
     if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
     if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }

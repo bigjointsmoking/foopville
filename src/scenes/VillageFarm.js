@@ -141,6 +141,17 @@ Object.assign(VillageScene.prototype, {
   // Screen position for XP pop-ups (they're drawn on the screen, not the map).
   xpAt(x, y) { const cam = this.cameras.main; return { x: x - cam.scrollX, y: Math.max(110, y - cam.scrollY - 50) }; },
 
+  // Pour the watering can into a sprinkler (F-C, v0.91)
+  fillSprinkler(s) {
+    const G = FUP.garden, n = G.fillSprinkler(s.p);
+    if (n === 'full') { FUP.audio.sfx('click'); this.say('sprinklerFull'); return; }
+    if (n === 'empty') { FUP.audio.sfx('error'); this.say('sprinklerCanEmpty'); return; }
+    this.farmWork(FUP.gardenData.jobs.water.seconds, 'water', s, () => {
+      this.say('sprinklerFilled', { item: `${G.sprinklerTank(s.p)}/${G.sprinklerMax(s.p)}` });
+      FUP.save.write();
+    });
+  },
+
   farmUse(s) {
     const G = FUP.garden, J = FUP.gardenData.jobs;
     if (s.kind === 'water') { this.farmWork(J.fill.seconds, 'water', s, () => { G.fillCan(); this.say('farmFill'); }); return; }
