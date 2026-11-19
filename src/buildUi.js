@@ -135,12 +135,12 @@ FUP.buildUi = {
         else if (sel) {
           const first = !Object.keys(FUP.facts.state).some(k => k.startsWith('built:'));
           if (P.put(sel, zoneId, spot.tx, spot.ty)) {
-            FUP.audio.sfx('guard');
+            FUP.audio.sfx('place');
             if (P.item(sel).stall && scene.say) scene.say('stallBuilt');
             else if (first && scene.say) scene.say('placeFirst');
             if (!P.ownedCount(sel)) sel = null;
           } else note = "It doesn't fit there.";
-        } else if (P.move(picked, spot.tx, spot.ty)) { FUP.audio.sfx('guard'); picked = null; }
+        } else if (P.move(picked, spot.tx, spot.ty)) { FUP.audio.sfx('place'); picked = null; }
         else {
           const other = P.at(zoneId, at.tx, at.ty);
           if (other && other.uid !== picked) picked = other.uid;   // tapped another thing: pick that one instead

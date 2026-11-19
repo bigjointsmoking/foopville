@@ -319,7 +319,7 @@ class HouseScene extends Phaser.Scene {
     const can = FUP.clock.canSleep();
     if (!can && FUP.run.currentHp() >= FUP.run.maxHp()) { this.say('houseFull'); return; }
     FUP.run.hp = null;   // full HP
-    FUP.audio.sfx('heal');
+    FUP.audio.sfx('sleep');
     if (can) {
       FUP.clock.sleep(); FUP.clock.rolled = 0;
       this.leaving = true;   // stand still while the screen is dark
@@ -364,7 +364,7 @@ class HouseScene extends Phaser.Scene {
     if (this.leaving) return;
     this.leaving = true;
     FUP.save.write();
-    FUP.audio.sfx('select');
+    FUP.audio.sfx('doorClose');   // the door shuts behind you
     this.cameras.main.fadeOut(300, 0, 0, 0);
     this.time.delayedCall(320, () => this.scene.start('Village', { from: 'home' }));
   }

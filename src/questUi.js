@@ -19,7 +19,7 @@ FUP.questUi = {
     if (r.coins && scene.sayLine) scene.sayLine(`${r.line ? r.line + '  ' : ''}(Done: ${r.done}. +${r.coins} coins.)`);
     const news = FUP.quests.takeNews();   // things a step handed you (seeds, the jar, the bowl)
     if (r.ok && !r.coins) { const next = FUP.quests.state.active[id] && FUP.quests.stepText(id); if (next || news.length) this.toast(scene, [...news, next ? `📜 ${FUP.quests.def(id).name}: ${next}` : ''].filter(Boolean).join('\n')); }
-    FUP.audio.sfx(r.coins ? 'fanfare' : r.ok ? 'select' : 'click');
+    FUP.audio.sfx(r.coins ? 'questDone' : r.ok ? 'questStep' : 'click');
     onDone();
   },
 
@@ -77,7 +77,9 @@ FUP.questUi = {
     const b = ui.button(scene, W / 2 - 70, H / 2 + h / 2 - 52, 140, 38, 'Nice', () => g.forEach(o => o.destroy()), { hot: true, size: 16 });
     [b.rect, b.txt].forEach(o => add(o, 3)); b.txt.setDepth(Z + 4);
     if (scene.bigMoment) scene.bigMoment('QUEST COMPLETE!'); else if (FUP.fx && FUP.fx.shake) FUP.fx.shake(scene, 'hit');
-    FUP.audio.sfx('fanfare');
+    FUP.audio.sfx('questDone');
+    // A piece of lost magic in the reward: its own chime once the jingle ends
+    if (rw.got.some(t => t.startsWith('✨'))) scene.time.delayedCall(1300, () => FUP.audio.sfx('spell'));
     FUP.save.write();
   },
 

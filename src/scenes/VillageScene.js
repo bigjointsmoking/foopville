@@ -514,7 +514,7 @@ class VillageScene extends Phaser.Scene {
     if (this.leaving) return;
     this.leaving = true;
     FUP.house.state.door = door;   // come back out of the same door
-    FUP.audio.sfx('select');
+    FUP.audio.sfx('doorOpen');
     this.cameras.main.fadeOut(300, 0, 0, 0);
     this.time.delayedCall(320, () => this.scene.start('House', {}));   // inside your house (v0.68, HouseScene)
   }

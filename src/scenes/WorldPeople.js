@@ -98,7 +98,7 @@ Object.assign(WorldScene.prototype, {
       this.saveHere();
       this.leaving = true;
       FUP.run.battle = { index: -1, type: 'guardian', result: null, shrine: true, stars, dropTier: FUP.raidData.dropTier };
-      FUP.audio.sfx('encounter');
+      FUP.audio.sfx('shrine');
       FUP.fx.shake(this, 'boss');
       this.cameras.main.fadeOut(900, 30, 0, 40);
       this.time.delayedCall(930, () => this.scene.start('Battle', { enemies: ['guardian'] }));

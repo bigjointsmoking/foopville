@@ -73,6 +73,15 @@ FUP.audioData = {
     coins:     { keys: ['coins_1', 'coins_2', 'coins_3', 'coins_4'], vol: 0.55, pitch: 0.04 },
     win:       { keys: ['jingle_win'], vol: 0.65 },
     lose:      { keys: ['jingle_down'], vol: 0.65 },
+    // v0.89 (Kenney CC0: RPG Audio, Impact Sounds, Interface Sounds, Music Jingles)
+    shrine:    { keys: ['bell_0', 'bell_1'], vol: 0.7, layer: ['roar_2'], layerVol: 0.3 },   // the shrine summons the Guardian
+    spell:     { keys: ['chime_0'], vol: 0.6, layer: ['magic_2'], layerVol: 0.25 },          // a piece of lost magic
+    questStep: { keys: ['page_0', 'page_1'], vol: 0.6, pitch: 0.05 },                         // a quest step done
+    questDone: { keys: ['jingle_quest'], vol: 0.7 },                                           // QUEST COMPLETE
+    place:     { keys: ['wood_0', 'wood_1', 'wood_2'], vol: 0.6, pitch: 0.06 },               // placing / moving furniture
+    doorOpen:  { keys: ['door_open'], vol: 0.55 },
+    doorClose: { keys: ['door_close_0', 'door_close_1'], vol: 0.55, pitch: 0.04 },
+    sleep:     { keys: ['jingle_sleep'], vol: 0.6 },                                           // going to bed
     // No recording (synth below): water, eat
   },
 
@@ -132,6 +141,16 @@ FUP.audioData = {
     coins:     { wave: 'square',   from: 1568, dur: 0.06, vol: 0.2,  notes: [0, 5, 0, 5], step: 0.06 },
     win:       { wave: 'square',   from: 523,  dur: 0.16, vol: 0.28, notes: [0, 4, 7, 12, 7, 12], step: 0.1 },
     lose:      { wave: 'triangle', from: 392,  dur: 0.4,  vol: 0.32, notes: [0, -1, -2, -5], step: 0.35 },
+
+    // v0.89 moments (the recordings above play first; these are the fallback)
+    shrine:    { wave: 'triangle', from: 98,   dur: 0.5,  vol: 0.35, notes: [0, 12, 0], step: 0.3 },
+    spell:     { wave: 'sine',     from: 1047, dur: 0.18, vol: 0.25, notes: [0, 7, 12, 19], step: 0.09 },
+    questStep: { noise: true,      from: 2500, to: 900,  dur: 0.12, vol: 0.15 },
+    questDone: { wave: 'square',   from: 523,  dur: 0.18, vol: 0.28, notes: [0, 4, 7, 12, 7, 12, 16], step: 0.1 },
+    place:     { noise: true,      from: 600,  to: 150,  dur: 0.1,  vol: 0.35 },
+    doorOpen:  { wave: 'sawtooth', from: 140,  to: 220,  dur: 0.3,  vol: 0.12 },
+    doorClose: { noise: true,      from: 500,  to: 100,  dur: 0.12, vol: 0.35 },
+    sleep:     { wave: 'sine',     from: 523,  dur: 0.3,  vol: 0.25, notes: [7, 4, 0, -5], step: 0.25 },
   },
 
   songs: {
