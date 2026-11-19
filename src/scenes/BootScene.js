@@ -22,11 +22,16 @@ class BootScene extends Phaser.Scene {
         }
       }
       FUP.anim.build(this);   // clip frames -> animations (src/anim.js)
+      if (FUP.loading) FUP.loading.done();   // hide the loading bar (src/loading.js)
       this.scene.start('Start');
     };
     if (!left) { go(); return; }
 
-    const one = key => { if (FUP.sprites[key] && --left <= 0) go(); };
+    const one = key => {
+      if (!FUP.sprites[key]) return;
+      if (FUP.loading) FUP.loading.pictures(list.length - left + 1, list.length);
+      if (--left <= 0) go();
+    };
     this.textures.on('addtexture', key => {
       if (!FUP.sprites[key]) return;
       this.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST); // crisp pixels

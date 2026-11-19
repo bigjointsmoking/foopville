@@ -70,10 +70,22 @@
     background: rgba(15, 14, 12, 0.55); color: var(--ink); font-size: 18px; line-height: 1; opacity: 0.7;
   }
   body:not(.on-title) #fs, body.is-full #fs { display: none; }
+  /* Loading bar before the title screen (src/loading.js) */
+  #loading {
+    position: fixed; inset: 0; z-index: 20; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    transition: opacity 0.35s;
+  }
+  #loading.ld-gone { opacity: 0; pointer-events: none; }
+  .ld-title { font-size: 34px; letter-spacing: 0.12em; color: var(--ink); }
+  .ld-track { width: min(320px, 70vw); height: 14px; border: 2px solid var(--edge); border-radius: 4px; padding: 2px; }
+  .ld-fill { height: 100%; width: 3%; background: var(--ink); border-radius: 2px; transition: width 0.15s linear; }
+  .ld-text { font-size: 15px; color: var(--dim); }
 </style>
 
 <div id="game"></div>
-<p class="foot">FOOPVILLE · prototype v0.87 · fix the well, farm, cook, rebuild the Market, wade into the Marsh, pay (or punch) the tax goblin, upset the pigeons, raid the old storehouse, face the Mushroom Guardian</p>
+<script src="src/loading.js"></script>
+<p class="foot">FOOPVILLE · prototype v0.88 · fix the well, farm, cook, rebuild the Market, wade into the Marsh, pay (or punch) the tax goblin, upset the pigeons, raid the old storehouse, face the Mushroom Guardian</p>
 
 <!-- The game engine (Phaser 3), loaded from the web -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
