@@ -25,7 +25,7 @@ FUP.tutorialData = {
   },
 
   // The practice farm patch: grows fast here (in Foopville a Grumpleberry takes 6 minutes)
-  patch: { tx: 16, ty: 10, crop: 'grumpleberry', growSeconds: 15, harvest: 2 },
+  patch: { tx: 16, ty: 10, crop: 'grumpleberry', growSeconds: 5, harvest: 2 },   // v0.97 (M2): 15 → 5 s
   // The sawhorse: the builder gives you exactly enough Bark for one plank
   sawhorse: { tx: 33, ty: 13 },
   // The training dummy in the ring (an enemy in data/enemies.js that can't kill you)
@@ -56,17 +56,16 @@ FUP.tutorialData = {
   //   done: the narrator's line when the step is finished.
   // v0.71 (Jesus: friends were lost after the island): every system gets explained, and the
   // captain ends with a numbered first-day plan.
+  // v0.97 (M2 speed pass, claude/FIRST_30_MINUTES.md): same lessons, about half the words and
+  // fewer pages; Wanda's two talks are one. Time it with: jsc tests/isle_time.js
   steps: [
     { kind: 'talk', tutor: 'greeter', goal: 'Talk to Greta the Greeter',
       pages: [
-        'Welcome to Orientation Isle, {name}. Everyone starts here. Most people leave. Eventually.',
-        'Over the water is Foopville, your new home. Before the ferry takes you there, the tutors here will teach you everything: fishing, farming, cooking, building, finding your way, quests and fighting.',
-        'Your new life, the short version: catch and grow food, cook it, fight your way through the Forest, fix up the run-down village, and push further out into a world full of nastier places and bigger bosses. Nobody expects much. Prove them right, or don\'t.',
-        'To walk: {walk}. Walk up to anyone or anything and {talk} to use it. The card in the top left always says what to do next, and the arrow points to it.',
-        { normal: 'You picked Normal mode. If you die, you wake up at home and your things wait in a grave where you fell. Fetch them within 15 minutes of play.',
-          hardcore: 'You picked Hardcore mode. If you die, that character is gone for good. Levels, coins, house, everything. No pressure.' },
-        'Time passes while you play: 20 minutes is one day (the Day label, top right). Crops keep growing, and scrap piles and the Market refill every new day. Your bed at home heals you fully; late in the day it lets you sleep until the next morning.',
-        'Your screen: HP at the bottom left (it does NOT refill by itself), 🎒 your backpack, 🗺️ the world map, 📊 your skills. First, open your backpack: {pack}.',
+        'Welcome to Orientation Isle, {name}. Most people leave. Eventually. Over the water is Foopville, your new home. Your life there: grow and catch food, cook it, fight through the Forest, fix up the run-down village, then push out to nastier places and bigger bosses. The tutors here teach you each part first.',
+        'To walk: {walk}. To use anything, walk up and {talk}. The card top left says what to do next; the arrow points to it.',
+        { normal: 'Normal mode: if you die, you wake up at home and your things wait in a grave where you fell. Fetch them within 15 minutes of play.',
+          hardcore: 'Hardcore mode: if you die, that character is gone for good. Levels, coins, house, everything. No pressure.' },
+        '20 minutes of play is a day (top right): crops grow, scrap piles and the Market refill. Your bed heals you fully; late in the day it sleeps you to morning. HP is bottom left, and it does NOT refill by itself. Now open your 🎒 backpack: {pack}.',
       ],
       again: 'Old Finnick is by the pond. He has been by the pond for years. Go and see him.' },
     { kind: 'do', event: 'pack', at: 'pack', goal: 'Open your 🎒 backpack',
@@ -76,9 +75,8 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'fisher', goal: 'Talk to Old Finnick by the pond',
       pages: [
-        'Fishing. You stand by the water, you wait, and you pretend you know what you\'re doing.',
-        'Stand next to the rings in the pond and {talk}. When a fish bites, keep it inside the zone until the bar fills up. Let it slip and the fish wins.',
-        'Fish are food: cook them or sell them. Higher Fishing levels catch better fish. Foopville has a pond, and the Docks have the sea, once somebody fixes the South Road.',
+        'Fishing: mostly waiting. Stand by the rings and {talk}. When a fish bites, keep it inside the zone until the bar fills. Let it slip and the fish wins.',
+        'Cook fish or sell them. Higher Fishing levels catch better fish. Foopville has a pond; the sea is at the Docks, once somebody fixes the South Road.',
       ],
       again: 'The rings in the water. That\'s where the fish are. Allegedly.' },
     { kind: 'do', event: 'fish', at: 'pond', goal: 'Catch a fish (stand by the rings)',
@@ -86,10 +84,8 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'farmer', goal: 'Talk to Turnip Tess at the farm patch',
       pages: [
-        'Farming! Crops grow while you play, and keep growing while the game is closed.',
-        'This patch is yours for today. Hoe it, plant a seed, water it, then pick what grows. Walk onto the patch and {talk} for each job.',
-        'Crops want water at every stage, or they wilt. Here they grow in seconds; back home they take real minutes.',
-        'Your cottage in Foopville comes with farm patches. Buy seeds from Pip on the farm, south of the village square. Hollis the Farmhand sells more patches. Fill your watering can at water.',
+        'Farming! Crops grow even while the game is closed. This patch is yours today: hoe, plant, water, pick. Walk onto it and {talk} for each job.',
+        'Water at every stage or crops wilt. Here they take seconds; at home, real minutes. Your cottage has patches. Seeds: Pip, on the farm south of the square. More patches: Hollis the Farmhand. Fill your can at any water.',
       ],
       again: 'Hoe, plant, water, wait, pick. Farming is mostly the waiting part.' },
     { kind: 'do', event: 'hoe', at: 'patch', goal: 'Hoe the farm patch', done: 'Soil, exposed. It looks surprised.' },
@@ -100,12 +96,9 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'cook', goal: 'Talk to Burnt Bertram by the campfire',
       pages: [
-        'Cooking. Put ingredients in the pot, pick a method, and cook. Cooked food heals far more than raw.',
-        'Every recipe needs a Cooking level. Start with a Roasted Grumpleberry: one Grumpleberry, Grill. Your fish needs Cooking 2. Ambitious of you.',
-        'Dishes go in your satchel. In a fight you eat them to heal, or throw them at things. Never go into the Forest without food.',
-        'Where to cook: your cottage has no stove yet (Planksworth the Carpenter sells one). Until then, you cook at campfires.',
-        'Out in the Forest, every area has a campfire like this one. There you can cook, Rest once per trip to get some HP back, change your gear, and choose: keep going, or walk home safely.',
-        'Walk into the campfire to start cooking. The 📖 Recipes button lists every recipe you know.',
+        'Cooking: ingredients in the pot, pick a method, cook. Cooked food heals far more than raw. Recipes need Cooking levels: try a Roasted Grumpleberry (Grumpleberry, Grill). Your fish needs Cooking 2. Ambitious.',
+        'Dishes go in your satchel: eat them in fights to heal, or throw them. Never enter the Forest without food.',
+        'No stove at home yet (Planksworth the Carpenter sells one), so use campfires. Each Forest area has one: cook, Rest once per trip for HP, change gear, or walk home safely. Walk into this one to cook. 📖 Recipes lists what you know.',
       ],
       again: 'The campfire. Walk into it. Carefully. That\'s how cooking starts.' },
     { kind: 'do', event: 'cook', at: 'campfire', goal: 'Cook a dish at the campfire',
@@ -113,11 +106,8 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'builder', goal: 'Talk to Nailbiter Nell', give: { bark: 3 },
       pages: [
-        'Building. Foopville is falling apart, and fixing it takes materials: planks, nails and stone. They go in your materials pouch, which never fills up.',
-        'You get materials by prying apart scrap piles: collapsed sheds, fallen trees, broken carts. There\'s a shed right next to me. Walk up and {talk}. Emptied piles come back the next day.',
-        'You can also saw Bark into planks at a sawhorse. Here\'s some Bark. Pry the shed first, then saw yourself a plank.',
-        'In Foopville, the Restoration Board by the well lists the repairs. Each one opens something new: the Well first, then the South Road to the Docks, then the East Bridge to the Marsh.',
-        'Villagers also put up signs asking you to build them things. Build them and they pay you. Planksworth the Carpenter sells furniture, and a stove for your kitchen.',
+        'Building. Fixing Foopville takes planks, nails and stone, kept in a materials pouch that never fills. Pry them out of scrap piles (sheds, fallen trees, carts); emptied piles refill next day. Or saw Bark into planks. Here\'s Bark: pry my shed ({talk}), then saw a plank.',
+        'The Restoration Board by Foopville\'s well lists repairs, each opening something new: the Well, the South Road to the Docks, the East Bridge to the Marsh. Villagers post signs for things to build, and pay. Planksworth sells furniture and a stove.',
       ],
       again: 'Pry the shed, saw the Bark. Materials, then repairs. That\'s building.' },
     { kind: 'do', event: 'salvage', at: 'salvage', goal: 'Pry apart the collapsed shed',
@@ -127,30 +117,20 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'scout', goal: 'Talk to Scout Wanda on the path',
       pages: [
-        'Lost already? Good, that\'s my job. First, open the 🗺️ world map (the button at the bottom, or M on a keyboard).',
-      ],
-      again: 'The 🗺️ button at the bottom. Open it. Maps work better when you look at them.' },
-    { kind: 'do', event: 'map', at: 'map', goal: 'Open the 🗺️ world map',
-      done: 'That\'s the world, or the part of it you know. Close it and talk to Wanda again.' },
-    { kind: 'talk', tutor: 'scout', goal: 'Talk to Scout Wanda again',
-      pages: [
-        'Foopville is home: shops, your cottage, the Quest Board. Nothing there tries to eat you. Everywhere else, something does.',
-        'Walk out of the village\'s north gate and you\'re in the Forest Edge (Lv 1-5). Keep going east: the Goblin Toll Road (Lv 5-9), then the Deep Woods (Lv 9-13). Each number is the Melee level you want before going in.',
-        'Leaving the village starts a trip. Out there, enemies chase you when they spot you and touching one starts a fight. Fog hides what you haven\'t seen yet. Pick up the ingredients lying around.',
-        'To get home, walk back out the way you came, or pick "Walk back" at a campfire. That ends the trip safely and you keep everything you carry.',
+        'Lost already? Good, that\'s my job. Foopville is safe. Everywhere else, something wants to eat you. North gate: the Forest Edge (Lv 1-5), then east to the Goblin Toll Road (5-9) and the Deep Woods (9-13). That\'s the Melee level you want first.',
+        'Leaving the village starts a trip. Enemies chase you if they spot you; touch one and you fight. Fog hides what you haven\'t seen. Grab ingredients. Walk out the way you came, or "Walk back" at a campfire, and you keep everything.',
         { normal: 'Die on a trip and your things drop in a grave right there. You wake up at home with 15 minutes of play to go and fetch them.',
           hardcore: 'Die on a trip and that\'s the end: new life, new name, back to this island. Know when to walk home.' },
-        'The world is bigger than it looks. Areas hide secrets and bosses, and the deeper you go, the better the loot and the worse the company. Explore, get stronger, go further.',
-        'The other roads out of Foopville are broken: the South Road (🪨) to the Docks and the East Bridge (🌉) to the Soggy Marsh. Repair them at the Restoration Board and they open up. Locked places show as ??? on the map.',
+        'Deeper means better loot, worse company, secrets and bosses. The South Road (🪨) to the Docks and the East Bridge (🌉) to the Soggy Marsh need repairs; locked places show as ??? on the map. Open the 🗺️ world map now: bottom button, or M.',
       ],
-      again: 'North gate, Forest, campfires, walk home. And find that hole in the Deep Woods, eventually.' },
+      again: 'The 🗺️ button at the bottom. Open it. Maps work better when you look at them. Then: north gate, Forest, campfires, walk home.' },
+    { kind: 'do', event: 'map', at: 'map', goal: 'Open the 🗺️ world map',
+      done: 'That\'s the world, or the part of it you know. Close it when you\'re done staring.' },
 
     { kind: 'talk', tutor: 'merchant', goal: 'Talk to the Shopkeeper',
       pages: [
-        'Oh, a new customer! I came over from Foopville to meet you before anyone else gets your money.',
-        'Coins come from fights, quests and selling. Sell me what you don\'t need: ingredients, dishes, gear. Gill at the Docks pays more for raw fish, once the road is fixed.',
-        'Haggling: once per visit you can try to charm me. Win and I sell cheaper AND pay you more. Lose and prices go up. Your Rizz level decides the odds. Haggle BEFORE you sell. Ugh. I said it.',
-        'Go on, try it: walk up to me again, press 😎 Haggle, then sell me something on the Sell tab.',
+        'A new customer! I came to get your money first. Coins come from fights, quests and selling me ingredients, dishes and gear. Gill at the Docks pays more for raw fish, once the road is fixed.',
+        'Once per visit you can haggle: win and I sell cheaper AND pay more; lose and prices go up. Rizz decides the odds. Haggle BEFORE you sell. Ugh. Try it: walk up again, press 😎 Haggle, then sell something.',
       ],
       again: 'Haggle first, then sell. In that order. I can\'t believe I\'m helping you.' },
     { kind: 'do', event: 'haggle', at: 'merchant', goal: 'Open her shop and press 😎 Haggle',
@@ -160,38 +140,30 @@ FUP.tutorialData = {
 
     { kind: 'talk', tutor: 'quests', goal: 'Talk to Clipboard Clive',
       pages: [
-        'Quests! Someone wants a thing done, you do it, they pay you. Like a job, but you\'re allowed to say no.',
-        'In Foopville the Quest Board Keeper has a board full of jobs: beat things, cook things, catch things. Take up to {maxQuests} at a time. When one is done, go back to the board and hand it in for coins.',
-        'The 📜 at the bottom of the village screen counts your quests and says when one is ready to hand in. New quests show up as you finish old ones.',
-        'Here\'s your first one: finish Sergeant Bruise\'s combat lesson in the ring. Then come back to me and hand it in.',
+        'Quests: a job you\'re allowed to refuse. The Quest Board in Foopville has jobs (beat, cook, catch things). Hold up to {maxQuests}; hand them in at the board for coins, and new ones appear. The 📜 at the bottom of the village screen says when one is ready.',
+        'Your first: finish Sergeant Bruise\'s combat lesson in the ring, then come back to me.',
       ],
       again: 'Your quest: finish Sergeant Bruise\'s combat lesson. Then come back here. The paperwork waits for no one.' },
     { kind: 'talk', tutor: 'combat', goal: 'Talk to Sergeant Bruise by the ring',
       pages: [
-        'Fighting! Out there, fights happen in real time and nothing waits for you. In here, I stop time and walk you through every button, one at a time.',
-        'Your HP does not refill after a fight. Eat, Rest at a campfire, or sleep in your bed at home. Winning gives Melee XP, coins, ingredients and sometimes gear. The Blacksmith in Foopville sells better gear; wear it from your backpack.',
-        { normal: 'Out there, lose all your HP and you drop your things in a grave. In here, the dummy can\'t hurt you much. It has tried.',
-          hardcore: 'Out there, lose all your HP and your whole life ends. In here, the dummy can\'t hurt you much. It has tried.' },
-        'Walk into the ring and up to the dummy to start the lesson.',
+        'Out there, fights run in real time. In here, I stop time and teach every button. HP doesn\'t refill after fights: eat, Rest at a campfire, or sleep. Wins give Melee XP, coins, ingredients, sometimes gear. The Blacksmith sells better gear; wear it from your backpack.',
+        { normal: 'Out there, lose all your HP and you drop your things in a grave. In here, the dummy can\'t hurt you much. It has tried. Walk up to it to start.',
+          hardcore: 'Out there, lose all your HP and your whole life ends. In here, the dummy can\'t hurt you much. It has tried. Walk up to it to start.' },
       ],
       again: 'The dummy is in the ring. Walk up to it and we start.' },
     { kind: 'do', event: 'fight', at: 'dummy', goal: 'Do the combat lesson (walk up to the dummy)',
       done: 'Lesson over. You now know every button. Knowing when to press them is the hard part.' },
     { kind: 'talk', tutor: 'quests', goal: 'Hand in your quest to Clipboard Clive', reward: true,
       pages: [
-        'Combat lesson: done. Paperwork: complete. Here\'s your reward: Rizz XP. Charm, it turns out, can be earned.',
-        'That\'s how quests work. Captain Dreary is at the end of the pier. The ferry is waiting. Shoo.',
+        'Lesson done. Paperwork complete. Your reward: Rizz XP. That\'s how quests work. Captain Dreary is at the end of the pier. Shoo.',
       ],
       again: 'The ferry. End of the pier. You can\'t miss it. People have tried.' },
 
     { kind: 'talk', tutor: 'captain', goal: 'Take the ferry from Captain Dreary on the pier', leave: true,
       pages: [
-        'Ferry to Foopville. One way. Nobody comes back. Nobody\'s asked to.',
-        'Here\'s {coins} coins for a fresh start. The trip is free, I just feel bad for you. The sea air will patch you up, too.',
-        'Everyone asks what to do first, so here: 1) Talk to the Quest Board Keeper in the square and take a couple of quests. 2) Buy seeds from Pip on the farm and plant them in your cottage\'s patches.',
-        '3) Walk out the north gate into the Forest Edge. Fight, pick up ingredients, cook at the campfire, and walk home before your HP runs low.',
-        '4) Sell what you don\'t need to the Shopkeeper and buy better gear from the Blacksmith. 5) Pry scrap piles around the village and put coins and planks toward the Well at the Restoration Board.',
-        'Sleep in your bed at home to heal fully. When your Melee level matches the next area on the 🗺️ map, go deeper. The world is waiting. It is not excited. Off you go.',
+        'Ferry to Foopville. One way. Nobody\'s asked to come back. Here\'s {coins} coins, and the sea air will patch you up.',
+        'Your first day: 1) Take quests at the Quest Board in the square. 2) Buy seeds from Pip; plant them at your cottage. 3) North gate to the Forest Edge: fight, gather, cook at the campfire, walk home before HP runs low.',
+        '4) Sell spares to the Shopkeeper, buy gear at the Blacksmith. 5) Pry scrap piles; put coins and planks toward the Well on the Restoration Board. Sleep to heal. When your Melee matches the next area on the 🗺️ map, go deeper. The world isn\'t excited. Off you go.',
       ] },
   ],
 
@@ -206,21 +178,21 @@ FUP.tutorialData = {
     biscuit: { name: 'Practice Biscuit', emoji: '🍪', tier: 'Edible', heal: 6, throwDamage: 4, element: 'blunt', practice: true },
     pressLabel: { attack: 'Press ATTACK', skills: 'Press SKILLS, then your Special', defend: 'Press DEFEND', rizz: 'Press RIZZ, then ROAST', eat: 'Press EAT, then a biscuit', throw: 'Press THROW, then a biscuit', flee: 'Press FLEE' },
     steps: [
-      { text: 'Right, recruit. I\'ve stopped time. Bottom left: your HP, your TURN bar, your LIMIT bar and FOCUS. Over the dummy: its HP and its own turn bar. In a real fight both turn bars fill on their own, and when yours is full you pick a move.' },
-      { press: 'attack', text: 'ATTACK: a plain hit with your weapon. Every hit that lands also builds Focus. Go on, hit it.',
-        done: 'Good. Watch the FOCUS bar: it went up. Getting hit builds Focus too.' },
-      { press: 'skills', allow: ['skills', 'skill'], text: 'SKILLS: your weapon\'s special moves. They cost Focus. Your {special} costs {cost} Focus, and you have enough. Press Skills, then {special}. More skills unlock at higher Melee levels.',
-        done: 'That\'s your Special. Use it whenever your Focus allows.' },
-      { press: 'defend', enemyHits: true, text: 'See the icon over the dummy? That\'s what it\'s about to do. A hit is coming. DEFEND makes the next hit hurt less. Press it, then watch.',
-        done: 'Much less painful. Pro tip: Defend JUST before a hit lands and it\'s a Perfect Block: no damage, and you hit back for free.' },
-      { press: 'rizz', allow: ['rizz', 'roast'], text: 'RIZZ: talking instead of hitting. Charm makes an enemy leave (not bosses), Roast lowers its attack. If it fails, the enemy gets angry. Press Rizz, then Roast.',
-        done: 'Your Rizz level decides the odds. Roasting a dummy: a new low, even for you.' },
-      { press: 'eat', allow: ['eat', 'practice'], text: 'I\'ve lent you two Practice Biscuits. EAT a dish to heal. Some dishes also boost you for a few turns. Press Eat, then a biscuit.',
-        done: 'Healed. Cooked food heals far more than raw. Never go out without food.' },
-      { press: 'throw', allow: ['throw', 'practice'], text: 'THROW a dish at an enemy for damage. Some foods hurt some enemies much more; you find out by trying. Press Throw, then the other biscuit.',
+      { text: 'Time\'s stopped, recruit. Bottom left: your HP, TURN, LIMIT and FOCUS bars. Over the dummy: its HP and turn bar. Turn bars fill on their own; when yours is full, pick a move.' },
+      { press: 'attack', text: 'ATTACK: a plain hit. Every hit that lands builds Focus. Hit it.',
+        done: 'FOCUS went up. Getting hit builds it too.' },
+      { press: 'skills', allow: ['skills', 'skill'], text: 'SKILLS: weapon moves paid with Focus. Your {special} costs {cost}. Press Skills, then {special}. More unlock with Melee levels.',
+        done: 'Use your Special whenever Focus allows.' },
+      { press: 'defend', enemyHits: true, text: 'The icon over the dummy shows its next move: a hit. DEFEND softens it. Press it and watch.',
+        done: 'Defend JUST before a hit lands for a Perfect Block: no damage, and a free hit back.' },
+      { press: 'rizz', allow: ['rizz', 'roast'], text: 'RIZZ: talk, don\'t hit. Charm makes an enemy leave (not bosses); Roast lowers its attack. Fail and it gets angry. Press Rizz, then Roast.',
+        done: 'Your Rizz level decides the odds. Roasting a dummy: a new low.' },
+      { press: 'eat', allow: ['eat', 'practice'], text: 'Two Practice Biscuits, on loan. EAT heals; some dishes also boost you for a few turns. Press Eat, then a biscuit.',
+        done: 'Cooked food heals far more than raw.' },
+      { press: 'throw', allow: ['throw', 'practice'], text: 'THROW a dish for damage. Some foods hurt some enemies much more. Press Throw, then the other biscuit.',
         done: 'Splat. Even burnt food can be thrown.' },
-      { text: 'The LIMIT bar fills when you get hurt or Defend. When it\'s full, a LIMIT BREAK button appears: one huge move. Save it for a bad moment.' },
-      { press: 'flee', text: 'FLEE: run away. It doesn\'t always work, and you get no loot. Today it works. Press Flee to end the lesson.' },
+      { text: 'LIMIT fills when you get hurt or Defend. When full, a LIMIT BREAK button appears: one huge move. Save it for a bad moment.' },
+      { press: 'flee', text: 'FLEE: run away. It can fail, and you get no loot. Today it works. Press Flee to end the lesson.' },
     ],
   },
 
