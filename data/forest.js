@@ -189,6 +189,23 @@ FUP.forestData = {
   enemyChaseRange: 4,    // squares: closer than this and it comes for you
   enemyLeashRange: 7,    // squares from home before it gives up and wanders back
   touchDistance: 26,     // pixels: this close to an enemy = fight
+
+  // --- How fights start (v0.94, Jesus approved 2026-11-18). Not every enemy chases you. ---
+  // types: enemy -> the share of that enemy that does this (1 = all of them). Every region uses these.
+  // Numbers are PLACEHOLDERS.
+  encounters: {
+    // Napping (💤): doesn't move. Touch it asleep = sneak attack (free hit, its turn bar starts empty).
+    // Each second you're within wakeRange squares it may wake (wakePerSecond), then it chases as usual.
+    sleep:  { types: { hedgehog: 1, mossBear: 1, squirrel: 0.33 }, wakeRange: 3, wakePerSecond: 0.35 },
+    // Hidden (only a ripple / rustling bush shows). Step within triggerRange squares and it jumps out:
+    // enemies start with full turn bars and you can't flee on turn 1.
+    ambush: { types: { redTapeEel: 1, leechLawyer: 0.33 }, triggerRange: 1.3 },
+    // Runs from you once you're within fleeRange squares. Catch him in escapeSeconds: he starts stunned
+    // and drops coinMult x coins. Too slow: gone for this trip.
+    runner: { types: { debtRunner: 1 }, fleeRange: 4, fleeSpeed: 150, escapeSeconds: 8, coinMult: 2 },
+    // Stops you to talk first (the Paralegal Newt's waiver): sign (pay signShare of your coins), Rizz, or refuse.
+    talk:   { types: { paralegalNewt: 1 }, signShare: 0.10, rizzXp: 15 },
+  },
   fleeGraceSeconds: 2.5, // after running away, enemies can't start a fight for this long
   // arriveGraceSeconds moved to data/world.js (v0.52)
 

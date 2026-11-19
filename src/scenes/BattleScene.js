@@ -79,6 +79,7 @@ class BattleScene extends Phaser.Scene {
     if (this.startEnraged) for (const e of this.enemies) {
       FUP.combat.addBuff(e, 'atk', 1 + FUP.balance.enrageAtkBonus, FUP.balance.enrageTurns, 'Enraged');
     }
+    this.surprise(rb);   // how the fight started (v0.94): a sneak attack, an ambush, a caught runner, a refused waiver
     this.setMenu('main');
     const first = this.enemyKeys[0];
     const bossSay = (this.enemyKeys.map(k => FUP.enemies[k]).find(d => d.boss) || {}).say || {};   // the Senior Partner has his own lines (v0.93)
@@ -94,6 +95,28 @@ class BattleScene extends Phaser.Scene {
     if (this.player.hp < this.player.maxHp * 0.3) { this.saidLowHp = true; this.say('startWounded'); }
     this.lesson = null;                   // Orientation Isle's combat lesson (BattleLesson.js)
     if (rb.lesson) this.startLesson();
+  }
+
+  // ---------- How the fight started (v0.94, data/forest.js encounters) ----------
+  surprise(rb) {
+    const real = this.liveReal(), first = real[0];
+    if (rb.surprise === 'sneak' && first) {   // it was napping: empty turn bars, and you get a free hit
+      for (const e of real) e.gauge = Math.min(e.gauge, -40);
+      this.time.delayedCall(500, () => { if (this.over || first.gone) return; this.bigMoment('SNEAK ATTACK!', FUP.ui.colors.good); this.lunge(this.playerSprite, 1); this.hitEnemy(first, 1.0, 0, false, { kind: 'counter' }); });
+    }
+    if (rb.surprise === 'ambush') {   // it jumped out: they go first, and no running on your first turn
+      for (const e of real) e.gauge = 100 - real.indexOf(e) * 5;
+      this.noFleeTurns = Math.max(this.noFleeTurns, 1);
+      this.time.delayedCall(200, () => { if (!this.over) this.bigMoment('AMBUSH!', FUP.ui.colors.bad); });
+    }
+    if (rb.surprise === 'caught' && first) {   // you caught the Debt Runner: stunned, and double coins
+      first.gauge = -60; first.coins = Math.round((first.coins || 0) * FUP.forestData.encounters.runner.coinMult);
+      this.time.delayedCall(300, () => { if (!this.over && !first.gone) { this.popup(first.view, 'STUNNED', 'info', -40); this.bigMoment('CAUGHT HIM!', FUP.ui.colors.good); } });
+    }
+    if (rb.sustained) {   // you refused the Paralegal Newt's waiver: his allies start Sustained
+      const newt = real.find(e => e.key === 'paralegalNewt'), m = newt && newt.moves.find(x => x.type === 'allyBuff');
+      if (m) for (const e of real) if (e !== newt) FUP.combat.addBuff(e, m.stat, m.mult, m.turns, m.label, true);
+    }
   }
 
   // ---------- Runs every frame ----------

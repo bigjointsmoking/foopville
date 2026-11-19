@@ -696,13 +696,14 @@ class WorldScene extends Phaser.Scene {
       if (!e.alive) return;
       const s = this.enemySprites[i];
       const touch = e.touch ? e.touch : e.bridge ? d.toll.bridgeTouch : e.godfather ? d.godfatherTouch : d.touchDistance;
+      if (e.mode && this.encounterMove(e, i, s, dt, calm, touch)) return;   // napping / hidden / runner (v0.94)
       if (!calm && Math.hypot(this.player.x - e.x, this.player.y - e.y) < touch) { this.startBattle(i); return; }
       if (e.still) { s.setAlpha(calm ? 0.5 : 1); return; }   // the bridge goblin and the Godfather hold their ground
       const toPlayer = Math.hypot(this.player.x - e.x, this.player.y - e.y);
       const fromHome = Math.hypot(e.x - e.homeX, e.y - e.homeY);
       let tx, ty, speed;
 
-      if (!calm && toPlayer < d.enemyChaseRange * T && fromHome < d.enemyLeashRange * T) {
+      if (!calm && e.mode !== 'runner' && toPlayer < d.enemyChaseRange * T && fromHome < d.enemyLeashRange * T) {   // (a runner never chases you)
         tx = this.player.x; ty = this.player.y; speed = d.enemyChaseSpeed; // chase!
         e.wander = null;
       } else {
@@ -726,6 +727,102 @@ class WorldScene extends Phaser.Scene {
     });
   }
 
+  // ---------- How fights start (v0.94, data/forest.js encounters) ----------
+  // A little mark over an enemy on the map (💤 / 💰 / ❗), following it and the fog. text '' hides it.
+  markEnemy(e, s, text) {
+    if (!s.mark) s.mark = FUP.ui.text(this, e.x, e.y - 30, '', 14, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5);
+    s.mark.setText(text).setPosition(e.x, e.y - 30).setDepth(e.y + 40).setVisible(!!text && s.visible);
+  }
+  // Napping, hidden and runner enemies move their own way. Returns true if it handled this enemy this frame.
+  encounterMove(e, i, s, dt, calm, touch) {
+    const EN = FUP.forestData.encounters, T = FUP.forestData.tileSize;
+    const dist = Math.hypot(this.player.x - e.x, this.player.y - e.y);
+    s.setAlpha(calm ? 0.5 : 1);
+    if (e.mode === 'sleep' && !e.awake) {
+      this.markEnemy(e, s, '💤');
+      if (!calm && dist < touch) { this.startBattle(i, { surprise: 'sneak' }); return true; }
+      if (!calm && dist < EN.sleep.wakeRange * T && Math.random() < EN.sleep.wakePerSecond * dt) {
+        e.awake = true;
+        this.markEnemy(e, s, '❗');
+        this.say('enemyWakes', { enemy: FUP.enemies[e.type].name });
+        this.time.delayedCall(900, () => { if (s.mark) s.mark.setText(''); });
+      }
+      return true;
+    }
+    if (e.mode === 'ambush' && !e.sprung) {
+      s.setAlpha(0);   // hidden: only a ripple / rustling bush shows
+      if (!s.hint) {
+        s.hint = this.add.text(e.x, e.y, e.type === 'redTapeEel' ? '〰️' : '🌿', { fontSize: '18px' }).setOrigin(0.5);
+        this.tweens.add({ targets: s.hint, angle: { from: -8, to: 8 }, duration: 260, yoyo: true, repeat: -1, repeatDelay: 1400 });
+      }
+      s.hint.setPosition(e.x, e.y).setDepth(e.y + 10).setVisible(s.visible);
+      if (!calm && dist < EN.ambush.triggerRange * T) {
+        e.sprung = true;
+        this.tweens.killTweensOf(s.hint); s.hint.destroy(); s.hint = null;
+        s.setAlpha(1);
+        this.startBattle(i, { surprise: 'ambush' });
+      }
+      return true;
+    }
+    if (e.mode === 'runner') {
+      this.markEnemy(e, s, '💰');
+      if (!calm && dist < touch) { this.startBattle(i, { surprise: e.fleeing ? 'caught' : null }); return true; }
+      if (!e.fleeing && !calm && dist < EN.runner.fleeRange * T) { e.fleeing = true; e.fleeT = 0; this.say('runnerSpotted'); }
+      if (!e.fleeing) return false;   // not spotted you yet: wanders like anyone else (but never chases)
+      e.fleeT += dt;
+      if (e.fleeT > EN.runner.escapeSeconds) {   // too slow: he's gone for this trip
+        e.alive = false;
+        if (s.mark) s.mark.destroy();
+        this.tweens.add({ targets: s, alpha: 0, duration: 500, onComplete: () => s.destroy() });
+        this.say('runnerEscaped');
+        return true;
+      }
+      const vx = e.x - this.player.x, vy = e.y - this.player.y, len = Math.hypot(vx, vy) || 1;
+      s.x = e.x; s.y = e.y;
+      this.slide(s, (vx / len) * EN.runner.fleeSpeed * dt, (vy / len) * EN.runner.fleeSpeed * dt, 12);
+      e.x = s.x; e.y = s.y;
+      if (vx) s.setFlipX(vx < 0);
+      s.setDepth(s.y + 16);
+      return true;
+    }
+    return false;   // 'talk' and an awake sleeper: the usual wander + chase (talk asks first in startBattle)
+  }
+
+  // The Paralegal Newt's waiver (v0.94): sign (pay), Rizz it, or refuse (fight, his allies start Sustained)
+  openWaiver(index) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 20000;
+    const run = FUP.run, EN = FUP.forestData.encounters.talk, e = this.A.enemies[index], data = FUP.enemies[e.type];
+    const pay = run.coins > 0 ? Math.max(1, Math.ceil(run.coins * EN.signShare)) : 0;
+    const chance = FUP.combat.rizzChance('charm', FUP.skills.level('rizz'), FUP.weapons[run.weapon], data, FUP.gear.totals().rizz);
+    const parts = [], fix = o => { parts.push(o); return o.setScrollFactor(0).setDepth(Z); };
+    fix(ui.shade(this, 0.7));
+    fix(ui.panel(this, W / 2 - 300, 150, 600, 270, 'panel'));
+    fix(ui.sprite(this, W / 2 - 240, 215, data.sprite, data.emoji, 60, 1.6));
+    fix(ui.text(this, W / 2 + 30, 180, data.name, 20, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0));
+    fix(ui.text(this, W / 2 + 30, 215, Phaser.Utils.Array.GetRandom(FUP.narrator.waiverAsk) + (pay ? `\nThe filing fee is ${pay} 🪙.` : '\nYou have no coins. He looks at you with pity.'), 14, c.ink, { align: 'center', lineSpacing: 5, wordWrap: { width: 420 } }).setOrigin(0.5, 0));
+    const close = () => parts.forEach(p => p.destroy());
+    const btn = (x, w, label, fn, hot, enabled = true) => {
+      const b = ui.button(this, x, 340, w, 52, label, fn, { size: 15, hot });
+      for (const o of [b.rect, b.txt, b.icon].filter(Boolean)) { o.setScrollFactor(0).setDepth(Z + 1); parts.push(o); }
+      if (!enabled) b.setEnabled(false);
+    };
+    const leave = () => {   // signed or talked round: he files it and wanders off for the rest of the trip
+      e.alive = false;
+      const s = this.enemySprites[index];
+      if (s) { if (s.mark) s.mark.destroy(); this.tweens.add({ targets: s, alpha: 0, y: s.y - 20, duration: 600, onComplete: () => s.destroy() }); }
+      this.leaving = false;
+      this.f.graceUntil = this.f.time + FUP.worldData.arriveGraceSeconds;
+    };
+    const fight = say => { close(); this.say(say); this.time.delayedCall(700, () => { this.leaving = false; this.startBattle(index, { refused: true }); }); };
+    const X = W / 2 - 280;
+    btn(X, 180, pay ? `✍️ Sign (${pay} 🪙)` : '✍️ Sign\n(no coins)', () => { close(); run.coins -= pay; FUP.audio.sfx('coins'); this.say('waiverSigned', { item: pay }); leave(); }, false, pay > 0);
+    btn(X + 190, 180, `💬 Rizz ${Math.round(chance * 100)}%\n(talk your way out)`, () => {
+      if (Math.random() < chance) { close(); FUP.audio.sfx('charm'); FUP.skills.addXp('rizz', EN.rizzXp, { x: W / 2, y: H / 2 }); this.say('waiverRizz'); leave(); }
+      else { FUP.audio.sfx('boo'); fight('waiverRizzFail'); }
+    }, true);
+    btn(X + 380, 180, '✊ Refuse\n(objection!)', () => fight('waiverRefuse'));
+  }
+
   // Touching an enemy. The Moss Goblin asks for his toll first; pigeons come as a flock.
   startBattle(index, opts = {}) {
     if (this.leaving) return;
@@ -733,9 +830,12 @@ class WorldScene extends Phaser.Scene {
     this.leaving = true;
     const e = this.A.enemies[index];
     if (e.type === 'goblin' && !opts.enraged) { this.openToll(index); return; }
+    if (e.mode === 'talk' && !opts.refused) { this.openWaiver(index); return; }   // the Paralegal Newt asks first (v0.94)
+    if (e.mode === 'sleep') e.awake = true;   // whatever happens next, it's awake now
     // mult = this area's multiplier: tougher enemies, more XP and coins (blueprint 18.6)
     const reg = FUP.world.region(this.f.area);
-    FUP.run.battle = { index, type: e.type, result: null, mult: this.info.mult, coinMult: this.info.coinMult, areaLevel: this.info.level, dropTier: (reg && reg.dropTier) || 1 };
+    FUP.run.battle = { index, type: e.type, result: null, mult: this.info.mult, coinMult: this.info.coinMult, areaLevel: this.info.level, dropTier: (reg && reg.dropTier) || 1,
+      surprise: opts.surprise || null, sustained: !!opts.refused };   // v0.94: sneak / ambush / caught; refused the newt's waiver
     const enemies = e.group ? e.group.slice() : e.count ? new Array(e.count).fill(e.type) : [e.type];
     FUP.audio.sfx('encounter');
     FUP.fx.shake(this, 'encounter');

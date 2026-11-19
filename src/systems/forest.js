@@ -105,6 +105,11 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     const e = { type, x: c.x, y: c.y, homeX: c.x, homeY: c.y, alive: true };
     if (type === 'pigeon') { const fl = a.flock || { min: 2, max: 3 }; e.count = fl.min + Math.floor(rng() * (fl.max - fl.min + 1)); }
     if (a.groups && a.groups[type]) e.group = this.marshGroup(a.groups[type], rng);
+    // How this one starts a fight (v0.94, data/forest.js encounters): napping, hidden, a runner, or talks first
+    for (const [mode, en] of Object.entries(FUP.forestData.encounters || {})) {
+      const share = en.types[type];
+      if (share && rng() < share) { e.mode = mode; break; }
+    }
     return e;
   },
   // Who you fight when you touch this enemy: one of the region's `groups` lists, picked by weight (the Marsh)

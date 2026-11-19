@@ -367,6 +367,15 @@ FUP.narrator = {
   farmSaved: ['You water the wilting {item} just in time. It will remember this. Barely.', 'The {item} perks up. It\'s smaller now, but alive. Like your ambitions.'],
   farmDead: ['Your {item} died of thirst. You had one job. Well, three waterings.', 'That {item} is very, very dead. Hoe it away and pretend it never happened.'],
   farmClear: ['You bury the evidence. The soil keeps your secret.'],
+  // v0.94 how fights start
+  enemyWakes: ['The {enemy} wakes up. It is not a morning person.', '{enemy}: awake, annoyed, coming.'],
+  runnerSpotted: ['A goblin with a sack of coins spots you and RUNS. Catch him!'],
+  runnerEscaped: ['He got away. The coins are his now. Your legs need work.'],
+  waiverAsk: ['"Before we proceed, please sign this waiver. It says I\'m not liable for anything. Ever."', '"Halt. Liability waiver. Sign here, here, and in blood here. Kidding. Ink is fine."'],
+  waiverSigned: ['You sign. He stamps it, files it, and wanders off. That was {item} coins of pure paperwork.'],
+  waiverRizz: ['You talk him into a "verbal agreement". He leaves happy. It isn\'t binding.'],
+  waiverRizzFail: ['"That is not how contracts work." Objection noted. Fight on.'],
+  waiverRefuse: ['You refuse to sign. He shouts "Objection!" and everyone gets defensive.'],
   // v0.93 new enemies + the Senior Partner
   spikes: ['Ow. {enemy} is mostly spikes. Defend first, then hit it.', 'You punched a hedgehog. Your knuckles have notes.'],
   runnerGrab: ['{enemy} pockets {item} of your coins. Stop him before he runs!'],
