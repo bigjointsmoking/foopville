@@ -75,7 +75,8 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     return Object.keys(weights)[0];
   },
 
-  // One region for a trip: shuffle which spots get ingredients and enemies.
+  // One region, built once per life (E1a): shuffle which spots get ingredients and enemies.
+  // After that the spots stay; what stands on them respawns on timers (respawn below).
   // Its `features` (data/world.js) decide whether it has enemies and things to forage.
   makeArea(id, rng = Math.random) {
     this.use(id);
@@ -87,22 +88,22 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     const enemies = !on('enemies') ? [] : shuffle(this.find('e')).slice(0, a.enemiesPerRun).map(s => this.makeEnemy(this.pickWeighted(a.enemyTypes, rng), s, a, rng));
     // The Toll Bridge: a Moss Goblin always stands on "B" and never wanders off it
     if (on('enemies')) for (const s of this.find('B')) enemies.push({ ...this.makeEnemy('goblin', s, a, rng), still: true, bridge: true });
-    // The hidden hole: one of the "H" spots, picked fresh every trip (null if the area has none)
+    // The hidden hole: one of the "H" spots, picked once and kept (E1a, Jesus: it stays where you find it)
     const holes = this.find('H');
     const hole = holes.length ? holes[Math.floor(rng() * holes.length)] : null;
     return {
       items, enemies, hole,
       player: null,     // where you stand in this area (set when you walk in)
-      rested: false,    // used this area's campfire Rest yet?
-      visited: false,
-      seen: new Array(this.width() * this.height()).fill(0), // fog of war: squares you've seen this trip
+      restedAt: null,   // play second of this area's last campfire Rest (cooldown: data/world.js respawn.rest)
+      visited: false,   // walked in yet on this trip (the narrator's hello)
+      seen: new Array(this.width() * this.height()).fill(0), // fog of war: squares you've ever seen (kept)
     };
   },
 
   // One enemy on the map. Pigeons are a flock: `count` = how many you fight at once.
   makeEnemy(type, s, a, rng = Math.random) {
     const c = this.center(s.tx, s.ty);
-    const e = { type, x: c.x, y: c.y, homeX: c.x, homeY: c.y, alive: true };
+    const e = { type, x: c.x, y: c.y, homeX: c.x, homeY: c.y, alive: true, spot: { tx: s.tx, ty: s.ty } };
     if (type === 'pigeon') { const fl = a.flock || { min: 2, max: 3 }; e.count = fl.min + Math.floor(rng() * (fl.max - fl.min + 1)); }
     if (a.groups && a.groups[type]) e.group = this.marshGroup(a.groups[type], rng);
     // How this one starts a fight (v0.94, data/forest.js encounters): napping, hidden, a runner, or talks first
@@ -149,6 +150,7 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     if (!g) return null;
     const i = g.id, was = this.current;
     const A = this.state(f, i);
+    if (A.enemies.some(e => e.godfather && e.alive)) { f.godfatherSpawned = true; return i; }   // he's still out there (regions are kept now)
     this.use(i);
     const T = this.size(), sq = p => ({ tx: Math.floor(p.x / T), ty: Math.floor(p.y / T) });
     const camp = this.find('C')[0];
@@ -172,7 +174,7 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     return i;
   },
 
-  // This trip's state for a region: made the first time you walk in (or kept from last trip if it hasn't respawned)
+  // A region's state for this trip: the kept one (FUP.world.regions), made the first time you ever walk in
   // (Leaves the map you're looking at as it was.)
   state(f, id, rng = Math.random) {
     if (!f.areas[id]) {
@@ -181,6 +183,45 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
       this.use(was);
     }
     return f.areas[id];
+  },
+
+  // ---------- Respawn (E1a) ----------
+  // Note when things died / were picked (the map code only flips alive / taken).
+  stamp(A, now = FUP.clock.now()) {
+    for (const e of A.enemies) if (!e.alive && e.deadAt == null) e.deadAt = now;
+    for (const it of A.items) if (it.taken && it.takenAt == null) it.takenAt = now;
+  },
+  // Bring back what's due in region `id`. `at` = where you stand ({x, y} pixels) or null.
+  // Only out of your sight and away from an active grave. Returns how many came back.
+  respawn(id, A, at = null, now = FUP.clock.now(), rng = Math.random) {
+    if (!A) return 0;
+    const was = this.current;
+    this.use(id);
+    const R = FUP.world.respawnTimes(id), a = this.area(id), T = this.size();
+    this.stamp(A, now);
+    const sight = ((a.fog && a.fog.sight) || 0) + R.sightMargin;
+    const G = FUP.grave && FUP.grave.active() && FUP.grave.state.region === id ? FUP.grave.state : null;
+    const clear = c => (!at || Math.hypot(c.x - at.x, c.y - at.y) > sight * T) && (!G || Math.hypot(c.x - G.x, c.y - G.y) > R.graveRadius * T);
+    // Quest enemies: keep only the ones a quest still wants; beaten ones never respawn as random enemies
+    const wanted = new Set((FUP.quests && FUP.quests.foesIn ? FUP.quests.foesIn(id) : []).map(q => q.id));
+    A.enemies = A.enemies.filter(e => !(e.questFoe && (!e.alive || !wanted.has(e.questFoe))) && !(e.godfather && !e.alive));
+    let n = 0;
+    A.enemies.forEach((e, k) => {
+      if (e.alive || e.godfather || now - e.deadAt < R.enemies) return;
+      const s = e.spot || { tx: Math.floor(e.homeX / T), ty: Math.floor(e.homeY / T) };
+      if (!clear(this.center(s.tx, s.ty))) return;
+      A.enemies[k] = e.bridge ? { ...this.makeEnemy('goblin', s, a, rng), still: true, bridge: true }
+        : this.makeEnemy(this.pickWeighted(a.enemyTypes, rng), s, a, rng);
+      n++;
+    });
+    for (const it of A.items) {
+      if (!it.taken || now - it.takenAt < R.items || !clear(this.center(it.tx, it.ty))) continue;
+      it.id = FUP.run.rollIngredient(rng, a.forageOdds, a.forage || null);
+      it.taken = false; delete it.takenAt;
+      n++;
+    }
+    this.use(was);
+    return n;
   },
 
   // A fresh trip. Each region is filled in when you first walk into it (FUP.forest.state),

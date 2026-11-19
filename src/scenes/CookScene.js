@@ -2,7 +2,7 @@
 // CAMP — cook what's in your bag. Two versions of this screen:
 //   'home'     = the stove in your house (you need one, v0.68). Cook, then
 //                step back into your room (HouseScene). Saves after every change.
-//   'campfire' = a campfire in one of the 3 Forest areas. Cook, Rest once
+//   'campfire' = a campfire in one of the 3 Forest areas. Cook, Rest (cooldown, E1a)
 //                per campfire (+30% HP), change gear, go back into the Forest
 //                or head home. The Guardian is no longer here: he's at the
 //                bottom of a hidden hole in the Deep Woods (WorldScene).
@@ -22,6 +22,7 @@ class CookScene extends Phaser.Scene {
     const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height;
 
     this.picked = [];        // ingredient ids currently in the pot
+    this.restBtn = null;     // only the Forest campfire has one (Phaser reuses this screen)
     this.method = 'grill';   // selected cooking method
     this.result = null;      // the last dish you cooked
     this.showBook = false;
@@ -43,7 +44,8 @@ class CookScene extends Phaser.Scene {
     if (this.mode === 'campfire') {
       this.timerText = ui.text(this, W - 222, 38, '', 18, c.accent, { fontStyle: '700' }).setOrigin(1, 0.5);
       this.restBtn = ui.button(this, W - 168, 20, 144, 36, `😴 Rest +${Math.round(FUP.forestData.restHealPercent * 100)}%`, () => this.rest(), { size: 15 });
-      this.restBtn.setEnabled(!this.campArea().rested);
+      this.restLabel = null;
+      this.refreshRest();
     }
     // (Your bed moved into the house itself in v0.68: Nap / Sleep live in HouseScene.)
     // (The garden menu is gone: farming happens on the village map now, see data/garden.js.)
@@ -81,19 +83,31 @@ class CookScene extends Phaser.Scene {
     f.time += Math.min(delta, 100) / 1000;
     const s = Math.floor(f.time);
     this.timerText.setText(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`);
+    this.refreshRest();
+  }
+
+  // The Rest button: ready, or counting down its cooldown (E1a: data/world.js respawn.rest)
+  refreshRest() {
+    if (!this.restBtn) return;
+    const wait = FUP.world.restWait(FUP.run.forest.area, this.campArea());
+    const label = wait ? `😴 Rest in ${Math.floor(wait / 60)}:${String(wait % 60).padStart(2, '0')}` : `😴 Rest +${Math.round(FUP.forestData.restHealPercent * 100)}%`;
+    if (label === this.restLabel) return;
+    this.restLabel = label;
+    this.restBtn.txt.setText(label);
+    this.restBtn.setEnabled(!wait);
   }
 
   // The Forest area this campfire is in (each campfire has its own Rest).
   campArea() { const f = FUP.run.forest; return f.areas[f.area]; }
 
-  // Campfire Rest: heal 30% of max HP, once per campfire per trip.
+  // Campfire Rest: heal 30% of max HP, then a cooldown (E1a: once per trip before).
   rest() {
     const f = FUP.run.forest;
-    if (!f || this.campArea().rested) return;
-    this.campArea().rested = true;
+    if (!f || FUP.world.restWait(f.area, this.campArea())) return;
+    this.campArea().restedAt = FUP.clock.now();
     const max = FUP.run.maxHp();
     FUP.run.hp = Math.min(max, FUP.run.currentHp() + Math.round(max * FUP.forestData.restHealPercent));
-    this.restBtn.setEnabled(false);
+    this.refreshRest();
     this.renderSatchel();
     this.say('campfireRest');
     FUP.audio.sfx('heal');
@@ -582,9 +596,9 @@ class CookScene extends Phaser.Scene {
       b.rect.setDepth(Z + 2); b.txt.setDepth(Z + 3); g.addMultiple([b.rect, b.txt]);
       add(ui.text(this, W / 2, y + 58, desc, 13, c.dim, { align: 'center', wordWrap: { width: 500 } }).setOrigin(0.5, 0));
     };
-    const next = hole ? 'Somewhere in these woods there\'s a hole. The Guardian is at the bottom.\nIt moves every trip.' : on ? `The way on to ${FUP.world.region(on.to).name} is out there somewhere.\nYou start next to the fire.` : 'You start next to the fire.';
+    const next = hole ? 'Somewhere in these woods there\'s a hole. The Guardian is at the bottom.\nOnce you find it, it stays put.' : on ? `The way on to ${FUP.world.region(on.to).name} is out there somewhere.\nYou start next to the fire.` : 'You start next to the fire.';
     option(170, '🌲 Back into the Forest', next, () => this.leave('forest'), true);
-    option(290, '🏘️ Walk back to Foopville', 'The trip ends safely. You keep your bag, satchel, coins and gear,\nso you can hand in quests and shop. Next trip, the Forest starts fresh.', () => this.leave('home'));
+    option(290, '🏘️ Walk back to Foopville', 'The trip ends safely. You keep your bag, satchel, coins and gear,\nso you can hand in quests and shop. The Forest stays as you left it.', () => this.leave('home'));
     const stay = ui.button(this, W / 2 - 90, 420, 180, 40, 'Stay here', () => this.closeLeaveChoice(), { size: 16 });
     stay.rect.setDepth(Z + 2); stay.txt.setDepth(Z + 3); g.addMultiple([stay.rect, stay.txt]);
   }

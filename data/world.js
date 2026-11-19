@@ -14,7 +14,16 @@ window.FUP = window.FUP || {};
 
 FUP.worldData = {
   maxSize: 64,               // no region map wider or taller than this (squares)
-  respawnSeconds: 300,       // play seconds before a danger region is reshuffled on your next trip
+  // E1a (Jesus 2026-11-19, design/exploration-e0.md): danger regions are built once per life and kept.
+  // Each enemy / ingredient spot comes back on its own timer, counted in PLAY seconds (nothing refills
+  // while the game is closed). A region can override any of these with its own `respawn: { ... }`.
+  respawn: {
+    enemies: 300,      // a beaten enemy's spot gets a new enemy after this long (Forest Edge: 5 min)
+    items: 600,        // a picked ingredient grows back after this long (10 min)
+    rest: 600,         // campfire Rest cooldown (10 min)
+    graveRadius: 6,    // squares: nothing respawns this close to your grave while it waits
+    sightMargin: 2,    // squares beyond your sight: things only come back where you can't see them
+  },
   fadeMs: 250,               // screen fade when you cross into another region
   arriveGraceSeconds: 1.5,   // after walking into a region, enemies leave you alone this long
 
@@ -32,8 +41,10 @@ FUP.worldData = {
     edge:      { name: 'Forest Edge', kind: 'danger', scene: 'World', box: { col: 0, row: 2 }, band: [1, 5], dropTier: 1,
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing'], links: { W: { to: 'village', edge: 'N' }, E: { to: 'tollroad', edge: 'W' } } },
     tollroad:  { name: 'Goblin Toll Road', kind: 'danger', scene: 'World', box: { col: 1, row: 2 }, band: [5, 9], dropTier: 2,
+                 respawn: { enemies: 420 },   // 7 min
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing'], links: { W: { to: 'edge', edge: 'E' }, E: { to: 'deepwoods', edge: 'W' } } },
     deepwoods: { name: 'Deep Woods', kind: 'danger', scene: 'World', box: { col: 2, row: 2 }, band: [9, 13], dropTier: 2,
+                 respawn: { enemies: 540 },   // 9 min
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing'], links: { W: { to: 'tollroad', edge: 'E' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
@@ -43,6 +54,7 @@ FUP.worldData = {
                  links: {} },
     // East of the village over the repaired bridge (W2). Map in data/region_marsh.js
     marsh:     { name: 'Soggy Marsh', kind: 'danger', scene: 'World', box: { col: 1, row: 3 }, band: [15, 22], dropTier: 3,
+                 respawn: { enemies: 600 },   // 10 min
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'], links: { W: { to: 'village', edge: 'E' } } },
   },
 

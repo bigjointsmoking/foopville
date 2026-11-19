@@ -236,6 +236,6 @@ FUP.forestData = {
   revengeKills: 5,
   godfatherTouch: 40,    // pixels: he blocks the trail
 
-  restHealPercent: 0.30, // Rest heals 30% of max HP, once per campfire per trip (Open Question 16)
+  restHealPercent: 0.30, // Rest heals 30% of max HP; then that campfire waits (data/world.js respawn.rest, E1a)
   holeTouch: 24,         // pixels: this close to the real hole = "Climb down?"
 };

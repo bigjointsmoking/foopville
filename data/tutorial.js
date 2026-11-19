@@ -98,7 +98,7 @@ FUP.tutorialData = {
       pages: [
         'Cooking: ingredients in the pot, pick a method, cook. Cooked food heals far more than raw. Recipes need Cooking levels: try a Roasted Grumpleberry (Grumpleberry, Grill). Your fish needs Cooking 2. Ambitious.',
         'Dishes go in your satchel: eat them in fights to heal, or throw them. Never enter the Forest without food.',
-        'No stove at home yet (Planksworth the Carpenter sells one), so use campfires. Each Forest area has one: cook, Rest once per trip for HP, change gear, or walk home safely. Walk into this one to cook. 📖 Recipes lists what you know.',
+        'No stove at home yet (Planksworth the Carpenter sells one), so use campfires. Each Forest area has one: cook, Rest for HP (every 10 minutes), change gear, or walk home safely. Walk into this one to cook. 📖 Recipes lists what you know.',
       ],
       again: 'The campfire. Walk into it. Carefully. That\'s how cooking starts.' },
     { kind: 'do', event: 'cook', at: 'campfire', goal: 'Cook a dish at the campfire',

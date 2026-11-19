@@ -12,13 +12,13 @@
 window.FUP = window.FUP || {};
 
 FUP.world = {
-  // region: where you are · seen: regions you've been to · respawn: { id: play second it was last shuffled }
-  state: { region: 'village', x: null, y: null, seen: { village: true }, respawn: {} },
-  lastState: {},   // each danger region as you left it last trip (memory only: reused if it hasn't respawned yet)
+  // region: where you are · seen: regions you've been to
+  state: { region: 'village', x: null, y: null, seen: { village: true } },
+  regions: {},     // E1a: each danger region's state, built once per life and saved (part 'regions')
   visit: null,     // a safe World region you're in (the Docks): same shape as a trip, but no trip (FUP.run.forest stays null)
   EDGES: ['N', 'S', 'E', 'W'],
 
-  reset() { this.state = { region: 'village', x: null, y: null, seen: { village: true }, respawn: {} }; this.lastState = {}; this.visit = null; },
+  reset() { this.state = { region: 'village', x: null, y: null, seen: { village: true } }; this.regions = {}; this.visit = null; },
 
   ids() { return Object.keys(FUP.worldData.regions); },
   region(id = this.state.region) { return FUP.worldData.regions[id] || null; },
@@ -150,20 +150,39 @@ FUP.world = {
   // You're home, however you got there (death, the chute, the boss, a campfire)
   arriveHome() { this.state.region = 'village'; this.visit = null; this.state.x = this.state.y = null; },
 
-  // ---------- Respawn ----------
-  // A danger region's state for this trip: the one you left last time if it hasn't
-  // respawned yet, else freshly shuffled (made by `make`).
+  // ---------- Kept regions (E1a) ----------
+  // A danger region's state: built once per life (by `make`), then kept and saved. Spots respawn
+  // one by one on timers (FUP.forest.respawn). A new trip only forgets where you stood.
   regionState(id, make) {
-    const C = FUP.clock, now = C && C.now ? C.now() : null, last = this.lastState[id];
-    const since = now === null ? Infinity : now - (this.state.respawn[id] ?? -Infinity);
-    if (last && since < FUP.worldData.respawnSeconds) {
-      last.visited = false; last.player = null;
-      return last;
-    }
-    const s = make();
-    if (now !== null) this.state.respawn[id] = now;
-    this.lastState[id] = s;
+    if (this.safe(id)) return make();   // safe places (the Docks, the Isle) have nothing to keep
+    const s = this.regions[id];
+    if (!s) return (this.regions[id] = make());
+    s.visited = false; s.player = null;
     return s;
+  },
+  // The respawn numbers for a region (data/world.js respawn, plus the region's own overrides)
+  respawnTimes(id) { const r = this.region(id); return { ...FUP.worldData.respawn, ...((r && r.respawn) || {}) }; },
+  // Campfire Rest: seconds until you can Rest again in this region (0 = now)
+  restWait(id, A, now = FUP.clock.now()) {
+    if (!A || A.restedAt == null) return 0;
+    return Math.max(0, Math.ceil(A.restedAt + this.respawnTimes(id).rest - now));
+  },
+
+  // Fog of war is saved as text: 6 squares per letter (seen = 1 bit)
+  FOG: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
+  packFog(seen) {
+    let out = '';
+    for (let i = 0; i < seen.length; i += 6) {
+      let n = 0;
+      for (let b = 0; b < 6; b++) if (seen[i + b]) n |= 1 << b;
+      out += this.FOG[n];
+    }
+    return out;
+  },
+  unpackFog(text, cells) {
+    const seen = new Array(cells).fill(0);
+    for (let i = 0; i < cells; i++) seen[i] = (this.FOG.indexOf(text[Math.floor(i / 6)] || 'A') >> (i % 6)) & 1;
+    return seen;
   },
 
   // Pairs of shown boxes that are linked (the map draws a line between them)

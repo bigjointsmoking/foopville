@@ -26,6 +26,8 @@ class WorldScene extends Phaser.Scene {
     this.info = F.area();                       // this area's data (name, map, multiplier)
     this.dropOldGround();
     if (this.arrive.from === 'campfire') this.A.player = F.besideCampfire();
+    // Kept regions (E1a): bring back enemies and ingredients whose timers ran out, out of your sight
+    if (this.scene.key === 'World' && !this.safe && this.A) F.respawn(this.f.area, this.A, this.A.player);
     this.leaving = false;
     this.pack = null;           // backpack screen (reset: Phaser reuses this screen)
     this.enemySprites = null;   // drawn in drawThings; quest foes join them (placeQuestFoes)

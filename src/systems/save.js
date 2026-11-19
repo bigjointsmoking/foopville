@@ -218,10 +218,34 @@ FUP.save = {
     get: () => FUP.world.state,
     set(d, all) {
       const W = FUP.world;
-      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) }, respawn: { ...(d.respawn || {}) } };
+      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) } };   // (old saves' `respawn` is dropped: E1a)
       if (W.region(d.region) && (W.safe(d.region) || (all && all.onRun && all.parts.trip))) W.state.region = d.region;   // mid-trip with the trip saved: still out there (v0.73)
     },
     reset: () => FUP.world.reset(),
+  });
+
+  // The danger regions as you left them (E1a): enemies, ingredients, the hole, the explored map (fog
+  // packed 6 squares per letter), campfire Rest time. Kept for the whole life. Must load before 'trip'.
+  S.register('regions', {
+    get() {
+      const out = {};
+      for (const [id, A] of Object.entries(FUP.world.regions)) {
+        FUP.forest.stamp(A);
+        out[id] = { ...A, seen: FUP.world.packFog(A.seen), cells: A.seen.length };
+      }
+      return out;
+    },
+    set(d) {
+      const W = FUP.world;
+      W.regions = {};
+      for (const [id, A] of Object.entries(d || {})) {
+        if (!W.region(id)) continue;
+        const r = copy(A);
+        r.seen = W.unpackFog(A.seen || '', A.cells || 0);
+        delete r.cells;
+        W.regions[id] = r;
+      }
+    },
   });
 
   S.register('cosmetics', {
@@ -236,11 +260,27 @@ FUP.save = {
     reset: () => FUP.tools.reset(),
   });
 
-  // Your trip (v0.73): every region you've walked through this trip, its enemies, items, fog, where you stand,
-  // the basement rooms. Only used when the save was made on a trip (onRun); otherwise ignored.
+  // Your trip (v0.73): the trip clock, counters, the basement rooms, and which regions you've walked
+  // through (their ids: the regions themselves are saved in 'regions' since E1a). Only used when
+  // the save was made on a trip (onRun); otherwise ignored.
   S.register('trip', {
-    get: () => FUP.run.forest || null,
-    set(d) { FUP.run.forest = d ? copy(d) : null; },
+    get: () => { const f = FUP.run.forest; return f ? { ...f, areas: Object.keys(f.areas || {}) } : null; },
+    set(d) {
+      if (!d) { FUP.run.forest = null; return; }
+      const f = copy(d), W = FUP.world, now = FUP.clock.now();
+      if (Array.isArray(f.areas)) f.areas = Object.fromEntries(f.areas.filter(id => W.regions[id]).map(id => [id, W.regions[id]]));
+      else {
+        // A save from before E1a: the trip carried whole regions. They become the kept regions.
+        for (const [id, A] of Object.entries(f.areas || {})) {
+          if (!W.region(id)) continue;
+          if (A.rested) A.restedAt = now;   // rested this trip = the cooldown starts now
+          delete A.rested;
+          W.regions[id] = A;
+        }
+        f.areas = Object.fromEntries(Object.keys(f.areas || {}).filter(id => W.regions[id]).map(id => [id, W.regions[id]]));
+      }
+      FUP.run.forest = f;
+    },
   });
 
   // Orientation Isle (v0.62): which step you're on, what you've done, the practice patch
