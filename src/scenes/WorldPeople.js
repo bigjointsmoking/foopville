@@ -28,6 +28,12 @@ Object.assign(WorldScene.prototype, {
         else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
       }
+      if (o.kind === 'office') {   // a boss's office (v0.93: the Senior Partner): book a fight for a fee
+        this.add.text(c0.x, c0.y, o.emoji || '🚪', { fontSize: '26px' }).setOrigin(0.5).setDepth(c0.y + 10);
+        ui.text(this, c0.x, c0.y - 22, 'OFFICE', 10, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+        this.spots.push({ kind: 'office', o, x: c0.x, y: c0.y, label: o.label || 'Office' });
+        this.solid.push({ tx: o.tx, ty: o.ty });
+      }
     }
     // The old shrine (v0.82): after The Bowl, feed the Guardian a dish here (src/systems/shrine.js)
     const SH = FUP.raidData.shrine;
@@ -106,6 +112,35 @@ Object.assign(WorldScene.prototype, {
     btn(list.length, 'Not now', close, false);
   },
 
+  // A boss's office (v0.93, the Senior Partner): the receptionist books you in for o.cost, every visit
+  openOffice(o) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.req;
+    const boss = FUP.enemies[o.boss], cost = { items: o.cost }, ok = R.canPay(cost);
+    const have = Object.entries(o.cost).map(([id, n]) => `${R.itemCount(id)}/${n} ${FUP.ingredients[id].name}s`).join(', ');
+    const g = [], add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+    const close = () => { g.forEach(x => x.destroy()); this.panel = null; };
+    this.panel = { destroy: close };   // walking stops while it's open
+    add(ui.shade(this, 0.6));
+    add(ui.panel(this, W / 2 - 260, H / 2 - 120, 520, 240, 'panel'), 1);
+    add(ui.text(this, W / 2, H / 2 - 104, `🚪 ${boss.name}`, 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 - 74, o.text + `\n\nYou have ${have}. A boss fight: no running away.`, 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
+    const btn = (x, label, fn, hot, off) => { const b = ui.button(this, x, H / 2 + 60, 220, 42, label, fn, { size: 14, hot }); if (off) b.setEnabled(false); [b.rect, b.txt].forEach(q => add(q, 3)); b.txt.setDepth(Z + 4); };
+    btn(W / 2 - 235, ok ? '📄 Book the meeting' : 'Not enough forms', () => {
+      if (!R.pay(cost)) return;
+      close();
+      this.say('officeBooked');
+      this.saveHere();
+      this.leaving = true;
+      const reg = FUP.world.region(this.f.area);
+      FUP.run.battle = { index: -1, type: o.boss, result: null, office: true, dropTier: (reg && reg.dropTier) || 1 };
+      FUP.audio.sfx('doorOpen');
+      FUP.fx.shake(this, 'boss');
+      this.cameras.main.fadeOut(700, 20, 10, 0);
+      this.time.delayedCall(730, () => this.scene.start('Battle', { enemies: [o.boss] }));
+    }, ok, !ok);
+    btn(W / 2 + 15, 'Leave', close, false);
+  },
+
   // Villagers out here for a quest step (FUP.quests.guestsIn): Pip at the pier, the Keeper in the Forest Edge
   drawGuests() {
     const ui = FUP.ui, c = ui.colors, home = (this.info.npcs || []).map(p => p.id);
@@ -166,6 +201,7 @@ Object.assign(WorldScene.prototype, {
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'shrine') { this.openShrine(); return; }
+    if (s.kind === 'office') { this.openOffice(s.o); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }
     if (s.kind === 'salvage') {

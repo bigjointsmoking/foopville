@@ -81,7 +81,8 @@ class BattleScene extends Phaser.Scene {
     }
     this.setMenu('main');
     const first = this.enemyKeys[0];
-    this.say(this.isBossFight ? 'bossStart' : this.isMiniBoss ? 'godfatherStart' : rb.tutorial ? 'dummyStart' : first === 'pigeon' ? 'pigeonStart' : rb.ambush ? 'raidAmbushStart' : first === 'sporeBouncer' ? 'bouncerStart' : 'start');
+    const bossSay = (this.enemyKeys.map(k => FUP.enemies[k]).find(d => d.boss) || {}).say || {};   // the Senior Partner has his own lines (v0.93)
+    this.say(this.isBossFight ? (bossSay.start || 'bossStart') : this.isMiniBoss ? 'godfatherStart' : rb.tutorial ? 'dummyStart' : first === 'pigeon' ? 'pigeonStart' : rb.ambush ? 'raidAmbushStart' : first === 'sporeBouncer' ? 'bouncerStart' : 'start');
     // Spored in a raid hazard room: you start this fight with that many Poison stacks
     const R = this.inRaid && FUP.run.forest.raid;
     if (R && R.spored) {
@@ -101,6 +102,7 @@ class BattleScene extends Phaser.Scene {
     const dt = Math.min(delta, 100) / 1000;
     const C = FUP.combat, p = this.player;
     if (this.lesson) { this.refreshHud(); return; }   // the combat lesson stops time (BattleLesson.js)
+    if (this.offerCard) { this.refreshHud(); return; }   // the Senior Partner's settlement offer stops time (BattleSkills.js)
     this.elapsed += dt;
     if (FUP.run.forest) FUP.run.forest.time += dt; // the run timer keeps going in fights
     if (this.feverFx) this.feverFx.hue(this.elapsed * 140);
@@ -263,7 +265,8 @@ class BattleScene extends Phaser.Scene {
     if (e.pigeon && !e.noDiplomacy && (this.player.effects || []).includes('pigeonDiplomacy')) {
       FUP.combat.addBuff(e, 'atk', FUP.gearData.effects.pigeonDiplomacy.atk, 999, 'Calm');
     }
-    if (e.boss) { e.phase = 0; e.turnInPhase = 0; e.feverUsed = {}; e.noticeUsed = {}; e.notice = null; }
+    if (e.boss) { e.phase = 0; e.turnInPhase = 0; e.feverUsed = {}; e.noticeUsed = {}; e.notice = null; e.billable = 0; e.settled = 0; }
+    if (opts.associate) { e.minion = true; e.xp = 0; e.coins = 0; e.noGear = true; }   // the Senior Partner's associates pay nothing
     if (e.fake) e.gauge = 0;
     else e.gauge = -FUP.balance.enemyStartSpread * this.liveReal().length;   // turn bars start spread out (v0.41)
 
@@ -876,6 +879,7 @@ class BattleScene extends Phaser.Scene {
       return false;
     }
     this.applyDamage(e, r.amount);
+    this.afterHitLanded(e, r.amount, kind);   // Hedgehog spikes, The Retainer (BattleSkills.js, v0.93)
     if (o.burn && e.hp > 0) e.burn = { dmg: Math.max(1, Math.round(e.maxHp * o.burn.pct)), turns: o.burn.turns };
     const big = r.crit || power >= 2 || em.tag === 'weak';
     this.time.delayedCall(delay, () => {
@@ -927,7 +931,7 @@ class BattleScene extends Phaser.Scene {
     if (e.boss && !e.fake) {
       if (this.fever) this.endFever(true);
       for (const o of this.live()) this.removeEnemy(o, 'flee');
-      if (this.isBossFight) this.time.delayedCall(400, () => this.say('allFlee'));
+      if (this.isBossFight) this.time.delayedCall(400, () => this.say((e.say && e.say.flee) || 'allFlee'));
     }
     // Godfather down (or charmed): the family flies off.
     if (e.miniBoss && how !== 'flee') {
@@ -941,8 +945,8 @@ class BattleScene extends Phaser.Scene {
   checkEnd() {
     if (this.over || this.liveReal().length) return;
     const bossDead = this.killed.some(k => k.boss);
-    if (bossDead) { this.say('bossWin'); this.endBattle('boss', true); return; }
-    this.endBattle(this.killed.length ? 'win' : 'charmed', true);
+    if (bossDead) { this.say((this.killed.find(k => k.boss).say || {}).win || 'bossWin'); this.endBattle('boss', true); return; }
+    this.endBattle(this.killed.length || !this.charmed.length ? 'win' : 'charmed', true);   // (a Debt Runner that ran off: still 'win')
     if (this.killed.length) this.say('win', { enemy: this.killed[this.killed.length - 1].name });
   }
 
@@ -961,8 +965,10 @@ class BattleScene extends Phaser.Scene {
       return;
     }
     const b = e.bossRules, n = e.turnInPhase + 1, N = b.notice;
-    const minions = this.liveReal().filter(o => o.minion).length;
-    if (e.notice && e.notice.left <= 1) e.nextMove = N.slam;                        // Last Warning runs out: DOOR SLAM
+    const minions = this.liveReal().filter(o => o.minion).length, ST = b.settlement;
+    if (e.settled > 0) e.nextMove = b.special.review;                               // the Senior Partner took your money: paperwork
+    else if (ST && e.phase === ST.phase && FUP.run.coins > 0 && (n === ST.onTurn || (n > ST.onTurn && (n - ST.onTurn) % ST.every === 0))) e.nextMove = b.special.offer;
+    else if (e.notice && e.notice.left <= 1) e.nextMove = N.slam;                        // Last Warning runs out: DOOR SLAM
     else if (n === b.feverOnTurn && !e.feverUsed[e.phase]) e.nextMove = b.special.fever;
     else if (N && n >= N.onTurn && !e.noticeUsed[e.phase] && !e.notice) e.nextMove = N.serve;
     else if (e.phase === 0 && n % b.summonEvery === 0 && minions < b.maxMinions) e.nextMove = b.special.summon;
@@ -998,7 +1004,7 @@ class BattleScene extends Phaser.Scene {
     if (this.actSignature(e, m)) {
       // handled: ledger, stance, audit, formation, bodyguard, eating your snack, Last Warning
     } else if (m.type === 'attack' || m.type === 'steal') {
-      const landed = this.strike(e, m.power, m.power >= 1.5, !!m.slam);   // Perfect Block / Riposte can stop it
+      const landed = this.strike(e, m.power * (1 + (e.billable || 0)), m.power >= 1.5, !!m.slam, m.counterMult || 1);   // Perfect Block / Riposte can stop it (billable: the Senior Partner)
       if (landed && m.poison && !this.over) this.addPoison(m.poison);
       if (m.type === 'steal' && landed && !this.over) {
         if (this.satchel.length) {
@@ -1073,7 +1079,7 @@ class BattleScene extends Phaser.Scene {
     if (e.boss && !this.over) {
       this.bossTurnEnd(e, m);   // Strays share spores (heal it), the Last Warning counts down
       e.turnInPhase++;
-      if (e.phase === 1) this.addPoison(e.bossRules.poisonPerTurn); // Spore Season
+      if (e.phase === 1 && e.bossRules.poisonPerTurn) this.addPoison(e.bossRules.poisonPerTurn); // Spore Season (the Guardian)
     }
     C.tickBuffs(e);
     if (!this.over && !e.gone) this.planMove(e);
@@ -1098,7 +1104,9 @@ class BattleScene extends Phaser.Scene {
     this.planMove(e);
     this.cameras.main.flash(300, 200, 120, 255);
     FUP.fx.shake(this, 'boss');
-    this.say('bossPhase' + phase);
+    this.say(((e.say && e.say.phase) || 'bossPhase') + phase);
+    const AS = e.bossRules.associates;   // the Senior Partner calls in his associates (v0.93)
+    if (AS && phase === AS.phase) AS.foes.forEach((k, i) => this.time.delayedCall(300 + i * 250, () => { if (!this.over) { this.spawnEnemy(k, { associate: true }); FUP.audio.sfx('summon'); } }));
     FUP.audio.sfx('phase');
     const banner = FUP.ui.text(this, 450, 230, `PHASE ${phase + 1}\n${phases[phase].name.toUpperCase()}`, 44, FUP.look.hex('p2'), {
       fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 8, align: 'center',
@@ -1196,7 +1204,8 @@ class BattleScene extends Phaser.Scene {
     for (const e of this.enemies) if (!e.gone) e.tellText.setVisible(false);
     if (!alreadySaid) {
       const who = (this.boss() || this.target() || {}).name;
-      this.say(result === 'lose' ? (this.isBossFight ? 'bossLose' : 'lose') : 'win', { enemy: who });
+      const bs = (this.boss() || {}).say || {};
+      this.say(result === 'lose' ? (this.isBossFight ? (bs.lose || 'bossLose') : 'lose') : 'win', { enemy: who });
     }
     if (result === 'fled') {
       this.tweens.add({ targets: [this.playerSprite, this.weaponSprite], x: '-=400', duration: 600, ease: 'Sine.easeIn' });
@@ -1283,8 +1292,9 @@ class BattleScene extends Phaser.Scene {
 
     // Beat the Guardian: the run is over. Show the run summary too.
     let summary = null;
-    const shrine = !!(run.battle && run.battle.shrine);   // fed at the Forest Edge shrine (v0.82): the trip goes on
-    if (result === 'boss' && run.forest) {
+    const shrine = !!(run.battle && (run.battle.shrine || run.battle.office));   // fed at the Forest Edge shrine (v0.82) / the Senior Partner's office (v0.93): the trip goes on
+    if (result === 'boss' && run.forest && run.battle && run.battle.office) { /* the Senior Partner: nothing extra, back to the Marsh */ }
+    else if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
       if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));
       else { summary = run.finishRun(); lines.unshift(`RUN TIME: ${fmt(summary.time)}`); }
@@ -1294,7 +1304,8 @@ class BattleScene extends Phaser.Scene {
     else if (this.questNews.length) lines.push(`📜 Quest done: ${this.questNews.join(', ')}!`);
     if (survived) lines.push(...FUP.quests.takeNews().slice(0, 3));   // what a quest step said or handed you (v0.82: the Guardian's last words, the bowl)
 
-    const titles = { win: 'VICTORY', lose: this.isBossFight ? 'SHOWN THE DOOR' : 'YOU DIED', charmed: 'CHARMED', fled: 'ESCAPED', boss: 'GUARDIAN DEFEATED' };
+    const deadBoss = this.killed.find(k => k.boss);
+    const titles = { win: 'VICTORY', lose: this.isBossFight ? 'SHOWN THE DOOR' : 'YOU DIED', charmed: 'CHARMED', fled: 'ESCAPED', boss: (deadBoss && deadBoss.winTitle) || 'GUARDIAN DEFEATED' };
     const colors = { win: c.good, lose: c.bad, charmed: FUP.look.hex('p2'), fled: c.dim, boss: c.accent };
     ui.shade(this, 0.7).setDepth(500);
     FUP.ui.panel(this, W / 2 - 250, 110, 500, 370, 'panel').setDepth(501);
@@ -1305,7 +1316,7 @@ class BattleScene extends Phaser.Scene {
     let label, go;
     if (!survived && run.isHardcore()) { label = 'New life'; go = () => this.scene.start('Start'); }
     else if (!survived) { label = '🏠 Wake up at home'; go = () => this.scene.start('Village', { from: 'respawn' }); }
-    else if (shrine) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }   // the shrine (v0.82)
+    else if (shrine) { const r = run.battle.office && run.forest && FUP.world.region(run.forest.area); label = r ? `🌿 Back to the ${r.name.replace('Soggy ', '')}` : '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }   // the shrine (v0.82) / a boss office (v0.93)
     else if (result === 'boss') { label = '🛝 Exit Chute'; go = () => this.exitChute(); }
     else if (run.battle && run.battle.tutorial) { label = '🏝️ Back to the island'; go = () => this.scene.start('World', { from: 'tutorialFight' }); }   // Orientation Isle (v0.62)
     else if (run.forest && run.forest.raid && !this.isBossFight) { label = '🚪 Back to the basement'; go = () => this.scene.start('Raid', {}); }

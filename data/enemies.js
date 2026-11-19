@@ -248,4 +248,101 @@ FUP.enemies = {
     // Approved: stamps one ally (its next hit taken is blocked). Guard-break skills tear the stamp off.
     signature: { id: 'approved' },
   },
+
+  // ---------- v0.93 new enemies (Jesus approved the drafts 2026-11-18). Numbers are PLACEHOLDERS. ----------
+  // Same number of fights per trip: they take a share of each area's spawns (enemyTypes weights).
+  // Forest Edge (Lv 1-5). Spikes: hitting it with an Attack or Skill hurts you `share` of the damage,
+  // unless your last action was Defend. Thrown dishes are safe.
+  hedgehog: {
+    name: 'Grumpy Hedgehog', emoji: '🦔', size: 90, sprite: 'hedgehog', mapSprite: 'hedgehog_map',
+    maxHp: 22, atk: 5, def: 2, spd: 12, resolve: 0.15,
+    xp: 40, coins: 7, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Prickle Poke', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Rolling Huff', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Curl Up', type: 'buff', stat: 'def', mult: 1.4, turns: 2, label: 'Curled up', tell: '🛡️', tellText: 'Raising DEF', weight: 1 },
+    ],
+    signature: { id: 'spikes', share: 0.3 },
+  },
+  // Goblin Toll Road (Lv 5-9). Grab and Go: a light hit and he pockets `steal` of your coins. On his next turn
+  // he runs off with them, unless you beat him first (then you get them back).
+  debtRunner: {
+    name: 'Goblin Debt Runner', emoji: '👺', size: 96, sprite: 'debtrunner', mapSprite: 'debtrunner_map',
+    maxHp: 34, atk: 6, def: 2, spd: 14, resolve: -0.05,
+    xp: 45, coins: 14, boss: false, weak: 'acid', resists: [],
+    moves: [
+      { name: 'Shoulder Barge', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 4 },
+      { name: 'Pocket Check', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Grab and Go', type: 'grab', power: 0.5, steal: 0.08, tell: '🪙', tellText: 'Eyeing your coins', weight: 3 },
+    ],
+    signature: { id: 'runner',
+      move: { name: 'Run For It', type: 'runAway', tell: '🏃', tellText: 'Running off with your coins (stop him!)' } },
+  },
+  // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
+  mossBear: {
+    name: 'Moss Bear', emoji: '🐻', size: 130, sprite: 'mossbear', mapSprite: 'mossbear_map',
+    maxHp: 70, atk: 8, def: 4, spd: 8, resolve: 0.30,
+    xp: 80, coins: 18, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Heavy Paw', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Moss Hug', type: 'attack', power: 1.3, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'windup', every: 3,
+      move: { name: 'Mossy Mauling', type: 'attack', power: 2.4, counterMult: 2, tell: '🐾', tellText: 'BIG SWIPE (Defend!)' } },
+  },
+  // Soggy Marsh (Lv 15-22). Back row. Sustained!: every other enemy gets DEF x mult for `turns`. Take it out first.
+  paralegalNewt: {
+    name: 'Paralegal Newt', emoji: '🦎', size: 80, row: 'back', sprite: 'newt', mapSprite: 'newt_map',
+    maxHp: 40, atk: 7, def: 2, spd: 13, resolve: 0.10,
+    xp: 60, coins: 16, boss: false, weak: 'frost', resists: [],
+    moves: [
+      { name: 'Clipboard Swat', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 3 },
+      { name: 'Sustained!', type: 'allyBuff', stat: 'def', mult: 1.4, turns: 2, label: 'Sustained', tell: '🛡️', tellText: 'Raising its allies\' DEF', weight: 3 },
+    ],
+    signature: { id: 'sustain' },
+  },
+  // Soggy Marsh. Wrap in Red Tape: your turn bar fills slower (SPD x mult) for `turns` of your turns.
+  redTapeEel: {
+    name: 'Red Tape Eel', emoji: '🐍', size: 110, row: 'front', sprite: 'eel', mapSprite: 'eel_map',
+    maxHp: 65, atk: 9, def: 3, spd: 10, resolve: 0.20,
+    xp: 75, coins: 20, boss: false, weak: 'acid', resists: ['poison'],
+    moves: [
+      { name: 'Slippery Bite', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 4 },
+      { name: 'Coil Crush', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Wrap in Red Tape', type: 'debuff', stat: 'spd', mult: 0.6, turns: 2, label: 'Tangled', tell: '🎀', tellText: 'About to tie you up', weight: 2 },
+    ],
+    signature: { id: 'redtape' },
+  },
+
+  // ---------- The Senior Partner (v0.93, the Soggy Marsh's boss, Melee ~20) ----------
+  // In his office in the Marsh's south-east corner; his receptionist books you in for 3 Stamped Forms a visit.
+  // Phase 1 Billable Hours: each of his turns his hits get `perTurn` stronger (up to `max`), and it stays.
+  // Phase 2 The Associates: he calls in two Leech Lawyers (no XP, no coins).
+  // Phase 3 Settlement Offer: on his `onTurn`-th turn, then every `every` turns, he offers to stop hitting
+  // you for `turns` of his turns for `share` of your coins (at least `min`). Take it or refuse.
+  seniorPartner: {
+    name: 'The Senior Partner', emoji: '🪱', hat: '🎩', size: 150, sprite: 'partner', mapSprite: 'partner_map',
+    maxHp: 260, atk: 12, def: 7, spd: 11, resolve: 0.50, noCharm: true, level: 20,
+    xp: 450, coins: 220, boss: true, weak: 'acid', resists: ['poison'],
+    winTitle: 'PARTNER DEFEATED', say: { start: 'partnerStart', win: 'partnerWin', lose: 'partnerLose', phase: 'partnerPhase', flee: 'partnerFlee' },
+    moves: [
+      { name: 'Retainer Slam', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Cross-Examination', type: 'attack', power: 1.7, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Fine Print', type: 'debuff', stat: 'atk', mult: 0.85, turns: 3, label: 'Fine print', tell: '📉', tellText: 'Lowering your ATK', weight: 1 },
+    ],
+    bossRules: {
+      phases: [
+        { name: 'Billable Hours', below: 1.00 },
+        { name: 'The Associates', below: 0.66 },
+        { name: 'Settlement Offer', below: 0.33 },
+      ],
+      billable: { phase: 0, perTurn: 0.06, max: 0.6 },
+      associates: { phase: 1, foes: ['leechLawyer', 'leechLawyer'] },
+      settlement: { phase: 2, onTurn: 2, every: 6, share: 0.2, min: 10, turns: 3 },
+      special: {
+        offer:  { name: 'Settlement Offer', type: 'offer', tell: '🤝', tellText: 'Making you an offer' },
+        review: { name: 'Reviewing the Settlement', type: 'review', tell: '📑', tellText: 'Busy with paperwork' },
+      },
+    },
+  },
 };

@@ -176,6 +176,12 @@ Object.assign(BattleScene.prototype, {
   // An enemy left the fight: break a formation, expose the Godfather, give back stolen food.
   onEnemyGone(e, how) {
     if (e.stolen) { this.satchel.push(e.stolen); e.stolen = null; }
+    if (e.grabbed && how !== 'flee') {   // beat the Debt Runner before he ran: your coins come back (v0.93)
+      FUP.run.coins += e.grabbed;
+      this.popup(this.playerSprite, `+${e.grabbed} 🪙 back`, 'good', -40);
+      this.say('runnerCaught', { item: e.grabbed });
+      e.grabbed = 0;
+    }
     if (how === 'flee' || this.over) return;
     if (e.formation && this.flock().length) {
       for (const o of this.flock()) o.gauge = 0;
@@ -201,6 +207,8 @@ Object.assign(BattleScene.prototype, {
     const sig = e.signature;
     if (!sig) return null;
     if (sig.id === 'hoarder' && e.stolen) return sig.eatMove;
+    if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
+    if (sig.id === 'windup' && (e.movesDone + 1) % sig.every === 0) return sig.move;   // the Moss Bear's big swipe (v0.93)
     if (sig.id === 'bodyguard') {
       const family = this.liveReal().filter(o => o.key === e.summon.minion);
       if (family.length && !family.some(o => o.bodyguard)) return sig.move;
@@ -296,6 +304,37 @@ Object.assign(BattleScene.prototype, {
         this.say('bodyguardAssign');
         return true;
       }
+      case 'grab': {   // the Debt Runner: a light hit, and he pockets some of your coins (v0.93)
+        const landed = this.strike(e, m.power, false);
+        const take = landed && FUP.run.coins > 0 ? Math.max(1, Math.floor(FUP.run.coins * m.steal * (1 - (p.stealLess || 0)))) : 0;
+        if (!this.over && take > 0) {
+          FUP.run.coins -= take; e.grabbed = (e.grabbed || 0) + take;
+          this.popup(this.playerSprite, `-${take} 🪙`, 'bad', -40);
+          this.say('runnerGrab', { enemy: e.name, item: take });
+          FUP.audio.sfx('coins');
+        }
+        return true;
+      }
+      case 'runAway': {   // he made it: gone, with your coins
+        const lost = e.grabbed || 0;
+        e.grabbed = 0;
+        this.say('runnerGone', { enemy: e.name, item: lost });
+        this.time.delayedCall(10, () => { if (!this.over && !e.gone) this.removeEnemy(e, 'flee'); });
+        return true;
+      }
+      case 'allyBuff': {   // the Paralegal Newt: everyone else's DEF goes up (v0.93)
+        const allies = this.liveReal().filter(o => o !== e);
+        for (const o of allies) { FUP.combat.addBuff(o, m.stat, m.mult, m.turns, m.label, true); this.popup(o.view, m.label.toUpperCase(), 'info'); }
+        this.say(allies.length ? 'newtSustain' : 'newtAlone', { enemy: e.name });
+        FUP.audio.sfx('guard');
+        return true;
+      }
+      case 'offer': this.openSettlement(e); return true;   // the Senior Partner (v0.93)
+      case 'review':
+        e.settled = Math.max(0, e.settled - 1);
+        this.popup(e.view, '📑 PAPERWORK', 'info');
+        this.say('partnerReview', { enemy: e.name });
+        return true;
       case 'notice': {
         const N = e.bossRules.notice;
         e.noticeUsed[e.phase] = true;
@@ -317,10 +356,53 @@ Object.assign(BattleScene.prototype, {
     }
     if (m.slam) e.notice = null;
     else if (e.notice && m.type !== 'notice') e.notice.left--;
+    // The Senior Partner's Billable Hours: every turn in phase 1, his hits grow (and stay grown)
+    const BH = e.bossRules.billable;
+    if (BH && e.phase === BH.phase && m.type !== 'review') e.billable = Math.min(BH.max, (e.billable || 0) + BH.perTurn);
+  },
+
+  // ---------- v0.93: after one of your hits lands ----------
+  // The Grumpy Hedgehog's spikes (unless you Defended last), and The Retainer (heal a share of what you dealt).
+  afterHitLanded(e, amount, kind) {
+    const p = this.player;
+    if (e.signature && e.signature.id === 'spikes' && (kind === 'attack' || kind === 'skill') && this.lastAction !== 'defend' && !this.over) {
+      const back = Math.max(1, Math.round(amount * e.signature.share));
+      this.time.delayedCall(150, () => { if (!this.over) { this.hurtPlayer({ amount: back, crit: false }, false, '🦔 '); this.say('spikes', { enemy: e.name }); } });
+    }
+    const rt = (p.effects || []).includes('retainer') && FUP.gearData.effects.retainer;
+    if (rt && kind !== 'counter' && p.hp < p.maxHp) {
+      const heal = Math.min(p.maxHp - p.hp, Math.max(1, Math.round(amount * rt.share)));
+      p.hp += heal;
+      this.popup(this.playerSprite, '+' + heal, 'good', -60);
+    }
+  },
+
+  // ---------- The Senior Partner's Settlement Offer (v0.93): time stops while you decide ----------
+  openSettlement(e) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 480, ST = e.bossRules.settlement;
+    const price = Math.min(FUP.run.coins, Math.max(ST.min, Math.ceil(FUP.run.coins * ST.share)));
+    if (price <= 0) return;
+    const g = [];
+    const close = () => { g.forEach(o => o.destroy()); this.offerCard = null; };
+    this.offerCard = { close };
+    g.push(ui.shade(this, 0.55).setDepth(Z));
+    g.push(ui.panel(this, W / 2 - 240, H / 2 - 110, 480, 220, 'panel').setDepth(Z + 1));
+    g.push(ui.text(this, W / 2, H / 2 - 92, '🤝 SETTLEMENT OFFER', 22, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0).setDepth(Z + 2));
+    g.push(ui.text(this, W / 2, H / 2 - 54, `"Pay ${price} 🪙 and I stop hitting you for ${ST.turns} of my turns. Nobody has to know."`, 15, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 430 } }).setOrigin(0.5, 0).setDepth(Z + 2));
+    const btn = (x, label, fn, hot) => { const b = ui.button(this, x, H / 2 + 40, 200, 44, label, fn, { size: 15, hot }); b.rect.setDepth(Z + 2); b.txt.setDepth(Z + 3); g.push(b.rect, b.txt); };
+    btn(W / 2 - 215, `Pay ${price} 🪙`, () => {
+      close();
+      FUP.run.coins -= price; e.settled = ST.turns;
+      this.popup(this.playerSprite, `-${price} 🪙`, 'bad', -40);
+      FUP.audio.sfx('coins');
+      this.say('partnerSettled', { item: price });
+      this.planMove(e);
+    }, false);
+    btn(W / 2 + 15, 'Refuse', () => { close(); this.say('partnerRefused'); FUP.audio.sfx('click'); }, true);
   },
 
   // An enemy hit on you. Riposte and Perfect Block can turn it around. Returns true if it landed.
-  strike(e, power, heavy, slam = false) {
+  strike(e, power, heavy, slam = false, counterMult = 1) {
     const p = this.player, PB = FUP.balance.perfectBlock;
     if (slam) e.notice = null;   // the notice is used up (a counter-hit now doesn't "contest" it)
     if (p.riposte) {
@@ -340,7 +422,8 @@ Object.assign(BattleScene.prototype, {
       FUP.audio.sfx('guard');
       this.addLimit(PB.limit);
       this.addFocus(FUP.balance.focus.perBlock);
-      this.hitEnemy(e, FUP.unlocks.perkBest('perfectCounter', PB.counterPower), 150, false, { kind: 'counter' });   // Unshaken perk
+      if (counterMult > 1) this.say('bearCounter', { enemy: e.name });   // the Moss Bear's big swipe, turned around (v0.93)
+      this.hitEnemy(e, FUP.unlocks.perkBest('perfectCounter', PB.counterPower) * counterMult, 150, false, { kind: 'counter' });   // Unshaken perk
       return false;
     }
     const dealt = FUP.combat.damage(e, p, power);
@@ -386,6 +469,9 @@ Object.assign(BattleScene.prototype, {
     if (e.stolen) f.push(`🎒 has your ${e.stolen.name}`);
     if (e.burn) f.push('🔥');
     if (e.formation) f.push('📣');
+    if (e.grabbed) f.push(`🪙 has ${e.grabbed} of yours`);
+    if (e.billable) f.push(`💼 +${Math.round(e.billable * 100)}%`);
+    if (e.settled) f.push('📑 settled');
     if (e.signature && e.signature.id === 'share' && this.boss()) f.push('💸');
     return f.join(' ');
   },

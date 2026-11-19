@@ -52,12 +52,14 @@ FUP.worldData.areas.marsh = {
   enemiesPerRun: 7, ingredientsPerRun: 9,
   forageOdds: { Common: 0.5, Uncommon: 0.35, Rare: 0.15 },
   forage: ['croakberry', 'mudroot', 'marsh_mint', 'bog_truffle'],        // only these grow here
-  enemyTypes: { mosquitoIntern: 4, leechLawyer: 3, filingFrog: 3 },
+  enemyTypes: { mosquitoIntern: 3, leechLawyer: 2, filingFrog: 2, paralegalNewt: 2, redTapeEel: 2 },   // v0.93 + newt, eel
   // Who you fight when you touch each one (w = weight)
   groups: {
     mosquitoIntern: [{ w: 1, foes: ['mosquitoIntern', 'mosquitoIntern'] }, { w: 1, foes: ['mosquitoIntern', 'mosquitoIntern', 'mosquitoIntern'] }],
     leechLawyer:    [{ w: 1, foes: ['leechLawyer'] }, { w: 1, foes: ['leechLawyer', 'mosquitoIntern'] }],
     filingFrog:     [{ w: 1, foes: ['leechLawyer', 'filingFrog'] }, { w: 1, foes: ['mosquitoIntern', 'mosquitoIntern', 'filingFrog'] }],
+    paralegalNewt:  [{ w: 1, foes: ['leechLawyer', 'paralegalNewt'] }, { w: 1, foes: ['mosquitoIntern', 'mosquitoIntern', 'paralegalNewt'] }],
+    redTapeEel:     [{ w: 1, foes: ['redTapeEel'] }, { w: 1, foes: ['redTapeEel', 'mosquitoIntern'] }],
   },
   fish: { F: 'marsh', '~': 'marsh' },   // v0.78: all marsh water
   // The Bog Notary stands outside his office (v0.82; The Old Accounts). His boss fight comes later.
@@ -67,6 +69,9 @@ FUP.worldData.areas.marsh = {
     { kind: 'sign', tx: 5, ty: 25, emoji: '🧰', sprite: 'prop_strongbox', label: 'Look', text: 'An old strongbox, lid rusted open, empty. A Filing Frog lives in it now. It files nothing. It just sits there, looking owed.' },
     { kind: 'sign', tx: 44, ty: 13, text: 'OFFICE OF THE BOG NOTARY. Closed. Take a number. There are no numbers.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },
+    // The Senior Partner's office (v0.93): his receptionist books you in for 3 Stamped Forms (data/enemies.js seniorPartner)
+    { kind: 'office', tx: 44, ty: 25, boss: 'seniorPartner', cost: { stamped_form: 3 }, emoji: '🚪', label: 'Office',
+      text: 'LEECH & LEECH, ATTORNEYS. The Senior Partner will see you now. For three Stamped Forms. Each visit.' },
   ],
   trees: { tree_dark: 4, tree_dead: 4, tree_spruce_dark: 2 },
   decorations: { deco_puddle: 0.10, deco_fern: 0.08, deco_glowshroom: 0.02, deco_log: 0.015, deco_stump: 0.01 },

@@ -42,7 +42,7 @@ FUP.forestData = {
       id: 'edge', fish: { '~': 'edgePond' }, name: 'Forest Edge',
       enemiesPerRun: 5,      // enemy spots used per trip (of 10 "e" on the map)
       ingredientsPerRun: 8,  // ingredient spots used per trip (of 16 "i")
-      enemyTypes: { squirrel: 1 },             // squirrels only here (blueprint 18.6)
+      enemyTypes: { squirrel: 3, hedgehog: 1 },   // squirrels, and since v0.93 the odd Grumpy Hedgehog (Jesus)
       forageOdds: { Common: 0.75, Uncommon: 0.22, Rare: 0.03 },
       mult: 1.0,             // enemy HP / ATK / DEF and their XP are multiplied by this
       coinMult: 1.0,         // ...and their coins by this (v0.40: deeper = better money)
@@ -88,7 +88,7 @@ FUP.forestData = {
       id: 'tollroad', fish: { '~': 'tollRiver' }, name: 'Goblin Toll Road',
       enemiesPerRun: 6,      // of 12
       ingredientsPerRun: 8,  // of 16
-      enemyTypes: { squirrel: 5, goblin: 3, pigeon: 2 },   // weights (PLACEHOLDER mix)
+      enemyTypes: { squirrel: 4, goblin: 3, pigeon: 2, debtRunner: 2 },   // weights (PLACEHOLDER mix; v0.93 + Debt Runner)
       flock: { min: 2, max: 2 },             // pigeons per fight here: "the odd pair"
       forageOdds: { Common: 0.60, Uncommon: 0.30, Rare: 0.10 },
       mult: 1.15,
@@ -136,7 +136,7 @@ FUP.forestData = {
       id: 'deepwoods', fish: { '~': 'darkPool' }, name: 'Deep Woods',
       enemiesPerRun: 8,      // of 15
       ingredientsPerRun: 10, // of 20
-      enemyTypes: { squirrel: 3, goblin: 2, pigeon: 4 },   // weights (PLACEHOLDER mix)
+      enemyTypes: { squirrel: 2, goblin: 2, pigeon: 4, mossBear: 2 },   // weights (PLACEHOLDER mix; v0.93 + Moss Bear)
       flock: { min: 2, max: 3 },             // pigeons per fight here
       godfather: true,                       // the revenge rule puts the Pigeon Godfather here
       forageOdds: { Common: 0.45, Uncommon: 0.35, Rare: 0.20 },

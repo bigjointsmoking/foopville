@@ -83,6 +83,7 @@ FUP.gearData = {
     // ----- Boss chase drops (bossDrops below). sell 250 each. -----
     pigeon_pin:      { slot: 'trinket', tier: 3, chase: true, name: 'Pigeon Diplomacy Pin', emoji: '🐦', stats: { rizz: 0.05 }, effect: 'pigeonDiplomacy', price: 0 },
     master_key:      { slot: 'trinket', tier: 3, chase: true, name: 'Master Key', emoji: '🗝️', stats: { crit: 0.05 }, effect: 'coinGuard', price: 0 },
+    retainer:        { slot: 'trinket', tier: 3, chase: true, name: 'The Retainer', emoji: '💼', stats: { atk: 2 }, effect: 'retainer', price: 0 },   // the Senior Partner (v0.93)
     mycelium_mantle: { slot: 'body', tier: 3, chase: true, name: 'Mycelium Mantle', emoji: '🍄', stats: { def: 9, hp: 15, resistPoison: 0.30 }, effect: 'thorns', price: 0, req: { combat: 15 } },
   },
 
@@ -91,6 +92,7 @@ FUP.gearData = {
   // key = a gear item above; hat = a cosmetic hat (data/cosmetics.js); place = a trophy for your plot (data/place.js).
   bossDrops: {
     godfather: [{ key: 'pigeon_pin', rate: 1 / 8 }, { hat: 'don_fedora', rate: 1 / 20 }, { place: 'golden_perch', rate: 1 / 30 }],
+    seniorPartner: [{ key: 'retainer', rate: 1 / 8 }],   // v0.93 (PLACEHOLDER rate)
     guardian:  [{ key: 'master_key', rate: 1 / 8 }, { key: 'mycelium_mantle', rate: 1 / 12 }, { hat: 'guardian_cap', rate: 1 / 20 }, { place: 'framed_warning', rate: 1 / 30 }],
   },
   chaseSell: 250,
@@ -100,6 +102,7 @@ FUP.gearData = {
     acornLuck: { name: 'Squirrel Friend', text: '+5% chance a squirrel leaves an extra ingredient.', chance: 0.05 },   // The Jerky Bandit (Nutsy's thank-you)
     pigeonDiplomacy: { name: 'Pigeon Diplomacy', text: 'Pigeons start every fight with -50% ATK.', atk: 0.5 },
     coinGuard:       { name: "Guardian's Spare Key", text: 'Immune to Feeding Time.' },
+    retainer:        { name: 'Billable Hours', text: 'Heal 10% of the damage you deal.', share: 0.1 },   // The Retainer (the Senior Partner)
     thorns:          { name: 'Spore Cloak', text: 'Whoever hits you takes 20% of that damage.', share: 0.2 },   // never finishes off a boss
   },
 
