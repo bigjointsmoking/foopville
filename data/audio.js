@@ -86,6 +86,12 @@ FUP.audioData = {
     eat:       { keys: ['eat_0', 'eat_1', 'eat_2', 'eat_3'], vol: 0.6, pitch: 0.06 },   // a crunchy bite
     taste:     { keys: ['gulp_0', 'gulp_1'], vol: 0.6, pitch: 0.05 },                  // tasting a bowl (quests)
     water:     { keys: ['pour'], vol: 0.5, pitch: 0.05 },                              // watering a patch
+    // v0.95: how fights start on the map (mixes of the recordings above; placeholders until better ones)
+    alert:     { keys: ['ui_pluck'], vol: 0.6, pitch: 0.05, layer: ['monster_1'], layerVol: 0.2 },   // ❗ an enemy starts chasing / wakes up
+    sneak:     { keys: ['swish_2'], vol: 0.6, layer: ['cloth'], layerVol: 0.4 },                     // you sneak up on a napper
+    ambush:    { keys: ['slime_1'], vol: 0.7, layer: ['roar_2'], layerVol: 0.35 },                   // something jumps out at you
+    runner:    { keys: ['coins_2', 'coins_3'], vol: 0.55, layer: ['cloth_2'], layerVol: 0.5 },       // the coin goblin bolts
+    runnerGone: { keys: ['cloth'], vol: 0.5, layer: ['ui_boo'], layerVol: 0.3 },                     // ...and gets away
   },
 
   playlists: {
@@ -155,6 +161,11 @@ FUP.audioData = {
     doorClose: { noise: true,      from: 500,  to: 100,  dur: 0.12, vol: 0.35 },
     sleep:     { wave: 'sine',     from: 523,  dur: 0.3,  vol: 0.25, notes: [7, 4, 0, -5], step: 0.25 },
     taste:     { wave: 'sine',     from: 300,  to: 180,  dur: 0.2,  vol: 0.25 },
+    alert:     { wave: 'square',   from: 880,  dur: 0.06, vol: 0.25, notes: [0, 12], step: 0.05 },
+    sneak:     { noise: true,      from: 3000, to: 600,  dur: 0.2,  vol: 0.2 },
+    ambush:    { wave: 'sawtooth', from: 160,  dur: 0.12, vol: 0.3,  notes: [0, 6, 12], step: 0.06 },
+    runner:    { wave: 'square',   from: 1568, dur: 0.05, vol: 0.2,  notes: [0, 5, 0, 5, 0], step: 0.05 },
+    runnerGone: { wave: 'triangle', from: 392, dur: 0.2,  vol: 0.25, notes: [0, -5], step: 0.18 },
   },
 
   songs: {

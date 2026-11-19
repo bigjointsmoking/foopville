@@ -80,6 +80,19 @@ FUP.skillData = {
           out.push({ level: lv, text: `Harvests give up to ${G.yieldMax + lv / G.bonusYieldEvery} (was ${G.yieldMax + lv / G.bonusYieldEvery - 1})` });
         }
         for (const p of FUP.unlockData.perks.gardening) out.push({ level: p.level, text: `⭐ ${p.name}: ${p.text}` });
+        // Farm things that need Gardening (data/place.js): helpers from the Carpenter, saplings from Pip (v0.95)
+        for (const it of Object.values(FUP.placeData.items)) {
+          const lv = it.req && it.req.skills && it.req.skills.gardening;
+          if (!lv) continue;
+          const tr = it.tree && G.trees && G.trees[it.tree], fruit = tr && FUP.ingredients[tr.fruit];
+          out.push({ level: lv, text: tr ? `${it.emoji} Plant a ${it.name} (sapling from Pip): ${fruit ? fruit.emoji + ' ' + fruit.name + 's' : 'fruit'} every ${Math.round(tr.fruitSeconds / 3600)} h`
+            : `${it.emoji} Build: ${it.name} (Carpenter)` });
+        }
+        // Giant crops (F-D): a 3x3 square of one crop can merge into one huge one
+        if (G.giant) {
+          const lv = Math.min(...G.giant.crops.map(id => (G.crops[id] || {}).level || 1));
+          out.push({ level: lv, text: `🎃 Giant crops: fill a 3x3 square with one crop (${G.giant.crops.map(id => FUP.ingredients[id].emoji).join('')}) for a ${Math.round(G.giant.chance * 100)}% chance it grows into one giant worth ${G.giant.worth}` });
+        }
         return out;
       },
     },

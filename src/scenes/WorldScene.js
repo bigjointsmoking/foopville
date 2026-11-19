@@ -696,6 +696,7 @@ class WorldScene extends Phaser.Scene {
       if (!e.alive) return;
       const s = this.enemySprites[i];
       const touch = e.touch ? e.touch : e.bridge ? d.toll.bridgeTouch : e.godfather ? d.godfatherTouch : d.touchDistance;
+      if (!calm) this.firstHint(e, s);   // v0.95: explain each new kind of enemy once
       if (e.mode && this.encounterMove(e, i, s, dt, calm, touch)) return;   // napping / hidden / runner (v0.94)
       if (!calm && Math.hypot(this.player.x - e.x, this.player.y - e.y) < touch) { this.startBattle(i); return; }
       if (e.still) { s.setAlpha(calm ? 0.5 : 1); return; }   // the bridge goblin and the Godfather hold their ground
@@ -706,7 +707,9 @@ class WorldScene extends Phaser.Scene {
       if (!calm && e.mode !== 'runner' && toPlayer < d.enemyChaseRange * T && fromHome < d.enemyLeashRange * T) {   // (a runner never chases you)
         tx = this.player.x; ty = this.player.y; speed = d.enemyChaseSpeed; // chase!
         e.wander = null;
+        if (!e.chasing) this.chaseStarts(e, s);
       } else {
+        if (e.chasing) { e.chasing = false; if (s.mark) s.mark.setText(''); }
         // Wander: pick a spot near home, walk to it, pause, repeat.
         if (!e.wander || e.wander.wait <= 0 && Math.hypot(e.wander.x - e.x, e.wander.y - e.y) < 6) {
           e.wander = { x: e.homeX + (Math.random() - 0.5) * T * 4, y: e.homeY + (Math.random() - 0.5) * T * 4, wait: 1 + Math.random() * 2 };
@@ -724,6 +727,7 @@ class WorldScene extends Phaser.Scene {
       if (vx) s.setFlipX(vx < 0);
       s.setDepth(s.y + 16);
       s.setAlpha(calm ? 0.5 : 1);
+      if (s.mark && s.mark.text) s.mark.setPosition(e.x, e.y - 30).setDepth(e.y + 40).setVisible(s.visible);   // the ❗ follows it
     });
   }
 
@@ -732,6 +736,35 @@ class WorldScene extends Phaser.Scene {
   markEnemy(e, s, text) {
     if (!s.mark) s.mark = FUP.ui.text(this, e.x, e.y - 30, '', 14, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5);
     s.mark.setText(text).setPosition(e.x, e.y - 30).setDepth(e.y + 40).setVisible(!!text && s.visible);
+  }
+  // v0.95: a ❗ (and a sound) the moment an enemy starts coming for you, so getting caught is never a surprise
+  chaseStarts(e, s) {
+    e.chasing = true;
+    if (this.f.time - (e.alertAt || -99) < 4) return;   // dancing on the edge of its range: don't beep every second
+    e.alertAt = this.f.time;
+    this.markEnemy(e, s, '❗');
+    FUP.audio.sfx('alert');
+    this.hintOnce('chase');
+    this.time.delayedCall(900, () => { if (s.mark && s.active) s.mark.setText(''); });
+  }
+  // One-time hints (once per browser, own storage like the tutorial flag). Returns true if it was already seen.
+  hintOnce(kind) {
+    let seen = {};
+    try { seen = JSON.parse(localStorage.getItem('fupville_hints') || '{}'); } catch (err) { /* private window: show it anyway */ }
+    if (seen[kind] || (this.hintsShown && this.hintsShown[kind])) return true;
+    (this.hintsShown = this.hintsShown || {})[kind] = true;
+    seen[kind] = 1;
+    try { localStorage.setItem('fupville_hints', JSON.stringify(seen)); } catch (err) { /* fine */ }
+    this.say('hint' + kind[0].toUpperCase() + kind.slice(1));
+    return false;
+  }
+  // The first time a napping / hidden / runner / waiver enemy is near and in sight, the narrator explains it
+  firstHint(e, s) {
+    const kind = e.mode === 'sleep' && !e.awake ? 'sleep' : e.mode === 'ambush' && !e.sprung ? 'ambush' : e.mode === 'runner' ? 'runner' : e.mode === 'talk' ? 'talk' : null;
+    if (!kind || !s.visible || e.hinted) return;
+    if (Math.hypot(this.player.x - e.x, this.player.y - e.y) > FUP.forestData.hintRange * FUP.forestData.tileSize) return;
+    e.hinted = true;
+    this.hintOnce(kind);
   }
   // Napping, hidden and runner enemies move their own way. Returns true if it handled this enemy this frame.
   encounterMove(e, i, s, dt, calm, touch) {
@@ -742,8 +775,9 @@ class WorldScene extends Phaser.Scene {
       this.markEnemy(e, s, '💤');
       if (!calm && dist < touch) { this.startBattle(i, { surprise: 'sneak' }); return true; }
       if (!calm && dist < EN.sleep.wakeRange * T && Math.random() < EN.sleep.wakePerSecond * dt) {
-        e.awake = true;
+        e.awake = true; e.chasing = true; e.alertAt = this.f.time;   // its own ❗: no second one when it starts chasing
         this.markEnemy(e, s, '❗');
+        FUP.audio.sfx('alert');
         this.say('enemyWakes', { enemy: FUP.enemies[e.type].name });
         this.time.delayedCall(900, () => { if (s.mark) s.mark.setText(''); });
       }
@@ -767,13 +801,14 @@ class WorldScene extends Phaser.Scene {
     if (e.mode === 'runner') {
       this.markEnemy(e, s, '💰');
       if (!calm && dist < touch) { this.startBattle(i, { surprise: e.fleeing ? 'caught' : null }); return true; }
-      if (!e.fleeing && !calm && dist < EN.runner.fleeRange * T) { e.fleeing = true; e.fleeT = 0; this.say('runnerSpotted'); }
+      if (!e.fleeing && !calm && dist < EN.runner.fleeRange * T) { e.fleeing = true; e.fleeT = 0; FUP.audio.sfx('runner'); this.say('runnerSpotted'); }
       if (!e.fleeing) return false;   // not spotted you yet: wanders like anyone else (but never chases)
       e.fleeT += dt;
       if (e.fleeT > EN.runner.escapeSeconds) {   // too slow: he's gone for this trip
         e.alive = false;
         if (s.mark) s.mark.destroy();
         this.tweens.add({ targets: s, alpha: 0, duration: 500, onComplete: () => s.destroy() });
+        FUP.audio.sfx('runnerGone');
         this.say('runnerEscaped');
         return true;
       }
@@ -837,7 +872,7 @@ class WorldScene extends Phaser.Scene {
     FUP.run.battle = { index, type: e.type, result: null, mult: this.info.mult, coinMult: this.info.coinMult, areaLevel: this.info.level, dropTier: (reg && reg.dropTier) || 1,
       surprise: opts.surprise || null, sustained: !!opts.refused };   // v0.94: sneak / ambush / caught; refused the newt's waiver
     const enemies = e.group ? e.group.slice() : e.count ? new Array(e.count).fill(e.type) : [e.type];
-    FUP.audio.sfx('encounter');
+    FUP.audio.sfx(opts.surprise === 'sneak' ? 'sneak' : opts.surprise === 'ambush' ? 'ambush' : 'encounter');
     FUP.fx.shake(this, 'encounter');
     this.cameras.main.flash(200, 255, 255, 255);
     this.time.delayedCall(250, () => this.scene.start('Battle', { enemies, enraged: !!opts.enraged }));
@@ -940,7 +975,8 @@ class WorldScene extends Phaser.Scene {
   say(category, vars = {}) {
     const lines = FUP.narrator[category];
     if (!lines || !lines.length) return;
-    const line = Phaser.Utils.Array.GetRandom(lines).replace(/\{item\}/g, vars.item !== undefined ? vars.item : 'something').replace(/\{day\}/g, FUP.clock.day());
+    let line = Phaser.Utils.Array.GetRandom(lines).replace(/\{item\}/g, vars.item !== undefined ? vars.item : 'something').replace(/\{day\}/g, FUP.clock.day());
+    for (const [k, v] of Object.entries(vars)) line = line.split('{' + k + '}').join(v);   // {enemy} etc.
     this.narratorText.setFontSize(17).setText(line);
     if (this.narratorText.height > 44) this.narratorText.setFontSize(14);   // long line: smaller, so it stays in the bar
     if (this.showBar) this.showBar();

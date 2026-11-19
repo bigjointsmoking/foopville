@@ -187,6 +187,7 @@ FUP.forestData = {
   enemyWanderSpeed: 45,
   enemyChaseSpeed: 105,  // slower than you, so you can outrun them if you're careful
   enemyChaseRange: 4,    // squares: closer than this and it comes for you
+  hintRange: 6,          // squares: a first-time hint (napping, hidden, runner...) shows when one is this close (v0.95)
   enemyLeashRange: 7,    // squares from home before it gives up and wanders back
   touchDistance: 26,     // pixels: this close to an enemy = fight
 

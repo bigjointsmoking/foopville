@@ -368,6 +368,12 @@ FUP.narrator = {
   farmDead: ['Your {item} died of thirst. You had one job. Well, three waterings.', 'That {item} is very, very dead. Hoe it away and pretend it never happened.'],
   farmClear: ['You bury the evidence. The soil keeps your secret.'],
   // v0.94 how fights start
+  // v0.95: one-time hints, the first time you see each kind of enemy behaviour (once per browser)
+  hintSleep: ['💤 That one is napping. Nappers don\'t chase: tiptoe up and touch it for a free first hit. Dawdle nearby and it may wake up.'],
+  hintAmbush: ['That ripple isn\'t the wind. Something is hiding there and jumps whoever walks into it. You could walk around it. You won\'t.'],
+  hintRunner: ['💰 A goblin with a coin sack. He runs once he sees you, but he\'s slower than you. Catch him quickly for double coins.'],
+  hintTalk: ['A newt with a clipboard. He doesn\'t chase to fight, he chases to make you sign things. Somehow worse.'],
+  hintChase: ['❗ means it has seen you and is coming. Run, or stand there looking brave. Both are valid.'],
   enemyWakes: ['The {enemy} wakes up. It is not a morning person.', '{enemy}: awake, annoyed, coming.'],
   runnerSpotted: ['A goblin with a sack of coins spots you and RUNS. Catch him!'],
   runnerEscaped: ['He got away. The coins are his now. Your legs need work.'],
