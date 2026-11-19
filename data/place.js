@@ -65,6 +65,14 @@ FUP.placeData = {
     rain_barrel: { name: 'Rain Barrel', emoji: '🛢️', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { building: 8 } },
                    cost: { items: { plank: 6, nails: 3, stone: 1 } }, helper: { kind: 'barrel', radius: 2, water: 6 },
                    blurb: 'Waters thirsty crops within 2 squares by itself, 6 times a day. Lazy farming, built properly.' },
+    // Farming 2.0 F-B (v0.87): beehive = chance of one extra crop nearby (like the scarecrow, its own bonus);
+    // hedge = crops next to it dry out half as fast. Numbers and costs are PLACEHOLDERS.
+    beehive:     { name: 'Beehive', emoji: '🐝', sprite: 'prop_beehive', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 6 } },
+                   cost: { coins: 300, items: { plank: 3 } }, helper: { kind: 'hive', radius: 2, chance: 0.5 },
+                   blurb: 'Crops within 2 squares: 50% chance of one extra at harvest. The bees are unionised.' },
+    hedge:       { name: 'Hedge', emoji: '🌳', sprite: 'bush', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 3 } },
+                   cost: { coins: 60 }, helper: { kind: 'hedge', radius: 1 },
+                   blurb: 'Crops right next to it dry out half as fast. A wall that grows. Ambitious.' },
     // Quest rewards (v0.79): never sold. source: 'quest'
     crow_scarecrow: { name: 'Crow-proof Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], noShop: true, source: 'quest',
                    helper: { kind: 'scarecrow', radius: 5, chance: 0.35 }, blurb: 'Crops within 5 squares: 35% chance of one extra at harvest. The crows have filed a complaint.' },

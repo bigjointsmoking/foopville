@@ -130,6 +130,7 @@ FUP.place = {
     for (let y = ty; y < ty + it.h; y++) for (let x = tx; x < tx + it.w; x++) {
       if (this.list(zoneId).some(o => o.uid !== ignoreUid && this.covers(o, x, y) && !this.stacks(itemId, o.item))) return false;
       if (map && !ground.includes(map.tileAt(z.where.tx + x, z.where.ty + y))) return false;
+      if (z.where.region === 'village' && FUP.garden && FUP.garden.isPatch && FUP.garden.isPatch(z.where.tx + x, z.where.ty + y)) return false;   // not on soil you tilled (v0.87)
     }
     return true;
   },

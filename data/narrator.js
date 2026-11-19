@@ -359,6 +359,9 @@ FUP.narrator = {
   gardenHarvest: ['You harvest {item}. The dirt did all the work. You take all the credit.', '{item}, freshly picked. Nature: still weirdly generous.'],
   gardenBagFull: ['Your bag is full. The rest stays in the ground, judging you.'],
   // Farming on the village map (data/garden.js)
+  gardenCompanion: ['You plant the {item} next to a friend. They\'ll both do better. Unlike you, socially.'],
+  farmTill: ['You dig a fresh patch. The grass had plans. Not any more.', 'New soil. Your farm, your rules. The worms were not consulted.'],
+  farmFlatten: ['You pat the soil flat. Grass will move back in. It always does.'],
   farmHoe: ['You hoe the weeds. The weeds will be back. They always come back.', 'Soil: loosened. Back: ruined.', 'You hit the ground repeatedly. Farmers call this progress.'],
   farmWater: ['Splash. The plant looks less disappointed in you.', 'You water it. It drinks without saying thanks. Rude.'],
   farmSaved: ['You water the wilting {item} just in time. It will remember this. Barely.', 'The {item} perks up. It\'s smaller now, but alive. Like your ambitions.'],

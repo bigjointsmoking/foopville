@@ -12,16 +12,7 @@ Object.assign(VillageScene.prototype, {
     const T = FUP.villageData.tileSize, M = FUP.villageMap;
     this.drawFields();
     this.farmViews = {};
-    for (const q of FUP.garden.squares()) {
-      const c = M.center(q.tx, q.ty);
-      const soil = this.add.image(c.x, c.y, 'farm_weeds').setDisplaySize(T + 2, T + 2).setDepth(-6);
-      const crop = this.add.image(c.x, c.y + T * 0.3, 'crop_sprout').setOrigin(0.5, 0.85).setScale(FUP.ui.artScale(2)).setDepth(c.y + T * 0.3).setVisible(false);
-      const icon = FUP.ui.text(this, c.x + 13, c.y - 9, '', 13, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(5200);
-      this.tweens.add({ targets: icon, y: c.y - 13, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-      soil.setInteractive({ useHandCursor: true });
-      soil.on('pointerdown', () => { if (!this.panel && !this.busy && FUP.ui.tapToWalk(this)) this.walkTo = this.patchSpot(q); });
-      this.farmViews[q.key] = { q, soil, crop, icon, sig: '' };
-    }
+    for (const q of FUP.garden.squares()) this.addFarmView(q);
     // A sign over each farm plot: its name, and the price while it's for sale
     this.plotSigns = [];
     for (const [ch, fp] of Object.entries(FUP.gardenData.farmPlots)) {
@@ -36,6 +27,25 @@ Object.assign(VillageScene.prototype, {
     this.waterTiles = this.findWater();   // the well only counts once it's repaired (VillageRepairs.js)
     this.refreshFarm(true);
     this.time.addEvent({ delay: 500, loop: true, callback: () => this.refreshFarm() });
+  },
+
+  // One patch's pictures: soil, crop, the little icon above it (v0.87: also used when you till new soil)
+  addFarmView(q) {
+    const T = FUP.villageData.tileSize, c = FUP.villageMap.center(q.tx, q.ty);
+    const soil = this.add.image(c.x, c.y, 'farm_weeds').setDisplaySize(T + 2, T + 2).setDepth(-6);
+    const crop = this.add.image(c.x, c.y + T * 0.3, 'crop_sprout').setOrigin(0.5, 0.85).setScale(FUP.ui.artScale(2)).setDepth(c.y + T * 0.3).setVisible(false);
+    const icon = FUP.ui.text(this, c.x + 13, c.y - 9, '', 13, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(5200);
+    this.tweens.add({ targets: icon, y: c.y - 13, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    soil.setInteractive({ useHandCursor: true });
+    soil.on('pointerdown', () => { if (!this.panel && !this.busy && FUP.ui.tapToWalk(this)) this.walkTo = this.patchSpot(q); });
+    this.farmViews[q.key] = { q, soil, crop, icon, sig: '' };
+  },
+  removeFarmView(key) {
+    const v = this.farmViews[key];
+    if (!v) return;
+    this.tweens.killTweensOf(v.icon);
+    [v.soil, v.crop, v.icon].forEach(o => o.destroy());
+    delete this.farmViews[key];
   },
 
   // Hollis's fields (data/village.js fields, v0.67): tilled rows, two plants per square, swaying in the wind.
@@ -107,6 +117,11 @@ Object.assign(VillageScene.prototype, {
     const T = FUP.villageData.tileSize, px = this.player.x, py = this.player.y;
     const tx = Math.floor(px / T), ty = Math.floor(py / T);
     let best = null, bestD = 30;
+    // v0.87: grass on your own land under your feet = Till (unless you're standing on a patch)
+    if (!this.farmViews[tx + ',' + ty] && FUP.garden.canTill(tx, ty)) {
+      const c = FUP.villageMap.center(tx, ty);
+      return { spot: { kind: 'till', x: c.x, y: c.y, tx, ty, label: 'Till' }, dist: 0 };
+    }
     for (const v of Object.values(this.farmViews)) {
       const q = v.q;
       const d = (q.tx === tx && q.ty === ty) ? 0 : Math.hypot(q.tx * T + T / 2 - px, q.ty * T + T / 2 - py);
@@ -129,6 +144,10 @@ Object.assign(VillageScene.prototype, {
   farmUse(s) {
     const G = FUP.garden, J = FUP.gardenData.jobs;
     if (s.kind === 'water') { this.farmWork(J.fill.seconds, 'water', s, () => { G.fillCan(); this.say('farmFill'); }); return; }
+    if (s.kind === 'till') {   // dig new soil on your land (v0.87)
+      this.farmWork(J.till.seconds, 'hoe', s, () => { const q = G.till(s.tx, s.ty); if (q) { this.addFarmView(q); if (Math.random() < 0.4) this.say('farmTill'); } });
+      return;
+    }
     // Re-check the patch: it may have changed while you walked there
     const fresh = this.patchSpot({ tx: s.tx, ty: s.ty, ch: s.ch });
     const where = this.xpAt(fresh.x, fresh.y), p = G.at(s.tx, s.ty);
@@ -152,6 +171,7 @@ Object.assign(VillageScene.prototype, {
         if (r.seed) this.sayLine(this.narratorText.text + ` You also got a ${ing.short || ing.name} seed back.`);
         if (r.golden) this.sayLine(this.narratorText.text + ' And a golden Heartroot. Golden Harvest says hi.');
         if (r.scared) this.sayLine(this.narratorText.text + ' The scarecrow got you one extra. It takes no credit. It has no mouth.');
+        if (r.buzzed) this.sayLine(this.narratorText.text + ' The bees chipped in one more. They expect nothing. They\'ll sting you anyway.');
       }); break;
       case 'plant': this.openSeeds(fresh); break;
       default:
@@ -194,9 +214,9 @@ Object.assign(VillageScene.prototype, {
   openSeeds(s) {
     const ui = FUP.ui, c = ui.colors, G = FUP.garden, D = FUP.gardenData, W = this.scale.width, H = this.scale.height;
     const ids = G.seedIds();
-    if (!ids.length) { FUP.audio.sfx('error'); this.say('farmNoSeeds'); return; }
+    if (!ids.length) this.say('farmNoSeeds');   // (v0.87: the window still opens, so you can turn the patch back into grass)
     const g = this.add.group(), fix = o => { o.setScrollFactor(0).setDepth(17000); g.add(o); return o; };
-    const rowH = 54, w = 420, h = 92 + ids.length * rowH, x = (W - w) / 2, y = Math.max(70, (H - h) / 2);
+    const rowH = 54, w = 420, h = 104 + ids.length * rowH, x = (W - w) / 2, y = Math.max(70, (H - h) / 2);
     fix(FUP.ui.shade(this, 0.45));
     fix(FUP.ui.panel(this, x, y, w, h, 'panel').setAlpha(0.97));
     fix(ui.text(this, x + 16, y + 12, 'PLANT A SEED', 18, c.accent, { fontStyle: '700' }));
@@ -216,16 +236,22 @@ Object.assign(VillageScene.prototype, {
       fix(FUP.ui.panel(this, x + 12, ry, w - 24, rowH - 6, 'inset'));
       fix(ui.sprite(this, x + 34, ry + (rowH - 6) / 2, 'ing_' + id, ing.emoji, 22));
       fix(ui.text(this, x + 58, ry + 6, `${ing.name} seeds  ×${G.seedCount(id)}`, 14, c.ink, { fontStyle: '700' }));
-      fix(ui.text(this, x + 58, ry + 26, ok ? `${G.timeText(G.growTime(id))} to grow · +${crop.plantXp} XP now, +${crop.harvestXp} at harvest` : `🔒 Gardening Lv ${crop.level}`, 11, ok ? c.info : c.dim));
+      const pals = G.companionsFor(id).map(p => (FUP.ingredients[p.id].short || FUP.ingredients[p.id].name) + (p.rule.bonus === 'yield' ? ' (+1)' : ' (faster)'));   // F-B companions
+      fix(ui.text(this, x + 58, ry + 26, ok ? `${G.timeText(G.growTime(id))} · +${crop.plantXp}/${crop.harvestXp} XP${pals.length ? ' · next to: ' + pals.join(', ') : ''}` : `🔒 Gardening Lv ${crop.level}`, 11, ok ? c.info : c.dim, { wordWrap: { width: w - 170 }, maxLines: 1 }));
       button(x + w - 92, ry + 8, 72, 32, 'Plant', () => {
         close();
         this.farmWork(D.jobs.plant.seconds, 'plop', s, () => {
           const r = G.plant(s.tx, s.ty, id, this.xpAt(s.x, s.y), Math.random, this.useCompost);
-          if (r) this.say(r.composted ? 'gardenCompost' : 'gardenPlant', { item: ing.short || ing.name });
+          if (r) this.say(r.pal ? 'gardenCompanion' : r.composted ? 'gardenCompost' : 'gardenPlant', { item: ing.short || ing.name });
         });
       }, { size: 14, hot: ok, disabled: !ok }).setEnabled(ok);
     });
     button(x + w - 108, y + h - 40, 92, 30, 'Cancel', () => close(), { size: 14 });
+    // v0.87: turn this empty patch back into grass (your land, your layout)
+    if (G.canFlatten(s.tx, s.ty)) button(x + 16, y + h - 40, 170, 30, '🌱 Back to grass', () => {
+      close();
+      this.farmWork(D.jobs.till.seconds, 'hoe', s, () => { if (G.flatten(s.tx, s.ty)) { this.removeFarmView(s.tx + ',' + s.ty); this.say('farmFlatten'); } });
+    }, { size: 13 });
     const close = () => {
       if (this.panel !== panel) return;
       btns.forEach(b => b.destroy()); g.destroy(true);

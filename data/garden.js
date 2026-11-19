@@ -44,6 +44,7 @@ FUP.gardenData = {
     harvest: { seconds: 0.6 },          // XP is per crop, below
     clear:   { seconds: 0.7, xp: 1 },   // hoeing away a dead crop
     fill:    { seconds: 0.8 },
+    till:    { seconds: 1.2 },          // dig new soil on your land (v0.87). No XP: tilling and flattening back can't be farmed
   },
 
   // What a harvest gives back: a random number from yieldMin to yieldMax,
@@ -68,6 +69,29 @@ FUP.gardenData = {
     // v0.81 quest crops: shop false = Pip never sells it (Grandmother's Soup gives the seeds); req = sold once it's met
     bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 5, harvestXp: 15,  seedPrice: 5, shop: false },
     sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 7, harvestXp: 22,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },
+  },
+
+  // ---------- Companion crops (Farming 2.0 F-B, v0.87): plant these side by side (touching edges) ----------
+  // bonus 'yield' = +amount crops for both · 'speed' = both grow this share faster. One companion bonus per patch.
+  // Pairs and numbers are PLACEHOLDERS (design/farming.md drafts).
+  companions: [
+    { a: 'tear_jerk_onion',      b: 'grumpleberry',      bonus: 'yield', amount: 1,    why: 'onions keep the pests off the berries' },
+    { a: 'dragons_sneeze_chili', b: 'ember_pepper',      bonus: 'speed', amount: 0.15, why: 'two kinds of heat warm the soil' },
+    { a: 'glowcap_mushroom',     b: 'spore_b_gone_moss', bonus: 'yield', amount: 1,    why: 'shade-lovers, happier together' },
+    { a: 'grumpy_lemon',         b: 'heartroot',         bonus: 'speed', amount: 0.15, why: 'sweet and sour, growing out of spite' },
+    { a: 'bitterroot',           b: 'sea_kale',          bonus: 'yield', amount: 1,    why: 'both bitter, both stubborn' },
+  ],
+
+  // ---------- Your land (Farming 2.0 F-A, v0.87; design/farming.md) ----------
+  // Every place you farm is land you lay out yourself: walk onto grass on your land and Till it into a patch,
+  // or turn an empty patch back into grass from the planting window. The patches you already had stay.
+  // box = the land (squares), from the plot's top-left. pad = the land is the plot's patches plus this many
+  // squares around them (house plots). The Allotment's patches are scattered single squares: pad 0.
+  // Sizes are PLACEHOLDERS (Jesus: about 24 squares per farm plot).
+  land: {
+    A: { tx: 6, ty: 43, w: 6, h: 4 },  B: { tx: 13, ty: 43, w: 6, h: 4 },  C: { tx: 26, ty: 43, w: 6, h: 4 },  D: { tx: 39, ty: 43, w: 6, h: 4 },
+    E: { tx: 6, ty: 50, w: 6, h: 4 },  F: { tx: 13, ty: 50, w: 6, h: 4 },  H: { tx: 26, ty: 50, w: 6, h: 4 },  J: { tx: 39, ty: 50, w: 6, h: 4 },
+    '1': { pad: 1 }, '2': { pad: 1 }, '3': { pad: 1 }, p: { pad: 0 },
   },
 
   // ---------- Seeds ----------

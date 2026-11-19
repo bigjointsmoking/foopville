@@ -440,7 +440,7 @@ class VillageScene extends Phaser.Scene {
     this.prompt.setVisible(false); this.actBtn.setVisible(false); this.actText.setVisible(false);
     if (s.kind === 'home') { this.goHome(s.door); return; }
     if (s.kind === 'forsale') { this.openPanel('carpenter'); return; }
-    if (s.kind === 'patch' || s.kind === 'water') { this.farmUse(s); return; }
+    if (s.kind === 'patch' || s.kind === 'water' || s.kind === 'till') { this.farmUse(s); return; }
     if (s.kind === 'fish') { this.goFish(s); return; }
     if (s.kind === 'saw') { this.sawPlank(s); return; }
     if (s.kind === 'stall') { this.openStall(s.uid); return; }

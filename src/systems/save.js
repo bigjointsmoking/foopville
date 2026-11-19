@@ -135,6 +135,7 @@ FUP.save = {
       FUP.garden.state = {
         patches, can: d.can ?? FUP.gardenData.canMax, lastTick: d.lastTick || all.savedAt || Date.now(),
         seeds: { ...(d.seeds || FUP.gardenData.startSeeds) }, plots: { ...(d.plots || {}) },
+        tilled: { ...(d.tilled || {}) }, flat: { ...(d.flat || {}) },   // your own layout (v0.87)
         compost: d.compost ? { ...d.compost, batches: (d.compost.batches || []).slice() } : FUP.garden.freshCompost(),
       };
       FUP.garden.tick();   // catch up on the time the game was closed

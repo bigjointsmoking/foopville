@@ -13,13 +13,14 @@ FUP.garden = {
   //   wet (watered this stage), dry (seconds thirsty), wilt, dead,
   //   yield, left (still to pick), paid (harvest XP given), idle (seconds as empty soil)
   // seeds: { ingredient id: how many } (the seed pouch). plots: { 'A': true } = farm plots you bought.
-  state: { patches: {}, can: 0, lastTick: 0, seeds: {}, plots: {} },
+  // tilled: { 'tx,ty': plot letter } = soil you dug yourself · flat: { 'tx,ty': true } = a starting patch you turned back into grass (v0.87)
+  state: { patches: {}, can: 0, lastTick: 0, seeds: {}, plots: {}, tilled: {}, flat: {} },
 
   // A new life: every patch is weeds, the watering can is full, a few starter seeds.
   reset() {
     const G = FUP.gardenData;
-    this.state = { patches: {}, can: G.canMax, lastTick: Date.now(), seeds: { ...G.startSeeds }, plots: {}, compost: this.freshCompost() };
-    this.patchList = null;
+    this.state = { patches: {}, can: G.canMax, lastTick: Date.now(), seeds: { ...G.startSeeds }, plots: {}, compost: this.freshCompost(), tilled: {}, flat: {} };
+    this.patchList = null; this.landBoxes = null;
   },
   // ---------- Compost Bin (v0.41) ----------
   //   bin: items waiting for a batch · batches: [times they're ready] · ready: Compost you can use
@@ -45,13 +46,75 @@ FUP.garden = {
   seedBack() { return FUP.unlocks.perkBest('seedBack', FUP.gardenData.seedBackChance); },
   fresh() { return { s: 'weeds', crop: null, need: 0, stage: 0, grown: 0, wet: false, dry: 0, wilt: false, dead: false, yield: 0, left: 0, paid: false, idle: 0, scared: false }; },
 
-  // Every patch square on the village map: [{ tx, ty, ch, key }]
+  // Every patch on the village map: [{ tx, ty, ch, key }] = the starting patches (map letters) you haven't
+  // flattened, plus the soil you tilled yourself (v0.87). ch = whose land it is.
   squares() {
     if (!this.patchList) {
+      const flat = this.state.flat || {};
       this.patchList = [];
-      for (const ch of this.patchChars()) for (const s of FUP.villageMap.find(ch)) this.patchList.push({ ...s, ch, key: s.tx + ',' + s.ty });
+      for (const ch of this.patchChars()) for (const s of FUP.villageMap.find(ch)) { const key = s.tx + ',' + s.ty; if (!flat[key]) this.patchList.push({ ...s, ch, key }); }
+      for (const [key, ch] of Object.entries(this.state.tilled || {})) { const [tx, ty] = key.split(',').map(Number); this.patchList.push({ tx, ty, ch, key, tilled: true }); }
     }
     return this.patchList;
+  },
+  isPatch(tx, ty) { return this.squares().some(q => q.tx === tx && q.ty === ty); },
+
+  // ---------- Your land (Farming 2.0 F-A, v0.87) ----------
+  // The land boxes: { ch: { x0, y0, x1, y1 } } (data/garden.js land; pad = around that plot's patches)
+  boxes() {
+    if (!this.landBoxes) {
+      this.landBoxes = {};
+      for (const [ch, L] of Object.entries(FUP.gardenData.land || {})) {
+        if (L.w) { this.landBoxes[ch] = { x0: L.tx, y0: L.ty, x1: L.tx + L.w - 1, y1: L.ty + L.h - 1 }; continue; }
+        const sq = FUP.villageMap.find(ch);
+        if (!sq.length) continue;
+        if (L.pad === 0) { this.landBoxes[ch] = { squares: sq.map(s => s.tx + ',' + s.ty) }; continue; }   // scattered single squares
+        this.landBoxes[ch] = { x0: Math.min(...sq.map(s => s.tx)) - L.pad, y0: Math.min(...sq.map(s => s.ty)) - L.pad, x1: Math.max(...sq.map(s => s.tx)) + L.pad, y1: Math.max(...sq.map(s => s.ty)) + L.pad };
+      }
+    }
+    return this.landBoxes;
+  },
+  // Whose land is this square on? (a plot letter, or null)
+  landOf(tx, ty) {
+    for (const [ch, b] of Object.entries(this.boxes())) {
+      if (b.squares ? b.squares.includes(tx + ',' + ty) : (tx >= b.x0 && tx <= b.x1 && ty >= b.y0 && ty <= b.y1)) return ch;
+    }
+    return null;
+  },
+  // How many squares of land you own, and how many are soil (for the HUD / Hollis)
+  landSize(ch) { const b = this.boxes()[ch]; return !b ? 0 : b.squares ? b.squares.length : (b.x1 - b.x0 + 1) * (b.y1 - b.y0 + 1); },
+  // Can you dig new soil here? Your own land, plain grass (or a starting patch you flattened), nothing standing on it.
+  canTill(tx, ty) {
+    const ch = this.landOf(tx, ty);
+    if (!ch || !this.owns(ch) || this.isPatch(tx, ty)) return null;
+    const M = FUP.villageMap, c = M.tileAt(tx, ty), key = tx + ',' + ty;
+    if (!(c === '.' || (this.patchChars().includes(c) && (this.state.flat || {})[key]))) return null;
+    if (M.blockedTile(tx, ty)) return null;                                   // props, fields, ruins, hills
+    const z = FUP.place && FUP.place.zoneAt && FUP.place.zoneAt('village', tx, ty);
+    if (z && FUP.place.at(z.zone, z.tx, z.ty)) return null;                    // a path / fence / scarecrow you placed
+    return ch;
+  },
+  // Dig it: a fresh, empty patch (no weeds yet). No XP (see data/garden.js jobs.till).
+  till(tx, ty) {
+    const ch = this.canTill(tx, ty);
+    if (!ch) return null;
+    const key = tx + ',' + ty;
+    if ((this.state.flat || {})[key]) delete this.state.flat[key];   // a starting patch coming back
+    else this.state.tilled[key] = ch;
+    this.state.patches[key] = { ...this.fresh(), s: 'soil' };
+    this.patchList = null;
+    return { tx, ty, ch, key };
+  },
+  // Turn an empty patch (soil or weeds, no crop) back into grass. Returns true if done.
+  canFlatten(tx, ty) { const p = this.state.patches[tx + ',' + ty]; return this.isPatch(tx, ty) && (!p || p.s !== 'crop'); },
+  flatten(tx, ty) {
+    if (!this.canFlatten(tx, ty)) return false;
+    const key = tx + ',' + ty;
+    if (this.state.tilled[key]) delete this.state.tilled[key];
+    else this.state.flat[key] = true;
+    delete this.state.patches[key];
+    this.patchList = null;
+    return true;
   },
   // Map letters that are farm patches: public, the 3 houses, the farm plots.
   patchChars() { return 'p' + FUP.houseData.houses.map(h => h.plotChar).join('') + Object.keys(FUP.gardenData.farmPlots).join(''); },
@@ -164,9 +227,37 @@ FUP.garden = {
     });
     if (useCompost) { p.need = Math.round(p.need * (1 - G.compost.growFaster)); p.yield += G.compost.bonusYield; p.composted = true; }
     p.left = p.yield;
+    const pal = this.companionBonus(tx, ty);   // a companion next door (F-B): both get the bonus
     if (FUP.facts) FUP.facts.add('did:plant');   // first-day goals (data/goals.js)
     this.xp(G.crops[id].plantXp, where);
-    return { id, composted: useCompost };
+    return { id, composted: useCompost, pal };
+  },
+
+  // ---------- Companion crops (F-B, v0.87; data/garden.js companions) ----------
+  // The pair rule for two crops, or null
+  companionOf(a, b) { return (FUP.gardenData.companions || []).find(c => (c.a === a && c.b === b) || (c.a === b && c.b === a)) || null; },
+  // Crops that go well with this one: [{ id, rule }]
+  companionsFor(id) { return (FUP.gardenData.companions || []).filter(c => c.a === id || c.b === id).map(c => ({ id: c.a === id ? c.b : c.a, rule: c })); },
+  // Give a patch its companion bonus once (yield: +amount still to pick; speed: the rest grows faster)
+  giveCompanion(p, rule) {
+    if (p.pal || p.s !== 'crop' || p.dead || p.paid) return false;
+    p.pal = rule.bonus;
+    if (rule.bonus === 'yield') { p.yield += rule.amount; p.left += rule.amount; }
+    else { const st = FUP.gardenData.stages, done = p.stage * (p.need / st) + p.grown; p.need = Math.round(done + (p.need - done) * (1 - rule.amount)); }
+    return true;
+  },
+  // A crop was just planted at (tx, ty): pair it with any neighbour (edges touching). Returns the rule, or null.
+  companionBonus(tx, ty) {
+    const p = this.at(tx, ty);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const k = (tx + dx) + ',' + (ty + dy), n = this.state.patches[k];
+      if (!n || n.s !== 'crop' || n.dead || !this.isPatch(tx + dx, ty + dy)) continue;
+      const rule = this.companionOf(p.crop, n.crop);
+      if (!rule) continue;
+      const a = this.giveCompanion(p, rule), b = this.giveCompanion(n, rule);
+      if (a || b) return rule;
+    }
+    return null;
   },
 
   water(tx, ty, where) {
@@ -189,6 +280,8 @@ FUP.garden = {
     // A scarecrow nearby (v0.70): sometimes one extra
     let scared = false;
     if (!p.paid && !p.scared) { p.scared = true; const h = this.helperNear(tx, ty, 'scarecrow'); if (h && rng() < h.def.chance) { p.left++; scared = true; } }
+    let buzzed = false;   // a beehive nearby (F-B, v0.87): its own chance of one extra
+    if (!p.paid && !p.buzzed) { p.buzzed = true; const h = this.helperNear(tx, ty, 'hive'); if (h && rng() < h.def.chance) { p.left++; buzzed = true; } }
     let got = 0;
     while (p.left > 0 && FUP.run.addToBag(id)) { p.left--; got++; }
     let seed = false, golden = false;
@@ -201,7 +294,7 @@ FUP.garden = {
     }
     const left = p.left;
     if (left <= 0) Object.assign(p, this.fresh(), { s: 'soil' });
-    return { id, got, left, seed, golden, scared };
+    return { id, got, left, seed, golden, scared, buzzed, pal: p.pal || null };
   },
 
   fillCan() {
@@ -227,7 +320,7 @@ FUP.garden = {
     if (!dt) return false;
     const away = dt > FUP.gardenData.awayGap;   // the game was closed or hidden
     let changed = false;
-    for (const p of Object.values(this.state.patches)) if (this.advance(p, dt, away)) changed = true;
+    for (const [key, p] of Object.entries(this.state.patches)) if (this.advance(p, dt, away, key)) changed = true;
     if (this.barrelWater()) changed = true;
     return changed;
   },
@@ -263,7 +356,7 @@ FUP.garden = {
   },
 
   // One patch, dt seconds later (dt can be hours if the game was closed: away = true).
-  advance(p, dt, away = false) {
+  advance(p, dt, away = false, key = '') {
     const G = FUP.gardenData, before = this.look(p) + p.stage;
     if (p.s === 'soil') {
       p.idle += dt;
@@ -277,7 +370,7 @@ FUP.garden = {
         if (p.grown >= per - 1e-6) { p.stage++; p.grown = 0; p.wet = false; p.dry = 0; }
       } else {
         // Thirsty: the dry clock runs (not while you're away, unless data says so)
-        if (!away || FUP.gardenData.dryWhileAway) p.dry += dt;
+        if (!away || FUP.gardenData.dryWhileAway) p.dry += key && this.helperNear(Number(key.split(',')[0]), Number(key.split(',')[1]), 'hedge') ? dt / 2 : dt;   // a hedge next to it: half as fast (F-B)
         dt = 0;
         if (p.dry >= G.dieAfter && !FUP.unlocks.hasPerk('noDeath')) { p.dead = true; p.wilt = false; }   // Hardy Crops perk: never die
         else if (p.dry >= FUP.unlocks.perkBest('wiltAfter', G.wiltAfter)) p.wilt = true;                  // Deep Roots perk
