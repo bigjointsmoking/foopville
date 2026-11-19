@@ -98,6 +98,7 @@ FUP.run = {
   addToBag(id) {
     if (!this.canAddIng(id)) return false;
     this.bag[id] = this.bagCount(id) + 1;
+    if (FUP.facts && !FUP.facts.has('ing:' + id)) FUP.facts.set('ing:' + id, 1);   // the collection log (E2): you've had one
     return true;
   },
 

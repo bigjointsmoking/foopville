@@ -85,6 +85,8 @@ FUP.backpack = {
     if (bp.opts.home || bp.tab === 'wardrobe' || bp.tab === 'spell') btn(PX + PW - 300, PY + 10, 90, 32, '🎒 Pack', () => { bp.tab = 'pack'; bp.sel = null; }, { hot: bp.tab === 'pack' });
     btn(PX + PW - 410, PY + 10, 104, 32, '🎩 Wardrobe', () => { bp.tab = 'wardrobe'; bp.sel = null; }, { hot: bp.tab === 'wardrobe' });
     btn(PX + PW - 500, PY + 10, 84, 32, '✨ Spell', () => { bp.tab = 'spell'; bp.sel = null; }, { hot: bp.tab === 'spell' });
+    // The collection log (E2): its own window on top (hidden on the Storage tab, whose title is long)
+    if (bp.tab !== 'store') btn(PX + PW - 590, PY + 10, 84, 32, '📖 Log', () => { if (!bp.log) bp.log = s.time.delayedCall(30, () => { bp.log = FUP.logUi.open(s, () => { bp.log = null; }); }); });   // a beat later: after the backpack redraws (two pop-open animations at once hide each other)
     if (bp.tab === 'wardrobe') { this.drawWardrobe(bp, add, btn, PX, PY, PW); return; }
     if (bp.tab === 'spell') { this.drawSpell(bp, add, PX, PY, PW); return; }
 

@@ -14,12 +14,13 @@ FUP.facts = {
   get(key) { return this.state[key] || 0; },
   has(key) { return this.get(key) > 0; },
   set(key, n) {
+    const old = this.get(key);
     if (n) this.state[key] = n; else delete this.state[key];
-    for (const fn of this.listeners) fn(key, this.get(key));
+    for (const fn of this.listeners) fn(key, this.get(key), old);   // old: the value before (the collection log spots firsts)
   },
   add(key, n = 1) { this.set(key, this.get(key) + n); return this.get(key); },
 
-  // fn(key, newValue) is called whenever a fact changes
+  // fn(key, newValue, oldValue) is called whenever a fact changes
   onFact(fn) { this.listeners.push(fn); },
 
   // A readable name: 'boss:guardian' -> 'Beat The Mushroom Guardian'

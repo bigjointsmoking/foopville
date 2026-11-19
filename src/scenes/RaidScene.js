@@ -15,6 +15,7 @@ class RaidScene extends WorldScene {
     const R = FUP.raid, T = R.size();
     this.f = FUP.run.forest;
     this.raid = this.f.raid;
+    FUP.facts.set('region:raid', 1);   // the collection log's Areas page (E2)
     R.use(this.raid.rooms[this.raid.index]);
     this.tiles = R;
     this.A = this.raid.room;            // this room's state (enemies, cracks, where you stand)
