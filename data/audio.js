@@ -82,7 +82,10 @@ FUP.audioData = {
     doorOpen:  { keys: ['door_open'], vol: 0.55 },
     doorClose: { keys: ['door_close_0', 'door_close_1'], vol: 0.55, pitch: 0.04 },
     sleep:     { keys: ['jingle_sleep'], vol: 0.6 },                                           // going to bed
-    // No recording (synth below): water, eat
+    // v0.90 (OpenGameArt CC0: '7 Eating Crunches' by StarNinjas, '40 CC0 water / splash / slime SFX' by rubberduck)
+    eat:       { keys: ['eat_0', 'eat_1', 'eat_2', 'eat_3'], vol: 0.6, pitch: 0.06 },   // a crunchy bite
+    taste:     { keys: ['gulp_0', 'gulp_1'], vol: 0.6, pitch: 0.05 },                  // tasting a bowl (quests)
+    water:     { keys: ['pour'], vol: 0.5, pitch: 0.05 },                              // watering a patch
   },
 
   playlists: {
@@ -151,6 +154,7 @@ FUP.audioData = {
     doorOpen:  { wave: 'sawtooth', from: 140,  to: 220,  dur: 0.3,  vol: 0.12 },
     doorClose: { noise: true,      from: 500,  to: 100,  dur: 0.12, vol: 0.35 },
     sleep:     { wave: 'sine',     from: 523,  dur: 0.3,  vol: 0.25, notes: [7, 4, 0, -5], step: 0.25 },
+    taste:     { wave: 'sine',     from: 300,  to: 180,  dur: 0.2,  vol: 0.25 },
   },
 
   songs: {

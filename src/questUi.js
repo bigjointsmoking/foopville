@@ -47,9 +47,10 @@ FUP.questUi = {
     add(ui.text(scene, W / 2, H / 2 - h / 2 + 46, line || '', 14, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 }, lineSpacing: 3 }).setOrigin(0.5, 0), 2);
     list.forEach((ch, k) => {
       const b = ui.button(scene, W / 2 - 230, H / 2 - h / 2 + 110 + k * 46, 460, 38, ch.label, () => {
+        if (tasting) FUP.audio.sfx('taste');   // a slurp from the bowl
         const r = FUP.quests.choose(id, ch.i);
         close();
-        if (r.retry) { if (scene.sayLine) scene.sayLine(r.line); FUP.audio.sfx('error'); FUP.save.write(); this.choices(scene, id, r.line, onDone); return; }
+        if (r.retry) { if (scene.sayLine) scene.sayLine(r.line); if (tasting) scene.time.delayedCall(550, () => FUP.audio.sfx('error')); else FUP.audio.sfx('error'); FUP.save.write(); this.choices(scene, id, r.line, onDone); return; }
         FUP.save.write();
         this.result(scene, id, r, onDone);
       }, { size: 14, hot: k === 0 });

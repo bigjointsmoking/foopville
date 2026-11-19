@@ -194,7 +194,7 @@ Object.assign(VillageScene.prototype, {
     if (s.x !== this.player.x) this.player.setFlipX(s.x < this.player.x);
     const reps = Math.max(1, Math.round(seconds / 0.25));
     this.tweens.add({ targets: this.player, angle: { from: 0, to: kind === 'water' ? 10 : -14 }, scaleY: this.player.scaleY * 0.92, duration: (seconds * 1000) / (reps * 2), yoyo: true, repeat: reps - 1 });
-    for (let i = 0; i < reps; i++) this.time.delayedCall((seconds * 1000 / reps) * i, () => { FUP.audio.sfx(kind === 'harvest' ? 'pickup' : kind); this.farmBits(kind, s.x, s.y); });
+    for (let i = 0; i < reps; i++) this.time.delayedCall((seconds * 1000 / reps) * i, () => { if (kind !== 'water' || i === 0) FUP.audio.sfx(kind === 'harvest' ? 'pickup' : kind); this.farmBits(kind, s.x, s.y); });   // watering: one pour, not one per swing
     this.time.delayedCall(seconds * 1000 + 30, () => {
       this.player.setAngle(0);
       this.busy = false;
