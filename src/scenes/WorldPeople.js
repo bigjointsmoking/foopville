@@ -89,7 +89,7 @@ Object.assign(WorldScene.prototype, {
     add(ui.shade(this, 0.6));
     add(ui.panel(this, W / 2 - 260, H / 2 - h / 2, 520, h, 'panel'), 1);
     add(ui.text(this, W / 2, H / 2 - h / 2 + 16, '🕯️ The Old Shrine', 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
-    add(ui.text(this, W / 2, H / 2 - h / 2 + 46, L.ask + '\nMore stars, better loot. Once a day. It\'s the full Guardian.', 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 - h / 2 + 46, L.ask + '\nMore stars, better loot. Once every 20 minutes. It\'s the full Guardian.', 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
     const btn = (k, label, fn, hot) => { const b = ui.button(this, W / 2 - 230, H / 2 - h / 2 + 110 + k * 46, 460, 38, label, fn, { size: 14, hot }); [b.rect, b.txt].forEach(x => add(x, 3)); b.txt.setDepth(Z + 4); };
     list.forEach((e, k) => btn(k, `${e.dish.emoji} ${e.dish.name}  ${'★'.repeat(e.stars)}${'☆'.repeat(5 - e.stars)}${e.n > 1 ? '  ×' + e.n : ''}`, () => {
       const stars = S.feed(k);

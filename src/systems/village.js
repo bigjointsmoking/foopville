@@ -40,10 +40,11 @@ FUP.village = {
     if (this.haggled() === 'fail') mult += h.failMarkup;
     return Math.max(1, Math.round(base * mult));
   },
-  sellPrice(base) {
+  // boost = false: no v0.78 x1.5 (farm crops and fish, v0.86: see sellBoosted)
+  sellPrice(base, boost = true) {
     let mult = 1 + this.rizzCut() + FUP.unlocks.perkSum('sellBonus');   // Bargain Hunter perk
     if (this.haggled() === 'win') mult += FUP.villageData.haggle.winDiscount;
-    return Math.max(1, Math.round(base * mult * FUP.villageData.sellMult));   // v0.78: everything sells for 50% more
+    return Math.max(1, Math.round(base * mult * (boost ? FUP.villageData.sellMult : 1)));   // v0.78: everything sells for 50% more (not crops or fish)
   },
 
   haggleChance() {
@@ -112,7 +113,9 @@ FUP.village = {
     return p;
   },
 
-  ingredientSellPrice(id) { const ing = FUP.ingredients[id]; return this.resaleCap(this.sellPrice(ing.sell || FUP.villageData.ingredientSellPrice[ing.rarity] || 1), FUP.villageData.shopIngredients[id] ? this.ingredientPrice(id) : 0); },   // each ingredient has its own price (v0.40)
+  // Does this ingredient get the x1.5 sell boost? Not farm crops or fish (data/village.js sellBoostSkip, v0.86 balance pass)
+  sellBoosted(id) { const S = FUP.villageData.sellBoostSkip || {}, ing = FUP.ingredients[id] || {}; return !((S.crops && FUP.gardenData && FUP.gardenData.crops[id]) || (S.sources || []).includes(ing.source)); },
+  ingredientSellPrice(id) { const ing = FUP.ingredients[id]; return this.resaleCap(this.sellPrice(ing.sell || FUP.villageData.ingredientSellPrice[ing.rarity] || 1, this.sellBoosted(id)), FUP.villageData.shopIngredients[id] ? this.ingredientPrice(id) : 0); },   // each ingredient has its own price (v0.40)
   sellIngredient(id) {
     if (FUP.run.bagCount(id) <= 0) return 0;
     const p = this.ingredientSellPrice(id);
@@ -124,7 +127,7 @@ FUP.village = {
 
   // ---------- Gill the Fishmonger: pays more for raw fish ----------
   fishBonus() { return FUP.villageData.fishBonus + FUP.unlocks.giftSum('fishmonger', 'fishBonus'); },
-  fishPrice(id) { return this.sellPrice(FUP.ingredients[id].sell * this.fishBonus()); },
+  fishPrice(id) { return this.sellPrice(FUP.ingredients[id].sell * this.fishBonus(), this.sellBoosted(id)); },
   // Fish you own: in the backpack first, then the pantry at home. [{ id, n }]
   fishOwned() {
     const pantry = FUP.house.state.pantry || {};

@@ -336,7 +336,8 @@ FUP.villageData = {
   // ---------- Haggling (blueprint 10) ----------
   // Always on: every Rizz level = 1% off what you buy and 1% more for what you sell, up to 30%.
   fishBonus: 1.2,   // Gill pays this much more for raw fish than the Shopkeeper (+0.1 from his Rizz 20 secret)
-  sellMult: 1.5,   // v0.78 (Jesus: selling paid too little): every sell price x this
+  sellMult: 1.5,   // v0.78 (Jesus: selling paid too little): every sell price x this...
+  sellBoostSkip: { crops: true, sources: ['Fishing'] },   // ...except farm crops and fish (v0.86 balance pass, Jesus: they out-earned fighting)
   resaleCap: 0.9,  // ...but never more than this share of what the shop sells the same thing for
   rizzDiscountPerLevel: 0.01,
   rizzDiscountMax: 0.30,

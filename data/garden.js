@@ -48,26 +48,26 @@ FUP.gardenData = {
 
   // What a harvest gives back: a random number from yieldMin to yieldMax,
   // and yieldMax goes up by 1 every `bonusYieldEvery` Gardening levels.
-  yieldMin: 2,
-  yieldMax: 4,
+  yieldMin: 1,   // v0.86 balance pass (Jesus): was 2-4, farming out-earned fighting
+  yieldMax: 3,
   bonusYieldEvery: 10,
 
   // Crops: which ingredients you can grow, from which Gardening level,
   // how long they take in real time (all 3 stages, at Gardening 1), the XP,
   // and what one seed costs at Pip's seed stall (before Rizz discounts).
   // Onion, Lemon and Ember Pepper only come from the farm (not found in the Forest).
-  crops: {
-    grumpleberry:         { level: 1,  growSeconds: 6 * 60,  plantXp: 8, harvestXp: 22,  seedPrice: 3 },
-    glowcap_mushroom:     { level: 1,  growSeconds: 6 * 60,  plantXp: 8, harvestXp: 22,  seedPrice: 3 },
-    tear_jerk_onion:      { level: 3,  growSeconds: 8 * 60,  plantXp: 10, harvestXp: 30,  seedPrice: 4 },
-    dragons_sneeze_chili: { level: 5,  growSeconds: 12 * 60, plantXp: 12, harvestXp: 40,  seedPrice: 6 },
-    grumpy_lemon:         { level: 8,  growSeconds: 15 * 60, plantXp: 18, harvestXp: 55, seedPrice: 8 },
-    spore_b_gone_moss:    { level: 10, growSeconds: 20 * 60, plantXp: 20, harvestXp: 65, seedPrice: 10 },
-    ember_pepper:         { level: 15, growSeconds: 25 * 60, plantXp: 30, harvestXp: 100, seedPrice: 15 },
-    heartroot:            { level: 20, growSeconds: 40 * 60, plantXp: 40, harvestXp: 150, seedPrice: 25 },
+  crops: {   // (v0.86 balance pass: plantXp + harvestXp halved, Jesus: Gardening levelled 3-4x faster than other skills)
+    grumpleberry:         { level: 1,  growSeconds: 6 * 60,  plantXp: 4, harvestXp: 11,  seedPrice: 3 },
+    glowcap_mushroom:     { level: 1,  growSeconds: 6 * 60,  plantXp: 4, harvestXp: 11,  seedPrice: 3 },
+    tear_jerk_onion:      { level: 3,  growSeconds: 8 * 60,  plantXp: 5, harvestXp: 15,  seedPrice: 4 },
+    dragons_sneeze_chili: { level: 5,  growSeconds: 12 * 60, plantXp: 6, harvestXp: 20,  seedPrice: 6 },
+    grumpy_lemon:         { level: 8,  growSeconds: 15 * 60, plantXp: 9, harvestXp: 28, seedPrice: 8 },
+    spore_b_gone_moss:    { level: 10, growSeconds: 20 * 60, plantXp: 10, harvestXp: 32, seedPrice: 10 },
+    ember_pepper:         { level: 15, growSeconds: 25 * 60, plantXp: 15, harvestXp: 50, seedPrice: 15 },
+    heartroot:            { level: 20, growSeconds: 40 * 60, plantXp: 20, harvestXp: 75, seedPrice: 25 },
     // v0.81 quest crops: shop false = Pip never sells it (Grandmother's Soup gives the seeds); req = sold once it's met
-    bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 10, harvestXp: 30,  seedPrice: 5, shop: false },
-    sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 14, harvestXp: 45,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },
+    bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 5, harvestXp: 15,  seedPrice: 5, shop: false },
+    sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 7, harvestXp: 22,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },
   },
 
   // ---------- Seeds ----------

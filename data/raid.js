@@ -32,12 +32,13 @@ FUP.raidData = {
   shrine: {
     region: 'edge', tx: 4, ty: 13,
     needQuest: 'theBowl',
+    cooldownSeconds: 1200,                  // once every 20 minutes of PLAY (v0.86: was once per in-game day, and Sleep skipped days)
     coinsPerStar: 30,                       // extra coins: 30 per star
     matsPerStar: 1, mats: ['plank', 'nails', 'stone'],   // building materials: 1 per star, random
     gearAtStars: 4,                         // 4-5 stars: one extra gear roll (Rare or better)
     lines: {
       locked: 'A mossy little shrine. Someone leaves a bowl here in the evenings. For the Quiet One, apparently.',
-      fed: 'The bowl is still licked clean from today. Come back tomorrow. It\'s full. Allegedly.',
+      fed: 'The bowl is still licked clean. It\'s full. Allegedly. Come back in {min} min.',
       noFood: 'The bowl is empty and so are your pockets. Cook something first.',
       ask: 'You set down the bowl. Something far below goes very quiet. Which dish?',
       summon: 'The ground shudders. The bowl is snatched down a crack. Then the crack gets bigger.',
