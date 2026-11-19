@@ -216,7 +216,7 @@ FUP.enemies = {
   // ---------- The Soggy Marsh (W2, Lv 15-22). Emoji pictures for now (Blender art later). ----------
   // Fights: 2-3 interns, or 1 lawyer (+1 intern half the time), or 1 frog + 1 lawyer / 2 interns (src/systems/forest.js marshGroup).
   mosquitoIntern: {
-    name: 'Mosquito Intern', emoji: '🦟', size: 70, row: 'front',
+    name: 'Mosquito Intern', emoji: '🦟', size: 70, row: 'front', sprite: 'mosquito', mapSprite: 'mosquito_map',   // art v0.84
     maxHp: 22, atk: 7, def: 1, spd: 14, resolve: 0.0,
     xp: 30, coins: 8, boss: false, weak: 'fire', resists: [],
     moves: [
@@ -227,7 +227,7 @@ FUP.enemies = {
     signature: { id: 'overtime', atkMult: 1.3 },
   },
   leechLawyer: {
-    name: 'Leech Lawyer', emoji: '🪱', size: 110, row: 'front',
+    name: 'Leech Lawyer', emoji: '🪱', size: 110, row: 'front', sprite: 'leech', mapSprite: 'leech_map',
     maxHp: 75, atk: 10, def: 4, spd: 9, resolve: 0.25,
     xp: 85, coins: 22, boss: false, weak: 'acid', resists: ['poison'],
     moves: [
@@ -238,7 +238,7 @@ FUP.enemies = {
     signature: { id: 'billable', healShare: 0.5 },
   },
   filingFrog: {
-    name: 'Filing Frog', emoji: '🐸', size: 96, row: 'back',
+    name: 'Filing Frog', emoji: '🐸', size: 96, row: 'back', sprite: 'frog', mapSprite: 'frog_map',
     maxHp: 50, atk: 9, def: 3, spd: 11, resolve: 0.1,
     xp: 70, coins: 18, boss: false, weak: 'frost', resists: [],
     moves: [

@@ -111,7 +111,7 @@ FUP.villageData = {
   npcs: {
     // New in story Phase B (2026-11-17). Name, look and lines are PLACEHOLDERS (tinted villager picture, like the island tutors).
     oldtimer: {
-      name: 'The Old-timer', spot: { tx: 15, ty: 28 }, sprite: 'npc_smith_map', portrait: 'npc_smith', tint: 0xc8bca8, emoji: '👴',
+      name: 'The Old-timer', spot: { tx: 15, ty: 28 }, sprite: 'npc_oldtimer_map', portrait: 'npc_oldtimer', emoji: '👴',   // own art since v0.84
       greet: [
         'Sit, sit. The bench is free. Everything else costs.',
         'Lovely statue. I come up here to look at it. It never looks back.',
@@ -128,7 +128,7 @@ FUP.villageData = {
     },
     // Story Phase C (v0.82, Jesus: "a banker or a money guy"). Name, spot, look and lines are PLACEHOLDERS.
     banker: {
-      name: 'Mr. Tally the Moneylender', spot: { tx: 28, ty: 7 }, sprite: 'npc_shop_map', portrait: 'npc_shop', tint: 0xb8c8a0, emoji: '💰',
+      name: 'Mr. Tally the Moneylender', spot: { tx: 28, ty: 7 }, sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '💰',
       noRizzSecrets: true,   // no Rizz 10/20/30 secrets yet (PLACEHOLDER: ask Jesus if they should have some)
       greet: [
         'Forty-one coins in the village fund. I counted. Twice. Out loud.',
@@ -137,9 +137,9 @@ FUP.villageData = {
       ],
     },
     // The Bog Notary (v0.82): lives in the Soggy Marsh (data/region_marsh.js npcs), outside his office. No fight yet:
-    // his boss quest comes later, with the town to the east (Jesus, 2026-11-18). PLACEHOLDER look: a tinted villager.
+    // his boss quest comes later, with the town to the east (Jesus, 2026-11-18). Own picture since v0.84.
     notary: {
-      name: 'The Bog Notary', sprite: 'npc_quest_map', portrait: 'npc_quest', tint: 0x8ab060, emoji: '🐸',
+      name: 'The Bog Notary', sprite: 'npc_notary_map', portrait: 'npc_notary', emoji: '🐸',
       noRizzSecrets: true,   // no Rizz 10/20/30 secrets yet (PLACEHOLDER: ask Jesus if they should have some)
       greet: [
         'Form?',

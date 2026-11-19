@@ -24,7 +24,8 @@ Object.assign(WorldScene.prototype, {
     if (this.feature('objects')) for (const o of info.objects || []) {
       const c0 = at(o.tx, o.ty);
       if (o.kind === 'sign') {   // (v0.82: emoji + label for other readable things, like the frog's strongbox)
-        this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
+        if (o.sprite) ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10);   // (v0.84: its own picture)
+        else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
       }
     }
@@ -32,7 +33,7 @@ Object.assign(WorldScene.prototype, {
     const SH = FUP.raidData.shrine;
     if (SH && SH.region === this.f.area) {
       const c0 = at(SH.tx, SH.ty);
-      this.add.text(c0.x, c0.y, '🕯️', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
+      ui.sprite(this, c0.x, c0.y, 'prop_shrine', '🕯️', 24).setDepth(c0.y + 10);
       ui.text(this, c0.x, c0.y - 22, 'SHRINE', 10, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
       this.spots.push({ kind: 'shrine', x: c0.x, y: c0.y, label: 'Shrine' });
       this.solid.push({ tx: SH.tx, ty: SH.ty });

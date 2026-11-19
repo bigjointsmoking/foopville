@@ -64,7 +64,7 @@ FUP.worldData.areas.marsh = {
   npcs: [{ id: 'notary', tx: 42, ty: 14 }],
   objects: [
     // The Frog and the strongbox (story Phase C): just a thing to find, no quest
-    { kind: 'sign', tx: 5, ty: 25, emoji: '🧰', label: 'Look', text: 'An old strongbox, lid rusted open, empty. A Filing Frog lives in it now. It files nothing. It just sits there, looking owed.' },
+    { kind: 'sign', tx: 5, ty: 25, emoji: '🧰', sprite: 'prop_strongbox', label: 'Look', text: 'An old strongbox, lid rusted open, empty. A Filing Frog lives in it now. It files nothing. It just sits there, looking owed.' },
     { kind: 'sign', tx: 44, ty: 13, text: 'OFFICE OF THE BOG NOTARY. Closed. Take a number. There are no numbers.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },
   ],
