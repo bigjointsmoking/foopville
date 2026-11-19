@@ -32,14 +32,14 @@ FUP.place = {
     const coins = this.isFree(itemId) ? 0 : Math.round((c.coins || 0) * (1 - this.buildCut())) * n;
     return { coins, items };
   },
-  price(itemId, n = 1) { return FUP.req.coinPrice(this.cost(itemId, n), { npc: 'carpenter' }); },
+  price(itemId, n = 1, npc = 'carpenter') { return FUP.req.coinPrice(this.cost(itemId, n), { npc }); },   // (Pip sells the saplings, v0.92)
   // Buy n (ground things come in any number). 'ok' | 'max' | 'locked' (requirement not met) | 'broke'
-  buy(itemId, n = 1) {
+  buy(itemId, n = 1, npc = 'carpenter') {
     const it = this.item(itemId);
     if (!it) return 'locked';
     if (it.max && this.total(itemId) + n > it.max) return 'max';
     if (!FUP.req.met(it.req)) return 'locked';
-    if (!FUP.req.pay(this.cost(itemId, n), { npc: 'carpenter' })) return 'broke';
+    if (!FUP.req.pay(this.cost(itemId, n), { npc })) return 'broke';
     this.state.owned[itemId] = this.ownedCount(itemId) + n;
     // Building XP from the listed coin price (discounts don't shrink it; free things give none)
     if (!this.isFree(itemId)) FUP.skills.addXp('building', Math.round(((it.cost || {}).coins || 0) * n * FUP.placeData.xp.perCoin));

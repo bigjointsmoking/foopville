@@ -79,6 +79,12 @@ FUP.placeData = {
     sprinkler:   { name: 'Sprinkler', emoji: '⛲', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 10, building: 8 } },
                    cost: { items: { brass: 2, plank: 4, nails: 2 } }, helper: { kind: 'sprinkler', radius: 1, tank: 12 },
                    blurb: 'Waters the 8 squares around it, 12 times per fill. You fill it. With your can. Progress.' },
+    // Fruit trees (F-D, v0.92): saplings sold by Pip (sapling: true keeps them off the Carpenter's list),
+    // placed in Build mode, 2x2. tree = the data/garden.js trees entry. Taking one back = a fresh sapling again.
+    grumbleplum_tree: { name: 'Grumbleplum Tree', emoji: '🌳', sprite: 'tree_grumbleplum_0', kind: 'ground', w: 2, h: 2, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 12 } },
+                        cost: { coins: 400 }, tree: 'grumbleplum', sapling: true, noShop: true, blurb: 'Two days to grow, then plums every 4 hours. Forever. Patience is a vegetable.' },
+    sourapple_tree:   { name: 'Sourapple Tree', emoji: '🌳', sprite: 'tree_sourapple_0', kind: 'ground', w: 2, h: 2, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 22 } },
+                        cost: { coins: 900 }, tree: 'sourapple', sapling: true, noShop: true, blurb: 'Apples so sour they make lemons look friendly. Two days to grow.' },
     // Quest rewards (v0.79): never sold. source: 'quest'
     crow_scarecrow: { name: 'Crow-proof Scarecrow', emoji: '🧍', sprite: 'deco_scarecrow', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], noShop: true, source: 'quest',
                    helper: { kind: 'scarecrow', radius: 5, chance: 0.35 }, blurb: 'Crops within 5 squares: 35% chance of one extra at harvest. The crows have filed a complaint.' },

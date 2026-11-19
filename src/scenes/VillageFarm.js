@@ -74,7 +74,7 @@ Object.assign(VillageScene.prototype, {
     }
     for (const v of Object.values(this.farmViews)) {
       const p = G.at(v.q.tx, v.q.ty), look = G.look(p), mine = G.owns(v.q.ch);
-      const sig = [look, p.stage, p.crop, p.wet, mine].join('|');
+      const sig = [look, p.stage, p.crop, p.wet, mine, p.giantOf].join('|');
       if (!all && sig === v.sig) continue;
       v.sig = sig;
       v.soil.setTexture(look === 'weeds' ? 'farm_weeds' : 'farm_soil').setDisplaySize(FUP.villageData.tileSize + 2, FUP.villageData.tileSize + 2);
@@ -89,10 +89,16 @@ Object.assign(VillageScene.prototype, {
         else if (p.stage >= 1) { key = `crop_${p.crop}_2`; scale = p.stage === 1 ? 1.7 : 2; }
         v.crop.setTexture(this.textures.exists(key) ? key : 'crop_sprout').setScale(FUP.ui.artScale(scale));
         if (look === 'wilting') v.crop.setTint(0xc8a860).setRotation(0.3);
+        // A giant crop (F-D): the top-left patch shows one huge plant over the 3x3, the others none
+        if (p.giantOf) {
+          if (p.giant) { const T = FUP.villageData.tileSize; if (!all && !v.wasGiant) this.say('giantCrop', { item: (FUP.ingredients[p.crop] || {}).short || p.crop }); v.wasGiant = true; v.crop.setScale(FUP.ui.artScale(6)).setPosition(v.q.tx * T + T * 1.5, v.q.ty * T + T * 2.7).setDepth(v.q.ty * T + T * 2.7); }
+          else v.crop.setVisible(false);
+        } else { const c0 = FUP.villageMap.center(v.q.tx, v.q.ty), T = FUP.villageData.tileSize; v.crop.setPosition(c0.x, c0.y + T * 0.3).setDepth(c0.y + T * 0.3); }
       }
       const icons = { thirsty: '💧', wilting: '🥀', ready: '✨', dead: '💀' };
-      v.icon.setText(mine ? icons[look] || '' : '');
+      v.icon.setText(mine && (!p.giantOf || p.giant) ? icons[look] || '' : '');
     }
+    this.refreshTrees(all);
     if (this.farmText) this.refreshFarmHud();
   },
 
@@ -141,6 +147,42 @@ Object.assign(VillageScene.prototype, {
   // Screen position for XP pop-ups (they're drawn on the screen, not the map).
   xpAt(x, y) { const cam = this.cameras.main; return { x: x - cam.scrollX, y: Math.max(110, y - cam.scrollY - 50) }; },
 
+  // A fruit tree (F-D, v0.92): pick, water, or hear how long it has left
+  treeUse(s) {
+    const G = FUP.garden, J = FUP.gardenData.jobs, look = G.treeLook(s.p), where = this.xpAt(s.x, s.y);
+    if (look === 'ripe') {
+      this.farmWork(J.harvest.seconds, 'harvest', s, () => {
+        const r = G.pickTree(s.p, where), ing = FUP.ingredients[r.id];
+        if (!r.got) { FUP.audio.sfx('error'); this.say('gardenBagFull'); return; }
+        this.say(r.left ? 'gardenBagFull' : 'treePicked', { item: `${r.got} ${ing.short || ing.name}` });
+        FUP.buildUi.drawPlaced(this, 'village'); this.refreshTrees(true); FUP.save.write();
+      });
+      return;
+    }
+    if (look === 'thirsty') {
+      if (G.state.can <= 0) { FUP.audio.sfx('error'); this.say('sprinklerCanEmpty'); return; }
+      this.farmWork(J.water.seconds, 'water', s, () => { G.waterTree(s.p, where); this.say('treeWatered'); this.refreshTrees(true); FUP.save.write(); });
+      return;
+    }
+    FUP.audio.sfx('click');
+    this.say(look === 'fruiting' ? 'treeFruiting' : 'treeGrowing', { item: G.timeText(G.treeLeft(s.p)) });
+  },
+  // 💧 / ✨ over each fruit tree, and its picture when it grows (a stage or a batch of fruit)
+  refreshTrees(force = false) {
+    const G = FUP.garden, T = FUP.villageData.tileSize, trees = G.trees().filter(p => FUP.place.zone(p.zone).where.region === 'village');
+    const pics = trees.map(p => p.uid + ':' + G.treeSprite(p)).join('|'), sig = pics + '#' + trees.map(p => G.treeLook(p)).join('|');
+    if (!force && sig === this._treeSig) return;
+    if (this._treePics !== undefined && pics !== this._treePics) FUP.buildUi.drawPlaced(this, 'village');   // a tree grew: new picture
+    this._treeSig = sig; this._treePics = pics;
+    (this.treeIcons || []).forEach(o => { this.tweens.killTweensOf(o); o.destroy(); });
+    this.treeIcons = trees.map(p => {
+      const b = FUP.buildUi.box(p, T), look = G.treeLook(p);
+      const icon = FUP.ui.text(this, b.x + b.w - 6, b.y - T * 0.6, { thirsty: '💧', ripe: '✨' }[look] || '', 14, FUP.ui.colors.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(5200);
+      this.tweens.add({ targets: icon, y: icon.y - 4, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      return icon;
+    });
+  },
+
   // Pour the watering can into a sprinkler (F-C, v0.91)
   fillSprinkler(s) {
     const G = FUP.garden, n = G.fillSprinkler(s.p);
@@ -182,6 +224,7 @@ Object.assign(VillageScene.prototype, {
         if (r.seed) this.sayLine(this.narratorText.text + ` You also got a ${ing.short || ing.name} seed back.`);
         if (r.golden) this.sayLine(this.narratorText.text + ' And a golden Heartroot. Golden Harvest says hi.');
         if (r.scared) this.sayLine(this.narratorText.text + ' The scarecrow got you one extra. It takes no credit. It has no mouth.');
+        if (r.giant) this.sayLine(this.narratorText.text + ' From one giant. It took some lifting.');
         if (r.buzzed) this.sayLine(this.narratorText.text + ' The bees chipped in one more. They expect nothing. They\'ll sting you anyway.');
       }); break;
       case 'plant': this.openSeeds(fresh); break;

@@ -556,6 +556,17 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
         btn2: `×5`, fn2: buy(5),
       };
     });
+    // Fruit tree saplings (F-D, v0.92): 2x2, placed with 🔨 Build on your land
+    for (const [id, it] of Object.entries(FUP.placeData.items).filter(([, it]) => it.sapling)) {
+      const P = FUP.place, price = P.price(id, 1, 'seeds'), missing = FUP.req.missing(it.req), td = D.trees[it.tree], have = P.total(id);
+      rows.push({
+        pic: 'tree_' + it.tree + '_3', emoji: it.emoji, name: `${it.name} sapling${have ? `  ×${have}` : ''}`,
+        sub: missing.length ? `🔒 Needs ${missing.join(', ')}` : `2x2, plant it with 🔨 Build · ${Math.round(td.growSeconds / 3600)} h to grow, then fruit every ${Math.round(td.fruitSeconds / 3600)} h`,
+        subColor: missing.length ? c.dim : c.info,
+        btn: `${price} 🪙`, disabled: !!missing.length || run.coins < price,
+        fn: () => { const r = P.buy(id, 1, 'seeds'); if (r === 'ok') { FUP.audio.sfx('coins'); this.talk('bought'); this.say('saplingBought'); } else this.talk('broke'); },
+      });
+    }
     rows.unshift(this.toolRow('can'));   // the watering can (G2, data/tools.js)
     this.pRows(rows, X, 90, RW, 8, 48);
     this.pText(X, 520, `Pouch: ${G.seedTotal()} seeds. A harvest gives a seed back ${Math.round(G.seedBack() * 100)}% of the time.`, 12, c.dim);

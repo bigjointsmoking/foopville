@@ -55,6 +55,9 @@ FUP.ingredients = {
   // v0.81 quest crops (data/garden.js): Bitterroot from Grandmother's Soup, Sea Kale from Never Seen the Sea
   bitterroot: { name: 'Bitterroot', short: 'Bitterroot', emoji: '🫚', color: '#8a6a3a', rarity: 'Uncommon', sell: 5, source: 'Farm' },
   sea_kale:   { name: 'Sea Kale', short: 'Sea Kale', emoji: '🥬', color: '#5a9a8a', rarity: 'Common', sell: 6, source: 'Farm' },
+  // v0.92 fruit from your own fruit trees (Farming 2.0 F-D, data/garden.js trees). Names are Jesus's picks; numbers PLACEHOLDERS.
+  grumbleplum: { name: 'Grumbleplum', short: 'Plum', emoji: '🫐', color: '#6a3a7a', rarity: 'Uncommon', sell: 8, source: 'Farm' },
+  sourapple:   { name: 'Sourapple', short: 'Sourapple', emoji: '🍏', color: '#8ac04a', rarity: 'Uncommon', sell: 12, source: 'Farm' },
   grumpy_lemon: { // back 2026-11-09 as a farm-only crop (data/garden.js)
     name: 'Grumpy Lemon', short: 'Lemon', emoji: '🍋', rarity: 'Common', sell: 7, source: 'Farm', price: 5,
   },

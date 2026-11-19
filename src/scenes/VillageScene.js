@@ -375,6 +375,22 @@ class VillageScene extends Phaser.Scene {
     return null;
   }
 
+  // A fruit tree right next to you (F-D, v0.92): water it / pick its fruit / see how long. Or null.
+  treeSpot() {
+    const G = FUP.garden, T = FUP.villageData.tileSize;
+    for (const p of G.trees()) {
+      const z = FUP.place.zone(p.zone);
+      if (!z || z.where.region !== 'village') continue;
+      const b = FUP.buildUi.box(p, T);
+      const dx = Math.max(b.x - this.player.x, 0, this.player.x - (b.x + b.w)), dy = Math.max(b.y - this.player.y, 0, this.player.y - (b.y + b.h));
+      if (Math.hypot(dx, dy) >= 30) continue;
+      const look = G.treeLook(p), t = G.treeState(p);
+      const label = look === 'ripe' ? `🧺 Pick (${t.fruit})` : look === 'thirsty' ? (G.state.can > 0 ? '💧 Water tree' : 'Can empty') : `🌳 ${G.timeText(G.treeLeft(p))}`;
+      return { kind: 'tree', p, label, x: b.x + b.w / 2, y: b.y + 10 };
+    }
+    return null;
+  }
+
   // The thing you're standing next to (or null).
   nearest() {
     let best = null, bestD = FUP.villageData.interactDistance;
@@ -385,6 +401,8 @@ class VillageScene extends Phaser.Scene {
     const f = this.nearestFarm();   // a patch under your feet wins over everything
     const spr = this.sprinklerSpot();   // ...except that standing on grass next to a sprinkler, Fill beats Till
     if (spr && (!f || f.spot.kind === 'till')) return spr;
+    const tree = this.treeSpot();   // same for a fruit tree
+    if (tree && (!f || f.spot.kind === 'till')) return tree;
     if (f && (f.dist < bestD || f.dist === 0 || !best)) return f.spot;
     if (best) return best;
     // Your food stall, if you're standing right next to it
@@ -459,6 +477,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'saw') { this.sawPlank(s); return; }
     if (s.kind === 'stall') { this.openStall(s.uid); return; }
     if (s.kind === 'sprinkler') { this.fillSprinkler(s); return; }
+    if (s.kind === 'tree') { this.treeUse(s); return; }
     if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
     if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }

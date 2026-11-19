@@ -44,7 +44,7 @@ FUP.garden = {
   // Gardening perks (data/unlocks.js): a bigger can, more seeds back
   canMax() { return FUP.unlocks.perkBest('canMax', FUP.gardenData.canMax) + FUP.unlocks.perkSum('canBonus'); },   // + the watering can tool (G2)
   seedBack() { return FUP.unlocks.perkBest('seedBack', FUP.gardenData.seedBackChance); },
-  fresh() { return { s: 'weeds', crop: null, need: 0, stage: 0, grown: 0, wet: false, dry: 0, wilt: false, dead: false, yield: 0, left: 0, paid: false, idle: 0, scared: false }; },
+  fresh() { return { s: 'weeds', crop: null, need: 0, stage: 0, grown: 0, wet: false, dry: 0, wilt: false, dead: false, yield: 0, left: 0, paid: false, idle: 0, scared: false, giantTried: false, giantOf: null, giant: false }; },
 
   // Every patch on the village map: [{ tx, ty, ch, key }] = the starting patches (map letters) you haven't
   // flattened, plus the soil you tilled yourself (v0.87). ch = whose land it is.
@@ -275,6 +275,7 @@ FUP.garden = {
   // The first pick can also give a seed back (seedBackChance).
   harvest(tx, ty, where, rng = Math.random) {
     const p = this.at(tx, ty);
+    if (p.giantOf) return this.harvestGiant(p.giantOf, where);   // part of a giant crop (F-D)
     if (this.look(p) !== 'ready') return null;
     const id = p.crop;
     // A scarecrow nearby (v0.70): sometimes one extra
@@ -322,6 +323,8 @@ FUP.garden = {
     let changed = false;
     for (const [key, p] of Object.entries(this.state.patches)) if (this.advance(p, dt, away, key)) changed = true;
     if (this.barrelWater()) changed = true;
+    if (this.treeTick(now)) changed = true;    // fruit trees (F-D)
+    if (this.giantCheck()) changed = true;     // giant crops (F-D)
     return changed;
   },
 
@@ -358,6 +361,105 @@ FUP.garden = {
     }
     return any;
   },
+
+  // ---------- Fruit trees (F-D, v0.92; data/garden.js trees) ----------
+  // A tree's state lives on its placed thing (data/place.js *_tree), so it moves with it in Build mode:
+  //   p.tree = { stage (0..treeStages), grown (seconds into this stage or batch), wet, fruit (ready to pick), at (last clock check) }
+  trees() { return FUP.place && FUP.place.state ? FUP.place.state.placed.filter(p => { const it = FUP.place.item(p.item); return it && it.tree; }) : []; },
+  treeDef(p) { return FUP.gardenData.trees[FUP.place.item(p.item).tree]; },
+  treeState(p) { if (!p.tree) p.tree = { stage: 0, grown: 0, wet: false, fruit: 0, at: Date.now() }; return p.tree; },
+  // 'thirsty' | 'growing' | 'fruiting' (grown, making fruit) | 'ripe' (fruit to pick)
+  treeLook(p) {
+    const t = this.treeState(p);
+    if (t.fruit > 0) return 'ripe';
+    return t.wet ? (t.stage >= FUP.gardenData.treeStages ? 'fruiting' : 'growing') : 'thirsty';
+  },
+  // Seconds until the next stage / batch, if it's watered
+  treeLeft(p) {
+    const t = this.treeState(p), d = this.treeDef(p), G = FUP.gardenData;
+    return Math.max(0, Math.ceil((t.stage >= G.treeStages ? d.fruitSeconds : d.growSeconds / G.treeStages) - t.grown));
+  },
+  // Real time passes for every tree (each keeps its own clock, t.at, so time while the game was closed counts).
+  // Watered trees grow; dry ones just wait. Returns true if one changed.
+  treeTick(now = Date.now(), rng = Math.random) {
+    let changed = false;
+    const G = FUP.gardenData;
+    for (const p of this.trees()) {
+      const t = this.treeState(p), d = this.treeDef(p), dt = Math.max(0, (now - (t.at || now)) / 1000);
+      t.at = now;
+      if (!t.wet || t.fruit > 0 || dt <= 0) continue;
+      t.grown += dt;
+      const need = t.stage >= G.treeStages ? d.fruitSeconds : d.growSeconds / G.treeStages;
+      if (t.grown < need) continue;
+      t.grown = 0; t.wet = false; changed = true;
+      if (t.stage < G.treeStages) t.stage++;
+      else t.fruit = d.fruitMin + Math.floor(rng() * (d.fruitMax - d.fruitMin + 1));
+    }
+    return changed;
+  },
+  // Water a thirsty tree from your can (Gardening XP). Returns true if done.
+  waterTree(p, where) {
+    const t = this.treeState(p);
+    if (this.treeLook(p) !== 'thirsty' || this.state.can <= 0) return false;
+    this.state.can--; t.wet = true;
+    this.xp(this.treeDef(p).waterXp, where);
+    return true;
+  },
+  // Pick the fruit into your backpack (what doesn't fit stays on the tree). XP once per batch.
+  pickTree(p, where) {
+    const t = this.treeState(p), d = this.treeDef(p);
+    if (t.fruit <= 0) return null;
+    let got = 0;
+    while (t.fruit > 0 && FUP.run.addToBag(d.fruit)) { t.fruit--; got++; }
+    if (got && !t.paid) { t.paid = true; this.xp(d.pickXp, where); }
+    if (t.fruit <= 0) t.paid = false;
+    return { id: d.fruit, got, left: t.fruit };
+  },
+  // Its picture: tree_<id>_0 sapling · _1 young (stages 1-2) · _2 grown · _3 grown with fruit
+  treeSize(p) { return FUP.gardenData.treeSizes[Number(this.treeSprite(p).slice(-1))] || 1; },
+  treeSprite(p) {
+    const t = this.treeState(p), id = FUP.place.item(p.item).tree;
+    return `tree_${id}_${t.fruit > 0 ? 3 : t.stage >= FUP.gardenData.treeStages ? 2 : t.stage >= 1 ? 1 : 0}`;
+  },
+
+  // ---------- Giant crops (F-D, v0.92; data/garden.js giant) ----------
+  // A patch key's 3x3 squares that it could anchor (top-left corners whose square contains it)
+  giantCheck(rng = Math.random) {
+    const G = FUP.gardenData, gd = G.giant;
+    if (!gd) return false;
+    let changed = false;
+    for (const [key, p] of Object.entries(this.state.patches)) {
+      if (p.giantTried || p.giantOf || this.look(p) !== 'ready' || !gd.crops.includes(p.crop) || p.paid) continue;
+      const [tx, ty] = key.split(',').map(Number);
+      for (let ox = -2; ox <= 0 && !p.giantTried; ox++) for (let oy = -2; oy <= 0 && !p.giantTried; oy++) {
+        const keys = [];
+        for (let y = 0; y < 3; y++) for (let x = 0; x < 3; x++) keys.push((tx + ox + x) + ',' + (ty + oy + y));
+        const all = keys.map(k => this.state.patches[k]);
+        if (!all.every((q, i) => q && !q.giantTried && !q.giantOf && !q.paid && q.crop === p.crop && this.look(q) === 'ready' && this.isPatch(...keys[i].split(',').map(Number)))) continue;
+        all.forEach(q => { q.giantTried = true; });   // one roll per square
+        if (rng() >= gd.chance) continue;
+        const anchor = keys[0];
+        all.forEach(q => { q.giantOf = anchor; });
+        Object.assign(this.state.patches[anchor], { giant: true, left: gd.worth });
+        changed = true;
+      }
+    }
+    return changed;
+  },
+  // Pick a giant crop (anchor key). All 9 patches go back to soil once it's all picked.
+  harvestGiant(anchor, where) {
+    const a = this.state.patches[anchor];
+    if (!a || !a.giant) return null;
+    const id = a.crop;
+    let got = 0;
+    while (a.left > 0 && FUP.run.addToBag(id)) { a.left--; got++; }
+    if (got && !a.paid) { a.paid = true; this.xp(FUP.gardenData.crops[id].harvestXp * FUP.gardenData.giant.xpTimes, where); }
+    const left = a.left;
+    if (left <= 0) for (const [k, q] of Object.entries(this.state.patches)) if (q.giantOf === anchor) Object.assign(q, this.fresh(), { s: 'soil' });
+    return { id, got, left, giant: true };
+  },
+  // The 9 keys of a giant crop (for drawing)
+  giantParts(anchor) { return Object.keys(this.state.patches).filter(k => this.state.patches[k].giantOf === anchor); },
 
   // ---------- Sprinklers (F-C, v0.91) ----------
   sprinklerTank(p) { return p.tank || 0; },

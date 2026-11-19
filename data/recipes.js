@@ -104,6 +104,11 @@ FUP.recipeData = {
     { level: 10, name: "Grandmother's Soup", ids: ['grumpleberry', 'tear_jerk_onion', 'bitterroot'], method: 'boil', xp: 60, heal: 50, buffs: [{ stat: 'def', pct: 0.10, turns: 3 }], throw: 10, sell: 18, secret: true, noRiddle: true,
       hint: 'A family recipe. The Old-timer remembers how it tasted.' },
     // Sea Kale: Pip sells the seeds after Never Seen the Sea
+    // v0.92 fruit-tree recipes (Farming 2.0 F-D). Names and numbers are PLACEHOLDERS for Jesus.
+    { level: 14, name: 'Grumbleplum Jam',     ids: ['grumbleplum', 'grumbleplum'], method: 'boil', xp: 72, heal: 34, throw: 8, sell: 24 },
+    { level: 19, name: 'Plum-Glazed Jerky',   ids: ['grumbleplum', 'squirrel_jerky'], method: 'grill', xp: 96, heal: 30, buffs: [{ stat: 'atk', pct: 0.10, turns: 3 }], throw: 10, sell: 20 },
+    { level: 26, name: 'Sourapple Slaw',      ids: ['sourapple', 'tear_jerk_onion', 'sea_kale'], method: 'raw', xp: 140, heal: 40, buffs: [{ stat: 'spd', pct: 0.10, turns: 3 }], throw: 10, sell: 35 },
+    { level: 33, name: 'Sourapple Crumble',   ids: ['sourapple', 'sourapple', 'flour', 'grumpleberry'], method: 'bake', xp: 170, heal: 80, throw: 16, sell: 48 },
     { level: 12, name: 'Sea Kale Broth',    ids: ['sea_kale', 'salty_sardine'], method: 'boil', xp: 64, heal: 34, throw: 10, sell: 17 },
   ],
 
@@ -126,6 +131,8 @@ FUP.recipeData = {
     dock_herring: { heal: 7 }, regret_snapper: { heal: 8 }, bashful_flounder: { heal: 9 }, sarcastic_mackerel: { heal: 11 }, grudge_tuna: { heal: 12 }, letter_opener: { heal: 13 },
     glowcap_mushroom:     { heal: 6 },
     heartroot:            { heal: 20 },
+    grumbleplum:          { heal: 8 },    // v0.92 fruit trees
+    sourapple:            { heal: 10 },
     tear_jerk_onion:      { heal: 3 },
     squirrel_jerky:       { buff: { stat: 'atk', pct: 0.05, turns: 3 } },
     dragons_sneeze_chili: { buff: { stat: 'atk', pct: 0.08, turns: 3 }, hpCost: 2 },

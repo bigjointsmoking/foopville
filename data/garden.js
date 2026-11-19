@@ -102,6 +102,22 @@ FUP.gardenData = {
   // Next to your Cottage. Put in burnt food or any ingredient. Every `perBatch` items start a batch
   // that turns into 1 Compost after `minutes` (real time, like crops). Use Compost when planting:
   // that crop grows `growFaster` faster and gives `bonusYield` more.
+  // ---------- Fruit trees (Farming 2.0 F-D, v0.92, Jesus: 2 days to grow, fruit every 4 hours, never dies) ----------
+  // A tree is a 2x2 thing you place (data/place.js *_tree, sapling bought from Pip). REAL TIME, like crops.
+  // It needs one watering per growth stage, then one per batch of fruit. Dry = it just waits (never wilts or dies).
+  // A new batch only starts once you've picked the last one. Levels, XP and fruit counts are PLACEHOLDERS (sapling prices: data/place.js).
+  treeStages: 3,
+  treeSizes: [0.45, 0.7, 1, 1],   // picture width per tree_<id>_<n> (sapling, young, grown, with fruit) as a share of its 2 squares
+  trees: {
+    grumbleplum: { fruit: 'grumbleplum', level: 12, growSeconds: 2 * 24 * 3600, fruitSeconds: 4 * 3600, fruitMin: 3, fruitMax: 5, waterXp: 4, pickXp: 30 },
+    sourapple:   { fruit: 'sourapple',   level: 22, growSeconds: 2 * 24 * 3600, fruitSeconds: 4 * 3600, fruitMin: 3, fruitMax: 5, waterXp: 6, pickXp: 55 },
+  },
+
+  // ---------- Giant crops (Farming 2.0 F-D, v0.92, Jesus: big veg, 5%) ----------
+  // 9 of the same crop in a 3x3 square, all ready at once: one roll per square (when the last one ripens).
+  // A hit merges them into one giant worth `worth` crops (instead of the 9 patches' own yields).
+  giant: { crops: ['tear_jerk_onion', 'dragons_sneeze_chili', 'grumpy_lemon', 'ember_pepper', 'heartroot'], chance: 0.05, worth: 15, xpTimes: 9 },
+
   compost: { spot: { tx: 2, ty: 16 }, perBatch: 3, minutes: 10, growFaster: 0.25, bonusYield: 1 },
 
   // ---------- The big farm (south of the village) ----------
