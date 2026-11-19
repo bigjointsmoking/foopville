@@ -5,6 +5,7 @@
 //   FUP.log.entries(pageId)   [{ key, id, name, emoji, sprite, hint, got, count, extra }]
 //   FUP.log.counts(pageId)    { got, total }      FUP.log.total()  { got, total }
 //   FUP.log.backfill()        fill entries for things a save already had (no pop-ups)
+//   FUP.log.prizes()          give any milestone reward you've reached and not had yet (data/log.js rewards)
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -107,6 +108,53 @@ FUP.log = {
     const cooked = (FUP.cooking && FUP.cooking.cookbook && FUP.cooking.cookbook.cooked) || {};
     for (const r of FUP.recipeData.list) if (cooked[r.name]) mark('recipe:' + FUP.cooking.recipeId(r));
     for (const id of Object.keys((FUP.world && FUP.world.state.seen) || {})) if (id !== 'village') mark('region:' + id);
+    this.prizes();   // a save already past a milestone gets it now (its pop-up waits for the next play screen)
+  },
+
+  // ---------- Milestone rewards (coins, titles + trophies, hats). Each once per life. ----------
+  prizes() {
+    const R = this.D().rewards, F = FUP.facts, out = [];
+    const say = (form, v) => form.replace(/\{(\w+)\}/g, (m, k) => v[k] !== undefined ? v[k] : m);
+    for (const p of this.D().pages) {
+      const k = this.counts(p.id), pct = k.total ? k.got / k.total * 100 : 0;
+      for (const m of R.page) {
+        const key = `logPrize:${p.id}:${m.at}`;
+        if (pct < m.at || F.has(key)) continue;
+        F.set(key, 1);
+        FUP.run.coins += m.coins;
+        out.push(say(R.text.page, { emoji: p.emoji, page: p.name, at: m.at, coins: m.coins }));
+      }
+      const done = R.done[p.id];
+      if (done && k.total && k.got === k.total && !F.has(`logDone:${p.id}`)) {
+        F.set(`logDone:${p.id}`, 1);   // unlocks the title (its req reads this fact)
+        const P = FUP.placeData && FUP.placeData.items[done.place];
+        if (P && FUP.place) FUP.place.state.owned[done.place] = (FUP.place.state.owned[done.place] || 0) + 1;
+        const T = FUP.cosmeticData && FUP.cosmeticData.titles[done.title];
+        out.push(say(R.text.done, { emoji: p.emoji, page: p.name, title: T ? T.text : done.title, trophy: P ? `${P.emoji} ${P.name}` : done.place }));
+      }
+    }
+    const T = this.total(), all = T.total ? T.got / T.total * 100 : 0;
+    for (const m of R.all) {
+      const key = `logPrize:all:${m.at}`;
+      if (all < m.at || F.has(key)) continue;
+      F.set(key, 1);
+      if (FUP.cosmetics) FUP.cosmetics.own(m.hat);
+      const H = FUP.cosmeticData && FUP.cosmeticData.hats[m.hat];
+      out.push(say(R.text.all, { at: m.at, hat: H ? `${H.emoji} ${H.name}` : m.hat }));
+    }
+    for (const text of out) this.news.push({ prize: true, text });
+    if (out.length) this.showNext();
+    return out;
+  },
+  // What the next reward is, for the window: { page: '25% = 100 🪙' or 'done', all: '25% = 🗞️ Paper Crown' or null }
+  nextPrize(pageId) {
+    const R = this.D().rewards, k = this.counts(pageId), pct = k.total ? k.got / k.total * 100 : 0;
+    const m = R.page.find(x => pct < x.at), done = R.done[pageId], T = FUP.cosmeticData && done && FUP.cosmeticData.titles[done.title];
+    const P = done && FUP.placeData && FUP.placeData.items[done.place];
+    const page = m ? `${m.at}% (${Math.ceil(k.total * m.at / 100)} found) = ${m.coins} 🪙` : k.got < k.total ? `100% = title "${T ? T.text : ''}" + ${P ? P.emoji + ' ' + P.name : 'a trophy'}` : null;
+    const t = this.total(), allPct = t.total ? t.got / t.total * 100 : 0, a = R.all.find(x => allPct < x.at);
+    const H = a && FUP.cosmeticData && FUP.cosmeticData.hats[a.hat];
+    return { page, all: a ? `${a.at}% = ${H ? H.emoji + ' ' + H.name : a.hat}` : null };
   },
 
   // ---------- "New in your log" pop-ups ----------
@@ -117,6 +165,7 @@ FUP.log = {
     if (!e) return;
     this.news.push(e);
     this.showNext();
+    this.prizes();
   },
   // The screen to draw on: whichever play screen is running (not the title or loading)
   screen() {
@@ -130,8 +179,10 @@ FUP.log = {
     const e = this.news.shift(), P = this.D().popup;
     this.showing = true;
     FUP.logUi.popup(s, e);
-    if (FUP.audio) FUP.audio.sfx(P.sound);
+    if (FUP.audio) FUP.audio.sfx(e.prize ? this.D().rewards.sound : P.sound);
     setTimeout(() => { this.showing = false; this.showNext(); }, (P.seconds + P.gap) * 1000);
   },
 };
 if (FUP.facts && FUP.facts.onFact) FUP.facts.onFact((key, n, old) => FUP.log.noticed(key, n, old));
+// Pop-ups that came while no play screen was up (loading a save, the title screen) show once one is
+if (typeof setInterval === 'function') setInterval(() => { if (FUP.log.news.length) FUP.log.showNext(); }, 1000);

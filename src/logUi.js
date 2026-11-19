@@ -9,7 +9,7 @@ FUP.logUi = {
   // The pop-up: a small card under the top bar of whatever screen is running
   popup(scene, e) {
     const ui = FUP.ui, c = ui.colors, W = scene.scale.width, P = FUP.logData.popup, Z = 32000;
-    const text = P.text.replace('{emoji}', e.emoji || '').replace('{name}', e.secret ? e.name : e.name);
+    const text = e.text || P.text.replace('{emoji}', e.emoji || '').replace('{name}', e.name);   // prizes bring their own text
     const t = ui.text(scene, W / 2, 96, text, 16, c.ink, { fontStyle: '700' }).setOrigin(0.5).setScrollFactor(0).setDepth(Z + 1);
     const w = Math.max(220, t.width + 40);
     const box = ui.panel(scene, W / 2 - w / 2, 76, w, 40, 'panel').setScrollFactor(0).setDepth(Z);
@@ -76,7 +76,8 @@ FUP.logUi = {
 
       // The line at the bottom: what you tapped
       const sel = es.find(e => e.key === picked);
-      let line = 'Tap anything to see what it is and where to find it.';
+      const nx = L.nextPrize(cur);
+      let line = `Next reward: ${nx.page || 'page complete ✔'}${nx.all ? '  ·  Whole log ' + nx.all : ''}\nTap anything to see what it is and where to find it.`;
       if (sel) {
         const name = sel.got || !sel.secret ? sel.name : 'A secret recipe';
         const counted = sel.got && ['creatures', 'fish', 'dishes'].includes(cur) && sel.count > 1 ? ` · ${{ creatures: 'defeated', fish: 'caught', dishes: 'cooked' }[cur]} ${sel.count}` : '';

@@ -3,7 +3,8 @@
 // Rules: src/systems/log.js · Window: src/logUi.js (📖 Log in the backpack).
 // Each page lists entries built from the game's own data; an entry fills when its fact is
 // first written (src/systems/facts.js). Per life, like facts: Hardcore wipes it, Normal keeps it.
-// Milestone rewards: not built yet (options go to Jesus first).
+// Milestone rewards (Jesus 2026-11-19: coins, titles, hats; design/collection.md section 2): given the moment
+// you cross them, with a pop-up. Never combat power.
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -40,4 +41,21 @@ FUP.logData = {
   // The "New in your log" pop-up
   popup: { text: '📖 New in your log: {emoji} {name}', seconds: 2.4, sound: 'questStep', gap: 0.5 },
   perScreen: 32,   // entries per page of the window (8 x 4)
+
+  // ---------- Rewards (each given once per life; remembered as facts 'logPrize:<page>:<at>' / 'logDone:<page>') ----------
+  rewards: {
+    page: [{ at: 25, coins: 100 }, { at: 50, coins: 300 }, { at: 75, coins: 800 }],   // a page this % full
+    // A full page: its title (data/cosmetics.js titles, unlocked by fact 'logDone:<page>') + a trophy to place (data/place.js)
+    done: {
+      ingredients: { title: 'log_forager',  place: 'golden_basket' },
+      dishes:      { title: 'log_chef',     place: 'golden_ladle' },
+      fish:        { title: 'log_angler',   place: 'mounted_fish' },
+      creatures:   { title: 'log_pest',     place: 'stuffed_squirrel' },
+      drops:       { title: 'log_lucky',    place: 'lucky_case' },
+      areas:       { title: 'log_explorer', place: 'explorer_globe' },
+    },
+    all: [{ at: 25, hat: 'paper_crown' }, { at: 50, hat: 'explorer_cap' }, { at: 75, hat: 'laurel' }, { at: 100, hat: 'halo' }],   // the whole log
+    sound: 'questDone',
+    text: { page: '{emoji} {page} {at}% in your log: +{coins} 🪙', done: '{emoji} {page} complete! Title "{title}" + {trophy} (place it with 🔨 Build)', all: '📖 Log {at}% complete! New hat: {hat} (🎒 Wardrobe)' },
+  },
 };

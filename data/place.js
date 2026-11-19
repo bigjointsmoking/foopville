@@ -56,6 +56,13 @@ FUP.placeData = {
     fancy_bed:  { name: 'Four-Poster Bed', emoji: '🛏️', kind: 'furniture', w: 2, h: 2, solid: true, zones: ['home'], req: { skills: { building: 18 } }, act: { label: '🛏️ Bed', bed: true }, cost: { coins: 3600, items: { plank: 12 } }, blurb: 'Sleep like royalty. Wake up like you.' },
     // Boss trophies (G1): only from boss chase drops (data/gear.js bossDrops). noShop = never sold anywhere.
     golden_perch:  { name: 'Golden Perch', emoji: '🏆', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'The Godfather sat here. Now you do. Well, a pigeon does.' },
+    // Collection log trophies (E2): a full page of the log (data/log.js rewards.done). PLACEHOLDER looks (emoji).
+    golden_basket:    { name: 'Golden Basket', emoji: '🧺', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every ingredient, gathered. The basket is the only thing you never ate.' },
+    golden_ladle:     { name: 'Golden Ladle', emoji: '🥄', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every dish, cooked. Marrowbone pretends not to be jealous.' },
+    mounted_fish:     { name: 'Mounted Fish', emoji: '🐟', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every fish, caught. This one still looks annoyed about it.' },
+    stuffed_squirrel: { name: 'Stuffed Squirrel', emoji: '🐿️', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every creature, beaten. The squirrels have started a memorial fund.' },
+    lucky_case:       { name: 'Lucky Display Case', emoji: '💎', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every rare drop. Statistically, you should not exist.' },
+    explorer_globe:   { name: "Explorer's Globe", emoji: '🌍', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'log', blurb: 'Every area, visited. The globe is mostly Foopville. That is accurate.' },
     framed_warning: { name: 'Framed Last Warning', emoji: '📜', kind: 'building', w: 1, h: 1, solid: true, zones: ['plot'], noShop: true, source: 'boss', blurb: 'You broke the warning. Then you framed it.' },
     // Farm helpers (v0.70): put them near your patches. helper.kind = what they do (src/systems/garden.js), radius in squares.
     //   scarecrow: chance of one extra crop at harvest · barrel: waters thirsty crops by itself, `water` times a day
