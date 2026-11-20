@@ -567,6 +567,7 @@ class WorldScene extends Phaser.Scene {
   }
 
   refreshHud() {
+    if (FUP.animals.news.length && !this.panel && this.sayLine) FUP.animals.takeNews().forEach(l => this.sayLine(l));   // your farm animals, while you're out (F-E)
     const run = FUP.run, c = FUP.ui.colors;
     const hp = run.currentHp(), max = run.maxHp();
     this.hpBar.set(hp / max);

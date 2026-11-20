@@ -56,6 +56,12 @@ FUP.ingredients = {
   bitterroot: { name: 'Bitterroot', short: 'Bitterroot', emoji: '🫚', color: '#8a6a3a', rarity: 'Uncommon', sell: 5, source: 'Farm' },
   sea_kale:   { name: 'Sea Kale', short: 'Sea Kale', emoji: '🥬', color: '#5a9a8a', rarity: 'Common', sell: 6, source: 'Farm' },
   // v0.92 fruit from your own fruit trees (Farming 2.0 F-D, data/garden.js trees). Names are Jesus's picks; numbers PLACEHOLDERS.
+  // Farming 2.0 F-E (v0.99.4): animal feed crops and animal produce. Names are PLACEHOLDERS.
+  grumblegrain: { name: 'Grumblegrain', short: 'Grain', emoji: '🌾', color: '#c8a850', rarity: 'Common', sell: 2, source: 'Farm', feed: true },   // chicken feed (feed: true = for animals, not the pot)
+  meadow_hay:   { name: 'Meadow Hay', short: 'Hay', emoji: '🌿', color: '#9ab050', rarity: 'Common', sell: 3, source: 'Farm', feed: true },       // cow feed
+  egg:          { name: 'Grumpy Egg', short: 'Egg', emoji: '🥚', color: '#f0e6c8', rarity: 'Common', sell: 4, source: 'Farm' },
+  milk:         { name: 'Cow Milk', short: 'Milk', emoji: '🥛', color: '#f4f0e8', rarity: 'Uncommon', sell: 8, source: 'Farm' },
+  honey:        { name: 'Unionised Honey', short: 'Honey', emoji: '🍯', color: '#e0a030', rarity: 'Uncommon', sell: 10, source: 'Farm' },
   grumbleplum: { name: 'Grumbleplum', short: 'Plum', emoji: '🫐', color: '#6a3a7a', rarity: 'Uncommon', sell: 8, source: 'Farm' },
   sourapple:   { name: 'Sourapple', short: 'Sourapple', emoji: '🍏', color: '#8ac04a', rarity: 'Uncommon', sell: 12, source: 'Farm' },
   grumpy_lemon: { // back 2026-11-09 as a farm-only crop (data/garden.js)

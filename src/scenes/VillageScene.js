@@ -278,6 +278,8 @@ class VillageScene extends Phaser.Scene {
     this.refreshQuestMarks();
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
+    FUP.animalUi.marks(this, 'village');  // 😟 / ✨ / 💀 over coops, barns and hives (F-E)
+    if (FUP.animals.news.length && !this.panel) FUP.animals.takeNews().forEach(l => this.sayLine(l));   // hungry / starving / died / the farmhand
     if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back
     const ts = JSON.stringify(FUP.fishing.state.traps.map(t => [t.region, t.tx, t.ty, t.fish.length]));
     if (ts !== this.trapSig && !this.panel) { this.trapSig = ts; FUP.trapUi.draw(this, 'village', FUP.villageMap); }   // a trap caught something
@@ -403,6 +405,8 @@ class VillageScene extends Phaser.Scene {
     if (spr && (!f || f.spot.kind === 'till')) return spr;
     const tree = this.treeSpot();   // same for a fruit tree
     if (tree && (!f || f.spot.kind === 'till')) return tree;
+    const animal = FUP.animalUi.spot(this);   // a coop, barn or beehive (F-E)
+    if (animal && (!f || f.spot.kind === 'till')) return animal;
     if (f && (f.dist < bestD || f.dist === 0 || !best)) return f.spot;
     if (best) return best;
     // Your food stall, if you're standing right next to it
@@ -478,6 +482,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'stall') { this.openStall(s.uid); return; }
     if (s.kind === 'sprinkler') { this.fillSprinkler(s); return; }
     if (s.kind === 'tree') { this.treeUse(s); return; }
+    if (s.kind === 'animal') { this.openAnimal(s.p); return; }
     if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
     if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
@@ -525,6 +530,15 @@ class VillageScene extends Phaser.Scene {
   }
 
   // Your food stall's window (src/stallUi.js). Counts as a panel.
+  // A coop, barn or beehive (F-E, src/animalUi.js)
+  openAnimal(p) {
+    const g = FUP.animalUi.open(this, p, () => {
+      if (this.panel === g) { this.panel = null; this.panelId = null; }
+      this.refreshHud(); FUP.save.write();
+    });
+    this.panel = g; this.panelId = 'animal';
+  }
+
   openStall(uid) {
     const g = FUP.stallUi.open(this, uid, () => {
       if (this.panel === g) { this.panel = null; this.panelId = null; }

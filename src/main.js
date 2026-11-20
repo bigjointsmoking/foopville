@@ -16,6 +16,8 @@ const config = {
 // (FUP.game lets tests and the browser console reach the running game.)
 // Fish traps fill up on play time, like the food stall (src/systems/fishing.js tickTraps)
 FUP.clock.every(1, 'traps', () => FUP.fishing.tickTraps(1));
+// Farm animals (F-E): hunger on play time, produce on the real clock (src/systems/animals.js)
+FUP.clock.every(1, 'animals', () => FUP.animals.tick(1));
 
 function boot() {
   FUP.game = new Phaser.Game(config);

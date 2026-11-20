@@ -203,6 +203,13 @@ FUP.save = {
     reset: () => FUP.clock.reset(),
   });
 
+  // Farm animals (F-E): the farmhand's paid days. Each animal's own state is saved on its placed thing.
+  S.register('animals', {
+    get: () => FUP.animals.state,
+    set(d) { FUP.animals.state = { hiredUntil: d.hiredUntil || 0 }; FUP.animals.news = []; },
+    reset: () => FUP.animals.reset(),
+  });
+
   S.register('stall', {
     get: () => FUP.stall.state,
     set(d) { FUP.stall.state = { byUid: copy(d.byUid || {}) }; },

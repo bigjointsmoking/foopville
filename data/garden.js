@@ -66,6 +66,9 @@ FUP.gardenData = {
     spore_b_gone_moss:    { level: 10, growSeconds: 20 * 60, plantXp: 10, harvestXp: 32, seedPrice: 10 },
     ember_pepper:         { level: 15, growSeconds: 25 * 60, plantXp: 15, harvestXp: 50, seedPrice: 15 },
     heartroot:            { level: 20, growSeconds: 40 * 60, plantXp: 20, harvestXp: 75, seedPrice: 25 },
+    // F-E (v0.99.4): animal feed. Cheap and quick: you'll need a lot of it.
+    grumblegrain:         { level: 4,  growSeconds: 8 * 60,  plantXp: 4, harvestXp: 10, seedPrice: 2 },
+    meadow_hay:           { level: 12, growSeconds: 15 * 60, plantXp: 6, harvestXp: 16, seedPrice: 4 },
     // v0.81 quest crops: shop false = Pip never sells it (Grandmother's Soup gives the seeds); req = sold once it's met
     bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 5, harvestXp: 15,  seedPrice: 5, shop: false },
     sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 7, harvestXp: 22,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },

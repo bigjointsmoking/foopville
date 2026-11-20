@@ -366,7 +366,7 @@ FUP.villagePanels = {
       if (it.max && P.total(id) >= it.max) return { emoji: it.emoji, pic: 'place_' + id, name: it.name, sub: placed ? 'You have it, and it is on your plot.' : 'You have it. Stand on your plot and tap 🔨 Build.', subColor: c.good };
       const where = it.kind === 'ground' ? (it.zones.includes('farm') ? 'plot or farm' : 'plot') : it.kind === 'building' ? 'needs a plot slot' : 'for your room';
       const buy = n => { const r = P.buy(id, n); if (r === 'ok') { FUP.audio.sfx('coins'); this.talk('bought'); } else if (r === 'broke') this.talk('broke'); };
-      const many = it.kind === 'ground' ? FUP.placeData.buyMany : 0;
+      const many = it.kind === 'ground' && !it.max ? FUP.placeData.buyMany : 0;   // (coops and barns have a max: one at a time)
       return {
         emoji: it.emoji, pic: 'place_' + id, name: `${it.name}  (${it.w}x${it.h}, ${where})`,
         sub: missing.length ? `Needs: ${missing.join(', ')}` : `${it.blurb || ''}${have ? `  ·  You have ${have}${placed ? ` (${placed} placed)` : ''}` : ''}`,
@@ -448,6 +448,18 @@ FUP.villagePanels = {
     });
     const plots = rows.length;
     rows.unshift(this.toolRow('hoe'));   // the hoe (G2, data/tools.js)
+    // Hire Hollis to feed your farm animals (F-E, src/systems/animals.js): he feeds them from their troughs
+    const AN = FUP.animals, [d1, d2] = FUP.animalData.farmhand.offers, hireN = n => {
+      if (AN.hire(n) === 'ok') { FUP.audio.sfx('coins'); this.sayLine(`Hollis is hired for ${AN.daysHired()} game day${AN.daysHired() === 1 ? '' : 's'}. He'll feed your animals from their troughs. Keep the troughs full.`); }
+      else this.talk('broke');
+    };
+    if (AN.list().some(p => AN.feeds(p))) rows.splice(1, 0, {
+      emoji: '🧑‍🌾', pic: null, name: 'Hire Hollis to feed your animals',
+      sub: AN.hired() ? `Hired: ${AN.daysHired()} more game day${AN.daysHired() === 1 ? '' : 's'}. Feeds from the troughs, never collects.` : 'He feeds them from the trough when their food runs out. Empty trough: he can\'t.',
+      subColor: AN.hired() ? c.good : undefined,
+      btn: `${d2} days: ${AN.hirePrice(d2)} 🪙`, disabled: run.coins < AN.hirePrice(d2), fn: () => hireN(d2),
+      btn2: `${d1}: ${AN.hirePrice(d1)}`, fn2: () => hireN(d1),
+    });
     this.pRows(rows, X, 90, RW, 8, 48);
     const owned = Object.keys(FUP.gardenData.farmPlots).filter(ch => G.owns(ch)).length;
     this.pText(X, 520, `You own ${owned} of ${plots} plots. Buy them in any order. Dying loses them, like everything else.`, 12, c.dim);

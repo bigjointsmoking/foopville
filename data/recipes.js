@@ -105,6 +105,13 @@ FUP.recipeData = {
       hint: 'A family recipe. The Old-timer remembers how it tasted.' },
     // Sea Kale: Pip sells the seeds after Never Seen the Sea
     // v0.92 fruit-tree recipes (Farming 2.0 F-D). Names and numbers are PLACEHOLDERS for Jesus.
+    // Farming 2.0 F-E (v0.99.4): eggs, milk, honey. Names and numbers are PLACEHOLDERS.
+    { level: 6,  name: 'Boiled Eggs',         ids: ['egg', 'egg'], method: 'boil', xp: 38, heal: 26, throw: 6, sell: 13 },
+    { level: 9,  name: 'Egg Drop Soup',       ids: ['egg', 'glowcap_mushroom'], method: 'boil', xp: 50, heal: 30, buffs: [{ stat: 'def', pct: 0.10, turns: 3 }], throw: 6, sell: 13 },
+    { level: 12, name: 'Warm Milk',           ids: ['milk'], method: 'boil', xp: 60, heal: 32, resists: [{ element: 'poison', amount: 0.2, turns: 3 }], throw: 4, sell: 13 },
+    { level: 15, name: 'Honey-Glazed Carp',   ids: ['honey', 'sulking_carp'], method: 'grill', xp: 76, heal: 34, buffs: [{ stat: 'atk', pct: 0.12, turns: 3 }], throw: 10, sell: 22 },
+    { level: 17, name: 'Farmhouse Cheese',    ids: ['milk', 'milk', 'rock_salt'], method: 'bake', xp: 86, heal: 44, throw: 10, sell: 30 },
+    { level: 20, name: 'Honey Cake',          ids: ['honey', 'egg', 'milk'], method: 'bake', xp: 100, heal: 50, buffs: [{ stat: 'spd', pct: 0.10, turns: 3 }], throw: 8, sell: 36 },
     { level: 14, name: 'Grumbleplum Jam',     ids: ['grumbleplum', 'grumbleplum'], method: 'boil', xp: 72, heal: 34, throw: 8, sell: 24 },
     { level: 19, name: 'Plum-Glazed Jerky',   ids: ['grumbleplum', 'squirrel_jerky'], method: 'grill', xp: 96, heal: 30, buffs: [{ stat: 'atk', pct: 0.10, turns: 3 }], throw: 10, sell: 20 },
     { level: 26, name: 'Sourapple Slaw',      ids: ['sourapple', 'tear_jerk_onion', 'sea_kale'], method: 'raw', xp: 140, heal: 40, buffs: [{ stat: 'spd', pct: 0.10, turns: 3 }], throw: 10, sell: 35 },
@@ -133,6 +140,7 @@ FUP.recipeData = {
     heartroot:            { heal: 20 },
     grumbleplum:          { heal: 8 },    // v0.92 fruit trees
     sourapple:            { heal: 10 },
+    egg: { heal: 3 }, milk: { heal: 6 }, honey: { heal: 8 },   // F-E (v0.99.4)
     tear_jerk_onion:      { heal: 3 },
     squirrel_jerky:       { buff: { stat: 'atk', pct: 0.05, turns: 3 } },
     dragons_sneeze_chili: { buff: { stat: 'atk', pct: 0.08, turns: 3 }, hpCost: 2 },
