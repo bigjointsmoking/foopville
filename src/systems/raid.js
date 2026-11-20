@@ -6,15 +6,20 @@
 // ============================================================
 window.FUP = window.FUP || {};
 
-FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
+FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
   current: 'entry',
-  OPEN: '#kd<', LOCKED: '#kd<>',   // solid letters while the door ahead is open / locked
+  OPEN: '#kd<h', LOCKED: '#kd<>h',   // solid letters while the door ahead is open / locked (h = a Vault bookshelf)
 
   // Lock or unlock the ">" door (the screen calls this as enemies go down)
   setLocked(on) { this.BLOCKED = on ? this.LOCKED : this.OPEN; },
 
   // A room's data by id ('office' = the boss room)
-  room(id = this.current) { return id === 'office' ? FUP.raidData.office : FUP.raidData.rooms[id]; },
+  room(id = this.current) {
+    const D = FUP.raidData;
+    if (id === 'office') return D.office;
+    if (id === 'archive') return D.vault.archive;   // the Vault's boss room (Phase D)
+    return D.rooms[id] || D.vault.rooms[id];
+  },
   use(id) { this.current = id; },
   size() { return FUP.raidData.tileSize; },
   // Every room id of one kind ('fight' or 'hazard')
@@ -34,6 +39,35 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
     this.enter(f, 0, rng);
   },
 
+  // ---------- The Vault (Phase D, data/raid.js vault) ----------
+  // The iron door opens for the Old Key: on your key ring (The Bowl) or in your bag. Once opened it stays open.
+  canOpenVault() {
+    return FUP.facts.has('vault:open') || FUP.facts.has('key:storehouse') || ((FUP.run.bag || {}).old_key || 0) > 0;
+  },
+  // Through the door: the Vault's rooms join this trip's raid, right after the Guardian's Hall.
+  openVault(f) {
+    const R = f.raid, V = FUP.raidData.vault;
+    FUP.facts.set('vault:open', 1);
+    FUP.facts.set('region:vault', 1);
+    R.vault = true;
+    R.vaultStart = R.index + 1;
+    R.rooms = R.rooms.slice(0, R.index + 1).concat(V.order, 'archive');
+    this.enter(f, R.index + 1);
+  },
+  // Beat the Archivist: the Right Form (once per life) and a spell piece. Returns lines for the results screen.
+  vaultReward() {
+    const V = FUP.raidData.vault, out = [];
+    if (!FUP.facts.has(V.form.fact)) {
+      if (FUP.run.addToBag(V.form.item)) { FUP.facts.set(V.form.fact, 1); out.push(`📜 In what's left of its lunch: ${FUP.ingredients[V.form.item].name} (in your bag)`); }
+      else out.push(`📜 It coughs up a form, but your bag is full. Make room and beat it again.`);
+    }
+    if (FUP.spell) {
+      const r = FUP.spell.add(V.spell);
+      if (r.fresh) out.push(`✨ A piece of lost magic (${r.count}/${FUP.spell.size()}): see ✨ Spell in your 🎒 backpack`);
+    }
+    return out;
+  },
+
   // Walk into room i of the raid. Rooms are one-way, so each one starts fresh.
   enter(f, i, rng = Math.random) {
     const R = f.raid;
@@ -50,14 +84,15 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
     for (const [ch, type] of Object.entries(d.enemyLetters)) {
       for (const s of this.find(ch)) enemies.push(FUP.forest.makeEnemy(type, s, a, rng));
     }
-    // The Guardian at his desk: he waits for you
-    for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy('guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
+    // The boss at his desk (the Guardian, or the Archivist in the Vault): he waits for you
+    for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy(a.boss || 'guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
     const amb = this.find('A')[0];
     return {
       id: this.current, kind: a.kind,
       enemies, items: [],
       ambush: amb ? { ...amb, done: false } : null,
       cracked: {},          // "tx,ty" → seconds until it breaks (or 'broken')
+      read: {},             // lore pages already read in this room (Phase D)
       sporeResist: 0,       // from a Poison-resist dish eaten in this room
       player: this.besideEntrance(),
       fresh: true,
@@ -108,9 +143,11 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<'), {
         seen.add(k); queue.push({ tx: nx, ty: ny });
       }
     }
-    for (const ch of '>tsmA123xL') for (const s of this.find(ch)) if (!seen.has(s.tx + ',' + s.ty)) problems.push(`${a.name}: "${ch}" at ${s.tx},${s.ty} can't be reached`);
+    for (const ch of '>tsmbpiwuA123xL') for (const s of this.find(ch)) if (!seen.has(s.tx + ',' + s.ty)) problems.push(`${a.name}: "${ch}" at ${s.tx},${s.ty} can't be reached`);
     if (a.kind !== 'office' && this.find('>').length !== 1) problems.push(`${a.name}: needs exactly one ">" exit`);
     if (a.kind === 'office' && this.find('L').length !== 1) problems.push(`${a.name}: needs the Guardian "L"`);
+    if (a.hazard === 'shelves' && !this.find('w').length) problems.push(`${a.name}: no shelf aisle ("w")`);
+    for (const l of a.lore || []) if (this.blockedTile(l.tx, l.ty)) problems.push(`${a.name}: lore page at ${l.tx},${l.ty} is on a wall`);
     if (a.kind === 'fight' && !Object.keys(FUP.raidData.enemyLetters).some(ch => this.find(ch).length)) problems.push(`${a.name}: a fight room with no enemies`);
     if (this.blockedTile(start.tx, start.ty - 1)) problems.push(`${a.name}: the square inside the "<" door is blocked`);
     if (a.hazard === 'vents' && !'123'.split('').every(ch => this.find(ch).length)) problems.push(`${a.name}: needs vents in groups 1, 2 and 3`);

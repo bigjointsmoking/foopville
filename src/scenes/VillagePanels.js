@@ -141,7 +141,8 @@ FUP.villagePanels = {
 
     const X = 270, RW = W - 40 - X;
     if (out) { this.renderAway(X, RW); return; }
-    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, orders: this.renderOrders, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary })[this.panelId].call(this, X, RW);
+    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, orders: this.renderOrders, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary,
+       receiver: this.renderReceiver, clerk: this.renderQuests, pennywise: this.renderTownShop })[this.panelId].call(this, X, RW);   // (Phase D: Ledgerwick; the Clerk keeps the same quest board)
   },
 
   // ---------- A villager out of the village for a quest: no shop out here ----------
@@ -161,6 +162,34 @@ FUP.villagePanels = {
     const c = FUP.ui.colors;
     this.pText(X, 36, 'OFFICE OF THE BOG NOTARY', 20, c.accent, { fontStyle: '700' });
     this.pText(X, 64, 'A large, damp toad behind a small, damp desk. Nothing gets in or out of the Marsh without the right form. Nobody has the right form.', 12, c.dim, { wordWrap: { width: RW - 20 } });
+  },
+
+  // ---------- Ledgerwick (Phase D, v1.00): the Receiver (just talk for now) and Mrs. Pennywise's shop ----------
+  renderReceiver(X, RW) {
+    const c = FUP.ui.colors;
+    this.pText(X, 36, 'THE COUNTING HOUSE', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'The Resident Receiver. "R" in the old ledgers. Every village\'s money comes through this office, gets counted very politely, and goes up the mountain. He seems to think that\'s fine.', 12, c.dim, { wordWrap: { width: RW - 20 } });
+    this.pText(X, 128, 'His part of the story comes later.', 12, c.info, { fontStyle: 'italic' });
+  },
+  renderTownShop(X, RW) {
+    const c = FUP.ui.colors, run = FUP.run;
+    this.pText(X, 36, 'REPOSSESSED GOODS', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, 'Fixed prices. No haggling. Everything goes in your bag.', 12, c.dim);
+    const rows = FUP.villageData.townShop.map(({ id, price }) => {
+      const ing = FUP.ingredients[id];
+      return {
+        emoji: ing.emoji, pic: FUP.ui.ingKey(id), name: ing.name, sub: `${ing.rarity}. In your bag: ${run.bagCount(id)}.`,
+        btn: `${price} 🪙`, disabled: run.coins < price,
+        fn: () => {
+          if (run.coins < price) { this.talk('broke'); return; }
+          if (!run.addToBag(id)) { this.talk('full'); FUP.audio.sfx('error'); return; }
+          run.coins -= price;
+          FUP.audio.sfx('coins');
+          this.talk('bought');
+        },
+      };
+    });
+    this.pRows(rows, X, 92, RW, 8, 52);
   },
 
   // ---------- The Old-timer: no shop, just the bench and the statue ----------

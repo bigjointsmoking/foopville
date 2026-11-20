@@ -19,6 +19,8 @@ FUP.spellData = {
     { quest: 'tollRecords', word: 'NAME' },
     { quest: 'theBowl',     word: 'HUNGER' },
     { quest: 'oldAccounts', word: 'QUIET' },
+    { quest: 'archivist',   word: 'OWED' },     // Phase D: beat the Archivist in the Vault (src/systems/raid.js vaultReward). Word PLACEHOLDER
+    { quest: 'rightForm',   word: 'SIGNED' },   // Phase D: the quest "The Right Form" (the Bog Notary). Word PLACEHOLDER
   ],
   // What the narrator says when a piece lands (by how many you have)
   lines: [

@@ -107,6 +107,13 @@ FUP.villageData = {
     { sprite: 'vil_seedstall', tx: 18, ty: 37, dx: 20, dy: 6, label: 'SEEDS' },
   ],
 
+  // Mrs. Pennywise's Repossessed Goods in Ledgerwick (Phase D): buy only, fixed prices, no haggling. PLACEHOLDER stock + prices.
+  townShop: [
+    { id: 'croakberry', price: 15 }, { id: 'mudroot', price: 15 }, { id: 'marsh_mint', price: 36 },
+    { id: 'egg', price: 12 }, { id: 'milk', price: 24 }, { id: 'honey', price: 30 },
+    { id: 'salty_sardine', price: 12 }, { id: 'bog_truffle', price: 90 },
+  ],
+
   // The villagers. `spot` = where they stand. `sprite` = map picture, `portrait` = big picture.
   npcs: {
     // New in story Phase B (2026-11-17). Name, look and lines are PLACEHOLDERS (tinted villager picture, like the island tutors).
@@ -146,6 +153,45 @@ FUP.villageData = {
         'Next. There is no next. Form?',
         'Stamped in triplicate or not at all. Mostly not at all.',
       ],
+    },
+    // ---------- Ledgerwick, the town east of the Marsh (Phase D, v1.00, data/region_east.js) ----------
+    // They live there (no village spot). Names, looks and lines are PLACEHOLDERS (tinted villager pictures).
+    // "R": the Resident Receiver. Polite. Collects the "dues" from every village and sends it up the mountain.
+    // Honestly thinks it's all fair. His story chapter comes later (just talk for now).
+    receiver: {
+      name: 'The Resident Receiver', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '🧾', tint: 0xb8a0e0,
+      noRizzSecrets: true,
+      greet: [
+        'Ah, a visitor from Foopville! Your village is a valued account. Slightly behind, but valued.',
+        'Everything that comes in goes up the mountain. Neatly. On time. That\'s the whole job, really. It\'s a lovely job.',
+        'Dues? Oh, it\'s not dues. It\'s a contribution. A compulsory, annual, compounding contribution.',
+        'Mr. Tally! Lovely man. Couldn\'t count past forty-one without starting again. We had to let him go.',
+      ],
+    },
+    clerk: {
+      name: 'The Town Clerk', sprite: 'npc_quest_map', portrait: 'npc_quest', emoji: '🗂️', tint: 0xa0c8e0,
+      noRizzSecrets: true,
+      greet: [
+        'The board here and the board in Foopville share jobs. We share everything. Mostly your village\'s money.',
+        'Quests? We call them "voluntary tasks". You volunteer. We assign.',
+        'Sign here, here, and here. No, that\'s fine, you don\'t have to read it. Nobody does.',
+      ],
+      taken: ['Logged. Filed. Good luck. Not legally binding.', 'Your task has been received. Please do it.'],
+      done: ['Completed and countersigned. Here\'s your fee, minus nothing. This time.', 'Done? Splendid. I\'ll file it under "done".'],
+      tooMany: ['That\'s the limit. Even here we have a limit. It\'s three.'],
+      empty: ['Nothing on the board. A quiet day. We don\'t like quiet days.'],
+    },
+    pennywise: {
+      name: 'Mrs. Pennywise', sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '🏷️', tint: 0xe0b0a0,
+      noRizzSecrets: true,
+      greet: [
+        'Repossessed goods! Every one of them came from somewhere nice. Now it comes from here.',
+        'That mudroot was taken off a farmer for late fees. Very fresh. The farmer, less so.',
+        'No haggling. The prices were set by the Receiver. He was very fair to himself.',
+      ],
+      bought: ['Sold! It\'s yours now. Until someone repossesses it.', 'Lovely. No returns. No refunds. No questions.'],
+      broke: ['Not enough coins. Happens to everyone here, eventually.'],
+      full: ['Your bag is full. We can repossess some of it, if you like. That was a joke. Mostly.'],
     },
     smith: {
       name: 'The Blacksmith', spot: { tx: 3, ty: 5 }, sprite: 'npc_smith_map', portrait: 'npc_smith', emoji: '🔨',

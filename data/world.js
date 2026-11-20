@@ -55,7 +55,14 @@ FUP.worldData = {
     // East of the village over the repaired bridge (W2). Map in data/region_marsh.js
     marsh:     { name: 'Soggy Marsh', kind: 'danger', scene: 'World', box: { col: 1, row: 3 }, band: [15, 22], dropTier: 3,
                  respawn: { enemies: 600 },   // 10 min
-                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'], links: { W: { to: 'village', edge: 'E' } } },
+                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'],
+                 links: { W: { to: 'village', edge: 'E' },
+                          // Phase D: the road east past the Bog Notary opens when "The Right Form" is done
+                          E: { to: 'east', edge: 'W', req: { facts: { 'road:east': 1 } }, lockEmoji: '📜',
+                               lockText: 'The road east goes past the Notary\'s office. Nobody gets past the Notary without the right form.' } } },
+    // Phase D (v1.00): the Receiver's town. Safe, like the Docks. Map in data/region_east.js
+    east:      { name: 'Ledgerwick', kind: 'cozy', scene: 'World', box: { col: 2, row: 3 }, features: ['npcs', 'objects', 'fishing', 'campfire'],
+                 links: { W: { to: 'marsh', edge: 'E' } } },
   },
 
   // Maps for regions that aren't Forest areas: each data/region_<id>.js file adds its own. Forest regions use data/forest.js.

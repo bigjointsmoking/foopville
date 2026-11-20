@@ -74,6 +74,7 @@ class WorldScene extends Phaser.Scene {
     if (b && b.tutorial) { this.tutorialAfterFight(b); return; }   // the training dummy (WorldTutorial.js)
     if (b && b.side) { this.sideAfterBattle(b); return; }   // a side-room ambush (WorldSideRooms.js, E3)
     if (b && b.shrine) { this.say(b.result === 'win' ? 'shrineWin' : 'forestAfterFlee'); return; }   // the Guardian at the shrine (v0.82)
+    if (b && b.worldOffice) { this.say(b.result === 'win' ? 'officeWon' : 'forestAfterFlee'); return; }   // a boss office (v1.00 fix: no map enemy behind it, this used to crash)
     if (!b) {
       if (this.safe) { this.greetSafe(); return; }
       if (this.arrive.from === 'campfire') this.say('forestFromCampfire');
@@ -659,7 +660,7 @@ class WorldScene extends Phaser.Scene {
     this.stepTimer -= dt;
     if (this.stepTimer <= 0) { this.stepTimer = 0.28; FUP.audio.sfx('step'); }
 
-    const len = Math.hypot(dx, dy), step = d.playerSpeed * dt;
+    const len = Math.hypot(dx, dy), step = d.playerSpeed * dt * (this.speedMult ? this.speedMult() : 1);   // ink puddles (RaidScene, Phase D)
     this.slide(this.player, (dx / len) * step, (dy / len) * step, 12);
     if (dx) this.player.setFlipX(dx < 0);
     this.player.setDepth(this.player.y + 16); // in front of trees above you, behind trees below

@@ -16,6 +16,7 @@ Object.assign(WorldScene.prototype, {
     if (this.feature('npcs')) for (const p of info.npcs || []) {
       const n = FUP.villageData.npcs[p.id], c0 = at(p.tx, p.ty);
       const s = FUP.anim.sprite(this, c0.x, c0.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(c0.y + 14);
+      if (n.tint && s.setTint) s.setTint(n.tint);   // placeholder looks (Ledgerwick's townsfolk, Phase D)
       this.tweens.add({ targets: s, scaleY: s.scaleY * 1.04, duration: 900 + Math.random() * 400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       ui.text(this, c0.x, c0.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
       this.spots.push({ kind: 'npc', id: p.id, x: c0.x, y: c0.y, sprite: s, label: 'Talk' });
@@ -117,7 +118,11 @@ Object.assign(WorldScene.prototype, {
 
   // A boss's office (v0.93, the Senior Partner): the receptionist books you in for o.cost, every visit
   openOffice(o) {
-    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.req;
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.req, Q = FUP.quests;
+    // Phase D (the Bog Notary): `free` = no fee while that quest is on that step; `openAfter` = shut until that quest is done
+    const free = o.free && Q.state.active[o.free.quest] && (Q.state.active[o.free.quest].step || 0) === o.free.step;
+    if (o.openAfter && !free && !Q.done(o.openAfter)) { this.say('officeClosed', { item: o.closedText || 'Closed.' }); FUP.audio.sfx('error'); return; }
+    if (free) o = { ...o, cost: {}, text: o.freeText || o.text };
     const boss = FUP.enemies[o.boss], cost = { items: o.cost }, ok = R.canPay(cost);
     const have = Object.entries(o.cost).map(([id, n]) => `${R.itemCount(id)}/${n} ${FUP.ingredients[id].name}s`).join(', ');
     const g = [], add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
@@ -126,16 +131,16 @@ Object.assign(WorldScene.prototype, {
     add(ui.shade(this, 0.6));
     add(ui.panel(this, W / 2 - 260, H / 2 - 120, 520, 240, 'panel'), 1);
     add(ui.text(this, W / 2, H / 2 - 104, `🚪 ${boss.name}`, 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
-    add(ui.text(this, W / 2, H / 2 - 74, o.text + `\n\nYou have ${have}. A boss fight: no running away.`, 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 - 74, o.text + `\n\n${free ? 'No fee this time.' : `You have ${have}.`} A boss fight: no running away.`, 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
     const btn = (x, label, fn, hot, off) => { const b = ui.button(this, x, H / 2 + 60, 220, 42, label, fn, { size: 14, hot }); if (off) b.setEnabled(false); [b.rect, b.txt].forEach(q => add(q, 3)); b.txt.setDepth(Z + 4); };
-    btn(W / 2 - 235, ok ? '📄 Book the meeting' : 'Not enough forms', () => {
+    btn(W / 2 - 235, free ? '🚪 Go in' : ok ? '📄 Book the meeting' : 'Not enough forms', () => {
       if (!R.pay(cost)) return;
       close();
       this.say('officeBooked');
       this.saveHere();
       this.leaving = true;
       const reg = FUP.world.region(this.f.area);
-      FUP.run.battle = { index: -1, type: o.boss, result: null, office: true, dropTier: (reg && reg.dropTier) || 1 };
+      FUP.run.battle = { index: -1, type: o.boss, result: null, worldOffice: true, dropTier: (reg && reg.dropTier) || 1 };   // (v1.00: was `office`, which the raid's Guardian also set)
       FUP.audio.sfx('doorOpen');
       FUP.fx.shake(this, 'boss');
       this.cameras.main.fadeOut(700, 20, 10, 0);

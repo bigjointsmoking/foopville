@@ -431,4 +431,24 @@ Object.assign(FUP.questData.quests, {
       { talk: 'shop', log: 'You brought the copied ledger to the Shopkeeper. Gold, paid to "the Resident", for "quiet".',
         say: 'No names. Just "the Resident". Gold paid for quiet. Every year. ...The old shopkeepers kept odd books. Don\'t let it keep you up. It\'s keeping me up.' },
     ] },
+  // ---------- Phase D (v1.00, Jesus 2026-11-19, design/phase-d.md): the Right Form ----------
+  // The Archivist in the Vault drops the Right Form. The Notary reads it, finds it correct, refuses to stamp it,
+  // and fights you in his office. Beat him and he stamps it: the road east opens (fact 'road:east').
+  // After the quest his office takes 3 Stamped Forms a fight (data/region_marsh.js office). Lines PLACEHOLDERS.
+  rightForm: { kind: 'story', from: 'notary', difficulty: 'hard', length: 'medium', name: 'The Right Form',
+    req: { facts: { 'got:rightForm': 1 } },
+    text: 'Nobody gets past the Bog Notary without the right form. You have the right form. That might be the problem.',
+    reward: { coins: 500, xp: { melee: 400 }, fragment: true, fact: 'road:east' },
+    afterGreet: ['Form? ...Oh. You. The road is open. Use it. Quietly.', 'Approved. Don\'t make me say it twice. I\'m not allowed to say it twice.'],
+    steps: [
+      { show: { right_form: 1 }, to: 'notary', goal: 'Show the Right Form to the Bog Notary (Soggy Marsh, east end)',
+        log: 'The Notary read the Right Form. It is correct. That is why he won\'t stamp it.',
+        say: '"Form R-1. Passage East. Filled in. Signed. Dated." He reads it again. "Correct. Completely correct. Nobody has ever had the right form. There is no procedure for the right form." He goes into his office. From inside: "Come in. We\'ll settle this the old way."' },
+      { event: 'bossDown', match: { enemy: 'bogNotary' }, goal: 'Beat the Bog Notary in his office (Soggy Marsh, east end)',
+        log: 'You beat the Bog Notary in his own office.',
+        say: 'The Notary, flat on his desk, holds out a webbed hand. "Form. Give me the form."' },
+      { show: { right_form: 1 }, to: 'notary', goal: 'Give the Right Form back to the Bog Notary to stamp',
+        log: 'He stamped it. The road east is open. Someone called the Receiver will want to meet you.',
+        say: '"Fine. FINE." STAMP. "Passage East: approved. The road past my office is open." He blots the ink. "The Resident Receiver will want to meet you. He meets everybody. Eventually. Usually about money."' },
+    ] },
 });

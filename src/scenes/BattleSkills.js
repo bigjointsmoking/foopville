@@ -110,6 +110,14 @@ Object.assign(BattleScene.prototype, {
       }
     }
     if (e.fake || o.kind === 'counter' || o.kind === 'limit') return { mult: 1 };
+    // Phase D: Paper Moths dodge; after an Ink Splash your hits can miss
+    const miss = (e.dodge || 0) + (this.inked > 0 ? this.inkMiss : 0);
+    if (miss > 0 && Math.random() < miss) {
+      this.popup(e.view, 'MISS', 'info');
+      this.say(this.inked > 0 ? 'inkMiss' : 'mothDodge', { enemy: e.name });
+      FUP.audio.sfx('error');
+      return { blocked: true };
+    }
     if (e.ledger) {
       e.ledger = false;
       if (o.kind === 'attack') {
@@ -141,6 +149,8 @@ Object.assign(BattleScene.prototype, {
     const sig = e.signature;
     if (sig && sig.id === 'bodyguard' && this.liveReal().some(o => o.bodyguard)) m *= sig.takenMult;
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
+    const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
+    if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
     return m;
   },
 
@@ -230,6 +240,11 @@ Object.assign(BattleScene.prototype, {
       FUP.combat.addBuff(e, 'atk', sig.atkMult, 99, 'Overtime', true);
       this.bigMoment('OVERTIME!', FUP.ui.colors.bad);
       this.say('overtime', { enemy: e.name });
+    }
+    if (e.chewing && e.hp > 0) {   // the Archivist eating pages (Phase D)
+      const heal = Math.min(e.maxHp - e.hp, Math.round(e.maxHp * e.chewing.pct));
+      if (heal > 0) { e.hp += heal; this.popup(e.view, `+${heal} 📄`, 'good', -60); }
+      if (--e.chewing.left <= 0) e.chewing = null;
     }
     if (e.burn) {
       const dmg = Math.max(1, Math.round(e.burn.dmg * this.takenMult(e)));
@@ -329,6 +344,44 @@ Object.assign(BattleScene.prototype, {
         FUP.audio.sfx('guard');
         return true;
       }
+      // ---------- Phase D (v1.00) ----------
+      case 'eatFocus': {   // the Bookworm: a light hit, and it eats some of your Focus
+        const landed = this.strike(e, m.power, false);
+        const take = landed ? Math.floor(p.focus * m.share) : 0;
+        if (!this.over && take > 0) { p.focus -= take; this.popup(this.playerSprite, `-${take} Focus`, 'bad', -40); this.say('bookwormFocus', { enemy: e.name, item: take }); }
+        return true;
+      }
+      case 'ink': {   // the Ink Slime: a hit, then your hits can miss for a few of your turns
+        const landed = this.strike(e, m.power, false);
+        if (landed && !this.over) { this.inked = m.turns; this.inkMiss = m.miss; this.popup(this.playerSprite, '🖋️ INKED', 'bad', -40); this.say('inkSplash', { enemy: e.name }); }
+        return true;
+      }
+      case 'creak':   // a Filing Shelf just stands there, in the way
+        this.popup(e.view, '🗄️ IN THE WAY', 'info');
+        return true;
+      case 'ban': {   // Redact (a random action) / Motion to Dismiss (the action you used last): blacked out for a few of your turns
+        if (m.power) this.strike(e, m.power, false);
+        if (this.over) return true;
+        const all = ['attack', 'skill', 'defend', 'rizz', 'eat', 'throw'];
+        let cat = m.pick === 'last' ? this.lastAction : all[Math.floor(Math.random() * all.length)];
+        if (!all.includes(cat)) cat = 'attack';
+        this.banned[cat] = Math.max(this.banned[cat] || 0, m.turns);
+        this.popup(this.playerSprite, `⬛ ${this.catName(cat).toUpperCase()} BANNED`, 'bad', -70);
+        this.say(m.pick === 'last' ? 'notaryMotion' : 'archivistRedact', { enemy: e.name, item: this.catName(cat) });
+        if (this.menuMode === 'main') this.setMenu('main');
+        return true;
+      }
+      case 'chew':   // the Archivist starts eating pages: it heals on its next few turns, unless you throw a dish at it
+        e.chewing = { left: m.turns, pct: m.healPct };
+        this.popup(e.view, '📄 EATING PAGES', 'info');
+        this.say('archivistChew', { enemy: e.name });
+        FUP.audio.sfx('eat');
+        return true;
+      case 'stampYou': {   // the Notary's STAMP: a hit that stuns you (your turn bar drops back)
+        const landed = this.strike(e, m.power, false);
+        if (landed && !this.over) { p.gauge = Math.min(p.gauge, m.stunGauge); this.popup(this.playerSprite, '🔨 STAMPED', 'bad', -70); this.bigMoment('STAMPED!', FUP.ui.colors.bad); this.say('notaryStamp', { enemy: e.name }); }
+        return true;
+      }
       case 'offer': this.openSettlement(e); return true;   // the Senior Partner (v0.93)
       case 'review':
         e.settled = Math.max(0, e.settled - 1);
@@ -426,6 +479,13 @@ Object.assign(BattleScene.prototype, {
       this.hitEnemy(e, FUP.unlocks.perkBest('perfectCounter', PB.counterPower) * counterMult, 150, false, { kind: 'counter' });   // Unshaken perk
       return false;
     }
+    if ((p.effects || []).includes('approval') && !this.approvalUsed) {   // Stamp of Approval (Phase D): the first hit each fight
+      this.approvalUsed = true;
+      this.popup(this.playerSprite, '✅ APPROVED: BLOCKED', 'good');
+      this.say('approvalBlock', { enemy: e.name });
+      FUP.audio.sfx('guard');
+      return false;
+    }
     const dealt = FUP.combat.damage(e, p, power);
     this.hurtPlayer(dealt, heavy || slam);
     // Spore Cloak (the Mycelium Mantle, G2): whoever hits you takes a share back. Never kills a boss.
@@ -472,6 +532,10 @@ Object.assign(BattleScene.prototype, {
     if (e.grabbed) f.push(`🪙 has ${e.grabbed} of yours`);
     if (e.billable) f.push(`💼 +${Math.round(e.billable * 100)}%`);
     if (e.settled) f.push('📑 settled');
+    if (e.chewing) f.push('📄 eating pages');
+    if (e.dodge) f.push('🦋 dodgy');
+    const SH = e.bossRules && e.bossRules.shelves;
+    if (SH && this.liveReal().some(o => o.key === SH.foe)) f.push('🗄️ behind shelves');
     if (e.signature && e.signature.id === 'share' && this.boss()) f.push('💸');
     return f.join(' ');
   },

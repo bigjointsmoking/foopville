@@ -15,6 +15,9 @@ FUP.factData = {
     'repair:market': 'Repair the Market',
     'repair:windmill': 'Repair the Windmill',
     'repair:fountain': 'Repair the Fountain',
+    'got:rightForm': 'Find the Right Form (the Vault, under the Old Storehouse)',   // Phase D
+    'road:east': 'Get past the Bog Notary',
+    'vault:open': 'Open the iron door in the Guardian\'s Hall',
   },
   // Fallback by prefix. {name} = the thing's own name (enemy, quest...) or its id.
   prefixes: {

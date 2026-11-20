@@ -345,4 +345,107 @@ FUP.enemies = {
       },
     },
   },
+  // ============================================================
+  // PHASE D (v1.00, Jesus 2026-11-19): the Vault under the Old Storehouse (behind the iron door the
+  // Old Key opens) and the Bog Notary's fight. Melee ~20-22. All names and numbers are PLACEHOLDERS.
+  // ============================================================
+  // The Vault: paper-eating creatures that moved into the elders' records.
+  // Bookworm: Eat Your Focus = a light hit that eats `share` of your Focus (skills cost Focus).
+  bookworm: {
+    name: 'Bookworm', emoji: '🐛', size: 100, sprite: 'bookworm', mapSprite: 'bookworm_map',
+    maxHp: 80, atk: 10, def: 4, spd: 9, resolve: 0.20,
+    xp: 90, coins: 22, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Chew', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 4 },
+      { name: 'Hardback Slam', type: 'attack', power: 1.6, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Eat Your Focus', type: 'eatFocus', power: 0.6, share: 0.5, tell: '📖', tellText: 'Hungry for your Focus', weight: 2 },
+    ],
+  },
+  // Paper Moth: comes in swarms of 3-4. Weak, but dodges `dodge` of your hits (Attack, skills, throws).
+  paperMoth: {
+    name: 'Paper Moth', emoji: '🦋', size: 72, row: 'back', sprite: 'papermoth', mapSprite: 'papermoth_map',
+    maxHp: 30, atk: 7, def: 1, spd: 14, resolve: 0.05, dodge: 0.35,
+    xp: 35, coins: 8, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Paper Cut', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Dust Dive', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 1 },
+    ],
+  },
+  // Ink Slime: Ink Splash = a hit, and for `turns` of your turns each of your hits misses `miss` of the time.
+  inkSlime: {
+    name: 'Ink Slime', emoji: '🫧', size: 110, row: 'front', sprite: 'inkslime', mapSprite: 'inkslime_map',
+    maxHp: 90, atk: 9, def: 5, spd: 8, resolve: 0.30,
+    xp: 95, coins: 24, boss: false, weak: 'frost', resists: ['poison'],
+    moves: [
+      { name: 'Splat', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 4 },
+      { name: 'Ink Splash', type: 'ink', power: 0.8, turns: 2, miss: 0.35, tell: '🖋️', tellText: 'About to splash ink', weight: 2 },
+    ],
+  },
+  // The Archivist's filing shelves (phase 1). They don't fight; while one stands, the Archivist takes almost nothing.
+  filingShelf: {
+    name: 'Filing Shelf', emoji: '🗄️', size: 96, row: 'front', sprite: 'filingshelf', mapSprite: 'filingshelf',
+    maxHp: 50, atk: 0, def: 6, spd: 6, resolve: 0.9, noCharm: true, noGear: true,
+    xp: 0, coins: 0, boss: false, weak: 'fire', resists: ['poison'],
+    moves: [ { name: 'Creak', type: 'creak', tell: '🗄️', tellText: 'Hiding the Archivist', weight: 1 } ],
+  },
+
+  // ---------- The Archivist (the Vault's boss, Melee ~20) ----------
+  // A huge old silverfish that ate most of the elders' records.
+  // Phase 1 Shelved: starts behind 2 Filing Shelves; while any stands it takes x`shelves.takenMult` damage.
+  // Phase 2 Redact: every `every` of its turns a hit that blacks out one of your actions for `turns` of your turns.
+  // Phase 3 Last Copy: every `every` turns it starts eating pages: heals `healPct` of its max HP on each of its
+  //   next `turns` turns. Throw a dish at it to make it spit them out (the heal stops).
+  // Drops the Right Form (once per life, data/raid.js vault.form) and spell piece 4 (data/spell.js).
+  archivist: {
+    name: 'The Archivist', emoji: '🐟', hat: '👓', size: 150, sprite: 'archivist', mapSprite: 'archivist_map',
+    maxHp: 300, atk: 13, def: 7, spd: 11, resolve: 0.50, noCharm: true, level: 21,
+    xp: 520, coins: 260, boss: true, weak: 'fire', resists: ['poison'],
+    winTitle: 'ARCHIVIST DEFEATED', say: { start: 'archivistStart', win: 'archivistWin', lose: 'archivistLose', phase: 'archivistPhase', flee: 'archivistFlee' },
+    moves: [
+      { name: 'Paper Cut', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Bound Volume', type: 'attack', power: 1.7, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Shush', type: 'debuff', stat: 'spd', mult: 0.8, turns: 2, label: 'Shushed', tell: '🤫', tellText: 'Lowering your SPD', weight: 1 },
+    ],
+    bossRules: {
+      phases: [
+        { name: 'Shelved', below: 1.00 },
+        { name: 'Redact', below: 0.66 },
+        { name: 'Last Copy', below: 0.33 },
+      ],
+      shelves: { phase: 0, foe: 'filingShelf', takenMult: 0.15 },
+      phaseMoves: [
+        { phase: 1, every: 2, move: { name: 'Redact', type: 'ban', pick: 'random', power: 0.8, turns: 1, tell: '⬛', tellText: 'Blacking out one of your actions' } },
+        { phase: 2, every: 3, move: { name: 'Eat the Pages', type: 'chew', healPct: 0.05, turns: 3, tell: '📄', tellText: 'Eating pages (throw a dish!)' } },
+      ],
+    },
+  },
+
+  // ---------- The Bog Notary (Phase D quest "The Right Form", Melee ~22) ----------
+  // A giant toad in his office in the Soggy Marsh's east end (the old W3 plan).
+  // Phase 1 Intake: every `every` of his turns STAMP: a hit that stuns you (your turn bar drops to `stunGauge`).
+  // Phase 2 Motions: every `every` turns a hit that bans the action you used last, for `turns` of your turns.
+  // Phase 3 Final Judgement: every `every` turns a huge croak. Defend it (Perfect Block) to counter x`counterMult`.
+  bogNotary: {
+    name: 'The Bog Notary', emoji: '🐸', hat: '🎩', size: 160, sprite: 'npc_notary', mapSprite: 'npc_notary_map',
+    maxHp: 340, atk: 13, def: 8, spd: 10, resolve: 0.50, noCharm: true, level: 22,
+    xp: 600, coins: 300, boss: true, weak: 'frost', resists: ['poison'],
+    winTitle: 'NOTARY DEFEATED', say: { start: 'notaryStart', win: 'notaryWin', lose: 'notaryLose', phase: 'notaryPhase', flee: 'notaryFlee' },
+    moves: [
+      { name: 'Tongue Lash', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Belly Flop', type: 'attack', power: 1.7, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Puff Up', type: 'buff', stat: 'def', mult: 1.4, turns: 2, label: 'Puffed up', tell: '🛡️', tellText: 'Raising DEF', weight: 1 },
+    ],
+    bossRules: {
+      phases: [
+        { name: 'Intake', below: 1.00 },
+        { name: 'Motions', below: 0.66 },
+        { name: 'Final Judgement', below: 0.33 },
+      ],
+      phaseMoves: [
+        { phase: 0, every: 4, move: { name: 'STAMP', type: 'stampYou', power: 0.9, stunGauge: -100, tell: '🔨', tellText: 'About to STAMP you' } },
+        { phase: 1, every: 3, move: { name: 'Motion to Dismiss', type: 'ban', pick: 'last', power: 0.6, turns: 2, tell: '📜', tellText: 'Filing a motion against your last move' } },
+        { phase: 2, every: 3, move: { name: 'FINAL JUDGEMENT', type: 'attack', power: 2.6, counterMult: 2, tell: '⚖️', tellText: 'FINAL JUDGEMENT (Defend!)' } },
+      ],
+    },
+  },
 };
