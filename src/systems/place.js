@@ -176,9 +176,21 @@ FUP.place = {
     return true;
   },
   // Back into `owned` (free, never destroyed)
+  // B3: what every PLACED thing adds up to for `key` (pantryBonus, trapBonus). Owned but packed away = nothing.
+  bonus(key) { return this.state.placed.reduce((t, p) => t + ((this.item(p.item) || {})[key] || 0), 0); },
+  // Why taking it back isn't allowed right now (a narrator key), or null. B3: the Shed's pantry space and the Trap Rack's traps.
+  takeBlock(uid) {
+    const p = this.byUid(uid), it = p && this.item(p.item);
+    if (!it) return null;
+    if (it.pantryBonus && FUP.house && FUP.house.pantryTotal && FUP.house.pantryTotal() > FUP.house.pantryMax() - it.pantryBonus) return 'shedFull';
+    if (it.trapBonus && FUP.fishing && FUP.fishing.trapLimit && FUP.fishing.state.traps.length > FUP.fishing.trapLimit() - it.trapBonus) return 'rackBusy';
+    return null;
+  },
   take(uid) {
     const p = this.byUid(uid);
     if (!p) return false;
+    this.refused = this.takeBlock(uid);
+    if (this.refused) return false;
     if (this.item(p.item).stall && FUP.stall && !FUP.stall.closeDown(uid)) return false;   // its dishes and coins come back to you; no room = it stays
     this.state.placed = this.state.placed.filter(q => q !== p);
     this.state.owned[p.item] = this.ownedCount(p.item) + 1;

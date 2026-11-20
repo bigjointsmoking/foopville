@@ -46,7 +46,7 @@ FUP.house = {
   // Perks from every house you own (they add up)
   houseSum(key) { return FUP.houseData.houses.filter((h, i) => this.owns(i)).reduce((t, h) => t + (h[key] || 0), 0); },
   canNap() { return FUP.houseData.houses.some((h, i) => h.nap && this.owns(i)); },
-  pantryMax() { return this.current('pantries').slots + this.houseSum('pantryBonus'); },
+  pantryMax() { return this.current('pantries').slots + this.houseSum('pantryBonus') + (FUP.place && FUP.place.bonus ? FUP.place.bonus('pantryBonus') : 0); },   // + the Shed (B3)
   pantryCount(id) { return this.state.pantry[id] || 0; },
   pantryTotal() { return Object.values(this.state.pantry).reduce((a, b) => a + b, 0); },
   pantryFull() { return this.pantryTotal() >= this.pantryMax(); },

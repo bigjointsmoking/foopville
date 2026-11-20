@@ -17,7 +17,7 @@ FUP.stall = {
     return this.state.byUid[uid];
   },
   tier(uid) { return FUP.stallData.tiers[this.get(uid).tier]; },
-  nextTier(uid) { return FUP.stallData.tiers[this.get(uid).tier + 1] || null; },
+  nextTier(uid) { const p = FUP.place.byUid(uid), it = p && FUP.place.item(p.item); return it && it.noUpgrade ? null : FUP.stallData.tiers[this.get(uid).tier + 1] || null; },   // the Second Stall stays small (B3)
   cap(uid) { return this.tier(uid).stock; },
   tillCap(uid) { return this.tier(uid).till * FUP.unlocks.perkBest('tillMult', 1); },
   // Play seconds between sales

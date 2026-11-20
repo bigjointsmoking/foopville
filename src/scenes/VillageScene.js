@@ -432,6 +432,12 @@ class VillageScene extends Phaser.Scene {
       const dx = Math.max(b.x - this.player.x, 0, this.player.x - (b.x + b.w)), dy = Math.max(b.y - this.player.y, 0, this.player.y - (b.y + b.h));
       if (Math.hypot(dx, dy) < 34) return { kind: 'stall', uid: p.uid, label: '🏪 Stall', x: b.x + b.w / 2, y: b.y + 10 };
     }
+    // The Shed (B3): your home storage, from the plot
+    for (const p of FUP.place.list('plot').filter(q => FUP.place.item(q.item).storage)) {
+      const T = FUP.villageData.tileSize, b = FUP.buildUi.box(p, T);
+      const dx = Math.max(b.x - this.player.x, 0, this.player.x - (b.x + b.w)), dy = Math.max(b.y - this.player.y, 0, this.player.y - (b.y + b.h));
+      if (Math.hypot(dx, dy) < 34) return { kind: 'shed', label: '🛖 Storage', x: b.x + b.w / 2, y: b.y + 10 };
+    }
     // Nothing else in reach: fishing water next to you?
     const T = FUP.villageData.tileSize, w = FUP.fishing.spotNear(Math.floor(this.player.x / T), Math.floor(this.player.y / T));
     if (!w) return null;
@@ -469,9 +475,9 @@ class VillageScene extends Phaser.Scene {
   }
 
   // The backpack counts as a panel too: walking stops while it's open (v0.41).
-  openPack() {
+  openPack(home = false) {   // home = true: from the Shed (B3), with your home storage
     if (this.panel || this.leaving || this.busy) return;
-    const bp = FUP.backpack.open(this, { home: false, onChange: () => this.refreshHud(), onClose: () => { if (this.panel === bp) { this.panel = null; this.panelId = null; } this.refreshHud(); FUP.save.write(); } });
+    const bp = FUP.backpack.open(this, { home: !!home, tab: home ? 'store' : 'pack', onChange: () => this.refreshHud(), onClose: () => { if (this.panel === bp) { this.panel = null; this.panelId = null; } this.refreshHud(); FUP.save.write(); } });
     this.panel = bp; this.panelId = 'pack';
   }
 
@@ -497,6 +503,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'fish') { this.goFish(s); return; }
     if (s.kind === 'saw') { this.sawPlank(s); return; }
     if (s.kind === 'stall') { this.openStall(s.uid); return; }
+    if (s.kind === 'shed') { this.openPack(true); return; }
     if (s.kind === 'sprinkler') { this.fillSprinkler(s); return; }
     if (s.kind === 'tree') { this.treeUse(s); return; }
     if (s.kind === 'animal') { this.openAnimal(s.p); return; }

@@ -8,6 +8,7 @@ window.FUP = window.FUP || {};
 FUP.factData = {
   // Exact names for single facts
   labels: {
+    'built:food_stall': 'Build your Food Stall',   // B3: the Second Stall
     'repair:well': 'Repair the Well',
     'repair:south_road': 'Repair the South Road',
     'repair:east_bridge': 'Repair the East Bridge',

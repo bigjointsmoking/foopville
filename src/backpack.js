@@ -11,7 +11,7 @@ window.FUP = window.FUP || {};
 
 FUP.backpack = {
   open(scene, opts = {}) {
-    const bp = { scene, opts, objs: [], sel: null, tab: 'pack', confirm: null, open: true };
+    const bp = { scene, opts, objs: [], sel: null, tab: opts.tab || 'pack', confirm: null, open: true };   // opts.tab: open on that tab (the Shed opens 'store')
     bp.destroy = () => {
       if (!bp.open) return;
       bp.open = false;

@@ -641,3 +641,11 @@ FUP.narrator.eventDone = {
   market_day: ['Market Day is over.', 'The market quiets down.'],
 };
 FUP.narrator.thievesGone = ['The squirrels got bored and wandered off. Nothing taken. They were just looking. Judging, really.'];
+
+// ---------- Plot buildings (B3). PLACEHOLDER lines. ----------
+FUP.narrator.shedBuilt = ['A shed. Somewhere to keep things you will never use. A milestone.', 'Your shed is up. It already smells like a shed.'];
+FUP.narrator.shedFull = ['Empty the shed first. It\'s not a magic trick.', 'Your pantry is using the shed\'s space. Clear 20 things out first.'];
+FUP.narrator.rackBuilt = ['A trap rack. More traps, more fish, more smell.', 'The trap rack is up. Gill will be thrilled. Or jealous.'];
+FUP.narrator.rackBusy = ['Pick up some traps first. The rack is holding them up.', 'Too many traps out to take the rack down. Bring a couple in.'];
+FUP.narrator.stall2Built = ['A second stall. Now you can disappoint two queues at once.', 'Two stalls. An empire, by village standards.'];
+

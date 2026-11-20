@@ -81,7 +81,7 @@ FUP.stallUi = {
           const r = S.upgrade(uid);
           if (r === 'ok') { FUP.audio.sfx('fanfare'); note = ''; } else { FUP.audio.sfx('error'); note = r === 'broke' ? "You can't afford that yet." : ''; }
         }, { hot: true, disabled: missing.length > 0 || !FUP.req.canPay(S.upgradeCost(uid), { npc: 'carpenter' }), size: 15 });
-      } else fix(ui.text(scene, LX, by + 8, 'Fully upgraded. It is the finest stall in a village with one stall.', 14, c.good), 2);
+      } else { const p = FUP.place.byUid(uid), small = p && FUP.place.item(p.item).noUpgrade; fix(ui.text(scene, LX, by + 8, small ? 'This one stays small. It has accepted that.' : 'Fully upgraded. It is the finest stall in a village with one stall.', 14, c.good), 2); }
     };
 
     g.destroy = () => {

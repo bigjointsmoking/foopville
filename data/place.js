@@ -35,6 +35,15 @@ FUP.placeData = {
     // max: how many you can own in total. stall: true = it works as a food stall (data/stall.js).
     food_stall: { name: 'Food Stall', emoji: '🏪', kind: 'building', w: 3, h: 2, solid: true, zones: ['plot'], max: 1,
                   cost: { coins: 1800, items: { plank: 8 } }, req: { skills: { building: 1 } }, stall: true, blurb: 'Sells your dishes while you are out getting hurt.' },
+    // B3 (Jesus 2026-11-20: prices x3 like the rest of the Carpenter's; the Shed opens your home storage + 20 pantry space)
+    // storage: walk up to it on the plot = your home storage · pantryBonus / trapBonus: count only while it stands (FUP.place.bonus)
+    // noUpgrade: a stall that keeps its first-tier numbers forever · say: narrator line when you place it
+    shed:         { name: 'Shed', emoji: '🛖', kind: 'building', w: 3, h: 2, solid: true, zones: ['plot'], max: 1, storage: true, pantryBonus: 20, say: 'shedBuilt',
+                    req: { skills: { building: 10 } }, cost: { coins: 6000, items: { plank: 15 } }, blurb: 'Reach your home storage from your plot. +20 pantry space while it stands.' },
+    trap_rack:    { name: 'Trap Rack', emoji: '🪤', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], max: 1, trapBonus: 2, say: 'rackBuilt',
+                    req: { skills: { building: 16 } }, cost: { coins: 4500, items: { plank: 12 } }, blurb: 'Own and set 2 more fish traps.' },
+    food_stall_2: { name: 'Second Stall', emoji: '🏪', sprite: 'place_food_stall', kind: 'building', w: 3, h: 2, solid: true, zones: ['plot'], max: 1, stall: true, noUpgrade: true, say: 'stall2Built',
+                    req: { skills: { building: 24 }, facts: { 'built:food_stall': 1 } }, cost: { coins: 15000, items: { plank: 25 } }, blurb: 'A second stall with its own stock. It stays small.' },
     bench:      { name: 'Bench', emoji: '🪑', kind: 'building', w: 2, h: 1, solid: true, zones: ['plot'], cost: { coins: 360 }, blurb: 'Somewhere to sit and regret things.' },
     flower_bed: { name: 'Flower Bed', emoji: '🌷', kind: 'ground', w: 1, h: 1, solid: false, zones: ['plot', 'farm'], cost: { coins: 90 }, blurb: 'Flowers. They ask for nothing. Yet.' },
     // Ground things for your plot and the farm (v0.57). free: true = costs nothing with the Building Mastery perk (freeGround)
