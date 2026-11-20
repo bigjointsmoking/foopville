@@ -100,6 +100,21 @@ FUP.world = {
     return { scene: this.region(to).scene, to, arrive };
   },
 
+  // ---------- The Cart (R3): straight to a region you've been, arriving as if you'd walked in from `via` ----------
+  ride(to, via) {
+    const r = this.region(to), edge = r && Object.keys(r.links || {}).find(e => r.links[e].to === via);
+    if (!edge) return null;
+    if (!this.safe(to)) this.startTrip();
+    this.state.region = to;
+    this.state.seen[to] = true;
+    FUP.facts.set('region:' + to, 1);
+    this.visit = null;
+    if (!this.safe(to) && FUP.run.forest) FUP.forest.enter(FUP.run.forest, to, edge);
+    const arrive = this.gapMiddle(to, edge);
+    if (this.safe(to) && r.scene === 'World') this.startVisit(to, arrive);
+    return { scene: r.scene, to, arrive };
+  },
+
   // ---------- Safe World regions (the Docks) ----------
   // Walking around somewhere safe: the World screen needs a "trip-like" state, but nothing is lost on a reload.
   startVisit(id, at) {

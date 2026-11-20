@@ -65,6 +65,7 @@ class WorldScene extends Phaser.Scene {
     this.stepTimer = 0;
     // The life layer: extra scenery, wind, critters, birds, day/night light (src/ambience.js)
     FUP.ambience.attach(this, { place: this.f.area, tiles: F, T, region: this.f.area });
+    if (FUP.world.justRode) { FUP.world.justRode = false; this.time.delayedCall(700, () => this.say('cartArrive')); }   // came by cart (R3)
   }
 
   // ---------- Coming back from a fight (or arriving) ----------

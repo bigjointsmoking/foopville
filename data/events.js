@@ -25,7 +25,7 @@ FUP.eventData = {
       discount: 0.2, seeds: 3, bait: 10,   // 20% off: 3 seeds of one crop · 10 of one bait · 1 ground thing
       ground: ['path', 'fence', 'hedge', 'lantern', 'flower_bed'] },
     pigeon_mail: { w: 3, name: 'Pigeon Mail', emoji: '🕊️', spot: 'door', coinsChance: 0.7, coins: [15, 40] },   // else a free riddle
-    lost_tourist: { w: 2, name: 'A Lost Tourist', emoji: '🧭', spot: { tx: 29, ty: 19 }, minStars: 2, rizzXp: 40 },
+    lost_tourist: { w: 2, name: 'A Lost Tourist', emoji: '🧭', spot: { tx: 26, ty: 19 }, minStars: 2, rizzXp: 40 },
     crop_thieves: { w: 2, name: 'Crop Thieves', emoji: '🐿️', count: 3, seconds: 45, reward: 'grumpleberry', needs: 'growingCrop' },
     rain: { w: 2, name: 'Rain', emoji: '🌧️', biteCut: 0.25 },   // fish bite 25% sooner in the village (Jesus: fish only, crops still need watering)
     chef_challenge: { w: 2, name: "Chef's Challenge", emoji: '🍽️', spot: 'chef', coinMult: 3, xpMult: 1.5, needs: 'threeRecipes' },

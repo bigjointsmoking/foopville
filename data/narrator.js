@@ -649,3 +649,19 @@ FUP.narrator.rackBuilt = ['A trap rack. More traps, more fish, more smell.', 'Th
 FUP.narrator.rackBusy = ['Pick up some traps first. The rack is holding them up.', 'Too many traps out to take the rack down. Bring a couple in.'];
 FUP.narrator.stall2Built = ['A second stall. Now you can disappoint two queues at once.', 'Two stalls. An empire, by village standards.'];
 
+
+// ---------- The Cart Stop and the Fountain (R3). PLACEHOLDER lines. ----------
+FUP.narrator.repairDone.cart_stop = [
+  'The Cart Stop is back. The horse looks at you like you owe it money. You will.',
+  'Fixed. A cart, a horse, and a driver who has seen things. Mostly roads.',
+  'You can ride places now. Walking was getting embarrassing anyway.',
+];
+FUP.narrator.repairDone.fountain = [
+  'The Fountain runs again. It does nothing useful. It\'s beautiful. Like you, minus the beautiful.',
+  'Every repair done. The village looks almost respectable. People are suspicious of you.',
+  'The Fountain sparkles. Foopville is restored. Your back will never be the same.',
+];
+FUP.narrator.cartGreet = ['"Where to? Somewhere you\'ve been, mind. I don\'t do adventures."', '"Fare up front. The horse has standards."', '"One way. I don\'t wait. Nobody waits for you."'];
+FUP.narrator.cartArrive = ['The cart drops you off and leaves at once. Rude, but efficient.', 'You arrive with a sore back and a lighter purse. Classic travel.', 'The driver says "good luck" in a tone that means "goodbye forever".'];
+FUP.narrator.cartBroke = ['"No coins, no cart." The horse agrees.', 'You can\'t afford the fare. The horse snorts. Loudly.'];
+FUP.narrator.boardAllDone = ['Nothing left to fix. Suspicious.'];

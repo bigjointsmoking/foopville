@@ -26,6 +26,7 @@ FUP.cosmeticData = {
     gatecrasher:   { text: 'the Gatecrasher', req: { facts: { 'boss:guardian': 1 } } },
     squirrel_bane: { text: "Squirrel's Bane", req: { facts: { 'kill:squirrel': 100 } } },
     pigeon_friend: { text: 'Friend of Pigeons', req: { facts: { 'boss:godfather': 5 } } },
+    restorer:      { text: 'the Restorer', req: { facts: { 'repair:fountain': 1 } } },   // the Fountain (R3)
     witness:       { text: 'the Witness', req: { facts: { 'title:witness': 1 } } },   // His First Quest (v0.81)
     // Collection log: a full page (E2, data/log.js rewards.done)
     log_forager:   { text: 'the Forager', req: { facts: { 'logDone:ingredients': 1 } } },

@@ -507,7 +507,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'sprinkler') { this.fillSprinkler(s); return; }
     if (s.kind === 'tree') { this.treeUse(s); return; }
     if (s.kind === 'animal') { this.openAnimal(s.p); return; }
-    if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller'].includes(s.kind)) { this.repairUse(s); return; }
+    if (['repairBoard', 'repairSite', 'well', 'sign', 'market', 'miller', 'cart', 'fountain'].includes(s.kind)) { this.repairUse(s); return; }
     if (s.kind === 'read') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
     if (s.kind === 'salvage') { FUP.salvageUi.use(this, s, () => { this.refreshSalvage(); this.refreshHud(); }); return; }

@@ -13,7 +13,8 @@ FUP.villagePanels = {
     const n = FUP.villageData.npcs[id], obj = (FUP.villageData.objects || {})[id];
     // Finished one of their quests? Their new lines join the old ones (v0.79: the world remembers)
     const after = n ? Object.entries(FUP.questData.quests).filter(([qid, q]) => q.from === id && q.afterGreet && FUP.quests.done(qid)).flatMap(([, q]) => q.afterGreet) : [];
-    this.speech = n ? Phaser.Utils.Array.GetRandom(after.length && Math.random() < 0.6 ? after : n.greet) : obj ? Phaser.Utils.Array.GetRandom(obj.greet) : '';
+    const restored = n && n.restored && FUP.facts.has('repair:fountain') && Math.random() < 1 / 3;   // R3: the village finally looks decent
+    this.speech = n ? Phaser.Utils.Array.GetRandom(restored ? n.restored : after.length && Math.random() < 0.6 ? after : n.greet) : obj ? Phaser.Utils.Array.GetRandom(obj.greet) : '';
     if (id === 'quest' && !FUP.quests.available().length && !FUP.quests.activeIds().length) this.speech = n.empty[0];
     if (id === 'carpenter' && FUP.house.LINES.every(l => !FUP.house.next(l))) this.speech = n.maxed[0];
     if (id === 'farmhand' && Object.keys(FUP.gardenData.farmPlots).every(ch => FUP.garden.owns(ch))) this.speech = n.maxed[0];

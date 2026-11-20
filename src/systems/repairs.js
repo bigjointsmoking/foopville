@@ -67,6 +67,25 @@ FUP.repairs = {
     if (FUP.save && FUP.save.write) FUP.save.write();
     return true;
   },
+  // ---------- The Cart Stop (R3) ----------
+  // Rides you can take: regions you've been to (fact region:<id>) that the cart goes to
+  cartRows() {
+    const C = FUP.repairData.cart.rides;
+    return Object.keys(C).filter(id => FUP.facts.has('region:' + id) && FUP.world.built(id)).map(id => {
+      const r = FUP.world.region(id);
+      return { id, name: r.name, band: r.band || null, fare: this.fare(id), safe: FUP.world.safe(id) };
+    });
+  },
+  fare(id) { return Math.max(1, Math.round(FUP.repairData.cart.rides[id].fare * (1 - FUP.village.rizzCut()))); },   // the always-on Rizz discount, no haggling
+  // Pay and go: returns FUP.world.ride's result, 'broke', or null
+  ride(id) {
+    const c = FUP.repairData.cart.rides[id];
+    if (!c || !this.done('cart_stop') || !FUP.facts.has('region:' + id)) return null;
+    const fare = this.fare(id);
+    if (FUP.run.coins < fare) return 'broke';
+    FUP.run.coins -= fare;
+    return FUP.world.ride(id, c.from);
+  },
   xpFor(id) { return Math.round((this.get(id).cost.coins || 0) * FUP.repairData.xpPerCoin); },
 
   // A repair paid for when the page closed: finish it now (called after loading)

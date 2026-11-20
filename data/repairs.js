@@ -33,7 +33,9 @@ FUP.repairData = {
     { id: 'east_bridge', name: 'The East Bridge', emoji: '🌉', req: { facts: { 'repair:south_road': 1 }, skills: { building: 5 } }, cost: { coins: 3500, items: { plank: 24 } }, unlocks: 'The Soggy Marsh.',
       site: { tx: 60, ty: 39, w: 1, h: 2, talk: { tx: 59, ty: 39 } }, ruinEmoji: '🚧', blockWhenRuined: true, mapWhenDone: [{ tx: 61, ty: 39, ch: '=' }, { tx: 61, ty: 40, ch: '=' }],
       clutter: [{ tx: 58, ty: 38, emoji: '🪨' }, { tx: 59, ty: 41, emoji: '🌿' }, { tx: 60, ty: 41, emoji: '🪵' }] },
-    { id: 'cart_stop', name: 'The Cart Stop', emoji: '🛒', req: { facts: { 'repair:south_road': 1 }, skills: { building: 8 } }, cost: { coins: 2000, items: { plank: 10 } }, unlocks: 'Paid rides to places you\'ve been.', soon: true },
+    { id: 'cart_stop', name: 'The Cart Stop', emoji: '🛒', req: { facts: { 'repair:south_road': 1 }, skills: { building: 8 } }, cost: { coins: 2000, items: { plank: 10 } }, unlocks: 'Paid rides to places you\'ve been.',
+      site: { tx: 9, ty: 7, w: 2, h: 1, talk: { tx: 10, ty: 8 } }, ruinEmoji: '🛒', doneEmoji: '🐴', block: true,   // (R3: spot is a PLACEHOLDER)
+      clutter: [{ tx: 8, ty: 7, emoji: '🪵' }, { tx: 11, ty: 7, emoji: '🌿' }, { tx: 9, ty: 6, emoji: '🪨' }] },
     { id: 'market', name: 'The Market', emoji: '🏬', req: { facts: { 'repair:east_bridge': 1 }, skills: { building: 10 } }, cost: { coins: 6000, items: { plank: 30 } }, unlocks: 'New offers every day. Your stall sells faster.',
       site: { tx: 40, ty: 28, w: 6, h: 2, talk: { tx: 42, ty: 30 } }, ruinEmoji: '🏚️', ruinPicture: 'ruin_crushed', doneEmoji: '🏬', block: true,
       scorch: [{ tx: 39, ty: 27 }, { tx: 47, ty: 29 }],
@@ -43,11 +45,19 @@ FUP.repairData = {
       scorch: [{ tx: 47, ty: 4 }, { tx: 51, ty: 4 }, { tx: 46, ty: 2 }],
       clutter: [{ tx: 47, ty: 3, emoji: '🌿' }, { tx: 51, ty: 3, emoji: '🪨' }, { tx: 50, ty: 4, emoji: '🌿' }] },
     { id: 'fountain', name: 'The Fountain', emoji: '⛲', req: { facts: { 'repair:well': 1, 'repair:south_road': 1, 'repair:east_bridge': 1, 'repair:cart_stop': 1, 'repair:market': 1, 'repair:windmill': 1 }, skills: { building: 20 } },
-      cost: { coins: 9000, items: { plank: 30 } }, unlocks: 'A title, a bigger quest board, and respect. Possibly.', soon: true },
+      cost: { coins: 9000, items: { plank: 30 } }, unlocks: 'A title, a bigger quest board, and respect. Possibly.',
+      site: { tx: 29, ty: 19, w: 2, h: 2, talk: { tx: 30, ty: 21 } }, ruinEmoji: '🕳️', doneEmoji: '⛲', block: true,   // (R3: spot is a PLACEHOLDER)
+      clutter: [{ tx: 28, ty: 19, emoji: '🌿' }, { tx: 31, ty: 20, emoji: '🪨' }, { tx: 28, ty: 21, emoji: '🌿' }] },
   ],
   // The repaired Market: 3 offers a day (src/systems/repairs.js rollMarket). Mult = x the item's price; stock = per day.
   market: { stallSpeed: 0.8, greenMult: 3, greenStock: 3, seedMult: 1.5, seedStock: 5, baitMult: 0.8, baitStock: 10,
             curios: ['gnome', 'weathervane', 'fancy_rug', 'pigeon_statue'] },
+  // The repaired Cart Stop (R3): one-way rides to places you've been. from = the region you'd walk in from
+  // (you arrive at that edge, like walking in). fare in coins (Rizz discount). Not listed = no cart goes there.
+  cart: { rides: { docks: { fare: 10, from: 'village' }, edge: { fare: 10, from: 'village' }, tollroad: { fare: 20, from: 'edge' },
+                   deepwoods: { fare: 30, from: 'tollroad' }, marsh: { fare: 20, from: 'village' }, east: { fare: 40, from: 'marsh' } } },   // (Ledgerwick added by Jesus)
+  // The repaired Fountain (R3): a title, +1 offer on each quest board tab (Jesus: 5 each)
+  fountain: { title: 'restorer', boardPlus: 1 },
   // The repaired Windmill sells flour
   miller: { flourPrice: 3 },
   // Wishing at the repaired well: once a day. w = weight (out of 100).

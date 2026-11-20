@@ -118,6 +118,7 @@ FUP.villageData = {
   npcs: {
     // New in story Phase B (2026-11-17). Name, look and lines are PLACEHOLDERS (tinted villager picture, like the island tutors).
     oldtimer: {
+      restored: ['Fountain\'s running again. Haven\'t seen that since I had knees. Don\'t let it go to your head.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'The Old-timer', spot: { tx: 15, ty: 28 }, sprite: 'npc_oldtimer_map', portrait: 'npc_oldtimer', emoji: '👴',   // own art since v0.84
       greet: [
         'Sit, sit. The bench is free. Everything else costs.',
@@ -135,6 +136,7 @@ FUP.villageData = {
     },
     // Story Phase C (v0.82, Jesus: "a banker or a money guy"). Name, spot, look and lines are PLACEHOLDERS.
     banker: {
+      restored: ['Property values are up four percent since the fountain. Your contribution has been noted. Briefly.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'Mr. Tally the Moneylender', spot: { tx: 28, ty: 7 }, sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '💰',
       noRizzSecrets: true,   // no Rizz 10/20/30 secrets yet (PLACEHOLDER: ask Jesus if they should have some)
       greet: [
@@ -195,6 +197,7 @@ FUP.villageData = {
       full: ['Your bag is full. We can repossess some of it, if you like. That was a joke. Mostly.'],
     },
     smith: {
+      restored: ['Village looks decent now. Shame about you, but you can\'t fix everything.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'The Blacksmith', spot: { tx: 3, ty: 5 }, sprite: 'npc_smith_map', portrait: 'npc_smith', emoji: '🔨',
       legend: "My family's told it for generations. Foop carried the great blade out to meet her. Heavy as a boulder, it was, and nobody else could lift it. Forged right here in this village, they say, though the records got lost. He dragged it all the way up that hill himself. One swing and the dragon was done. Best steel this village ever made.",
       greet: [
@@ -227,6 +230,7 @@ FUP.villageData = {
       ],
     },
     shop: {
+      restored: ['Customers keep stopping at the fountain to admire it. Then they leave. Thanks for that.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'The Shopkeeper', spot: { tx: 24, ty: 5 }, sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '🪙',
       reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
         { fact: 'clue:ledgerPage', line: "An older name under ours? Paperwork gets messy. Don't let it keep you up." },
@@ -251,6 +255,7 @@ FUP.villageData = {
       ],
     },
     chef: {
+      restored: ['The fountain is the second most tasteful thing in this village. My soup is first. You aren\'t on the list.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'Chef Marrowbone', spot: { tx: 4, ty: 10 }, sprite: 'npc_chef_map', portrait: 'npc_chef', emoji: '👨‍🍳',
       greet: [
         'You call that cooking? I call it a cry for help.',
@@ -273,6 +278,7 @@ FUP.villageData = {
       ],
     },
     carpenter: {
+      restored: ['Every repair finished. I\'d say I taught you everything, but I\'d be lying, and you\'d be flattered.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'Planksworth the Carpenter', spot: { tx: 12, ty: 15 }, sprite: 'npc_carpenter_map', portrait: 'npc_carpenter', emoji: '🪚',
       legend: "Fighting? Please. Foop was clever. Everyone forgets that. The story goes he had the carpenters raise a great trap overnight, a pit under a false floor, perfectly level. When the dragon stomped in, down she went. Best timber work this village ever did, and nobody even knows who built it. Typical.",
       greet: [
@@ -290,6 +296,7 @@ FUP.villageData = {
       ],
     },
     farmhand: {
+      restored: ['Village looks proper again. Crops don\'t care. I don\'t either. Well. A bit.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'Hollis the Farmhand', spot: { tx: 25, ty: 38 }, sprite: 'npc_farmhand_map', portrait: 'npc_farmhand', emoji: '🧑‍🌾',
       greet: [
         'Land for sale. Good dirt. Mostly dirt. Some of it is rocks pretending.',
@@ -306,6 +313,7 @@ FUP.villageData = {
       ],
     },
     seeds: {
+      restored: ['You fixed EVERYTHING! Even the fountain! You\'re still really bad at small talk, though!'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'Pip the Seed Seller', spot: { tx: 18, ty: 38 }, sprite: 'npc_seeds_map', portrait: 'npc_seeds', emoji: '🌰',
       reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
         { fact: 'clue:ash', line: "That's no house fire. I don't know what that is. Put the lid back on." },
@@ -328,6 +336,7 @@ FUP.villageData = {
       ],
     },
     quest: {
+      restored: ['A RESTORED VILLAGE! At LAST! Now it\'s worth defending! Mostly from you!'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'The Quest Board Keeper', spot: { tx: 20, ty: 9 }, sprite: 'npc_quest_map', portrait: 'npc_quest', emoji: '📜',
       reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
         { fact: 'clue:ledgerPage', line: "A scratched-out NAME? On an OFFICIAL page? Somebody should complain. Not me." },

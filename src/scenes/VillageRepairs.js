@@ -53,8 +53,13 @@ Object.assign(VillageScene.prototype, {
         const mid = M.center(s.tx + (s.w - 1) / 2, s.ty + (s.h - 1) / 2), size = Math.min(s.w, 3) * 22 + 10;
         const pic = keep(this.add.text(mid.x, mid.y + 10, r.doneEmoji, { fontSize: size + 'px' }).setOrigin(0.5, 0.75).setDepth(mid.y + 30));
         if (r.id === 'windmill') this.tweens.add({ targets: pic, angle: { from: -5, to: 5 }, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // creaks in the wind
-        const kind = r.id === 'market' ? 'market' : r.id === 'windmill' ? 'miller' : null;
-        if (kind) this.spots.push({ id: r.id, kind, repair: true, x: talk.x, y: talk.y - 20, label: kind === 'market' ? '🏬 Market' : '🌾 Miller' });
+        if (r.id === 'fountain') {   // R3: water sparkles over it
+          const drop = keep(this.add.text(mid.x, mid.y - 26, '💧', { fontSize: '16px' }).setOrigin(0.5).setDepth(mid.y + 31));
+          this.tweens.add({ targets: drop, alpha: { from: 1, to: 0.2 }, y: drop.y - 6, duration: 700, yoyo: true, repeat: -1 });
+        }
+        const kind = { market: 'market', windmill: 'miller', cart_stop: 'cart', fountain: 'fountain' }[r.id] || null;
+        const label = { market: '🏬 Market', miller: '🌾 Miller', cart: '🐴 Cart', fountain: '💧 Fill can' }[kind];
+        if (kind) this.spots.push({ id: r.id, kind, repair: true, x: talk.x, y: talk.y - 20, label });
       }
     }
     // Locked ways out of the village (data/world.js links): 🪨 / 🌉 on the gap until it's fixed
@@ -85,6 +90,13 @@ Object.assign(VillageScene.prototype, {
     if (s.kind === 'well') { this.openWell(s); return; }
     if (s.kind === 'market') { this.renderMarket(); return; }
     if (s.kind === 'miller') { this.renderMiller(); return; }
+    if (s.kind === 'cart') { this.renderCart(); return; }
+    if (s.kind === 'fountain') {   // R3: fill your watering can, like at the well
+      const G = FUP.garden;
+      if (G.state.can >= G.canMax()) { this.sayLine(`Your watering can is already full (${G.state.can}/${G.canMax()}).`); return; }
+      this.farmWork(FUP.gardenData.jobs.fill.seconds, 'water', s, () => { G.fillCan(); this.say('farmFill'); });
+      return;
+    }
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); }
   },
 
@@ -116,7 +128,8 @@ Object.assign(VillageScene.prototype, {
     this.say('repairBoard');
     this.repairWindow('repairBoard', 640, 104 + list.length * rowH, ({ x, y, w, fix }) => {
       fix(ui.text(this, x + 16, y + 12, 'RESTORATION BOARD', 18, c.accent, { fontStyle: '700' }));
-      fix(ui.text(this, x + 16, y + 36, 'Pay at the ruin itself. Walk up to it and press the button.', 12, c.dim));
+      const all = list.every(r => R.done(r.id));
+      fix(ui.text(this, x + 16, y + 36, all ? FUP.narrator.boardAllDone[0] : 'Pay at the ruin itself. Walk up to it and press the button.', 12, all ? c.good : c.dim));
       list.forEach((r, i) => {
         const ry = y + 58 + i * rowH, done = R.done(r.id), why = R.why(r.id);
         fix(ui.panel(this, x + 12, ry, w - 24, rowH - 6, 'inset'));
@@ -164,7 +177,8 @@ Object.assign(VillageScene.prototype, {
       FUP.fx.shake(this, 'big');
       FUP.audio.sfx('catch');
       this.drawRepairs(); this.refreshGround();
-      if (r.id === 'well') this.waterTiles = this.findWater();
+      if (r.id === 'well' || r.id === 'fountain') this.waterTiles = this.findWater();
+      if (r.id === 'fountain') this.time.delayedCall(2600, () => { if (this.scene.isActive()) this.sayLine(`New title: "${FUP.cosmeticData.titles[FUP.repairData.fountain.title].text}" (🎒 Wardrobe). The quest board has room for more, too.`); });
       this.villageBanner(`${r.name.toUpperCase()}: RESTORED`);
       this.say('repairDone.' + r.id);
       this.refreshHud();
@@ -224,6 +238,8 @@ Object.assign(VillageScene.prototype, {
       if (ch === 'w' && !FUP.repairs.done('well')) continue;
       for (const s of M.find(ch)) out.push(M.center(s.tx, s.ty));
     }
+    const f = FUP.repairs.get('fountain');   // R3: the Fountain counts as water once it's repaired
+    if (f && f.site && FUP.repairs.done('fountain')) for (let ty = f.site.ty; ty < f.site.ty + f.site.h; ty++) for (let tx = f.site.tx; tx < f.site.tx + f.site.w; tx++) out.push(M.center(tx, ty));
     return out;
   },
 
@@ -248,6 +264,32 @@ Object.assign(VillageScene.prototype, {
           if (res === 'soldOut') this.say('marketSoldOut');
           close(); this.renderMarket(res === 'broke' ? "You can't afford that." : res === 'full' ? 'No room in your backpack.' : ' ');
         }, { size: 13, hot: r.left > 0 && FUP.run.coins >= r.price, disabled: !r.left }).setEnabled(r.left > 0);
+      });
+    });
+  },
+
+  // ---------- The repaired Cart Stop (R3): one-way rides to places you've been ----------
+  renderCart(note = '') {
+    const ui = FUP.ui, c = ui.colors, R = FUP.repairs, rows = R.cartRows(), rowH = 44;
+    if (!note) this.say('cartGreet');
+    this.repairWindow('cart', 500, 120 + Math.max(1, rows.length) * rowH, ({ x, y, w, fix, button, close }) => {
+      fix(ui.text(this, x + 16, y + 12, '🐴 THE CART STOP', 18, c.accent, { fontStyle: '700' }));
+      fix(ui.text(this, x + 16, y + 36, note.trim() || `One way. You walk back. You have ${FUP.run.coins} 🪙.`, 12, note.trim() ? c.bad : c.dim));
+      if (!rows.length) fix(ui.text(this, x + 16, y + 64, 'He only drives to places you can describe. Go somewhere first.', 13, c.dim, { wordWrap: { width: w - 40 } }));
+      rows.forEach((r, i) => {
+        const ry = y + 58 + i * rowH;
+        fix(ui.panel(this, x + 12, ry, w - 24, rowH - 6, 'inset'));
+        fix(ui.text(this, x + 24, ry + 8, r.name, 14, c.ink, { fontStyle: '700' }));
+        fix(ui.text(this, x + 24, ry + 24, r.safe ? 'Safe' : `Lv ${r.band ? r.band.join('-') : '?'} · starts a trip`, 11, r.safe ? c.good : c.info));
+        const can = FUP.run.coins >= r.fare;
+        button(x + w - 140, ry + 5, 114, 28, `Ride ${r.fare} 🪙`, () => {
+          const res = R.ride(r.id);
+          if (res === 'broke' || !res) { FUP.audio.sfx('error'); this.say('cartBroke'); close(); this.renderCart(' '); return; }
+          close();
+          FUP.audio.sfx('coins');
+          FUP.world.justRode = true;
+          this.leave(res);
+        }, { size: 13, hot: can, disabled: !can }).setEnabled(can);
       });
     });
   },

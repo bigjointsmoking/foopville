@@ -66,7 +66,8 @@ FUP.quests = {
   // How many of a kind the board shows (His First Quest can add one: data/quests.js boardPerk)
   boardSize(kind) {
     const D = FUP.questData, p = D.boardPerk;
-    return D.boardSize[kind] + (p && p.kind === kind && FUP.facts.has(p.fact) ? p.extra : 0);
+    const fountain = FUP.facts.has('repair:fountain') && FUP.repairData && FUP.repairData.fountain ? FUP.repairData.fountain.boardPlus : 0;   // R3: the Fountain
+    return D.boardSize[kind] + (p && p.kind === kind && FUP.facts.has(p.fact) ? p.extra : 0) + fountain;
   },
   // On the board right now (kind = only that kind).
   available(kind = null) {
