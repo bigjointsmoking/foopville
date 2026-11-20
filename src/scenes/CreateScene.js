@@ -49,8 +49,8 @@ class CreateScene extends Phaser.Scene {
     // Preview: big hero (fights) and small hero (map)
     FUP.looks.apply(this, this.look);
     add(FUP.ui.panel(this, 40, 100, 280, 380, 'panel'));
-    add(ui.sprite(this, 180, 270, 'hero_me', '🧍', 100, 4.5));
-    add(ui.sprite(this, 180, 440, 'hero_map_me', '🧍', 30, 2.5));
+    add(FUP.heroArt.make(this, 180, 265, 'battle', { look: this.look, scale: 1.7, weapon: false }));
+    add(FUP.heroArt.make(this, 180, 435, 'map', { look: this.look, scale: 1.2 }));
     add(ui.text(this, 180, 470, 'on the map', 11, c.dim).setOrigin(0.5, 1));
 
     // Name

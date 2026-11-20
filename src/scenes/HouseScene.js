@@ -35,7 +35,7 @@ class HouseScene extends Phaser.Scene {
     // You: at the stove if you just cooked, otherwise just inside the door
     const st = FUP.home.fixture('stove'), bed = FUP.home.fixture('bed'), D = FUP.home.door, from = this.arrive.from;
     const start = from === 'stove' ? M.center(st.tx, st.ty + 1) : from === 'slept' ? M.center(bed.tx + bed.w, bed.ty + 1) : M.center(D.tx, D.ty - 1);
-    this.player = ui.sprite(this, start.x, start.y, FUP.looks.key('hero_map'), '🧍', 30).setOrigin(0.5, 0.72).setDepth(start.y + 16);
+    this.player = FUP.heroArt.make(this, start.x, start.y, 'map').setOrigin(0.5, 0.72).setDepth(start.y + 16);
     this.hat = FUP.cosmetics.attachHat(this, this.player, 'map');
 
     this.drawHud();

@@ -211,7 +211,7 @@ class VillageScene extends Phaser.Scene {
     const start = this.arrive.at ? M.center(this.arrive.at.tx, this.arrive.at.ty)   // walked in from another region (the Docks)
       : (this.arrive.from === 'run' || this.arrive.from === 'retreat' || this.arrive.from === 'chute') ? FUP.world.gapMiddle('village', 'N')   // just inside the gate
       : this.arrive.from === 'home' && door && FUP.house.state.door ? M.center(door.tx, door.ty) : M.center(P.tx, P.ty);
-    this.player = ui.sprite(this, start.x, start.y, FUP.looks.key('hero_map'), '🧍', 30).setOrigin(0.5, 0.72).setDepth(start.y + 16);
+    this.player = FUP.heroArt.make(this, start.x, start.y, 'map').setOrigin(0.5, 0.72).setDepth(start.y + 16);
     this.hat = FUP.cosmetics.attachHat(this, this.player, 'map');   // your hat, if you wear one (G2)
     // Clicking a villager or the door walks you there and opens it
     for (const s of this.spots) {

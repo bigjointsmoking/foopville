@@ -41,7 +41,7 @@ class StartScene extends Phaser.Scene {
 
     // Your hero (in your colours) on the path, facing the Forest
     if (this.saved) FUP.looks.apply(this, this.saved.look);
-    ui.sprite(this, W / 2, 590, FUP.looks.key('hero'), '🧍', 60, 2).setOrigin(0.5, 1).setDepth(5);
+    FUP.heroArt.make(this, W / 2, 590, 'battle', { look: this.saved ? this.saved.look : null, weapon: false }).setOrigin(0.5, 1).setDepth(5);
 
     // ---------- The title ----------
     const LG = TT.logo;
@@ -54,7 +54,7 @@ class StartScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, alpha: 1, scale: logo.type === 'Image' ? FUP.ui.artScale(LG.scale) : LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v1.06', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v1.07', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);

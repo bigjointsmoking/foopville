@@ -12,7 +12,7 @@ window.FUP = window.FUP || {};
 
 FUP.weapons = {
   sword: {
-    name: 'Rusty Sword', emoji: '🗡️', sprite: 'w_sword',
+    name: 'Rusty Sword', emoji: '🗡️', sprite: 'w_sword', handTint: { 2: '#b8d0e8', 3: '#f2c84b', 4: '#e0e8ff', 5: '#c890f0' },   // A2: upgrades tint the weapon in his hand (tier: colour, PLACEHOLDER)
     style: 'Balanced. Normal speed, normal damage. The responsible choice.',
     atkMult: 1.0, spdMult: 1.0, rizzBonus: 0, healMult: 1.0,
     special: { name: 'Double Slash', desc: '2 hits at 90% power', hits: 2, power: 0.9 },
@@ -24,7 +24,7 @@ FUP.weapons = {
     ],
   },
   pan: {
-    name: 'Frying Pan', emoji: '🍳', sprite: 'w_pan',
+    name: 'Frying Pan', emoji: '🍳', sprite: 'w_pan', handTint: { 2: '#8a9aaa', 3: '#e0b84a', 4: '#c8a0a0', 5: '#c890f0' },   // A2: upgrades tint the weapon in his hand (tier: colour, PLACEHOLDER)
     style: 'Slow (-20% speed), heavy (+25% attack). Food you eat heals 15% more.',
     atkMult: 1.25, spdMult: 0.8, rizzBonus: 0, healMult: 1.15,
     special: { name: 'BONK', desc: '140% hit, 35% chance to stun', hits: 1, power: 1.4, stunChance: 0.35 },
@@ -37,7 +37,7 @@ FUP.weapons = {
     ],
   },
   chicken: {
-    name: 'Rubber Chicken', emoji: '🐔', sprite: 'w_chicken',
+    name: 'Rubber Chicken', emoji: '🐔', sprite: 'w_chicken', handTint: { 2: '#f8e070', 3: '#f2b84b', 4: '#ffd0e0', 5: '#c890f0' },   // A2: upgrades tint the weapon in his hand (tier: colour, PLACEHOLDER)
     // Buffed in v0.35 (Jesus): was -30% attack, +15% Rizz, SQUEAK 60% hit / -25% ATK for 3 moves.
     style: 'Fast (+20% speed), a bit weak (-15% attack). +35% Rizz success.',
     atkMult: 0.85, spdMult: 1.2, rizzBonus: 0.35, healMult: 1.0,

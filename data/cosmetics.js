@@ -37,5 +37,5 @@ FUP.cosmeticData = {
     log_explorer:  { text: 'the Explorer', req: { facts: { 'logDone:areas': 1 } } },
   },
   // Where the hat sits: pixels above the hero's middle, and its size (map / fight)
-  hatOffset: { map: -20, battle: -44 }, hatSize: { map: 22, battle: 44 },
+  hatOffset: { map: -30, battle: -66 }, hatSize: { map: 22, battle: 50 },   // (v1.07: moved up for the taller hero from the sketches)
 };

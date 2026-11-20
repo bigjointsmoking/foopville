@@ -8,7 +8,7 @@ window.FUP = window.FUP || {};
 
 FUP.looksData = {
   hairstyles: [
-    { id: 'fringe',   name: 'Fringe' },
+    { id: 'fringe',   name: 'Messy' },   // (v1.07: the sketch's messy hair; the id stays 'fringe' for old saves)
     { id: 'spiky',    name: 'Spiky' },
     { id: 'ponytail', name: 'Ponytail' },
     { id: 'bald',     name: 'Bald (aerodynamic)' },

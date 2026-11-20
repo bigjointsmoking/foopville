@@ -259,11 +259,12 @@ class BattleScene extends Phaser.Scene {
   }
 
   drawPlayer() {
-    this.playerSprite = FUP.ui.sprite(this, 240, 290, FUP.looks.key('hero'), '🧍', 108).setDepth(300);
+    this.playerSprite = FUP.heroArt.make(this, 240, 290, 'battle', { scale: FUP.look.heroAnim.battleScale }).setDepth(300);   // the layered hero with the weapon in hand (A2)
+    this.playerSprite.y = 352 - this.playerSprite.displayHeight / 2;   // feet on the shadow
     this.hat = FUP.cosmetics.attachHat(this, this.playerSprite, 'battle');   // your hat (G2)
-    // Upgraded weapon (from the gear shop) shows in your hand
+    // The weapon is part of the hero picture now (A2); the old loose weapon picture only if the hero art is missing
     const up = FUP.run.equipped && FUP.run.equipped.weapon;
-    this.weaponSprite = FUP.ui.sprite(this, 292, 312, up ? FUP.gear.spriteKey(up) : this.weapon.sprite, this.weapon.emoji, 48).setDepth(301);
+    this.weaponSprite = this.playerSprite.heroWeapon || FUP.ui.sprite(this, 292, 312, up ? FUP.gear.spriteKey(up) : this.weapon.sprite, this.weapon.emoji, 48).setDepth(301);
     this.guardIcon = this.add.text(178, 300, '🛡️', { fontSize: '40px' }).setOrigin(0.5).setVisible(false).setDepth(302);
     this.playerSprite.baseX = this.playerSprite.x;
     this.playerSprite.baseY = this.playerSprite.y;
@@ -771,6 +772,7 @@ class BattleScene extends Phaser.Scene {
       if (this.deductMult < 1) this.player.defendMult = 0.75;   // audited: a weak guard
       this.addLimit(FUP.balance.limitPerDefend);
       this.popup(this.playerSprite, 'GUARD', 'info');
+      if (this.playerSprite.heroPlay) this.playerSprite.heroPlay('defend');
       this.say('defend');
       FUP.audio.sfx('guard');
     }, { cat: 'defend' });
@@ -1301,6 +1303,7 @@ class BattleScene extends Phaser.Scene {
     this.popup(this.playerSprite, prefix + (r.crit ? 'CRIT ' : '') + '-' + r.amount, r.crit ? 'crit' : 'bad');
     FUP.audio.sfx(prefix ? 'poison' : 'hurt');
     FUP.fx.hit(this, this.playerSprite, -1);
+    if (this.playerSprite.heroPlay) this.playerSprite.heroPlay('hurt');
     FUP.fx.burst(this, this.playerSprite.x, this.playerSprite.y - 10, prefix ? 'poison' : 'hurt');
     FUP.fx.shake(this, r.crit ? 'crit' : heavy ? 'heavy' : 'hurt');
     if (r.crit) this.say('enemyCrit', { enemy: (this.target() || {}).name });
@@ -1499,7 +1502,7 @@ class BattleScene extends Phaser.Scene {
     const tube = this.add.graphics().setDepth(901);
     tube.lineStyle(70, FUP.look.num('w3')); tube.lineBetween(-40, 80, W + 40, H - 60);
     tube.lineStyle(56, FUP.look.num('k1')); tube.lineBetween(-40, 80, W + 40, H - 60);
-    const hero = ui.sprite(this, -20, 70, FUP.looks.key('hero_map'), '🧍', 40).setDepth(902).setAngle(30).setScale(FUP.ui.artScale(FUP.ui.pixelScale * 1.4));
+    const hero = FUP.heroArt.make(this, -20, 70, 'map', { scale: 1.4 }).setDepth(902).setAngle(30);
     ui.text(this, W / 2, 60, 'THE EXIT CHUTE', 30, ui.colors.accent, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 6 }).setOrigin(0.5).setDepth(903);
     const line = Phaser.Utils.Array.GetRandom(FUP.narrator.chuteSlide);
     ui.text(this, W / 2, H - 40, line, 17, ui.colors.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: W - 80 } }).setOrigin(0.5).setDepth(903);
@@ -1544,6 +1547,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   lunge(sprite, dir) {
+    if (sprite.heroPlay) sprite.heroPlay('attack');   // the hero swings his weapon (A2)
     this.tweens.add({
       targets: sprite, x: sprite.baseX + 34 * dir, duration: 90, yoyo: true, ease: 'Quad.easeOut',
       onComplete: () => { if (sprite.active && !this.over) sprite.x = sprite.baseX; },

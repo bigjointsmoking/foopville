@@ -257,7 +257,7 @@ class WorldScene extends Phaser.Scene {
     this.enemySprites = A.enemies.map(e => e.alive ? this.enemySprite(e) : null);
     this.placeQuestFoes();
 
-    this.player = FUP.ui.sprite(this, A.player.x, A.player.y, FUP.looks.key('hero_map'), '🧍', 30).setOrigin(0.5, 0.72).setDepth(A.player.y + 16);
+    this.player = FUP.heroArt.make(this, A.player.x, A.player.y, 'map').setOrigin(0.5, 0.72).setDepth(A.player.y + 16);
     this.hat = FUP.cosmetics.attachHat(this, this.player, 'map');   // your hat, if you wear one (G2)
   }
 

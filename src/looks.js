@@ -33,10 +33,11 @@ FUP.looks = {
     const style = FUP.looksData.hairstyles.some(h => h.id === look.hairstyle) ? look.hairstyle : 'fringe';
     // Same look as last time and already painted: nothing to do (v0.41: avoids swapping a picture a fading screen still uses)
     const sig = JSON.stringify(look) + style;
-    if (this._sig === sig && scene.textures.exists('hero_me') && scene.textures.exists('hero_map_me')) return;
+    if (this._sig === sig && scene.textures.exists('hero_me') && scene.textures.exists('hero_map_me')) { if (FUP.heroArt) FUP.heroArt.paint(scene, look); return; }
     this._sig = sig;
     this.paint(scene, 'herokey_' + style, 'hero_me', look);
     this.paint(scene, 'herokey_map_' + style, 'hero_map_me', look);
+    if (FUP.heroArt) FUP.heroArt.paint(scene, look);   // the layered hero from the sketches (A2)
   },
 
   paint(scene, fromKey, toKey, look) {

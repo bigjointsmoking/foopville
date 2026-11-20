@@ -87,6 +87,8 @@ FUP.look = {
   // The 🗺️ world map panel (src/worldMapUi.js): box size in pixels, colours for each kind of box
   worldMap: { box: { w: 150, h: 64, gap: 14 }, here: 'y2', seen: 'k2', unseen: 'k1', locked: 'r2', line: 's3' },
 
+  // The hero's frame speeds, seconds per frame (src/heroArt.js, A2)
+  heroAnim: { idle: 0.32, attack: 0.07, hurt: 0.12, defend: 0.14, walk: 0.11, battleScale: 1.45 },   // battleScale: how big he's drawn in fights
   feel: {
     transitionMs: 220,          // fade to black between screens (0 = off)
     menuPopMs: 160,             // windows slide up + fade in when they open (0 = off)
