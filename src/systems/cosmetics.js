@@ -3,7 +3,7 @@
 // Numbers and names in data/cosmetics.js.
 //   own(id) / has(id)         get a hat / do you have it
 //   buy(id)                   'ok' | 'owned' | 'broke' (the Shopkeeper, Rizz discount applies)
-//   wear('hat' | 'title', id) id = null takes it off
+//   wear('hat' | 'title', id) id = null takes it off. A hat takes head armour off (into the backpack); 'noRoom' if full
 //   titles()                  ids of titles you've unlocked
 //   nameLine()                "Pib the Gatecrasher"
 //   attachHat(scene, sprite, mode)  draws the worn hat on a hero sprite ('map' or 'battle')
@@ -25,7 +25,10 @@ FUP.cosmetics = {
     this.own(id);
     return 'ok';
   },
+  // One thing on his head at a time (v1.08, Jesus): wearing a hat takes your head armour off into the
+  // backpack. Backpack full = the hat stays off (returns 'noRoom'; narrator hatNoRoom).
   wear(slot, id) {
+    if (slot === 'hat' && id && this.has(id) && FUP.run.equipped && FUP.run.equipped.head && !FUP.run.unequip('head')) return 'noRoom';
     if (slot === 'hat') this.state.hat = id && this.has(id) ? id : null;
     if (slot === 'title') this.state.title = id && this.titles().includes(id) ? id : null;
   },
@@ -37,14 +40,17 @@ FUP.cosmetics = {
   },
 
   // The worn hat follows the hero sprite every frame. Call from create() (screens are reused).
+  // Old saves could have a hat AND head armour on: the armour (it has stats) wins.
+  tidyHead() { if (this.state.hat && FUP.run && FUP.run.equipped && FUP.run.equipped.head) this.state.hat = null; },
   attachHat(scene, sprite, mode = 'map') {
+    this.tidyHead();
     const id = this.state.hat, h = id && FUP.cosmeticData.hats[id];
     if (!h || !sprite) return null;
     const D = FUP.cosmeticData, off = D.hatOffset[mode], size = D.hatSize[mode];
     const hat = scene.add.text(sprite.x, sprite.y + off, h.emoji, { fontSize: size + 'px' }).setOrigin(0.5, 0.8);
     const follow = () => {
       if (!hat.active || !sprite.active) return;
-      hat.setPosition(sprite.x, sprite.y + off).setDepth((sprite.depth || 0) + 1).setVisible(sprite.visible).setAlpha(sprite.alpha);
+      hat.setPosition(sprite.x, sprite.y + off).setDepth((sprite.depth || 0) + 1).setVisible(sprite.visible && this.state.hat === id).setAlpha(sprite.alpha);   // gone the moment head armour goes on
       hat.setScale(sprite.flipX ? -1 : 1, 1);
     };
     follow();

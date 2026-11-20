@@ -162,7 +162,7 @@ FUP.backpack = {
       const h = D.hats[id], on = C.state.hat === id, y = Y + 24 + i * 46;
       add(ui.text(s, X, y + 4, h.emoji, 24, c.ink), 2);
       add(ui.text(s, X + 40, y + 8, h.name + (on ? '  (wearing)' : ''), 14, on ? c.good : c.ink, { fontStyle: '700' }), 2);
-      btn(X + colW - 110, y, 100, 32, on ? 'Take off' : 'Wear', () => { C.wear('hat', on ? null : id); redrawHat(); }, { hot: !on });
+      btn(X + colW - 110, y, 100, 32, on ? 'Take off' : 'Wear', () => { if (C.wear('hat', on ? null : id) === 'noRoom') { FUP.audio.sfx('error'); if (s.say) s.say('hatNoRoom'); } redrawHat(); }, { hot: !on });
     });
     // Titles
     const TX = X + colW + 24;

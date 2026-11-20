@@ -665,3 +665,5 @@ FUP.narrator.cartGreet = ['"Where to? Somewhere you\'ve been, mind. I don\'t do 
 FUP.narrator.cartArrive = ['The cart drops you off and leaves at once. Rude, but efficient.', 'You arrive with a sore back and a lighter purse. Classic travel.', 'The driver says "good luck" in a tone that means "goodbye forever".'];
 FUP.narrator.cartBroke = ['"No coins, no cart." The horse agrees.', 'You can\'t afford the fare. The horse snorts. Loudly.'];
 FUP.narrator.boardAllDone = ['Nothing left to fix. Suspicious.'];
+// v1.08 one head item at a time: a Wardrobe hat can't go on while head armour has nowhere to go
+FUP.narrator.hatNoRoom = ['Your helmet needs somewhere to go before the hat goes on. Your backpack is full.', 'One head, one thing on it. Make room in your backpack for the helmet first.'];

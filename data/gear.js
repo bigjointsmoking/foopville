@@ -37,7 +37,7 @@ FUP.gearData = {
     weapon_5: { slot: 'weapon', tier: 5, chase: true, names: { sword: 'Blade That Has Read Your Reviews', pan: 'Pan of the Five Kitchens', chicken: 'The Squeak Heard Round the World' }, emoji: '⚔️', stats: { atk: 15 }, price: 10800, req: { skills: { melee: 40 } } },
 
     // ----- Head -----
-    bucket:      { slot: 'head', tier: 1, cut: 'sturdy', name: 'Bucket', emoji: '🪣', stats: { def: 2 }, price: 180 },
+    bucket:      { slot: 'head', tier: 1, cut: 'sturdy', name: 'Reinforced Bucket', emoji: '🪣', stats: { def: 2 }, price: 180 },
     leather_cap: { slot: 'head', tier: 2, cut: 'sturdy', name: 'Leather Cap', emoji: '🧢', stats: { def: 3, hp: 5 }, price: 420, req: { combat: 10 } },
     headband:    { slot: 'head', tier: 2, cut: 'light',  name: 'Headband of Trying', emoji: '🎽', stats: { def: 1, crit: 0.03 }, price: 420, req: { combat: 10 } },
     flat_cap:    { slot: 'head', tier: 2, cut: 'dapper', name: 'Flat Cap', emoji: '🧢', stats: { def: 1, rizz: 0.06 }, price: 420, req: { combat: 10 } },

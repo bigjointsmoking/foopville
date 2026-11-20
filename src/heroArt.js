@@ -3,8 +3,11 @@
 // The hero is drawn in LAYERS that stay stacked on top of each other:
 //   body    skin / shirt / scarf in key colours, recoloured to your creator picks (src/looks.js)
 //   hair    your hairstyle (key colour, recoloured)
-//   bucket  the dented bucket helmet (hidden while a Wardrobe hat is worn: the hat replaces it)
+//   armour  a_<gear key> for each worn armour piece (v1.08, A2 part 2): legs, then body, under the hair
+//   head    ONE thing on his head: worn head armour (a_<key>), else a Wardrobe hat (an emoji, cosmetics.attachHat),
+//           else the bucket. Some head armour hides the hair (data/look.js heroArmour.hideHair).
 //   weapon  in his hand in fights (your base weapon; upgrades tint it, data/weapons.js handTint)
+// Change your gear and the picture changes by itself on the next frame.
 // Every layer has the same frames, so they always line up:
 //   fights  hb_<layer>_<frame>         frames: rest, idle_0-3, attack_0-3, hurt_0-1, defend_0-1
 //   maps    hm_<dir>_<layer>_<frame>   dir: side / front / back, frames: rest, walk_0-3
@@ -49,8 +52,14 @@ FUP.heroArt = {
   // A painted key if there is one
   key(scene, k) { return scene.textures.exists(k + '_me') ? k + '_me' : k; },
 
-  // What's on his head: the bucket, unless a Wardrobe hat is worn (Jesus: the hat replaces it)
-  showBucket() { return !(FUP.cosmetics && FUP.cosmetics.state && FUP.cosmetics.state.hat); },
+  // What's on his head: head armour, else a Wardrobe hat, else the bucket (Jesus: one head item at a time)
+  showBucket() { return !(FUP.cosmetics && FUP.cosmetics.state && FUP.cosmetics.state.hat) && !this.armour().head; },
+  // Worn armour that has a picture: { head, body, legs } = gear keys (random drops use their base key)
+  armour() {
+    const eq = (FUP.run && FUP.run.equipped) || {}, out = {};
+    for (const slot of ['head', 'body', 'legs']) { const it = eq[slot]; if (it && it.key && FUP.sprites && FUP.sprites[`hb_a_${it.key}_rest`]) out[slot] = it.key; }
+    return out;
+  },
   // The weapon in his hand: the base weapon's model, tinted for upgrades
   weapon() {
     const base = (FUP.run && FUP.run.weapon) || 'sword', up = FUP.run && FUP.run.equipped && FUP.run.equipped.weapon;
@@ -58,27 +67,48 @@ FUP.heroArt = {
     const tint = ((FUP.weapons[base] || {}).handTint || {})[tier];
     return { id: base, tint: tint ? Phaser.Display.Color.HexStringToColor(tint).color : null };
   },
+  // The layers on top of the body, bottom to top
+  layerList(mode, look, opts) {
+    const arm = opts.armour === false ? {} : this.armour(), out = [];
+    if (arm.legs) out.push('a_' + arm.legs);
+    if (arm.body) out.push('a_' + arm.body);
+    const hide = ((FUP.look.heroArmour || {}).hideHair || []).includes(arm.head);
+    if (!hide) out.push('hair_' + this.hairStyle(look));
+    if (arm.head) out.push('a_' + arm.head);
+    else if (opts.bucket !== false && this.showBucket()) out.push('bucket');
+    return out;
+  },
 
   make(scene, x, y, mode = 'map', opts = {}) {
     const ui = FUP.ui, scale = ui.artScale(ui.pixelScale * (opts.scale || 1));
     if (!this.ready(scene)) return ui.sprite(scene, x, y, null, '🧍', mode === 'battle' ? 108 : 30);   // (art not loaded: an emoji, like before)
-    const look = opts.look || this.look(), style = this.hairStyle(look);
+    const look = opts.look || this.look();
     this.paint(scene, look);
     const dir0 = mode === 'battle' ? '_' : 'side';
     const body = scene.add.image(x, y, this.key(scene, this.base(mode, dir0, 'body', 'rest'))).setScale(scale);
-    const layerIds = ['hair_' + style];
-    if (opts.bucket !== false && this.showBucket()) layerIds.push('bucket');
-    let weapon = null;
-    if (mode === 'battle' && opts.weapon !== false) { weapon = this.weapon(); layerIds.push('w_' + weapon.id); }
-    const layers = layerIds.map(id => ({ id, img: scene.add.image(x, y, this.key(scene, this.base(mode, dir0, id, 'rest'))).setScale(scale) }));
-    if (weapon && weapon.tint) layers[layers.length - 1].img.setTint(weapon.tint);
-    const H = body.hero = { mode, dir: dir0, clip: null, frame: 'rest', t: 0, last: null, still: 0, layers };
-    body.heroWeapon = weapon ? layers[layers.length - 1].img : null;
+    const H = body.hero = { mode, dir: dir0, clip: null, frame: 'rest', t: 0, last: null, still: 0, layers: [], sig: null };
+    const weapon = mode === 'battle' && opts.weapon !== false ? this.weapon() : null;
+    // (Re)build the layers when what he wears changes
+    const build = () => {
+      const ids = this.layerList(mode, look, opts);
+      if (weapon) ids.push('w_' + weapon.id);
+      const sig = ids.join('|');
+      if (sig === H.sig) return;
+      H.sig = sig;
+      for (const L of H.layers) if (L.img.active) L.img.destroy();
+      H.layers = ids.filter(id => scene.textures.exists(this.base(mode, mode === 'battle' ? '_' : 'side', id, 'rest')))
+        .map(id => ({ id, img: scene.add.image(body.x, body.y, this.key(scene, this.base(mode, H.dir, id, H.frame))).setScale(body.scaleX) }));
+      const w = weapon && H.layers.find(L => L.id === 'w_' + weapon.id);
+      if (w && weapon.tint) w.img.setTint(weapon.tint);
+      body.heroWeapon = w ? w.img : null;
+    };
+    build();
+    const layersNow = () => H.layers;
 
     const setFrame = (f) => {
       H.frame = f;
       body.setTexture(this.key(scene, this.base(mode, H.dir, 'body', f)));
-      for (const L of layers) L.img.setTexture(this.key(scene, this.base(mode, H.dir, L.id, f)));
+      for (const L of layersNow()) L.img.setTexture(this.key(scene, this.base(mode, H.dir, L.id, f)));
     };
     // Fights: play a move once, then breathe again
     body.heroPlay = (clip, onDone) => { H.clip = clip; H.t = 0; H.onDone = onDone || null; };
@@ -109,6 +139,8 @@ FUP.heroArt = {
           if (f !== H.frame || dir !== H.dirShown) { H.dirShown = dir; setFrame(f); }
         } else if ((H.still += dt) > 0.12 && H.frame !== 'rest') { H.dirShown = H.dir; setFrame('rest'); }
       }
+      build();
+      const layers = layersNow();
       for (let k = 0; k < layers.length; k++) {
         const L = layers[k].img;
         L.setPosition(body.x, body.y).setOrigin(body.originX, body.originY).setScale(body.scaleX, body.scaleY).setFlipX(body.flipX)
@@ -117,7 +149,7 @@ FUP.heroArt = {
     };
     follow();
     scene.events.on('postupdate', follow);
-    const cleanup = () => { scene.events.off('postupdate', follow); for (const L of layers) if (L.img.active) L.img.destroy(); };
+    const cleanup = () => { scene.events.off('postupdate', follow); for (const L of layersNow()) if (L.img.active) L.img.destroy(); };
     body.once('destroy', cleanup);
     scene.events.once('shutdown', cleanup);
     return body;

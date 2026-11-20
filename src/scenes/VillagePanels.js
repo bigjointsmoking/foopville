@@ -484,7 +484,7 @@ FUP.villagePanels = {
         btn: has ? 'Owned' : `${price} 🪙`, disabled: has || FUP.run.coins < price, hot: !has && FUP.run.coins >= price,
         fn: () => {
           const r = C.buy(id);
-          if (r === 'ok') { FUP.audio.sfx('fanfare'); this.talk('bought'); C.wear('hat', id); if (this.hat) this.hat.destroy(); this.hat = C.attachHat(this, this.player, 'map'); FUP.save.write(); }
+          if (r === 'ok') { FUP.audio.sfx('fanfare'); this.talk('bought'); if (C.wear('hat', id) === 'noRoom') this.say('hatNoRoom'); if (this.hat) this.hat.destroy(); this.hat = C.attachHat(this, this.player, 'map'); FUP.save.write(); }
           else if (r === 'broke') this.talk('broke');
         },
       };

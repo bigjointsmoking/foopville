@@ -178,6 +178,7 @@ FUP.run = {
     this.stash.splice(i, 1);
     if (this.equipped[item.slot]) this.stash.push(this.equipped[item.slot]);
     this.equipped[item.slot] = item;
+    if (item.slot === 'head' && FUP.cosmetics) FUP.cosmetics.state.hat = null;   // one head item at a time (v1.08): the hat goes back in the Wardrobe
     this.capHp();
     return true;
   },
@@ -197,7 +198,7 @@ FUP.run = {
     this.coins -= price;
     const item = FUP.gear.fromShop(key);
     // Worn straight away if that slot is empty; otherwise it needs a backpack slot (v0.41)
-    if (!this.equipped[item.slot] && FUP.unlocks.canWear(item)) { this.equipped[item.slot] = item; this.capHp(); }
+    if (!this.equipped[item.slot] && FUP.unlocks.canWear(item)) { this.equipped[item.slot] = item; if (item.slot === 'head' && FUP.cosmetics) FUP.cosmetics.state.hat = null; this.capHp(); }
     else if (!this.addGear(item)) { this.coins += price; return null; }
     return item;
   },

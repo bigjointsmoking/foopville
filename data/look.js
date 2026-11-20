@@ -88,6 +88,8 @@ FUP.look = {
   worldMap: { box: { w: 150, h: 64, gap: 14 }, here: 'y2', seen: 'k2', unseen: 'k1', locked: 'r2', line: 's3' },
 
   // The hero's frame speeds, seconds per frame (src/heroArt.js, A2)
+  // A2 part 2 (v1.08): head armour that hides his hair (full helms). Placeholder pick.
+  heroArmour: { hideHair: ['lord_helm', 'hood'] },
   heroAnim: { idle: 0.32, attack: 0.07, hurt: 0.12, defend: 0.14, walk: 0.11, battleScale: 1.45 },   // battleScale: how big he's drawn in fights
   feel: {
     transitionMs: 220,          // fade to black between screens (0 = off)
