@@ -141,7 +141,7 @@ FUP.villagePanels = {
 
     const X = 270, RW = W - 40 - X;
     if (out) { this.renderAway(X, RW); return; }
-    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary })[this.panelId].call(this, X, RW);
+    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, orders: this.renderOrders, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary })[this.panelId].call(this, X, RW);
   },
 
   // ---------- A villager out of the village for a quest: no shop out here ----------
@@ -463,6 +463,33 @@ FUP.villagePanels = {
     this.pRows(rows, X, 90, RW, 8, 48);
     const owned = Object.keys(FUP.gardenData.farmPlots).filter(ch => G.owns(ch)).length;
     this.pText(X, 520, `You own ${owned} of ${plots} plots. Buy them in any order. Dying loses them, like everything else.`, 12, c.dim);
+  },
+
+  // ---------- Hollis's farm order board (F-F, src/systems/orders.js) ----------
+  renderOrders(X, RW) {
+    const c = FUP.ui.colors, O = FUP.orders, D = FUP.orderData;
+    O.refresh();
+    this.pText(X, 36, 'FARM ORDERS', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 64, '3 a day. New ones every morning; unfinished ones just go away.', 12, c.dim, { wordWrap: { width: RW - 150 } });
+    const rows = O.state.list.map(o => {
+      const n = FUP.villageData.npcs[o.giver], have = Math.min(O.have(o), o.n);
+      return {
+        name: `${n.emoji} ${n.name.replace(/^The /, '')}: ${O.what(o)}`,
+        sub: (o.line ? `"${o.line}"\n` : '') + `Pays: ${O.payText(o)}`, subColor: o.done ? c.good : undefined,
+        btn: o.done ? 'Done ✓' : o.type === 'giant' ? (have ? 'Show Pip' : 'Not yet') : `Hand in ${have}/${o.n}`,
+        disabled: o.done || !O.ready(o), hot: O.ready(o),
+        fn: () => {
+          const r = O.handIn(o, { x: this.scale.width / 2, y: this.scale.height / 2 });
+          if (r === 'ok') { FUP.audio.sfx('questDone'); this.sayLine(`Order filled for ${n.name.replace(/^The /, 'the ')}. +${o.coins} coins.`); }
+          else if (r === 'room') { FUP.audio.sfx('error'); this.sayLine('No room in your backpack for the feed they\'re giving you. Make room first.'); }
+          else FUP.audio.sfx('error');
+        },
+      };
+    });
+    if (!rows.length) this.pText(X, 100, D.empty, 13, c.dim, { fontStyle: 'italic', wordWrap: { width: RW - 20 } });
+    this.pRows(rows, X, 100, RW, 4, 96);
+    const done = O.state.list.filter(o => o.done).length;
+    this.pText(X, 520, `Filled today: ${done} of ${O.state.list.length}. ${FUP.clock.label()}.`, 12, c.dim);
   },
 
   // ---------- Compost Bin (v0.41) ----------

@@ -183,6 +183,14 @@ class VillageScene extends Phaser.Scene {
       ui.text(this, p.x, p.y - s.displayHeight * 0.8 - 2, 'COMPOST', 10, c.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
       this.spots.push({ id: 'compost', kind: 'object', x: p.x, y: p.y, sprite: s, label: o.label });
     }
+    // Hollis's farm order board (F-F, data/orders.js)
+    {
+      const ob = FUP.orderData.board, p = M.center(ob.tx, ob.ty), o = d.objects.orders;
+      const s = ui.sprite(this, p.x, p.y, 'vil_board', o.emoji, 26).setOrigin(0.5, 0.8).setDepth(p.y + 10).setScale(FUP.ui.artScale(FUP.ui.pixelScale * 0.6));
+      ui.text(this, p.x, p.y - s.displayHeight * 0.8 - 2, 'ORDERS', 10, c.ink, { stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this.orderBoard = { x: p.x, y: p.y - s.displayHeight * 0.8 - 16 };
+      this.spots.push({ id: 'orders', kind: 'object', x: p.x, y: p.y, sprite: s, label: o.label });
+    }
     // The sawhorse next to the Carpenter: saw Bark into planks (data/place.js)
     {
       const o = d.objects.sawhorse, p = M.center(o.spot.tx, o.spot.ty);
@@ -278,6 +286,13 @@ class VillageScene extends Phaser.Scene {
     this.refreshQuestMarks();
     this.dayText.setText(FUP.clock.label());
     FUP.stallUi.marks(this, 'village');   // 🪙 / 💤 over your stall
+    // ✨ over the order board when you can hand one in (F-F)
+    FUP.orders.refresh();
+    const oReady = FUP.orders.readyCount() > 0;
+    if (this.orderBoard && oReady !== !!this.orderMark) {
+      if (this.orderMark) { this.tweens.killTweensOf(this.orderMark); this.orderMark.destroy(); this.orderMark = null; }
+      if (oReady) { this.orderMark = this.add.text(this.orderBoard.x, this.orderBoard.y, '✨', { fontSize: '18px' }).setOrigin(0.5, 1).setDepth(5200); this.tweens.add({ targets: this.orderMark, y: this.orderMark.y - 5, duration: 700, yoyo: true, repeat: -1 }); }
+    }
     FUP.animalUi.marks(this, 'village');  // 😟 / ✨ / 💀 over coops, barns and hives (F-E)
     if (FUP.animals.news.length && !this.panel) FUP.animals.takeNews().forEach(l => this.sayLine(l));   // hungry / starving / died / the farmhand
     if (!this.panel) { this.refreshCommissions(); if (this.salvageSig() !== this._salSig) this.refreshSalvage(); }   // timers, new day = piles back

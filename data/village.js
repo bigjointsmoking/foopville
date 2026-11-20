@@ -308,6 +308,9 @@ FUP.villageData = {
     // The sawhorse beside the Carpenter: saw Bark into planks (data/place.js)
     sawhorse: { name: 'Sawhorse', emoji: '🪚', label: '🪚 Saw', spot: { tx: 13, ty: 16 },
       greet: ['A sawhorse. It has never once been ridden.', 'Bark goes in. Planks come out. Fingers stay on, ideally.', 'The Carpenter watches you saw. He is not impressed.'] },
+    // Hollis's farm order board (F-F, data/orders.js): 3 villager orders a day
+    orders: { name: 'Farm Order Board', portrait: 'vil_board', emoji: '📋', label: '📋 Orders',
+      greet: ['Orders from the village. Everyone wants something. Nobody wants to grow it.', 'Hollis pinned these up. He did it sitting down.', 'Fresh orders every morning. Old ones go in the compost.'] },
     compost: { name: 'Compost Bin', portrait: 'vil_barrel', emoji: '🪣', label: 'Compost',
       greet: ['It smells like ambition. And rot. Mostly rot.', 'A bin of regret. Feed it your failures.', 'Your burnt food finally has a purpose.'] },
   },

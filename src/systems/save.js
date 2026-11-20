@@ -203,6 +203,13 @@ FUP.save = {
     reset: () => FUP.clock.reset(),
   });
 
+  // Farm orders (F-F): today's 3 orders on Hollis's board
+  S.register('orders', {
+    get: () => FUP.orders.state,
+    set(d) { FUP.orders.state = { day: d.day || 0, list: copy(d.list || []) }; },
+    reset: () => FUP.orders.reset(),
+  });
+
   // Farm animals (F-E): the farmhand's paid days. Each animal's own state is saved on its placed thing.
   S.register('animals', {
     get: () => FUP.animals.state,

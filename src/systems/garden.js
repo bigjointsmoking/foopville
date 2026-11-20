@@ -453,7 +453,7 @@ FUP.garden = {
     const id = a.crop;
     let got = 0;
     while (a.left > 0 && FUP.run.addToBag(id)) { a.left--; got++; }
-    if (got && !a.paid) { a.paid = true; this.xp(FUP.gardenData.crops[id].harvestXp * FUP.gardenData.giant.xpTimes, where); }
+    if (got && !a.paid) { a.paid = true; this.xp(FUP.gardenData.crops[id].harvestXp * FUP.gardenData.giant.xpTimes, where); if (FUP.facts) FUP.facts.add('did:giant'); }   // (F-F: Pip's giant order counts these)
     const left = a.left;
     if (left <= 0) for (const [k, q] of Object.entries(this.state.patches)) if (q.giantOf === anchor) Object.assign(q, this.fresh(), { s: 'soil' });
     return { id, got, left, giant: true };
