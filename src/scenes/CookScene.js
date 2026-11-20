@@ -357,25 +357,26 @@ class CookScene extends Phaser.Scene {
     // ----- Left: what you're wearing -----
     add(ui.text(this, 40, 74, 'WEARING', 14, c.dim, { fontStyle: '700' }));
     G.slots.forEach((slot, i) => {
-      const y = 96 + i * 62, it = run.equipped[slot];
-      add(FUP.ui.panel(this, 40, y, 400, 56, 'inset', it ? Phaser.Display.Color.HexStringToColor(it.color).color : c.muted));
-      add(ui.text(this, 52, y + 8, `${G.slotEmoji[slot]} ${G.slotNames[slot].toUpperCase()}`, 11, c.dim, { fontStyle: '700' }));
+      const y = 96 + i * 52, it = run.equipped[slot];   // v1.01: 6 slots (the slingshot), so a bit tighter
+      add(FUP.ui.panel(this, 40, y, 400, 48, 'inset', it ? Phaser.Display.Color.HexStringToColor(it.color).color : c.muted));
+      add(ui.text(this, 52, y + 5, `${G.slotEmoji[slot]} ${G.slotNames[slot].toUpperCase()}`, 11, c.dim, { fontStyle: '700' }));
       if (it) {
-        pic(68, y + 36, it, it.emoji);
-        add(ui.text(this, 90, y + 22, nameOf(it), nameOf(it).length > 30 ? 12 : 14, it.color, { fontStyle: '700', wordWrap: { width: 262 }, maxLines: 1 }));
-        add(ui.text(this, 90, y + 39, FUP.gear.statText(it.stats) + (FUP.gear.effectInfo(it) ? ` · ★ ${FUP.gear.effectInfo(it).name}` : ''), 11, c.info, { wordWrap: { width: 262 }, maxLines: 1 }));
-        btn(360, y + 14, 70, 28, 'Take off', () => run.unequip(slot));
+        pic(68, y + 31, it, it.emoji);
+        add(ui.text(this, 90, y + 17, nameOf(it), nameOf(it).length > 30 ? 12 : 14, it.color, { fontStyle: '700', wordWrap: { width: 262 }, maxLines: 1 }));
+        add(ui.text(this, 90, y + 33, FUP.gear.statText(it.stats) + (FUP.gear.effectInfo(it) ? ` · ★ ${FUP.gear.effectInfo(it).name}` : ''), 11, c.info, { wordWrap: { width: 262 }, maxLines: 1 }));
+        btn(360, y + 10, 70, 28, 'Take off', () => run.unequip(slot));
       } else {
-        add(ui.text(this, 52, y + 26, slot === 'weapon' ? `Your ${FUP.weapons[run.weapon].name} (no upgrade)` : 'Nothing', 13, c.dim, { fontStyle: 'italic' }));
+        add(ui.text(this, 52, y + 21, slot === 'weapon' ? `Your ${FUP.weapons[run.weapon].name} (no upgrade)` : 'Nothing', 13, c.dim, { fontStyle: 'italic' }));
       }
     });
     // Your stats with all this on
     const p = FUP.combat.makePlayer(FUP.skills.level('melee'), FUP.weapons[run.weapon]);
-    const stats = [`HP ${p.maxHp}`, `ATK ${Math.round(p.atk * 10) / 10}`, `DEF ${p.def}`, `Crit ${Math.round(p.crit * 100)}%`];
+    const stats = [`HP ${p.maxHp}`, `ATK ${Math.round(p.atk * 10) / 10}`, `DEF ${Math.round(p.def * 10) / 10}`, `Crit ${Math.round(p.crit * 100)}%`];
+    if (run.hasSling()) stats.push(`Ranged ATK ${Math.round(p.ratk * 10) / 10}`, `Ammo ${run.ammoText() || 'none'}`);   // v1.01
     if (p.gearResist.poison) stats.push(`Poison resist ${Math.round(p.gearResist.poison * 100)}%`);
-    add(ui.text(this, 40, 410, 'YOUR STATS', 14, c.dim, { fontStyle: '700' }));
+    add(ui.text(this, 40, 412, 'YOUR STATS', 14, c.dim, { fontStyle: '700' }));
     add(ui.text(this, 40, 430, stats.join('   ·   '), 15, c.ink, { fontStyle: '700', wordWrap: { width: 400 } }));
-    add(ui.text(this, 40, 470, 'More DEF = enemies hit you for less.\nThe Guardian hits hard: armor helps a lot.', 12, c.dim, { lineSpacing: 3 }));
+    if (!run.hasSling()) add(ui.text(this, 40, 470, 'More DEF = enemies hit you for less.\nThe Guardian hits hard: armor helps a lot.', 12, c.dim, { lineSpacing: 3 }));   // (the slingshot's stats take this room)
 
     // ----- Right: shop or your stuff -----
     const X = 460, RW = W - 40 - X;

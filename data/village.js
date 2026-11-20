@@ -371,7 +371,7 @@ FUP.villageData = {
   // Blacksmith: weapon upgrades and armor. Shopkeeper: trinkets and ingredients,
   // and buys anything you own. Keys are ids from data/gear.js and data/ingredients.js.
   // Grouped by slot, then tier (G1). Each tier has a Sturdy / Light / Dapper piece. weapon_5 left the shop (boss drop later).
-  smithStock: ['weapon_2', 'weapon_3', 'weapon_4',
+  smithStock: ['weapon_2', 'weapon_3', 'weapon_4', 'sling_1', 'sling_2', 'sling_3', 'sling_4',
     'bucket', 'leather_cap', 'headband', 'flat_cap', 'shroom_helm', 'goggles', 'top_hat', 'lord_helm', 'hood', 'monocle',
     'burlap_sack', 'padded_vest', 'tunic', 'waistcoat', 'bark_armor', 'duelist_coat', 'velvet_jacket', 'plate_armor', 'harness', 'suit',
     'trousers', 'kneepads', 'shorts', 'slacks', 'shin_guards', 'tights', 'dance_shoes', 'greaves', 'leggings', 'breeches'],

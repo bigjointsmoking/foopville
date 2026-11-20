@@ -11,12 +11,16 @@ FUP.combat = {
   makePlayer(level, weapon, g = FUP.gear.totals()) {
     const s = FUP.balance.playerStats, U = FUP.unlocks;
     const perk = (k, d) => U ? U.perkBest(k, d) : d, sum = k => U ? U.perkSum(k) : 0;   // Melee perks (data/unlocks.js)
-    const maxHp = Math.round((s.hpBase + s.hpPerLvl * level + g.hp) * (1 + sum('hpPct')));
+    // v1.01 (design/combat.md §2): HP and DEF come from your combat level (the best of Melee / Ranged), ATK from the skill hitting
+    const cl = FUP.skills && FUP.skills.combatLevel ? Math.max(level, FUP.skills.combatLevel()) : level;
+    const R = FUP.rangedData, rl = FUP.skills ? FUP.skills.level('ranged') : 1;
+    const maxHp = Math.round((s.hpBase + s.hpPerLvl * cl + g.hp) * (1 + sum('hpPct')));
     return {
       name: 'You', isPlayer: true,
       maxHp, hp: maxHp,
       atk: (s.atkBase + s.atkPerLvl * level + g.atk) * weapon.atkMult,
-      def: s.defBase + s.defPerLvl * level + g.def,
+      ratk: R ? R.atkBase + R.atkPerLvl * rl + (g.ratk || 0) : 0,   // Ranged ATK (shots, ranged skills): your melee weapon doesn't count
+      def: s.defBase + s.defPerLvl * cl + g.def,
       spd: (s.spdBase + s.spdPerLvl * level) * weapon.spdMult * (1 + g.spd),
       crit: FUP.balance.critChance + g.crit + sum('critAdd'),
       critMult: perk('critMult', 0), guardMult: perk('defendMult', 0),

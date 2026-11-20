@@ -15,6 +15,11 @@ FUP.balance = {
 
   // --- Damage ---
   defenseWeight: 0.35,       // each point of the target's DEF blocks this much damage (was 0.5; v0.41: armor blocked too much)
+  // Rows (v1.01, design/combat.md §1): melee moves on a back-row enemy while a front-row one stands do x0.6.
+  // Shots, ranged skills and Throw always do full damage. Back-row enemies are drawn higher and smaller.
+  rows: { meleeBackMult: 0.6, backScale: 0.85 },
+  // Bosses and confusion (v1.01, design/combat.md §5): half the chance, and a confused boss skips its move instead of hitting itself
+  bossConfuse: { chanceMult: 0.5, skip: true },
   critChance: 0.08,          // 8% of hits are critical hits
   critMultiplier: 1.75,      // a crit does 175% damage
   damageRandomMin: 0.9,      // damage wobbles between 90%...

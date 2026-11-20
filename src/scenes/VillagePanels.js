@@ -204,7 +204,18 @@ FUP.villagePanels = {
     const ui = FUP.ui, c = ui.colors, G = FUP.gearData, V = FUP.village, run = FUP.run;
     this.pText(X, 36, 'WEAPONS & ARMOR', 20, c.accent, { fontStyle: '700' });
     this.pText(X, 64, this.priceNote(), 12, c.dim);
-    const rows = FUP.villageData.smithStock.map(k => {
+    // Slingshot ammo first (v1.01, data/ranged.js): pebbles in packs
+    const pb = FUP.rangedData.ammo.pebble, pPrice = V.buyPrice(pb.buy.coins, 'smith');
+    const ammoRow = {
+      pic: null, emoji: pb.emoji, name: `${pb.name}s x${pb.buy.count}  (slingshot ammo)`, sub: `You carry ${run.ammoCount('pebble')}/${run.ammoMax()}. Wear a slingshot to Shoot in fights.`,
+      btn: `${pPrice} 🪙`, disabled: run.coins < pPrice || run.ammoCount('pebble') >= run.ammoMax(),
+      fn: () => {
+        if (run.coins < pPrice) { this.talk('broke'); return; }
+        if (!run.addAmmo('pebble', pb.buy.count)) return;
+        run.coins -= pPrice; FUP.audio.sfx('coins'); this.talk('bought');
+      },
+    };
+    const rows = [ammoRow].concat(FUP.villageData.smithStock.map(k => {
       const d = G.items[k], price = V.gearPrice(k), worn = run.equipped[d.slot];
       const need = FUP.unlocks.wearLevel(k), weak = !FUP.unlocks.canWear(k);   // weapon upgrades need Melee (data/unlocks.js)
       return {
@@ -221,9 +232,9 @@ FUP.villagePanels = {
           else this.talk('bought');
         },
       };
-    });
+    }));
     this.pRows(rows, X, 90, RW, 9);   // 9 a page so the page arrows fit above the note
-    this.pText(X, 518, `New gear goes on straight away if that slot is empty. Change what you wear at home. Your Melee: ${FUP.skills.level('melee')} · Combat: ${FUP.req.combatLevel()}.`, 12, c.dim);
+    this.pText(X, 518, `New gear goes on straight away if that slot is empty. Change what you wear at home. Your Melee: ${FUP.skills.level('melee')} · Ranged: ${FUP.skills.level('ranged')} · Combat: ${FUP.req.combatLevel()}.`, 12, c.dim);
   },
 
   // ---------- Shopkeeper: buy ingredients + trinkets, sell anything ----------

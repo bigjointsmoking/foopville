@@ -225,6 +225,7 @@ Object.assign(VillageScene.prototype, {
         if (r.golden) this.sayLine(this.narratorText.text + ' And a golden Heartroot. Golden Harvest says hi.');
         if (r.scared) this.sayLine(this.narratorText.text + ' The scarecrow got you one extra. It takes no credit. It has no mouth.');
         if (r.giant) this.sayLine(this.narratorText.text + ' From one giant. It took some lifting.');
+        if (r.ammo) this.sayLine(this.narratorText.text + ` +${r.ammo.n} ${FUP.rangedData.ammo[r.ammo.id].emoji} ${FUP.rangedData.ammo[r.ammo.id].name}s for your slingshot.`);   // v1.01
         if (r.buzzed) this.sayLine(this.narratorText.text + ' The bees chipped in one more. They expect nothing. They\'ll sting you anyway.');
       }); break;
       case 'plant': this.openSeeds(fresh); break;

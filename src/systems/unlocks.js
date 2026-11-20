@@ -17,14 +17,14 @@ FUP.unlocks = {
   // Level needed to wear an item (0 = anyone). Takes an item or a gear key.
   wearLevel(itemOrKey) {
     const req = this.wearReq(itemOrKey);
-    return req ? ((req.skills && req.skills.melee) || req.combat || 0) : 0;
+    return req ? ((req.skills && (req.skills.melee || req.skills.ranged)) || req.combat || 0) : 0;
   },
   canWear(itemOrKey) { return FUP.req.met(this.wearReq(itemOrKey)); },
   // "Melee 20" (weapons) or "Combat 20" (armor); '' = anyone can wear it
   wearText(itemOrKey) {
     const req = this.wearReq(itemOrKey);
     if (!req) return '';
-    return req.skills && req.skills.melee ? `Melee ${req.skills.melee}` : req.combat ? `Combat ${req.combat}` : '';
+    return req.skills && req.skills.melee ? `Melee ${req.skills.melee}` : req.skills && req.skills.ranged ? `Ranged ${req.skills.ranged}` : req.combat ? `Combat ${req.combat}` : '';
   },
 
   // ---------- Melee: Limit Breaks you know ----------

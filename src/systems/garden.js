@@ -285,17 +285,20 @@ FUP.garden = {
     if (!p.paid && !p.buzzed) { p.buzzed = true; const h = this.helperNear(tx, ty, 'hive'); if (h && rng() < h.def.chance) { p.left++; buzzed = true; } }
     let got = 0;
     while (p.left > 0 && FUP.run.addToBag(id)) { p.left--; got++; }
-    let seed = false, golden = false;
+    let seed = false, golden = false, ammo = null;
     if (!p.paid && got > 0) {
       p.paid = true;
       this.xp(FUP.gardenData.crops[id].harvestXp, where);
       if (rng() < this.seedBack()) { this.state.seeds[id] = this.seedCount(id) + 1; seed = true; }
       // Golden Harvest perk: sometimes a bonus Heartroot
       if (rng() < FUP.unlocks.perkSum('goldenChance') && FUP.run.addToBag('heartroot')) golden = true;
+      // Slingshot ammo from some crops (v1.01, data/ranged.js harvest): Ember Seeds, Lemon Pips
+      const ah = FUP.rangedData && FUP.rangedData.harvest[id];
+      if (ah) { const n = FUP.run.addAmmo(ah.ammo, ah.count); if (n) ammo = { id: ah.ammo, n }; }
     }
     const left = p.left;
     if (left <= 0) Object.assign(p, this.fresh(), { s: 'soil' });
-    return { id, got, left, seed, golden, scared, buzzed, pal: p.pal || null };
+    return { id, got, left, seed, golden, scared, buzzed, ammo, pal: p.pal || null };
   },
 
   fillCan() {

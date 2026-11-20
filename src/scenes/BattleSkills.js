@@ -31,12 +31,13 @@ Object.assign(BattleScene.prototype, {
   // Your Special plus the weapon's extra skills, in unlock order.
   allSkills() {
     const w = this.weapon, sp = w.special;
-    return [{ id: 'special', level: 1, name: sp.name, desc: sp.desc, special: true, focus: FUP.balance.focus.special }, ...(w.skills || [])];
+    const ranged = FUP.run.hasSling() ? FUP.rangedData.skills : [];   // v1.01: ranged skills with a slingshot on (data/ranged.js)
+    return [{ id: 'special', level: 1, name: sp.name, desc: sp.desc, special: true, focus: FUP.balance.focus.special }, ...(w.skills || []), ...ranged];
   },
-  skillKnown(s) { return FUP.skills.level('melee') >= s.level; },
+  skillKnown(s) { return FUP.skills.level(s.ranged ? 'ranged' : 'melee') >= s.level; },
   // Focus cost (v0.41): Practiced perk takes some off
   skillCost(s) { return Math.max(0, (s.focus || 0) - FUP.unlocks.perkSum('focusCut')); },
-  skillReady(s) { return this.skillKnown(s) && this.player.focus >= this.skillCost(s) && (!s.eatBoost || this.satchel.length > 0); },
+  skillReady(s) { return this.skillKnown(s) && this.player.focus >= this.skillCost(s) && (!s.eatBoost || this.satchel.length > 0) && (!s.ranged || !!this.skillAmmo(s)); },
   addFocus(n) {
     const p = this.player, F = FUP.balance.focus;
     p.focus = Math.min(F.max, (p.focus || 0) + n);
@@ -50,7 +51,17 @@ Object.assign(BattleScene.prototype, {
     if (s.all || s.bounces || s.riposte || s.confuseChance) run(); else this.withTarget(run);   // single-target skills ask who
   },
 
+  // A ranged skill (v1.01): Ranged ATK + ammo, no row penalty, no Focus from its shots
+  runRangedSkill(s) {
+    const t = this.target(), id = this.skillAmmo(s);
+    if (!t || !id || !FUP.run.useAmmo(id, s.ammoCost || 1)) return;
+    this.moveCallout({ view: this.playerSprite }, s.name);
+    for (let i = 0; i < (s.hits || 1); i++) this.time.delayedCall(i * 200, () => { if (!t.gone && !this.over) this.shootAt(t, id, s.power, { skill: true, ignoreDef: s.ignoreDef }); });
+    if (s.push && !t.fake) { t.gauge -= s.push; this.popup(t.view, 'PINNED', 'info', -40); }   // Pin Down: its next turn comes later
+  },
+
   runSkill(s, dish) {
+    if (s.ranged) { this.runRangedSkill(s); return; }
     const p = this.player, t = this.target(), C = FUP.combat;
     this.lunge(this.playerSprite, 1.4);
     this.moveCallout({ view: this.playerSprite }, s.name);
@@ -85,7 +96,7 @@ Object.assign(BattleScene.prototype, {
     } else if (s.confuseChance) {
       // Chaos Squawk: some get confused, the rest get angry
       for (const e of this.liveReal()) {
-        if (Math.random() < s.confuseChance) { e.confused = true; this.popup(e.view, 'CONFUSED', 'info', -40); }
+        if (Math.random() < s.confuseChance * (e.boss ? FUP.balance.bossConfuse.chanceMult : 1)) { e.confused = true; this.popup(e.view, 'CONFUSED', 'info', -40); }
         else { C.addBuff(e, 'atk', 1 + FUP.balance.enrageAtkBonus, FUP.balance.enrageTurns, 'Enraged'); this.popup(e.view, 'ENRAGED', 'bad', -40); }
       }
     } else if (s.eatBoost && dish) {
@@ -111,7 +122,7 @@ Object.assign(BattleScene.prototype, {
     }
     if (e.fake || o.kind === 'counter' || o.kind === 'limit') return { mult: 1 };
     // Phase D: Paper Moths dodge; after an Ink Splash your hits can miss
-    const miss = (e.dodge || 0) + (this.inked > 0 ? this.inkMiss : 0);
+    const miss = (e.dodge || 0) * (o.ranged ? FUP.rangedData.dodgeMult : 1) + (this.inked > 0 ? this.inkMiss : 0);   // shots: moths dodge half as often (Jesus, v1.01)
     if (miss > 0 && Math.random() < miss) {
       this.popup(e.view, 'MISS', 'info');
       this.say(this.inked > 0 ? 'inkMiss' : 'mothDodge', { enemy: e.name });
@@ -120,7 +131,7 @@ Object.assign(BattleScene.prototype, {
     }
     if (e.ledger) {
       e.ledger = false;
-      if (o.kind === 'attack') {
+      if (o.kind === 'attack' || o.kind === 'shot') {   // a plain shot bounces off the ledger like a plain Attack (v1.01)
         this.popup(e.view, '📒 BLOCKED', 'info');
         this.say('ledgerBlock', { enemy: e.name });
         FUP.audio.sfx('guard');
@@ -155,8 +166,11 @@ Object.assign(BattleScene.prototype, {
   },
 
   // Every bit of damage an enemy takes goes through here (counts toward contesting the Last Warning).
-  applyDamage(e, amount) {
+  applyDamage(e, amount, kind = 'melee') {
+    const before = e.hp;
     e.hp = Math.max(this.lesson ? 1 : 0, e.hp - amount);   // the lesson's dummy never falls over
+    e.dmgBy = e.dmgBy || { melee: 0, ranged: 0 };            // v1.01: who hurt it (its XP is split by this)
+    e.dmgBy[kind] += before - e.hp;
     const n = e.notice;
     if (n && !e.fake) {
       n.dealt += amount;
@@ -362,7 +376,7 @@ Object.assign(BattleScene.prototype, {
       case 'ban': {   // Redact (a random action) / Motion to Dismiss (the action you used last): blacked out for a few of your turns
         if (m.power) this.strike(e, m.power, false);
         if (this.over) return true;
-        const all = ['attack', 'skill', 'defend', 'rizz', 'eat', 'throw'];
+        const all = ['attack', 'skill', 'defend', 'rizz', 'eat', 'throw'].concat(FUP.run.hasSling() ? ['shoot'] : []);
         let cat = m.pick === 'last' ? this.lastAction : all[Math.floor(Math.random() * all.length)];
         if (!all.includes(cat)) cat = 'attack';
         this.banned[cat] = Math.max(this.banned[cat] || 0, m.turns);
@@ -509,7 +523,7 @@ Object.assign(BattleScene.prototype, {
   },
 
   // ---------- The Mold Accountant's audit ----------
-  catName(cat) { return { attack: 'Attack', skill: 'Skill', throw: 'Throw', eat: 'Eat', rizz: 'Rizz', defend: 'Defend', flee: 'Flee', limit: 'Limit Break' }[cat] || cat; },
+  catName(cat) { return { shoot: 'Shoot', attack: 'Attack', skill: 'Skill', throw: 'Throw', eat: 'Eat', rizz: 'Rizz', defend: 'Defend', flee: 'Flee', limit: 'Limit Break' }[cat] || cat; },
   // Is any living enemy auditing this kind of action?
   deductFor(cat) {
     const a = this.liveReal().find(o => o.audit && o.audit === cat);

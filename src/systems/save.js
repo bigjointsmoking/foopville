@@ -170,6 +170,12 @@ FUP.save = {
     set(d) { FUP.gear._uid = Math.max(FUP.gear._uid, d || 1); },
   });
 
+  // Slingshot ammo (v1.01): { pebble: 20, acorn: 4 }
+  S.register('ammo', {
+    get: () => FUP.run.ammo,
+    set(d) { FUP.run.ammo = {}; for (const [id, n] of Object.entries(d || {})) if (FUP.rangedData.ammo[id] && n > 0) FUP.run.ammo[id] = n; },
+    reset() { FUP.run.ammo = {}; },
+  });
   S.register('grave', {
     get: () => FUP.grave.state,
     set(d) {

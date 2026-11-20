@@ -57,8 +57,12 @@ class BattleScene extends Phaser.Scene {
     this.charmed = [];
     this.meleeXp = 0;       // XP earned so far this fight (given the moment each enemy goes down)
     this.rizzXp = 0;
+    this.rangedXp = 0;      // v1.01: shots' share of each enemy's XP
+    this.shotYet = false;   // Opening Shot perk: the first shot each fight
+    this.saidShoot = false;
+    this.saidBack = false;  // the back-row hint (once a fight)
     this.sweetGifts = [];   // what Sweet Talk got you this fight (for the results screen)
-    this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz') };
+    this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz'), ranged: FUP.skills.level('ranged') };
     FUP.progressUi.attach(this);
     this.questNews = [];    // quests finished during this fight
     this.targetIdx = 0;
@@ -334,7 +338,7 @@ class BattleScene extends Phaser.Scene {
 
     // Pop in
     box.setScale(0.2).setAlpha(0);
-    this.tweens.add({ targets: box, scale: 1, alpha: 1, duration: 300, ease: 'Back.easeOut' });
+    this.tweens.add({ targets: box, scale: e.row === 'back' ? FUP.balance.rows.backScale : 1, alpha: 1, duration: 300, ease: 'Back.easeOut' });   // back row: smaller (v1.01)
 
     this.enemies.push(e);
     if (!e.fake) this.planMove(e);
@@ -345,7 +349,10 @@ class BattleScene extends Phaser.Scene {
     if (e.boss) return BATTLE_SLOTS.boss;
     const list = this.isBossFight ? BATTLE_SLOTS.minions : BATTLE_SLOTS.normal;
     const taken = this.live().map(o => o.slot && o.slot.join(','));
-    return list.find(s => !taken.includes(s.join(','))) || list[list.length - 1];
+    const free = list.filter(s => !taken.includes(s.join(',')));
+    if (e.row === 'back') { const high = free.filter(s => s[1] < 250); if (high.length) return high[0]; }   // v1.01: the back row stands further back (higher up)
+    if (e.row !== 'back') { const low = free.filter(s => s[1] >= 250); if (low.length) return low[0]; }
+    return free[0] || list[list.length - 1];
   }
 
   moveEnemy(e, [x, y]) {
@@ -453,6 +460,7 @@ class BattleScene extends Phaser.Scene {
     if (mode === 'main') {
       items = [
         { id: 'attack', label: 'Attack', act: () => this.withTarget(() => this.doAttack()) },
+        ...(FUP.run.hasSling() ? [this.shootButton()] : []),   // v1.01: a slingshot is worn
         { id: 'skills', label: `Skills (${this.allSkills().filter(k => this.skillReady(k)).length})`, nav: () => this.setMenu('skills') },
         { id: 'defend', label: 'Defend', act: () => this.doDefend() },
         { id: 'rizz', label: 'Rizz', nav: () => this.setMenu('rizz') },
@@ -461,7 +469,7 @@ class BattleScene extends Phaser.Scene {
         { id: 'flee', label: 'Flee', act: () => this.doFlee(), needs: () => this.canFlee() },
       ];
       // Phase D: blacked-out actions (Redact, Motion to Dismiss) can't be used until the ban runs out
-      const cats = { attack: 'attack', skills: 'skill', defend: 'defend', rizz: 'rizz', eat: 'eat', throw: 'throw' };
+      const cats = { attack: 'attack', shoot: 'shoot', skills: 'skill', defend: 'defend', rizz: 'rizz', eat: 'eat', throw: 'throw' };
       for (const it of items) {
         const cat = cats[it.id];
         if (cat && this.banned[cat] > 0) { it.label = `⬛ ${it.label.split(' (')[0]}\nbanned ${this.banned[cat]}`; it.needs = () => false; it.size = 13; }
@@ -494,7 +502,7 @@ class BattleScene extends Phaser.Scene {
       // Your Special + weapon skills (data/weapons.js), unlocked by Melee level
       cols = 2;
       items = this.allSkills().map(k => {
-        if (!this.skillKnown(k)) return { label: `🔒 ${k.name}\nMelee ${k.level}`, act: () => {}, needs: () => false, size: 13 };
+        if (!this.skillKnown(k)) return { label: `🔒 ${k.name}\n${k.ranged ? 'Ranged' : 'Melee'} ${k.level}`, act: () => {}, needs: () => false, size: 13 };
         const cost = this.skillCost(k), ok = this.player.focus >= cost;
         return { id: 'skill', label: `${k.name} · ${cost} Focus\n${k.desc}`, act: () => this.useSkill(k), needs: () => this.skillReady(k), size: 11, hot: ok };
       });
@@ -508,12 +516,20 @@ class BattleScene extends Phaser.Scene {
         return { label: `${art ? '' : d.emoji + ' '}${st.n > 1 ? `×${st.n} ` : ''}${d.tier}\n${this.dishFx(d)} (+50%)`, act: () => this.act(() => { const [dish] = this.satchel.splice(i, 1); this.runSkill(sk, dish); }, { cat: 'skill', skillId: sk.id }), size: 12, icon: pic };
       });
       items.push({ label: '← Back', nav: () => this.setMenu('skills'), back: true, size: 15 });
+    } else if (mode === 'shoot') {
+      // Pick the ammo (v1.01, like Throw's list): name, how many, element
+      cols = 3;
+      items = FUP.run.ammoKinds().map(id => {
+        const A = FUP.rangedData.ammo[id];
+        return { id: 'shoot', label: `${A.emoji} ${A.name} x${FUP.run.ammoCount(id)}\n${A.element ? A.element + ' · ' : ''}power ${A.power}`, act: () => this.withTarget(() => this.doShoot(id)), size: 13 };
+      });
+      items.push({ label: '← Back', nav: () => this.setMenu('main'), size: 15, back: true });
     } else if (mode === 'target') {
       // Pick who to hit (v0.41, Jesus): with 2+ enemies every attack asks first
       cols = 2;
       const t0 = this.target();
       items = this.live().map(e => ({
-        label: `${e === t0 ? '▶ ' : ''}${e.name}\n${Math.max(0, Math.ceil((e.fake && this.boss() ? this.boss() : e).hp))} HP`,
+        label: `${e === t0 ? '▶ ' : ''}${e.name}${e.row === 'back' ? ' · BACK' : ''}\n${Math.max(0, Math.ceil((e.fake && this.boss() ? this.boss() : e).hp))} HP`,
         act: () => { const go = this.afterTarget; this.afterTarget = null; this.setTarget(e); if (go) go(); }, size: 13, hot: e === t0,
       }));
       items.push({ label: '← Back', nav: () => { this.afterTarget = null; this.setMenu('main'); }, back: true, size: 15 });
@@ -607,6 +623,52 @@ class BattleScene extends Phaser.Scene {
     return { mult: 1 };
   }
 
+  // ---------- Rows (v1.01, data/balance.js rows) ----------
+  // Melee on a back-row enemy while any front-row enemy still stands: x0.6. Shots: full (Mastery: +25% on the back row).
+  rowMult(e, o = {}) {
+    if (e.row !== 'back') return 1;
+    if (o.ranged) return FUP.unlocks.perkBest('backBonus', 1);
+    if (o.kind === 'throw') return 1;
+    return this.liveReal().some(x => x !== e && x.row !== 'back') ? FUP.balance.rows.meleeBackMult : 1;
+  }
+
+  // ---------- Shoot (v1.01, data/ranged.js) ----------
+  shootButton() {
+    const kinds = FUP.run.ammoKinds(), n = FUP.run.ammoTotal();
+    return { id: 'shoot', label: n ? `🎯 Shoot (${n})` : '🎯 No ammo',
+      nav: () => kinds.length > 1 ? this.setMenu('shoot') : this.withTarget(() => this.doShoot(kinds[0])), needs: () => FUP.run.ammoTotal() > 0 };
+  }
+  doShoot(id) {
+    this.act(() => {
+      const e = this.target(), U = FUP.unlocks;
+      if (!e || !FUP.run.useAmmo(id)) return;
+      if (!this.saidShoot) { this.saidShoot = true; this.say('shootFirst'); }
+      this.shootAt(e, id, 1, { open: true });
+      if (Math.random() < U.perkBest('doubleShot', 0)) this.time.delayedCall(220, () => { if (!e.gone && !this.over) { this.popup(this.playerSprite, 'DOUBLE SHOT', 'good', -70); this.shootAt(e, id, 1); } });   // Double Shot perk
+      if (Math.random() < U.perkBest('ammoBack', 0)) { FUP.run.addAmmo(id, 1); this.popup(this.playerSprite, `+1 ${FUP.rangedData.ammo[id].emoji}`, 'good', -40); }   // Scavenger perk
+      if (!FUP.run.ammoTotal()) this.time.delayedCall(600, () => { if (!this.over) this.say('outOfAmmo'); });
+    }, { cat: 'shoot' });
+  }
+  // One shot at e with this ammo. x.open = can get Opening Shot; x.skill = from a ranged skill (no Focus). Returns true if it landed.
+  shootAt(e, id, power, x = {}) {
+    const R = FUP.rangedData, A = R.ammo[id], U = FUP.unlocks;
+    let p = power * A.power;
+    if (x.open && !this.shotYet) { this.shotYet = true; p *= U.perkBest('openShot', 1); }
+    const fly = this.add.text(this.playerSprite.x + 40, this.playerSprite.y - 30, A.emoji, { fontSize: '22px' }).setOrigin(0.5).setDepth(450);
+    this.tweens.add({ targets: fly, x: e.view.x, y: e.view.y - 20, duration: 180, ease: 'Quad.easeIn', onComplete: () => fly.destroy() });
+    this.lunge(this.playerSprite, 0.5);
+    FUP.audio.sfx('throw');
+    const landed = this.hitEnemy(e, p, 180, !!x.ignoreDef, { kind: 'shot', ranged: true, element: A.element });
+    if (landed) {
+      if (!x.skill) this.addFocus(U.perkBest('shotFocus', R.shotFocus));
+      const down = U.perkBest('shotAtkDown', 0);
+      if (down && !e.gone && !e.fake) FUP.combat.addBuff(e, 'atk', down, 1, 'Suppressed');   // Suppressing Fire perk
+    }
+    return landed;
+  }
+  // Ammo a ranged skill uses: the first kind with enough
+  skillAmmo(s) { return FUP.run.ammoKinds().find(id => FUP.run.ammoCount(id) >= (s.ammoCost || 1)) || null; }
+
   isReady() { return !this.over && this.player.gauge >= 100; }
 
   onPlayerReady() {
@@ -695,7 +757,7 @@ class BattleScene extends Phaser.Scene {
         this.say('squeak', { enemy: e.name });
       }
       // Rubber Chicken: sometimes the squeak confuses it (its next move hits itself)
-      if (!e.gone && !e.fake && sp.confuseChance && Math.random() < sp.confuseChance) {
+      if (!e.gone && !e.fake && sp.confuseChance && Math.random() < sp.confuseChance * (e.boss ? FUP.balance.bossConfuse.chanceMult : 1)) {   // bosses: half (v1.01)
         e.confused = true;
         this.popup(e.view, 'CONFUSED', 'info', -70);
         this.say('squeakConfused', { enemy: e.name });
@@ -909,8 +971,13 @@ class BattleScene extends Phaser.Scene {
     const guard = this.checkGuards(e, { ...o, kind });     // the Goblin's ledger, the Bouncer's Arms Crossed
     if (guard.blocked) return false;
     const exec = e.hp / e.maxHp < FUP.unlocks.perkBest('executeBelow', 0) ? FUP.unlocks.perkBest('executeMult', 1) : 1;   // Executioner perk
-    const r = FUP.combat.damage(this.player, e, power * exec * (guard.mult || 1) * (kind === 'counter' ? 1 : this.deductMult), ignoreDef);
-    const em = o.element ? this.elementMult(e, o.element) : { mult: 1 };
+    // v1.01: shots use Ranged ATK (+ shot crit, Piercing); melee on the back row is weaker while the front row stands
+    const R = FUP.rangedData, U = FUP.unlocks, pierce = o.ranged ? U.perkBest('shotPierce', 0) : 0;
+    const shooter = o.ranged ? { ...this.player, atk: this.player.ratk, crit: this.player.crit + R.shotCritAdd + U.perkSum('shotCrit') } : this.player;
+    const r = FUP.combat.damage(shooter, pierce ? { ...e, def: e.def * (1 - pierce) } : e, power * exec * this.rowMult(e, o) * (guard.mult || 1) * (kind === 'counter' ? 1 : this.deductMult), ignoreDef);
+    if (!this.saidBack && this.rowMult(e, o) < 1) { this.saidBack = true; this.time.delayedCall(500, () => { if (!this.over) this.say('backRow'); }); }
+    let em = o.element ? this.elementMult(e, o.element) : { mult: 1 };
+    if (o.ranged && em.tag === 'weak') em = { ...em, mult: U.perkBest('ammoWeak', R.weakMult) };   // Weak Spot perk
     r.amount = Math.max(1, Math.round(r.amount * em.mult * this.takenMult(e)));
     if (guard.bounce) {
       // Arms Crossed: it bounces back at you
@@ -919,7 +986,7 @@ class BattleScene extends Phaser.Scene {
       this.time.delayedCall(delay + 150, () => { if (!this.over) { this.hurtPlayer({ amount: back, crit: false }, false); this.say('stanceBounce', { enemy: e.name }); } });
       return false;
     }
-    this.applyDamage(e, r.amount);
+    this.applyDamage(e, r.amount, o.ranged ? 'ranged' : 'melee');
     this.afterHitLanded(e, r.amount, kind);   // Hedgehog spikes, The Retainer (BattleSkills.js, v0.93)
     if (o.burn && e.hp > 0) e.burn = { dmg: Math.max(1, Math.round(e.maxHp * o.burn.pct)), turns: o.burn.turns };
     const big = r.crit || power >= 2 || em.tag === 'weak';
@@ -956,7 +1023,13 @@ class BattleScene extends Phaser.Scene {
     // XP right away, with a pop-up over the enemy (the results screen adds it all up)
     const at = { x: e.view.x, y: e.view.y - 90 };
     if (how === 'killed' && !e.fake) { FUP.facts.add(`kill:${e.key}`); if (e.boss || e.miniBoss) FUP.facts.add(`boss:${e.key}`); }
-    if (how === 'killed' && e.xp) { this.meleeXp += e.xp; FUP.skills.addXp('melee', e.xp, at); }
+    if (how === 'killed' && e.xp) {
+      // v1.01: XP split by who hurt it (shots + ranged skills = Ranged, everything else = Melee)
+      const d = e.dmgBy || {}, tot = (d.melee || 0) + (d.ranged || 0);
+      const rx = tot ? Math.round(e.xp * (d.ranged || 0) / tot) : 0, mx = e.xp - rx;
+      if (mx) { this.meleeXp += mx; FUP.skills.addXp('melee', mx, at); }
+      if (rx) { this.rangedXp += rx; FUP.skills.addXp('ranged', rx, { x: at.x, y: at.y - 26 }); }
+    }
     if (how === 'charmed' && e.xp) { const x = Math.round(e.xp * FUP.balance.charmXpShare * FUP.unlocks.perkBest('charmXpMult', 1)); this.rizzXp += x; FUP.skills.addXp('rizz', x, at); }
     // Quests count kills and charms (not the fake Guardians from the Fever Dream)
     if (!e.fake && (how === 'killed' || how === 'charmed')) this.questNews.push(...FUP.quests.event(how === 'killed' ? 'kill' : 'charm', { enemy: e.key }));
@@ -1031,6 +1104,16 @@ class BattleScene extends Phaser.Scene {
     if (!this.enemyTurnStart(e)) return;   // burning; last move's guard / audit ends (BattleSkills.js)
     FUP.anim.once(e.pic, 'attack');
     // Confused (Rubber Chicken's SQUEAK): this move hits itself instead
+    if (e.confused && e.boss && FUP.balance.bossConfuse.skip) {   // v1.01: a confused boss loses its move instead of hitting itself
+      e.confused = false;
+      this.moveCallout(e, 'Confused');
+      this.popup(e.view, 'SKIPS ITS MOVE', 'info', -40);
+      this.say('bossConfused', { enemy: e.name });
+      e.movesDone++;
+      C.tickBuffs(e);
+      if (!this.over && !e.gone) this.planMove(e);
+      return;
+    }
     if (e.confused) {
       e.confused = false;
       this.moveCallout(e, 'Confused');
@@ -1292,13 +1375,19 @@ class BattleScene extends Phaser.Scene {
       const gained = [];
       const lvl = id => FUP.skills.level(id) > L[id] ? ` · LEVEL ${FUP.skills.level(id)}!` : '';
       if (meleeXp) gained.push(`+${meleeXp} Melee XP` + lvl('melee'));
+      if (this.rangedXp) gained.push(`+${this.rangedXp} Ranged XP` + lvl('ranged'));
       if (rizzXp) gained.push(`+${rizzXp} Rizz XP` + lvl('rizz'));
       if (coins) gained.push(`+${coins} 🪙 (${run.coins} total)`);
       const kept = [], lost = [];
       for (const e of [...this.killed, ...this.charmed]) { const l = run.loot(e.key); kept.push(...l.kept); lost.push(...l.lost); }
+      // Slingshot ammo from some enemies (v1.01, data/ranged.js drops: squirrels leave acorns)
+      const ammoGot = {};
+      for (const e of this.killed) { const dr = FUP.rangedData.drops[e.key]; if (dr && Math.random() < dr.chance) ammoGot[dr.ammo] = (ammoGot[dr.ammo] || 0) + run.addAmmo(dr.ammo, dr.count); }
       const show = ids => ids.map(id => FUP.ingredients[id].emoji).join(' ');
       lines.push(`Fight time: ${fmt(this.elapsed)}`, ...gained);
       if (kept.length) lines.push(`Dropped: ${show(kept)}`);
+      const ammoLine = Object.entries(ammoGot).filter(([, n]) => n > 0).map(([id, n]) => `${FUP.rangedData.ammo[id].emoji} +${n}`).join(' ');
+      if (ammoLine) lines.push(`Ammo: ${ammoLine}`);
       if (this.sweetGifts.length) lines.push(`🍬 Sweet-talked: ${this.sweetGifts.join(' ')}`);
       if (lost.length) lines.push(`Backpack full. Left behind: ${show(lost)}`);
       // Gear drops (normal enemies sometimes, the Guardian always)
@@ -1326,7 +1415,7 @@ class BattleScene extends Phaser.Scene {
     } else if (result === 'fled' && run.battle && run.battle.lessonDone) {
       lines.push(FUP.tutorialData.lesson.resultLine);   // Orientation Isle: the combat lesson ended (BattleLesson.js)
     } else if (result === 'fled') {
-      const kept = [this.meleeXp && `+${this.meleeXp} Melee XP`, this.rizzXp && `+${this.rizzXp} Rizz XP`].filter(Boolean);
+      const kept = [this.meleeXp && `+${this.meleeXp} Melee XP`, this.rangedXp && `+${this.rangedXp} Ranged XP`, this.rizzXp && `+${this.rizzXp} Rizz XP`].filter(Boolean);
       lines.push(kept.length ? `You keep the XP you earned (${kept.join(', ')}).` : 'No XP.', 'No dignity. No ingredients.', `HP left: ${p.hp}/${p.maxHp}`);
     } else if (run.isHardcore()) {
       lines.push(`You lasted ${fmt(this.elapsed)}.`, 'Hardcore: your levels, cookbook, coins and bag are gone.', 'Start a new life.');

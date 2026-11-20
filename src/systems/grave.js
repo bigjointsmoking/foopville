@@ -37,9 +37,10 @@ FUP.grave = {
       region, x: spot.x, y: spot.y,   // region id (data/world.js); before v0.52 this was an area number
       left: FUP.runData.grave.minutes * 60,
       bag: { ...run.bag }, satchel: run.satchel.slice(), coins: run.coins, gear,
+      ammo: { ...(run.ammo || {}) },   // slingshot ammo is carried too (v1.01)
     };
     // You wake up at home with nothing on you but your base weapon
-    run.bag = {}; run.satchel = []; run.coins = 0;
+    run.bag = {}; run.satchel = []; run.coins = 0; run.ammo = {};
     run.hp = null;
     run.limit = 0;   // a fresh start: empty Limit bar
     run.forest = null; run.battle = null;
@@ -71,7 +72,8 @@ FUP.grave = {
       if (k > 0) g.bag[id] = k; else delete g.bag[id];
     }
     g.satchel = g.satchel.filter(d => { if (run.canAddDish(d.name, d.tier)) { run.satchel.push(d); got.dishes++; return false; } return true; });
-    got.left = Object.values(g.bag).reduce((a, b) => a + b, 0) + g.satchel.length + g.gear.length;
+    for (const [id, n] of Object.entries(g.ammo || {})) { const k = run.addAmmo(id, n); got.ammo = (got.ammo || 0) + k; if (n - k > 0) g.ammo[id] = n - k; else delete g.ammo[id]; }   // ammo (v1.01)
+    got.left = Object.values(g.bag).reduce((a, b) => a + b, 0) + g.satchel.length + g.gear.length + Object.values(g.ammo || {}).reduce((a, b) => a + b, 0);
     if (!got.left) this.state = null;
     return got;
   },

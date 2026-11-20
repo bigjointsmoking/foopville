@@ -62,7 +62,7 @@ FUP.gear = {
 
   // Everything you're wearing, added up. Missing stats count as 0.
   totals() {
-    const t = { atk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, stealLess: 0, satchel: 0, sight: 0, effects: [] };
+    const t = { atk: 0, ratk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, stealLess: 0, satchel: 0, sight: 0, effects: [] };
     const eq = (FUP.run && FUP.run.equipped) || {};
     for (const slot of FUP.gearData.slots) {
       const it = eq[slot];
@@ -134,7 +134,7 @@ FUP.gear = {
     const it = typeof itemOrKey === 'string' ? { ...FUP.gearData.items[itemOrKey], stats: FUP.gearData.items[itemOrKey].stats } : itemOrKey;
     const worn = FUP.run.equipped[it.slot];
     const a = it.stats || {}, b = (worn && worn.stats) || {};
-    const names = { atk: 'ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', stealLess: 'less coin lost', satchel: 'backpack slots', sight: 'sight' };
+    const names = { atk: 'ATK', ratk: 'Ranged ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', stealLess: 'less coin lost', satchel: 'backpack slots', sight: 'sight' };
     const pct = k => ['spd', 'crit', 'rizz', 'heal', 'resistPoison', 'resistFire', 'stealLess'].includes(k);
     const diffs = [];
     for (const k of Object.keys(names)) {
@@ -160,6 +160,7 @@ FUP.gear = {
     const pct = v => `${v > 0 ? '+' : ''}${Math.round(v * 100)}%`;
     const out = [];
     if (stats.atk) out.push(`+${stats.atk} ATK`);
+    if (stats.ratk) out.push(`+${stats.ratk} Ranged ATK`);
     if (stats.def) out.push(`+${stats.def} DEF`);
     if (stats.hp) out.push(`+${stats.hp} HP`);
     if (stats.spd) out.push(`${pct(stats.spd)} speed`);

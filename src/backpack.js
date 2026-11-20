@@ -103,6 +103,8 @@ FUP.backpack = {
       add(ui.text(s, EX + 66, y + 20, G.slotNames[slot], 11, c.dim), 2);
       box.setInteractive({ useHandCursor: true }).on('pointerdown', () => s.time.delayedCall(1, () => { bp.sel = { kind: 'worn', slot }; bp.confirm = null; this.draw(bp); }));
     });
+    // Slingshot ammo you carry (v1.01)
+    if (run.ammoTotal()) add(ui.text(s, EX, EY + 18 + G.slots.length * 66, 'AMMO  ' + run.ammoText(), 12, c.info, { fontStyle: '700', wordWrap: { width: 120 } }), 2);
 
     // ----- Middle: the grid -----
     const list = bp.tab === 'pack' ? this.entries() : this.storeEntries();

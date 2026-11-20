@@ -61,6 +61,21 @@ FUP.unlockData = {
       { level: 46, name: 'Unbreakable',   text: 'Once per fight, a killing blow leaves you at 1 HP', unbreakable: 1 },
       { level: 50, name: 'Mastery',       text: 'Limit bar fills 25% faster', limitRate: 1.25 },
     ],
+    // Ranged (v1.01, design/combat.md §2). With the slingshots and ranged skills: never more than 5 levels without an unlock.
+    ranged: [
+      { level: 3,  name: 'Steady Hands',     text: 'Shots: +3% crit', shotCrit: 0.03 },
+      { level: 7,  name: 'Scavenger',        text: '25% chance to get the ammo back', ammoBack: 0.25 },
+      { level: 12, name: 'Opening Shot',     text: 'Your first shot each fight hits x1.5', openShot: 1.5 },
+      { level: 17, name: 'Deep Pockets',     text: 'Carry 150 of each ammo (was 99)', ammoMax: 150 },
+      { level: 22, name: 'Quick Draw',       text: 'Shots give 25 Focus (was 15)', shotFocus: 25 },
+      { level: 25, name: 'Weak Spot',        text: 'Element ammo hits weaknesses x1.75 (was x1.5)', ammoWeak: 1.75 },
+      { level: 28, name: 'Scavenger II',     text: '40% chance to get the ammo back', ammoBack: 0.40 },
+      { level: 33, name: 'Suppressing Fire', text: 'An enemy you shoot has -10% ATK on its next move', shotAtkDown: 0.9 },
+      { level: 37, name: 'Sharpshooter',     text: 'Shots: +6% more crit', shotCrit: 0.06 },
+      { level: 42, name: 'Piercing',         text: 'Shots ignore 30% of DEF', shotPierce: 0.3 },
+      { level: 46, name: 'Double Shot',      text: '15% chance to fire twice for one ammo', doubleShot: 0.15 },
+      { level: 50, name: 'Mastery',          text: 'Back-row enemies take +25% from shots', backBonus: 1.25 },
+    ],
     rizz: [
       { level: 3,  name: 'Smooth Talker',  text: 'Roast lasts 1 turn longer', roastTurns: 1 },
       { level: 6,  name: 'Bargain Hunter', text: 'Shops pay you 5% more when you sell', sellBonus: 0.05 },

@@ -1,6 +1,6 @@
 // ============================================================
 // GEAR — armor, weapon upgrades and trinkets (blueprint 18.3).
-// 5 slots: weapon, head, body, legs, trinket.
+// 6 slots: weapon, head, body, legs, trinket, ranged (v1.01: the slingshot, data/ranged.js).
 //
 // stats you can put on an item:
 //   atk, def, hp       flat bonus
@@ -11,15 +11,16 @@
 //   resistPoison / resistFire   less damage of that kind (0.15 = -15%)
 //   stealLess          less coin lost to theft, tolls and Feeding Time (0.10 = -10%)
 //   satchel            extra satchel slots
+//   ratk               Ranged ATK (slingshots, v1.01)
 // price = coins in the shop (v0.41: every price doubled; v0.43: x3 again, Jesus). starter = you begin each life wearing it.
 // v0.58 (G1): tiers, wear levels, 3 armor cuts, boss chase drops. Random drops only use items up to the region's dropTier.
 // ============================================================
 window.FUP = window.FUP || {};
 
 FUP.gearData = {
-  slots: ['weapon', 'head', 'body', 'legs', 'trinket'],
-  slotNames: { weapon: 'Weapon', head: 'Head', body: 'Body', legs: 'Legs', trinket: 'Trinket' },
-  slotEmoji: { weapon: '⚔️', head: '🪖', body: '👕', legs: '👖', trinket: '💍' },
+  slots: ['weapon', 'head', 'body', 'legs', 'trinket', 'ranged'],
+  slotNames: { weapon: 'Weapon', head: 'Head', body: 'Body', legs: 'Legs', trinket: 'Trinket', ranged: 'Ranged' },
+  slotEmoji: { weapon: '⚔️', head: '🪖', body: '👕', legs: '👖', trinket: '💍', ranged: '🎯' },
   cutNames: { sturdy: 'Sturdy', light: 'Light', dapper: 'Dapper' },
 
   // ---------- The shop's fixed items ----------
@@ -86,6 +87,11 @@ FUP.gearData = {
     pigeon_pin:      { slot: 'trinket', tier: 3, chase: true, name: 'Pigeon Diplomacy Pin', emoji: '🐦', stats: { rizz: 0.05 }, effect: 'pigeonDiplomacy', price: 0 },
     master_key:      { slot: 'trinket', tier: 3, chase: true, name: 'Master Key', emoji: '🗝️', stats: { crit: 0.05 }, effect: 'coinGuard', price: 0 },
     retainer:        { slot: 'trinket', tier: 3, chase: true, name: 'The Retainer', emoji: '💼', stats: { atk: 2 }, effect: 'retainer', price: 0 },   // the Senior Partner (v0.93)
+    // ----- Slingshots (v1.01, phase C1, design/combat.md §2): the Blacksmith sells them. Ranged level to wear. -----
+    sling_1: { slot: 'ranged', tier: 1, name: 'Forked Stick',          emoji: '🪃', stats: { ratk: 2 },  price: 150 },
+    sling_2: { slot: 'ranged', tier: 2, name: 'Proper Slingshot',      emoji: '🎯', stats: { ratk: 4 },  price: 480,  req: { skills: { ranged: 10 } } },
+    sling_3: { slot: 'ranged', tier: 3, name: 'Wrist Rocket of Regret', emoji: '🎯', stats: { ratk: 7 },  price: 1320, req: { skills: { ranged: 20 } } },
+    sling_4: { slot: 'ranged', tier: 4, name: 'The Long Argument',     emoji: '🏹', stats: { ratk: 11 }, price: 4200, req: { skills: { ranged: 30 } } },
     // Phase D (v1.00): the Archivist and the Bog Notary. Names, stats and effects PLACEHOLDERS.
     dog_eared_bookmark: { slot: 'trinket', tier: 3, chase: true, name: 'Dog-Eared Bookmark', emoji: '🔖', stats: { atk: 2, crit: 0.03 }, effect: 'bookmark', price: 0 },
     stamp_of_approval:  { slot: 'trinket', tier: 3, chase: true, name: 'Stamp of Approval', emoji: '✅', stats: { def: 4 }, effect: 'approval', price: 0 },

@@ -132,7 +132,12 @@ FUP.skillData = {
   const perkGuide = id => () => ((FUP.unlockData.perks || {})[id] || []).map(p => ({ level: p.level, text: '\u2b50 ' + p.name + ': ' + p.text }));
   const soon = (id, what) => () => [{ level: 1, text: `Coming soon: ${what}` }, ...perkGuide(id)()];
   const N = k => FUP.look.num(k), S = FUP.skillData.skills, notYet = 'Not in the game yet.';
-  S.ranged   = { order: 2,  built: false, combat: true, name: 'Ranged',   emoji: '🎯', color: N('x'),  everyLevel: () => 'Every level: +0.6 Ranged ATK.', guide: perkGuide('ranged') };
+  // Ranged (v1.01): slingshots from the Blacksmith, ranged skills, perks (data/ranged.js, data/gear.js sling_*)
+  S.ranged   = { order: 2,  built: true, combat: true, name: 'Ranged',   emoji: '🎯', color: N('x'),  everyLevel: () => `Every level: +${FUP.rangedData.atkPerLvl} Ranged ATK.`, guide: () => [
+      ...Object.entries(FUP.gearData.items).filter(([k, d]) => d.slot === 'ranged').map(([k, d]) => ({ level: (d.req && d.req.skills && d.req.skills.ranged) || 1, text: `${d.emoji} Wear: ${d.name} (+${d.stats.ratk} Ranged ATK, the Blacksmith)` })),
+      ...FUP.rangedData.skills.map(k => ({ level: k.level, text: `🎯 Skill: ${k.name}: ${k.desc}` })),
+      ...perkGuide('ranged')(),
+    ] };
   S.magic    = { order: 3,  built: false, combat: true, name: 'Magic',    emoji: '✨', color: N('p1'), everyLevel: () => notYet, guide: perkGuide('magic') };
   S.fishing  = { order: 7,  built: true,  name: 'Fishing',  emoji: '🎣', color: N('b3'), everyLevel: () => 'Every level: the catch bar gets a little bigger.', guide: () => {
       const out = [];

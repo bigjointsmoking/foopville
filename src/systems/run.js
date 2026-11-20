@@ -44,8 +44,32 @@ FUP.run = {
     this.equipped = {};
     for (const slot of FUP.gearData.slots) this.equipped[slot] = null;
     for (const [key, it] of Object.entries(FUP.gearData.items)) if (it.starter) this.equipped[it.slot] = FUP.gear.fromShop(key);
-    FUP.save.resetParts();   // skills, cookbook, garden, house, quests, grave, facts... (src/systems/save.js)
+    FUP.save.resetParts();   // skills, cookbook, garden, house, quests, grave, facts, ammo... (src/systems/save.js)
   },
+
+  // ---------- Slingshot ammo (v1.01, data/ranged.js): carried, so it goes into a Normal-mode grave ----------
+  ammo: {},
+  ammoMax() { return FUP.unlocks.perkBest('ammoMax', FUP.rangedData.ammoMax); },
+  ammoCount(id) { return this.ammo[id] || 0; },
+  ammoTotal() { return Object.values(this.ammo).reduce((a, b) => a + b, 0); },
+  // Kinds you have, in data order
+  ammoKinds() { return Object.keys(FUP.rangedData.ammo).filter(id => this.ammoCount(id) > 0); },
+  // Add up to the cap. Returns how many fit.
+  addAmmo(id, n) {
+    const room = Math.max(0, this.ammoMax() - this.ammoCount(id)), got = Math.min(room, n);
+    if (got > 0) this.ammo[id] = this.ammoCount(id) + got;
+    return got;
+  },
+  useAmmo(id, n = 1) {
+    if (this.ammoCount(id) < n) return false;
+    this.ammo[id] -= n;
+    if (this.ammo[id] <= 0) delete this.ammo[id];
+    return true;
+  },
+  // "🪨 34 · 🌰 6" (backpack line), '' when empty
+  ammoText() { return this.ammoKinds().map(id => `${FUP.rangedData.ammo[id].emoji} ${this.ammoCount(id)}`).join(' · '); },
+  // Wearing a slingshot?
+  hasSling() { return !!(this.equipped && this.equipped.ranged); },
 
   // Game mode (picked in the character creator, locked for life)
   mode() { return this.hero.mode; },

@@ -605,6 +605,12 @@ FUP.narrator = {
   notaryFlee: ['The Filing Frogs hop away with the paperwork.'],
   notaryStamp: ['STAMP. You\'ve been processed. Hold still. You have no choice.', 'He stamps you flat. Received, with thanks.'],
   notaryMotion: ['Motion to dismiss your {item}. Granted, by him, for him.', 'He files a motion against your {item}. It\'s binding. He says so.'],
+  // ---------- Ranged (v1.01) ----------
+  shootFirst: ['You threw a rock, but with equipment.', 'Slingshot out. Somewhere, a window flinches.'],
+  outOfAmmo: ['Click. That was the sound of poor planning.', 'Out of ammo. You could throw harsh words. You will not.'],
+  backRow: ['It is hiding at the back. Sensible. Unlike you.'],
+  bossConfused: ['{enemy} is confused and forgets what it was doing. Bosses don\'t hit themselves. They\'re professionals.'],
+  ammoHarvest: ['{item}'],
   officeClosed: ['{item}'],
   officeWon: ['You walk out of the office. Nobody stops you. Nobody makes eye contact either.', 'Meeting adjourned. By force.'],
   eastLocked: ['The road east goes past the Notary\'s office. Nobody gets past the Notary. Not without the right form.'],
