@@ -177,6 +177,7 @@ FUP.villageData = {
         'Sign here, here, and here. No, that\'s fine, you don\'t have to read it. Nobody does.',
       ],
       taken: ['Logged. Filed. Good luck. Not legally binding.', 'Your task has been received. Please do it.'],
+      shuffled: ['New day, new postings. Yesterday\'s have been archived. Forever.', 'Fresh notices. The old ones were filed under "missed".'],   // V2 (PLACEHOLDER lines)
       done: ['Completed and countersigned. Here\'s your fee, minus nothing. This time.', 'Done? Splendid. I\'ll file it under "done".'],
       tooMany: ['That\'s the limit. Even here we have a limit. It\'s three.'],
       empty: ['Nothing on the board. A quiet day. We don\'t like quiet days.'],
@@ -262,6 +263,8 @@ FUP.villageData = {
         'There. Solve it in the kitchen, not in my doorway.',
       ],
       allKnown: ['You\'ve heard every riddle I have. Now go cook them. Badly, I assume.'],
+      special: ['Today\'s special. Made by someone who can cook. Eat it and pretend.', 'Two plates. Not to learn from. To eat.', 'Fresh from my kitchen. Don\'t tell people you made it. They\'ll know.'],   // V2 (PLACEHOLDER lines)
+      specialSold: ['Gone. Like your chances.', 'Sold out. Come back tomorrow. Bring talent.'],
       broke: ['Knowledge costs money. Ignorance is free, as you\'ve proven.'],
       rizz: [
         { level: 10, line: 'Fire hurts mushrooms. The Guardian is a mushroom. Do the maths. I\'ll wait.' },
@@ -340,6 +343,7 @@ FUP.villageData = {
       taken: ['The fate of Foopville rests on you! Again! Somehow!', 'Go, brave soul! Try not to die! It\'s bad for paperwork!'],
       done: ['You DID it! I shall write a SONG! It will be short.', 'Legendary! Here\'s your reward. Don\'t spend it all on bad food.'],
       tooMany: ['Three quests at once is the LIMIT! I\'m worried about you! A normal amount!'],
+      shuffled: ['NEW DAY! NEW JOBS! The old ones got bored and left!', 'I took down yesterday\'s jobs. They were holding the board together, but still.'],   // V2 (PLACEHOLDER lines)
       empty: ['Nothing on the board right now. Go level something and come back.'],
       rizz: [
         { level: 10, line: 'A hero with CHARM! Here, a TIP! A coin tip! Fifteen of them!', gift: { coins: 15 } },
@@ -404,6 +408,9 @@ FUP.villageData = {
   riddlePrice: { base: 20, perLevel: 4 },   // doubled in v0.43
   riddleHalfPriceRizz: 20,  // at this Rizz level Marrowbone charges half (blueprint 18.8)
   riddleRizzMult: 0.5,
+  // Marrowbone's Special (V2, Jesus 2026-11-20): every new day, `stock` ready-made dishes of one random recipe up to
+  // `levelAbove` levels over your Cooking, at `stars`, for priceMult x their sell price (Rizz discount applies, not the riddle half price). PLACEHOLDER numbers.
+  special: { stars: 2, stock: 2, priceMult: 2.5, levelAbove: 5 },
 
   // ---------- Map look ----------
   ground: {

@@ -159,9 +159,16 @@ FUP.save = {
       const known = id => !!FUP.questData.quests[id], active = {}, rest = {};   // quests that no longer exist are dropped
       for (const [id, s] of Object.entries(d.active || {})) if (known(id)) active[id] = s;
       for (const [id, n] of Object.entries(d.rest || {})) if (known(id)) rest[id] = n;
-      FUP.quests.state = { active, board: (d.board || []).filter(known), rest };
+      FUP.quests.state = { active, board: (d.board || []).filter(known), rest, day: d.day || 0, fresh: !!d.fresh };
     },
     reset: () => FUP.quests.reset(),
+  });
+
+  // Marrowbone's Special (V2): today's dish and how many are left
+  S.register('special', {
+    get: () => FUP.village.special,
+    set(d) { FUP.village.special = { day: d.day || 0, recipe: d.recipe || null, left: d.left || 0 }; },
+    reset() { FUP.village.special = { day: 0, recipe: null, left: 0 }; },
   });
 
   // The counter that gives each piece of gear its own id: never goes backwards

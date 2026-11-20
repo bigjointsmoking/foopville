@@ -102,7 +102,7 @@ FUP.village = {
     const byTier = { Inedible: 1, Edible: 6, Tasty: 14, Delicious: 25, Legendary: 40 };
     return dish.sell !== undefined ? dish.sell : (byTier[dish.tier] || 5);
   },
-  dishSellPrice(dish) { return this.sellPrice(this.dishBasePrice(dish)); },
+  dishSellPrice(dish) { return this.resaleCap(this.sellPrice(this.dishBasePrice(dish)), dish.bought || 0); },   // V2: a bought Special can't sell for more than 90% of its price
   sellDish(index) {
     const dish = FUP.run.satchel[index];
     if (!dish) return 0;
@@ -167,5 +167,36 @@ FUP.village = {
     FUP.run.coins -= p;
     FUP.cooking.cookbook.riddles[r.name] = true;   // the recipe book shows it from now on
     return true;
+  },
+
+  // ---------- Marrowbone's Special (V2, Jesus 2026-11-20) ----------
+  // Every new game day: `stock` of one random (not secret) recipe up to `levelAbove` levels over your
+  // Cooking, ready-made at `stars`. Rolled the first time you look on a new day (sleeping counts).
+  special: { day: 0, recipe: null, left: 0 },
+  rollSpecial(rng = Math.random, force = false) {
+    const S = FUP.villageData.special, day = FUP.clock ? FUP.clock.day() : 1;
+    if (!force && this.special.day === day) return this.special;
+    const top = FUP.skills.level('cooking') + S.levelAbove;
+    const pool = FUP.recipeData.list.filter(r => !r.secret && r.level <= top);
+    const r = pool.length ? pool[Math.floor(rng() * pool.length)] : null;
+    this.special = { day, recipe: r ? r.name : null, left: r ? S.stock : 0 };
+    return this.special;
+  },
+  specialRecipe() { const st = this.rollSpecial(); return (st.recipe && FUP.recipeData.list.find(r => r.name === st.recipe)) || null; },
+  // Price = priceMult x what the dish sells for at those stars, with the usual Rizz discount
+  specialPrice(r) { const S = FUP.villageData.special; return this.buyPrice(S.priceMult * FUP.cooking.sellFor(r, S.stars), 'chef'); },
+  // 'ok' | 'gone' | 'broke' | 'full'
+  buySpecial() {
+    const r = this.specialRecipe(), run = FUP.run, C = FUP.cooking, S = FUP.villageData.special;
+    if (!r || this.special.left <= 0) return 'gone';
+    const price = this.specialPrice(r);
+    if (run.coins < price) return 'broke';
+    const ok = run.addDish({ name: C.title(r.name), emoji: FUP.cookingData.methods[r.method].emoji, tier: C.tierForStars(S.stars), ids: r.ids, method: r.method,
+      burnt: false, effects: C.effects(r, S.stars), sellPrice: C.sellFor(r, S.stars) });
+    if (!ok) return 'full';
+    run.satchel[run.satchel.length - 1].bought = price;   // can't be sold back for more than you paid (dishSellPrice, stall)
+    run.coins -= price;
+    this.special.left--;
+    return 'ok';
   },
 };

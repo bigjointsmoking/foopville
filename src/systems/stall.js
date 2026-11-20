@@ -29,7 +29,7 @@ FUP.stall = {
   // Will customers buy this dish?
   accepts(dish) { return !dish.burnt && !dish.inedible && !FUP.stallData.refuse.includes(dish.name); },
   // What one sale puts in the till: the Shopkeeper's plain price (no Rizz, no haggle) plus the premium
-  salePrice(dish) { return Math.round(FUP.village.dishBasePrice(dish) * (FUP.stallData.premium + FUP.unlocks.perkSum('stallPremium'))); },
+  salePrice(dish) { return FUP.village.resaleCap(Math.round(FUP.village.dishBasePrice(dish) * (FUP.stallData.premium + FUP.unlocks.perkSum('stallPremium'))), dish.bought || 0); },   // (V2: a bought Special never sells for profit)
 
   // Backpack -> stall. `dish` is one of FUP.run.satchel.
   add(uid, dish) {

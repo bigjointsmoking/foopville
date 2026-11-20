@@ -13,12 +13,13 @@ FUP.quests = {
   // active: { questId: { n: progress, done: true once finished } }
   // board:  quest ids on offer right now (the board refills, Refinement Phase 5)
   // rest:   { questId: hand-ins left before it can come back }
-  state: { active: {}, board: [], rest: {} },
+  // day:   the game day the board was last shuffled (V2); fresh: the keeper hasn't said "new day" yet
+  state: { active: {}, board: [], rest: {}, day: 0, fresh: false },
   runKills: 0,  // enemies defeated on this trip to the Forest
   news: [],     // lines a quest wants shown after a fight (v0.82: the Guardian's last words, the bowl): takeNews()
   takeNews() { const n = this.news; this.news = []; return n; },
 
-  reset() { this.state = { active: {}, board: [], rest: {} }; this.runKills = 0; this.news = []; },
+  reset() { this.state = { active: {}, board: [], rest: {}, day: 0, fresh: false }; this.runKills = 0; this.news = []; },
 
   def(id) { return FUP.questData.quests[id]; },
   kind(id) { const q = this.def(id); return (q && q.kind) || 'challenge'; },
@@ -37,13 +38,30 @@ FUP.quests = {
   },
   // Top the board up to boardSize with quests that fit you (not taken, not resting).
   // Each kind keeps its own board (boardSize per kind in data/quests.js).
-  refill(rng = Math.random) {
+  // avoid = yesterday's offers (V2): picked only when nothing else fits.
+  refill(rng = Math.random, avoid = []) {
     const s = this.state, D = FUP.questData;
     s.board = s.board.filter(id => this.def(id) && !s.active[id]);
     for (const kind of Object.keys(D.boardSize)) {   // (Quests aren't random: they're all listed, see available)
-      const pool = Object.keys(D.quests).filter(id => this.kind(id) === kind && this.fits(id) && !s.active[id] && !s.board.includes(id) && !s.rest[id]);
-      while (s.board.filter(id => this.kind(id) === kind).length < this.boardSize(kind) && pool.length) s.board.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+      const all = Object.keys(D.quests).filter(id => this.kind(id) === kind && this.fits(id) && !s.active[id] && !s.board.includes(id) && !s.rest[id]);
+      const pool = all.filter(id => !avoid.includes(id)), spare = all.filter(id => avoid.includes(id));
+      while (s.board.filter(id => this.kind(id) === kind).length < this.boardSize(kind) && (pool.length || spare.length)) {
+        const from = pool.length ? pool : spare;
+        s.board.push(from.splice(Math.floor(rng() * from.length), 1)[0]);
+      }
     }
+  },
+  // V2 (Jesus 2026-11-20): on a new game day every offer you haven't taken is re-rolled.
+  // Taken quests and their progress stay. Checked whenever the board is looked at.
+  dayCheck(rng = Math.random) {
+    const s = this.state, day = FUP.clock && FUP.clock.day ? FUP.clock.day() : 1;
+    if (s.day === day) return false;
+    const first = !s.day; s.day = day;
+    if (first) return false;   // a brand-new board (or an old save): nothing to shuffle yet
+    const old = s.board.slice(); s.board = [];
+    this.refill(rng, old);
+    s.fresh = true;
+    return true;
   },
   // How many of a kind the board shows (His First Quest can add one: data/quests.js boardPerk)
   boardSize(kind) {
@@ -54,7 +72,7 @@ FUP.quests = {
   available(kind = null) {
     // Quests (v0.79): every one you haven't done or taken, Requirements met or not (the board shows what's missing)
     if (kind === 'quest' || kind === 'story') return Object.keys(FUP.questData.quests).filter(id => this.kind(id) === kind && !this.state.active[id] && !this.done(id));
-    this.refill(); return this.state.board.filter(id => !kind || this.kind(id) === kind);
+    this.dayCheck(); this.refill(); return this.state.board.filter(id => !kind || this.kind(id) === kind);
   },
   // Quests you could start right now with this villager (the ❗ over their head)
   startsAt(npc) { return this.available('quest').filter(id => this.def(id).from === npc && this.fits(id)); },

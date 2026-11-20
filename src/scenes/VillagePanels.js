@@ -339,9 +339,30 @@ FUP.villagePanels = {
   // ---------- Chef Marrowbone: riddles about secret recipes ----------
   renderChef(X, RW) {
     const ui = FUP.ui, c = ui.colors, V = FUP.village, run = FUP.run, cb = FUP.cooking.cookbook;
-    this.pText(X, 36, 'SECRET RECIPE RIDDLES', 20, c.accent, { fontStyle: '700' });
+    this.pText(X, 36, 'MARROWBONE\'S KITCHEN', 20, c.accent, { fontStyle: '700' });
     const halfAt = FUP.villageData.riddleHalfPriceRizz, half = FUP.skills.level('rizz') >= halfAt;
     this.pText(X, 64, 'Some recipes aren\'t in any book. A riddle hints at what goes in. You still need the Cooking level.' + (half ? `  😎 Half price (Rizz ${halfAt}).` : ''), 12, half ? c.good : c.dim, { wordWrap: { width: RW - 100 } });
+    // V2: Today's Special (one row on top)
+    const S = FUP.villageData.special, sp = V.specialRecipe(), left = V.special.left, saved = this.panelPage;
+    this.pText(X, 92, 'TODAY\'S SPECIAL', 12, c.dim, { fontStyle: '700' });
+    if (sp) {
+      const price = V.specialPrice(sp), C = FUP.cooking;
+      this.panelPage = 0;
+      this.pRows([{
+        pic: null, emoji: FUP.cookingData.methods[sp.method].emoji, name: `${C.title(sp.name)}  ${'★'.repeat(S.stars)}  ·  ${left} left`,
+        sub: left > 0 ? C.fxText(C.effects(sp, S.stars)) + (sp.level > FUP.skills.level('cooking') ? `  ·  You can't cook this yet (Cooking ${sp.level})` : '') : 'Sold out. Back tomorrow.', subColor: left > 0 ? c.dim : c.bad,
+        btn: left > 0 ? `Buy ${price} 🪙` : 'Gone', disabled: left <= 0 || run.coins < price,
+        fn: () => {
+          const r = V.buySpecial();
+          if (r === 'ok') { FUP.audio.sfx('coins'); this.talk(V.special.left > 0 ? 'special' : 'specialSold'); this.sayLine(`Bought: ${C.title(sp.name)} ${'★'.repeat(S.stars)}. It's in your backpack.`); }
+          else if (r === 'broke') this.talk('broke');
+          else if (r === 'full') this.sayLine('Your backpack is full. Make room first.');
+          else this.talk('specialSold');
+        },
+      }], X, 108, RW, 1, 50);
+      this.panelPage = saved;
+    } else this.pText(X, 112, 'Nothing today. He says the kitchen is "resting".', 13, c.dim);
+    this.pText(X, 166, 'RIDDLES', 12, c.dim, { fontStyle: '700' });
     const forSale = V.riddlesForSale();
     if (!forSale.length) this.speech = this.speech || FUP.villageData.npcs.chef.allKnown[0];
     const rows = forSale.map(r => {
@@ -357,8 +378,8 @@ FUP.villagePanels = {
         },
       };
     });
-    if (!forSale.length) this.pText(X, 100, 'You\'ve bought or found every secret. Marrowbone is visibly disappointed.', 14, c.dim);
-    this.pRows(rows, X, 96, RW, 6, 46);
+    if (!forSale.length) this.pText(X, 184, 'You\'ve bought or found every secret. Marrowbone is visibly disappointed.', 14, c.dim);
+    this.pRows(rows, X, 182, RW, 5, 46);
     const found = FUP.recipeData.list.filter(r => r.secret && cb.discovered[r.name]).length;
     const total = FUP.recipeData.list.filter(r => r.secret).length;
     this.pText(X, 474, `Secret recipes found: ${found} / ${total}. Riddles you bought are in your recipe book at home.`, 12, c.dim, { wordWrap: { width: RW } });
@@ -657,6 +678,7 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
     if (!this.panelTab || !D.kinds[this.panelTab]) this.panelTab = 'quest';
     const kind = this.panelTab;
     this.pText(X, 36, 'QUEST BOARD', 20, c.accent, { fontStyle: '700' });
+    if (Q.dayCheck() || Q.state.fresh) { this.talk('shuffled'); Q.state.fresh = false; }   // V2: a new day shuffled the offers
     // Tabs: Side Stories / Challenges / Story
     Object.entries(D.kinds).forEach(([k, K], i) => {
       const n = Q.activeIds(k).length;
