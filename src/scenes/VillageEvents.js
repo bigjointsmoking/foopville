@@ -68,7 +68,7 @@ Object.assign(VillageScene.prototype, {
     // Something standing on the map you walk up to: the peddler, the tourist, the crate, the letter
     if (!sp) return;
     const p = M.center(sp.tx, sp.ty), y = a.id === 'pigeon_mail' ? p.y - 6 : p.y;
-    const s = keep(ui.sprite(this, p.x + (a.id === 'pigeon_mail' ? 18 : 0), y, null, e.emoji, a.id === 'mystery_crate' ? 26 : 28).setOrigin(0.5, 0.8).setDepth(y + 12));
+    const s = keep(ui.sprite(this, p.x + (a.id === 'pigeon_mail' ? 18 : 0), y, e.sprite, e.emoji, a.id === 'mystery_crate' ? 26 : 28).setOrigin(0.5, 0.8).setDepth(y + 12));
     if (a.id !== 'mystery_crate') this.tweens.add({ targets: s, scaleY: s.scaleY * 1.05, duration: 800, yoyo: true, repeat: -1 });
     mark(s.x, y - 30);
     const label = { peddler: '🧳 Browse', pigeon_mail: '✉️ Read', lost_tourist: 'Talk', mystery_crate: '📦 Open' }[a.id] || 'Look';

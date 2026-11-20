@@ -51,8 +51,12 @@ Object.assign(VillageScene.prototype, {
       // A repaired building: its picture on the site, and a shop window at the talk square
       if (done && r.doneEmoji) {
         const mid = M.center(s.tx + (s.w - 1) / 2, s.ty + (s.h - 1) / 2), size = Math.min(s.w, 3) * 22 + 10;
-        const pic = keep(this.add.text(mid.x, mid.y + 10, r.doneEmoji, { fontSize: size + 'px' }).setOrigin(0.5, 0.75).setDepth(mid.y + 30));
-        if (r.id === 'windmill') this.tweens.add({ targets: pic, angle: { from: -5, to: 5 }, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // creaks in the wind
+        const T = FUP.villageData.tileSize, painted = r.doneSprite && this.textures.exists(r.doneSprite);
+        const pic = painted   // A1: the painted building, as wide as its site, standing on its bottom row
+          ? keep(this.add.image(mid.x, mid.y + T * s.h / 2, r.doneSprite).setOrigin(0.5, 0.88).setDepth(mid.y + T * s.h / 2))
+          : keep(this.add.text(mid.x, mid.y + 10, r.doneEmoji, { fontSize: size + 'px' }).setOrigin(0.5, 0.75).setDepth(mid.y + 30));
+        if (painted) pic.setScale((s.w + 0.4) * T / pic.width);
+        if (r.id === 'windmill' && !painted) this.tweens.add({ targets: pic, angle: { from: -5, to: 5 }, duration: 1800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // creaks in the wind
         if (r.id === 'fountain') {   // R3: water sparkles over it
           const drop = keep(this.add.text(mid.x, mid.y - 26, '💧', { fontSize: '16px' }).setOrigin(0.5).setDepth(mid.y + 31));
           this.tweens.add({ targets: drop, alpha: { from: 1, to: 0.2 }, y: drop.y - 6, duration: 700, yoyo: true, repeat: -1 });

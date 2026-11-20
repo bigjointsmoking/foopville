@@ -161,7 +161,7 @@ FUP.villageData = {
     // "R": the Resident Receiver. Polite. Collects the "dues" from every village and sends it up the mountain.
     // Honestly thinks it's all fair. His story chapter comes later (just talk for now).
     receiver: {
-      name: 'The Resident Receiver', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '🧾', tint: 0xb8a0e0,
+      name: 'The Resident Receiver', sprite: 'npc_receiver_map', portrait: 'npc_receiver', emoji: '🧾',   // painted in A1 (v1.06)
       noRizzSecrets: true,
       greet: [
         'Ah, a visitor from Foopville! Your village is a valued account. Slightly behind, but valued.',
@@ -171,7 +171,7 @@ FUP.villageData = {
       ],
     },
     clerk: {
-      name: 'The Town Clerk', sprite: 'npc_quest_map', portrait: 'npc_quest', emoji: '🗂️', tint: 0xa0c8e0,
+      name: 'The Town Clerk', sprite: 'npc_clerk_map', portrait: 'npc_clerk', emoji: '🗂️',
       noRizzSecrets: true,
       greet: [
         'The board here and the board in Foopville share jobs. We share everything. Mostly your village\'s money.',
@@ -185,7 +185,7 @@ FUP.villageData = {
       empty: ['Nothing on the board. A quiet day. We don\'t like quiet days.'],
     },
     pennywise: {
-      name: 'Mrs. Pennywise', sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '🏷️', tint: 0xe0b0a0,
+      name: 'Mrs. Pennywise', sprite: 'npc_pennywise_map', portrait: 'npc_pennywise', emoji: '🏷️',
       noRizzSecrets: true,
       greet: [
         'Repossessed goods! Every one of them came from somewhere nice. Now it comes from here.',
