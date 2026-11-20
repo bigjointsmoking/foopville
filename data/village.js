@@ -340,7 +340,7 @@ FUP.villageData = {
   // Always on: every Rizz level = 1% off what you buy and 1% more for what you sell, up to 30%.
   fishBonus: 1.2,   // Gill pays this much more for raw fish than the Shopkeeper (+0.1 from his Rizz 20 secret)
   sellMult: 1.5,   // v0.78 (Jesus: selling paid too little): every sell price x this...
-  sellBoostSkip: { crops: true, sources: ['Fishing'] },   // ...except farm crops and fish (v0.86 balance pass, Jesus: they out-earned fighting)
+  sellBoostSkip: { crops: true, sources: ['Fishing'] },   // ...except farm crops and fish (v0.86 balance pass, Jesus: they out-earned fighting). Eggs / milk / honey / tree fruit KEEP the boost on purpose (v0.99.6 check, Jesus: they're small)
   resaleCap: 0.9,  // ...but never more than this share of what the shop sells the same thing for
   rizzDiscountPerLevel: 0.01,
   rizzDiscountMax: 0.30,

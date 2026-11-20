@@ -14,6 +14,7 @@
 //   - Hollis the Farmhand can be hired by the game day: he presses Feed for you, using the
 //     feed in the trough (empty trough = they go hungry anyway). He never collects for you.
 // Rules: src/systems/animals.js. Window: src/animalUi.js. ALL NUMBERS ARE PLACEHOLDERS.
+// v0.99.6 balance check (Jesus): produce doubled (batch + hold x2), prices unchanged.
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -22,11 +23,11 @@ FUP.animalData = {
   warnLeft: 0.5,       // game days of hunger left when the second warning comes
 
   kinds: {
-    coop: { name: 'Chickens', who: 'chickens', be: 'are', emoji: '🐔', produce: 'egg', units: 'eggs', every: 2 * 3600, batch: 3, hold: 6,
+    coop: { name: 'Chickens', who: 'chickens', be: 'are', emoji: '🐔', produce: 'egg', units: 'eggs', every: 2 * 3600, batch: 6, hold: 12,
             feed: 'grumblegrain', trough: 10, restock: 150, feedXp: 6, collectXp: 10 },
-    barn: { name: 'Cow', who: 'cow', be: 'is', emoji: '🐄', produce: 'milk', units: 'bottles of milk', every: 3 * 3600, batch: 1, hold: 3,
+    barn: { name: 'Cow', who: 'cow', be: 'is', emoji: '🐄', produce: 'milk', units: 'bottles of milk', every: 3 * 3600, batch: 2, hold: 6,
             feed: 'meadow_hay', trough: 10, restock: 400, feedXp: 10, collectXp: 18 },
-    hive: { name: 'Bees', who: 'bees', be: 'are', emoji: '🐝', produce: 'honey', units: 'jars of honey', every: 4 * 3600, batch: 1, hold: 3,
+    hive: { name: 'Bees', who: 'bees', be: 'are', emoji: '🐝', produce: 'honey', units: 'jars of honey', every: 4 * 3600, batch: 2, hold: 6,
             feed: null, collectXp: 12 },   // no feeding, no trough, never die
   },
 

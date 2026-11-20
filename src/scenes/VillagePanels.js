@@ -470,7 +470,7 @@ FUP.villagePanels = {
     const c = FUP.ui.colors, O = FUP.orders, D = FUP.orderData;
     O.refresh();
     this.pText(X, 36, 'FARM ORDERS', 20, c.accent, { fontStyle: '700' });
-    this.pText(X, 64, '3 a day. New ones every morning; unfinished ones just go away.', 12, c.dim, { wordWrap: { width: RW - 150 } });
+    this.pText(X, 64, `New orders on Day ${O.nextDay()}. Unfinished ones just go away.`, 12, c.dim, { wordWrap: { width: RW - 150 } });
     const rows = O.state.list.map(o => {
       const n = FUP.villageData.npcs[o.giver], have = Math.min(O.have(o), o.n);
       return {
@@ -489,7 +489,7 @@ FUP.villagePanels = {
     if (!rows.length) this.pText(X, 100, D.empty, 13, c.dim, { fontStyle: 'italic', wordWrap: { width: RW - 20 } });
     this.pRows(rows, X, 100, RW, 4, 96);
     const done = O.state.list.filter(o => o.done).length;
-    this.pText(X, 520, `Filled today: ${done} of ${O.state.list.length}. ${FUP.clock.label()}.`, 12, c.dim);
+    this.pText(X, 520, `Filled: ${done} of ${O.state.list.length}. ${FUP.clock.label()}.`, 12, c.dim);
   },
 
   // ---------- Compost Bin (v0.41) ----------

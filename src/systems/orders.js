@@ -1,5 +1,5 @@
 // ============================================================
-// FARM ORDERS (F-F) — Hollis's board: 3 orders a game day. No drawing.
+// FARM ORDERS (F-F) — Hollis's board: 3 orders, new ones every few game days. No drawing.
 // Numbers in data/orders.js. Window: VillagePanels.renderOrders.
 //   state = { day, list: [{ giver, type, id, n, coins, xp, mats, extra, done, since }] }
 // ============================================================
@@ -36,10 +36,12 @@ FUP.orders = {
   },
 
   // ---------- The daily roll ----------
-  // New day = 3 new orders (each from a different villager). Returns true if it rolled.
+  // Every refreshDays game days: 3 new orders (each from a different villager). Returns true if it rolled.
+  nextDay() { return (this.state.day || 0) + (FUP.orderData.refreshDays || 1); },
   refresh(day = FUP.clock.day(), rng = Math.random) {
-    if (this.state.day === day) return false;
-    const D = FUP.orderData, pool = [];
+    const D = FUP.orderData, last = this.state.day || 0;
+    if (last && day >= last && day - last < (D.refreshDays || 1)) return false;   // every refreshDays game days (v0.99.6)
+    const pool = [];
     for (const [giver, g] of Object.entries(D.givers)) for (const a of g.asks) if (this.canMake(a)) pool.push({ giver, a });
     const list = [];
     while (list.length < D.perDay && pool.length) {

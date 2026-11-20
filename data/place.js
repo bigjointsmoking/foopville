@@ -76,14 +76,14 @@ FUP.placeData = {
     // hedge = crops next to it dry out half as fast. Numbers and costs are PLACEHOLDERS.
     beehive:     { name: 'Beehive', emoji: '🐝', sprite: 'prop_beehive', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 6 } },
                    cost: { coins: 300, items: { plank: 3 } }, helper: { kind: 'hive', radius: 2, chance: 0.5 }, animal: 'hive',   // F-E: honey too
-                   blurb: 'Crops within 2 squares: 50% chance of one extra at harvest. Honey every 4 hours. The bees are unionised.' },
+                   blurb: 'Crops within 2 squares: 50% chance of one extra at harvest. 2 honey every 4 hours. The bees are unionised.' },
     // Farm animals (F-E, v0.99.4, data/animals.js). animal = the data/animals.js kinds entry. max = how many you can own.
     chicken_coop: { name: 'Chicken Coop', emoji: '🐔', sprite: 'prop_coop', kind: 'ground', w: 2, h: 2, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 8 } }, max: 2,
                     cost: { coins: 600, items: { plank: 6 } }, animal: 'coop',
-                    blurb: 'Chickens. Feed them Grumblegrain daily, collect 3 eggs every 2 hours. Forget, and they won\'t forgive you.' },
+                    blurb: 'Chickens. Feed them Grumblegrain daily, collect 6 eggs every 2 hours. Forget, and they won\'t forgive you.' },
     cow_barn:     { name: 'Cow Barn', emoji: '🐄', kind: 'ground', w: 3, h: 2, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 14 } }, max: 1,
                     cost: { coins: 1500, items: { plank: 10, stone: 4 } }, animal: 'barn',
-                    blurb: 'One cow. Feed her Meadow Hay daily, milk every 3 hours. She has opinions about the hay.' },
+                    blurb: 'One cow. Feed her Meadow Hay daily, 2 milk every 3 hours. She has opinions about the hay.' },
     hedge:       { name: 'Hedge', emoji: '🌳', sprite: 'bush', kind: 'ground', w: 1, h: 1, solid: true, zones: ['plot', 'farm'], req: { skills: { gardening: 3 } },
                    cost: { coins: 60 }, helper: { kind: 'hedge', radius: 1 },
                    blurb: 'Crops right next to it dry out half as fast. A wall that grows. Ambitious.' },

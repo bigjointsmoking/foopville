@@ -1,7 +1,7 @@
 // ============================================================
 // FARM ORDERS (Farming 2.0 F-F, planned with Jesus 2026-11-19: design/farming.md).
-// Hollis's order board, by the fields. 3 orders a game day from villagers; the board
-// refreshes every new day and unfinished orders just go away (no penalty).
+// Hollis's order board, by the fields. 3 orders from villagers; the board refreshes every
+// `refreshDays` game days (v0.99.6) and unfinished orders just go away (no penalty).
 // Orders only ask for things you can make right now (never shop-bought answers).
 // Pay: coins ~2x what the goods sell for, Gardening XP (Cooking for dishes), building
 // materials, and now and then an extra. Rules: src/systems/orders.js. ALL NUMBERS ARE PLACEHOLDERS.
@@ -17,6 +17,7 @@ window.FUP = window.FUP || {};
 
 FUP.orderData = {
   perDay: 3,
+  refreshDays: 3,              // new orders every 3 game days (~1 hour of play). Balance check v0.99.6, Jesus: daily paid too much
   board: { tx: 28, ty: 37 },   // next to Hollis (spot is a PLACEHOLDER)
   payMult: 2,                  // coins = what the goods sell for x this
   giantPay: 150,               // coins for a giant crop order
