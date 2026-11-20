@@ -219,7 +219,7 @@ FUP.save = {
     get: () => FUP.world.state,
     set(d, all) {
       const W = FUP.world;
-      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) }, pigeonKills: (d.pigeonKills || []).slice() };   // (old saves' `respawn` is dropped: E1a)
+      W.state = { region: 'village', x: d.x ?? null, y: d.y ?? null, seen: { village: true, ...(d.seen || {}) }, pigeonKills: (d.pigeonKills || []).slice(), hank: d.hank || null };   // hank: { day, count } (E3: Hooded Hank once a day)   // (old saves' `respawn` is dropped: E1a)
       if (W.region(d.region) && (W.safe(d.region) || (all && all.onRun && all.parts.trip))) W.state.region = d.region;   // mid-trip with the trip saved: still out there (v0.73)
     },
     reset: () => FUP.world.reset(),

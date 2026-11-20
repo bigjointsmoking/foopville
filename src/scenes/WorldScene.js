@@ -28,6 +28,7 @@ class WorldScene extends Phaser.Scene {
     if (this.arrive.from === 'campfire') this.A.player = F.besideCampfire();
     // Kept regions (E1a): bring back enemies and ingredients whose timers ran out, out of your sight
     if (this.scene.key === 'World' && !this.safe && this.A) F.respawn(this.f.area, this.A, this.A.player);
+    if (this.scene.key === 'World' && !this.safe && this.A) FUP.sideRooms.refresh(this.f.area, this.A);   // side rooms (E3): a new day rolls new ones
     this.leaving = false;
     this.pack = null;           // backpack screen (reset: Phaser reuses this screen)
     this.enemySprites = null;   // drawn in drawThings; quest foes join them (placeQuestFoes)
@@ -40,6 +41,7 @@ class WorldScene extends Phaser.Scene {
     this.drawExits();
     this.drawThings();
     this.drawPeople();          // villagers, signs, traps, fishing water (WorldPeople.js; only where `features` say so)
+    if (this.scene.key === 'World') this.drawSideRooms();   // Forest side rooms (WorldSideRooms.js, E3)
     this.drawHole();
     this.drawGrave();
     this.fogTex = null;
@@ -70,6 +72,7 @@ class WorldScene extends Phaser.Scene {
     const b = FUP.run.battle;
     FUP.run.battle = null;
     if (b && b.tutorial) { this.tutorialAfterFight(b); return; }   // the training dummy (WorldTutorial.js)
+    if (b && b.side) { this.sideAfterBattle(b); return; }   // a side-room ambush (WorldSideRooms.js, E3)
     if (b && b.shrine) { this.say(b.result === 'win' ? 'shrineWin' : 'forestAfterFlee'); return; }   // the Guardian at the shrine (v0.82)
     if (!b) {
       if (this.safe) { this.greetSafe(); return; }
@@ -417,7 +420,7 @@ class WorldScene extends Phaser.Scene {
   }
 
   // This area's fog settings (the Raid has its own)
-  fogData() { return this.info.fog; }
+  fogData() { return FUP.gear.withSight(this.info.fog); }
 
   // Enemies only show inside your sight. The hole too (and the narrator notices it once).
   updateSight() {
@@ -429,7 +432,7 @@ class WorldScene extends Phaser.Scene {
       if (see && e.godfather && !e.seen) { e.seen = true; this.say('godfatherSeen'); }
     });
     if (this.holePos) {
-      const near = Math.hypot(this.holePos.x - this.player.x, this.holePos.y - this.player.y) < this.info.fog.sight * FUP.forestData.tileSize;
+      const near = Math.hypot(this.holePos.x - this.player.x, this.holePos.y - this.player.y) < this.fogData().sight * FUP.forestData.tileSize;
       this.holeSprite.setVisible(near);
       if (near && !this.A.holeSeen) { this.A.holeSeen = true; this.say('holeFound'); }
     }
@@ -635,6 +638,7 @@ class WorldScene extends Phaser.Scene {
     if (!this.leaving) this.checkCampfire();
     if (!this.leaving) this.checkExits();
     if (!this.leaving) this.checkHole();
+    if (!this.leaving && this.scene.key === 'World') this.checkAmbush();   // side rooms (E3)
     if (!this.leaving) this.checkGrave();
     this.refreshHud();
   }

@@ -39,7 +39,7 @@ FUP.gear = {
     for (const r of pool) { if (roll < r.chance) { rarity = r; break; } roll -= r.chance; }
 
     // Base item: any shop item of a random slot (not the free starter pants)
-    const keys = Object.keys(G.items).filter(k => { const d = G.items[k]; return !d.starter && !d.chase && !d.quest && (d.tier || 1) <= dropTier; });   // quest rewards never drop
+    const keys = Object.keys(G.items).filter(k => { const d = G.items[k]; return !d.starter && !d.chase && !d.quest && !d.hank && (d.tier || 1) <= dropTier; });   // quest rewards never drop
     const item = this.fromShop(keys[Math.floor(rng() * keys.length)]);
     item.rarity = rarity.name; item.color = rarity.color; item.sell = rarity.sell;
 
@@ -62,7 +62,7 @@ FUP.gear = {
 
   // Everything you're wearing, added up. Missing stats count as 0.
   totals() {
-    const t = { atk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, stealLess: 0, satchel: 0, effects: [] };
+    const t = { atk: 0, def: 0, hp: 0, spd: 0, crit: 0, rizz: 0, heal: 0, resistPoison: 0, resistFire: 0, stealLess: 0, satchel: 0, sight: 0, effects: [] };
     const eq = (FUP.run && FUP.run.equipped) || {};
     for (const slot of FUP.gearData.slots) {
       const it = eq[slot];
@@ -79,6 +79,9 @@ FUP.gear = {
     const key = typeof itemOrKey === 'string' ? itemOrKey : itemOrKey.key;
     return key.startsWith('weapon_') ? `gear_${key}_${FUP.run.weapon}` : `gear_${key}`;
   },
+
+  // Fog settings plus the sight your gear gives (the Lantern, E3): a copy, the data stays as it is
+  withSight(fog) { const extra = this.totals().sight || 0; return extra && fog ? { ...fog, sight: fog.sight + extra } : fog; },
 
   has(effectId) { return this.totals().effects.includes(effectId); },
 
@@ -131,7 +134,7 @@ FUP.gear = {
     const it = typeof itemOrKey === 'string' ? { ...FUP.gearData.items[itemOrKey], stats: FUP.gearData.items[itemOrKey].stats } : itemOrKey;
     const worn = FUP.run.equipped[it.slot];
     const a = it.stats || {}, b = (worn && worn.stats) || {};
-    const names = { atk: 'ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', stealLess: 'less coin lost', satchel: 'backpack slots' };
+    const names = { atk: 'ATK', def: 'DEF', hp: 'HP', spd: 'speed', crit: 'crit', rizz: 'Rizz', heal: 'food healing', resistPoison: 'poison resist', resistFire: 'fire resist', stealLess: 'less coin lost', satchel: 'backpack slots', sight: 'sight' };
     const pct = k => ['spd', 'crit', 'rizz', 'heal', 'resistPoison', 'resistFire', 'stealLess'].includes(k);
     const diffs = [];
     for (const k of Object.keys(names)) {
@@ -166,6 +169,7 @@ FUP.gear = {
     if (stats.resistPoison) out.push(`Poison resist ${Math.round(stats.resistPoison * 100)}%`);
     if (stats.resistFire) out.push(`Fire resist ${Math.round(stats.resistFire * 100)}%`);
     if (stats.stealLess) out.push(`${Math.round(stats.stealLess * 100)}% less coin lost`);
+    if (stats.sight) out.push(`+${stats.sight} sight in the dark`);
     if (stats.satchel) out.push(`+${stats.satchel} backpack slot${stats.satchel === 1 ? '' : 's'}`);
     return out.join(' · ');
   },

@@ -310,6 +310,12 @@ FUP.narrator = {
   holeNotYet: ['Sensible. The hole will wait. Holes are patient like that.'],
   forestWalkHome: ['You walk back to Foopville. Nobody asks how it went. Nobody has to.'],
   forestPickup: ['You found {item}. You will now put it in your mouth, eventually.', 'Picked up {item}. The ground was using it.', '{item}. Free food. Don\'t ask why it was on the floor.'],
+  // Side rooms (E3). sideAmbush is from the 18.6 design; the rest are PLACEHOLDERS
+  sideAmbush: ['Empty clearing. Totally safe. You believed that.'],
+  stashCoins: ['A buried chest. {item} coins inside. Finders keepers is a real law. Probably.', 'You dig up {item} coins. Somebody buried them for a rainy day. It\'s raining on them now.'],
+  stashGear: ['A buried chest with {item} in it. Somebody\'s loss. Mostly theirs.'],
+  stashFull: ['There\'s gear in this chest and no room in your backpack. The chest will wait. Chests are patient.'],
+  sideAfterAmbush: ['You survived the clearing. The clearing is unimpressed.'],
   forestBagFull: ['Your bag is full. Cook something or leave it on the floor like an animal.'],
   forestAfterWin: ['The squirrel won\'t be bothering anyone. Keep walking.', 'One less squirrel. The Forest barely noticed.'],
   // After a win, per enemy (forestAfterWin_ + the enemy id). Falls back to forestAfterWin.

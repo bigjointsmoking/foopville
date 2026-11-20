@@ -24,8 +24,11 @@ Object.assign(WorldScene.prototype, {
     if (this.feature('objects')) for (const o of info.objects || []) {
       const c0 = at(o.tx, o.ty);
       if (o.kind === 'sign') {   // (v0.82: emoji + label for other readable things, like the frog's strongbox)
-        if (o.sprite) ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10);   // (v0.84: its own picture)
+        // (E4 lore: hidden = nothing drawn, the thing is already on the map; scale = a smaller big picture; solid = walk around it)
+        if (o.hidden) { /* no picture */ }
+        else if (o.sprite) { const p = ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10); if (o.scale && this.textures.exists(o.sprite)) p.setScale(p.scaleX * o.scale); }   // (v0.84: its own picture)
         else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
+        if (o.solid) this.solid.push({ tx: o.tx, ty: o.ty });
         this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
       }
       if (o.kind === 'office') {   // a boss's office (v0.93: the Senior Partner): book a fight for a fee
@@ -202,6 +205,8 @@ Object.assign(WorldScene.prototype, {
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'shrine') { this.openShrine(); return; }
     if (s.kind === 'office') { this.openOffice(s.o); return; }
+    if (s.kind === 'stash') { this.digStash(s.room); return; }   // side rooms (E3, WorldSideRooms.js)
+    if (s.kind === 'hank') { this.openHank(s.room); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }
     if (s.kind === 'trap') { FUP.trapUi.use(this, this.f.area, s, this.tiles); return; }
     if (s.kind === 'salvage') {

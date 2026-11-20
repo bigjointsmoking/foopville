@@ -77,6 +77,8 @@ FUP.gearData = {
     // Quest rewards (v0.79, data/questlines.js): never sold anywhere. quest: true
     spoon_charm: { slot: 'trinket', tier: 1, quest: true, name: 'Spoon of Unusual Quality', emoji: '🥄', stats: { heal: 0.10 }, price: 0, sell: 30 },   // Spoons (Blacksmith): food heals 10% more
     acorn_charm: { slot: 'trinket', tier: 1, quest: true, name: 'Acorn Charm', emoji: '🐿️', stats: {}, effect: 'acornLuck', price: 0, sell: 20 },
+    // Only Hooded Hank sells it (E3 side rooms, data/siderooms.js). hank: true = never dropped, never in a village shop. +2 sight in fog
+    lantern:     { slot: 'trinket', tier: 1, hank: true, name: 'Lantern', emoji: '🏮', stats: { sight: 2 }, price: 120 },
     mood_ring:   { slot: 'trinket', tier: 1, name: 'Mood Ring', emoji: '💍', stats: { rizz: 0.10 }, price: 540 },
     lunchbox:    { slot: 'trinket', tier: 1, name: 'Lunchbox', emoji: '🍱', stats: { satchel: 3 }, price: 900 },
 

@@ -60,7 +60,7 @@ class RaidScene extends WorldScene {
     const n = this.raid.index + 1, total = this.raid.rooms.length;
     return this.info.kind === 'office' ? this.info.name : `${this.info.name} (${n}/${total - 1})`;
   }
-  fogData() { return FUP.raidData.fog; }
+  fogData() { return FUP.gear.withSight(FUP.raidData.fog); }
 
   // ---------- Arriving, or coming back from a fight ----------
   afterBattle() {

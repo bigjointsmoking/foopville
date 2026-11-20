@@ -49,7 +49,13 @@ FUP.forestData = {
       level: 3,              // the Melee level this area is meant for: enemies scale up if you're above it (v0.41)
       trees: { tree_birch: 5, tree_round: 3, tree_pine: 2 },
       decorations: { deco_flowers: 0.16, deco_shroom: 0.01, deco_stump: 0.01, bush: 0.03 },
-      landmarks: [['deco_signpost', 2, 18], ['deco_stump', 28, 16], ['deco_stump', 32, 16], ['deco_stump', 28, 20], ['deco_stump', 32, 20]],
+      landmarks: [['deco_stump', 28, 16], ['deco_stump', 32, 16], ['deco_stump', 28, 20], ['deco_stump', 32, 20]],
+      // Lore objects (E4, Jesus 2026-11-19): walk up and Read / Look. Spots are PLACEHOLDERS.
+      // kind 'sign' like the Marsh's: sprite (or emoji), label, text; hidden = no picture; solid = you walk around it
+      objects: [
+        { kind: 'sign', tx: 2, ty: 18, sprite: 'deco_signpost', text: 'FOOPVILLE → (probably). The arrow\'s paint is much newer than the board it\'s nailed to.' },
+        { kind: 'sign', tx: 30, ty: 18, hidden: true, label: 'Look', text: 'Five stumps in a neat ring, all cut level at once. Someone sat here to talk about something. Nobody sits here now.' },
+      ],
       ground: { ...FUP.look.mood('forestEdge'), treeShade: 0.78 },   // colours: data/look.js
       light: FUP.look.mood('forestEdge').light,
       weather: 'sunbeams',
@@ -98,6 +104,11 @@ FUP.forestData = {
       decorations: { deco_leaves: 0.14, deco_puddle: 0.07, deco_log: 0.012, deco_stump: 0.01 },
       shoreDeco: ['deco_reeds', 0.55],
       landmarks: [['deco_fence', 8, 11], ['deco_fence', 14, 11], ['deco_fence', 26, 11], ['deco_fence', 32, 11]],
+      objects: [   // lore (E4). Spots are PLACEHOLDERS
+        { kind: 'sign', tx: 22, ty: 11, text: 'TOLL: 4 COINS. ALWAYS HAS BEEN. The 4 is painted over a 3, over a 2, over something scratched out.' },
+        { kind: 'sign', tx: 2, ty: 5, emoji: '🪨', label: 'Look', solid: true, text: 'A stone milestone. One face is worn smooth. The other says FOOPVILLE in fresh chalk.' },
+        { kind: 'sign', tx: 21, ty: 16, text: 'NOTICE: Complaints must be filed in person, in triplicate. The filing fee is 4 coins.' },
+      ],
       ground: { ...FUP.look.mood('tollRoad'), treeShade: 0.75 },     // colours: data/look.js
       light: FUP.look.mood('tollRoad').light,
       weather: 'leaves',
@@ -147,6 +158,11 @@ FUP.forestData = {
       decorations: { deco_glowshroom: 0.05, deco_fern: 0.12, deco_shroom: 0.03, deco_log: 0.02, deco_stump: 0.01, deco_oldsign: 0.006 },
       landmarks: [['deco_glowshroom', 35, 17], ['deco_glowshroom', 37, 17], ['deco_glowshroom', 35, 19], ['deco_glowshroom', 37, 19],
         ['deco_oldsign', 14, 1], ['deco_oldsign', 31, 13], ['deco_oldsign', 20, 22]],
+      objects: [   // lore (E4). Spots are PLACEHOLDERS
+        { kind: 'sign', tx: 15, ty: 1, sprite: 'ruin_crushed', emoji: '🏚️', label: 'Look', solid: true, scale: 0.35, text: 'A shack folded flat, like something sat on it. A sign in the rubble, in letters nobody in Foopville uses.' },
+        { kind: 'sign', tx: 33, ty: 13, sprite: 'tree_dead', emoji: '🪵', label: 'Look', solid: true, text: 'Scorch marks ring this trunk higher than any campfire could reach. The bark grew back around them. It took a long time.' },
+        { kind: 'sign', tx: 6, ty: 19, emoji: '🪜', label: 'Look', text: 'Stone steps that start in the dirt and climb into nothing. Whoever built them knew where they were going. You don\'t.' },
+      ],
       ground: { ...FUP.look.mood('deepWoods'), treeShade: 0.5 },     // colours: data/look.js
       light: FUP.look.mood('deepWoods').light,
       weather: 'fireflies',

@@ -212,12 +212,13 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
     this.use(id);
     const R = FUP.world.respawnTimes(id), a = this.area(id), T = this.size();
     this.stamp(A, now);
-    const sight = ((a.fog && a.fog.sight) || 0) + R.sightMargin;
+    const fog = a.fog && FUP.gear ? FUP.gear.withSight(a.fog) : a.fog;   // a Lantern sees further: nothing pops up inside it
+    const sight = ((fog && fog.sight) || 0) + R.sightMargin;
     const G = FUP.grave && FUP.grave.active() && FUP.grave.state.region === id ? FUP.grave.state : null;
     const clear = c => (!at || Math.hypot(c.x - at.x, c.y - at.y) > sight * T) && (!G || Math.hypot(c.x - G.x, c.y - G.y) > R.graveRadius * T);
     // Quest enemies: keep only the ones a quest still wants; beaten ones never respawn as random enemies
     const wanted = new Set((FUP.quests && FUP.quests.foesIn ? FUP.quests.foesIn(id) : []).map(q => q.id));
-    A.enemies = A.enemies.filter(e => !(e.questFoe && (!e.alive || !wanted.has(e.questFoe))) && !(e.godfather && !e.alive));
+    A.enemies = A.enemies.filter(e => !(e.questFoe && (!e.alive || !wanted.has(e.questFoe))) && !(e.godfather && !e.alive) && !(e.side && !e.alive));   // side-room guards (E3) come back with the next day's roll
     let n = 0;
     A.enemies.forEach((e, k) => {
       if (e.alive || e.godfather || now - e.deadAt < R.enemies) return;
@@ -228,6 +229,7 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
       n++;
     });
     for (const it of A.items) {
+      if (it.side) continue;   // a side room's patch (E3) refills with the next day's roll
       if (!it.taken || now - it.takenAt < R.items || !clear(this.center(it.tx, it.ty))) continue;
       it.id = FUP.run.rollIngredient(rng, a.forageOdds, a.forage || null);
       it.taken = false; delete it.takenAt;
