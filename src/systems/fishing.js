@@ -233,7 +233,8 @@ FUP.fishing = {
   biteWait(rng = Math.random) {
     const G = FUP.fishData.game;
     const bait = this.baitData() || {};   // a Worm: bites come 30% sooner
-    return (G.biteMin + rng() * (G.biteMax - G.biteMin)) * Math.max(0.2, 1 - FUP.unlocks.perkSum('biteCut') - (bait.biteCut || 0));
+    const rain = FUP.events ? FUP.events.biteMult() : 1;   // V3: rain in the village, bites come sooner
+    return (G.biteMin + rng() * (G.biteMax - G.biteMin)) * Math.max(0.2, 1 - FUP.unlocks.perkSum('biteCut') - (bait.biteCut || 0)) * rain;
   },
 
   // Which fish bites (weighted), or null if nothing can

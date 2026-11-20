@@ -125,6 +125,7 @@ FUP.fishingUi = {
       if (r.meterV >= 1) {
         const perfect = r.touched && !r.dropped, res = F.land(r.fishId, perfect, { x: W / 2, y: H / 2 - 150 });
         res.treasure = F.rollTreasure(perfect);   // something else on the line?
+        res.glitter = FUP.events ? FUP.events.glitterCatch(spotId, r.fishId) : null;   // V3: the pond glitters, catches come in pairs
         result(res);
       }
       else if (r.meterV <= 0) result(null);
@@ -148,9 +149,10 @@ FUP.fishingUi = {
         const pic = fix(ui.sprite(scene, W / 2, py + 54, ui.ingKey(res.id), fishEmoji(res.id), 44, 3), 2);
         pic.setScale(pic.scaleX * 0.3);
         scene.tweens.add({ targets: pic, scale: pic.scaleX / 0.3, duration: 260, ease: 'Back.easeOut' });
-        fix(ui.text(scene, W / 2, py + 96, fishName(res.id) + (res.extra ? ' x2' : ''), 20, c.accent, { fontStyle: '700' }).setOrigin(0.5), 2);
+        fix(ui.text(scene, W / 2, py + 96, fishName(res.id) + ((res.extra ? 1 : 0) + (res.glitter ? 1 : 0) ? ` x${1 + (res.extra ? 1 : 0) + (res.glitter ? 1 : 0)}` : ''), 20, c.accent, { fontStyle: '700' }).setOrigin(0.5), 2);
         fix(ui.text(scene, W / 2, py + 124, `+${res.xp} 🎣 Fishing XP`, 15, c.good).setOrigin(0.5), 2);
-        if (res.perfect) fix(ui.text(scene, W / 2, py + 146, '✨ Perfect catch!', 15, c.crit, { fontStyle: '700' }).setOrigin(0.5), 2);
+        if (res.perfect) fix(ui.text(scene, W / 2, py + 146, '✨ Perfect catch!' + (res.glitter ? `  Double! (${res.glitter.left} left)` : ''), 15, c.crit, { fontStyle: '700' }).setOrigin(0.5), 2);
+        else if (res.glitter) fix(ui.text(scene, W / 2, py + 146, `✨ Double! (${res.glitter.left} left)`, 15, c.crit, { fontStyle: '700' }).setOrigin(0.5), 2);
         if (res.treasure) {
           FUP.audio.sfx('coins');
           fix(ui.text(scene, W / 2, py + 170, `Something else was on the line: ${res.treasure.text}`, 13, c.accent, { fontStyle: '700', align: 'center', wordWrap: { width: PW - 30 } }).setOrigin(0.5), 2);

@@ -33,7 +33,7 @@ FUP.awayCard = {
     // Later phases: daily orders (V2), the market (R2), village events (V3)
     if (FUP.quests && FUP.quests.dailyLine) { const l = FUP.quests.dailyLine(); if (l) add('📜', l); }
     if (FUP.repairs && FUP.repairs.marketLine) { const l = FUP.repairs.marketLine(); if (l) add('🏬', l); }
-    if (FUP.events && FUP.events.activeLine) { const l = FUP.events.activeLine(); if (l) add('🎪', l); }
+    if (FUP.events && FUP.events.activeLine) { const l = FUP.events.activeLine(); if (l) add('❗', l); }
     return out;
   },
 

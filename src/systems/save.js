@@ -164,6 +164,13 @@ FUP.save = {
     reset: () => FUP.quests.reset(),
   });
 
+  // Village surprise events (V3): what's going on, when the last one ended
+  S.register('events', {
+    get: () => FUP.events.state,
+    set(d) { FUP.events.state = { active: d.active && FUP.eventData.list[d.active.id] ? d.active : null, lastEnd: d.lastEnd ?? -FUP.eventData.gapSeconds, seen: { ...(d.seen || {}) } }; },
+    reset: () => FUP.events.reset(),
+  });
+
   // Marrowbone's Special (V2): today's dish and how many are left
   S.register('special', {
     get: () => FUP.village.special,

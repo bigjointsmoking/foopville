@@ -615,3 +615,29 @@ FUP.narrator = {
   officeWon: ['You walk out of the office. Nobody stops you. Nobody makes eye contact either.', 'Meeting adjourned. By force.'],
   eastLocked: ['The road east goes past the Notary\'s office. Nobody gets past the Notary. Not without the right form.'],
 };
+
+// ---------- Village surprise events (V3, data/events.js). PLACEHOLDER lines. ----------
+// eventStart.<id>: said when one starts (names where to look). eventDone.<id>: when you finish it.
+FUP.narrator.eventStart = {
+  peddler: ['A travelling peddler has set up by the north gate. He looks honest. That\'s the worrying part.', 'Someone\'s selling things by the north gate. From a suitcase. Very official.'],
+  pigeon_mail: ['A pigeon left something on your doorstep. For once, it\'s a letter.', 'There\'s mail at your door. Delivered by pigeon. Judged by pigeon.'],
+  lost_tourist: ['A lost tourist is wandering the middle of the village, looking hungry and confused. Relatable.', 'There\'s a stranger in the village square. He looks lost. And hungry. Mostly hungry.'],
+  crop_thieves: ['Squirrels are eyeing your crops. Go shoo them before they get ideas.', 'Your farm has visitors. Small, furry, guilty-looking visitors. Shoo them, quickly.'],
+  rain: ['It\'s raining. The fish love it. Your crops don\'t care. Water them anyway.', 'Rain. Everything smells like wet dog, including you. The fish are biting, though.'],
+  chef_challenge: ['Marrowbone wants to see if you can cook one specific thing. He\'s already disappointed.', 'Chef Marrowbone has a challenge for you. He says it\'s easy. He also says that about insults.'],
+  glitter_pond: ['The village pond is glittering. Fish come out two at a time for a while. Don\'t ask why.', 'Something shiny is in the pond. The fish are excited. Go and take advantage.'],
+  mystery_crate: ['A crate has turned up somewhere in the village. Nobody knows whose it is. Finders keepers.', 'There\'s a mystery crate lying around the village. It\'s yours now. Legally questionable.'],
+  market_day: ['It\'s Market Day! Your food stall is selling twice as fast. Try to keep up.', 'Market Day. The whole village is shopping. Even your stall is doing well. Shocking.'],
+};
+FUP.narrator.eventDone = {
+  peddler: ['The peddler packs his suitcase and leaves. He was whistling. That\'s never good.', 'Sold out. He waves goodbye with your money.'],
+  pigeon_mail: ['Mail read. The pigeon has already left something else. Don\'t look.', 'Letter opened. Nobody writes to you. Somebody just did.'],
+  lost_tourist: ['The tourist wanders off, well fed and still lost.', 'He thanks you and walks straight into a fence. Happy, though.'],
+  crop_thieves: ['Every squirrel shooed. Your crops are safe. For now.', 'The squirrels have fled. They\'ll talk about you.'],
+  rain: ['The rain stops.', 'The sun comes back. Nobody asked it to.'],
+  chef_challenge: ['"Acceptable. Barely. Take your money and go."', '"I\'ve had worse. Not recently, but I have."'],
+  glitter_pond: ['The pond stops glittering. Back to normal, boring fish.', 'The sparkle\'s gone. The fish look disappointed.'],
+  mystery_crate: ['Free stuff. The best kind.', 'Nobody saw you take it. Probably.'],
+  market_day: ['Market Day is over.', 'The market quiets down.'],
+};
+FUP.narrator.thievesGone = ['The squirrels got bored and wandered off. Nothing taken. They were just looking. Judging, really.'];

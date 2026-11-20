@@ -23,7 +23,8 @@ FUP.stall = {
   // Play seconds between sales
   seconds(uid) {
     const market = FUP.facts.has('repair:market') && FUP.repairData && FUP.repairData.market ? FUP.repairData.market.stallSpeed : 1;
-    return (this.tier(uid).sellSeconds || FUP.stallData.sellSeconds) * (1 - FUP.unlocks.perkSum('stallSpeedCut')) * market;
+    const event = FUP.events ? FUP.events.stallMult() : 1;   // V3: Market Day, twice as fast
+    return (this.tier(uid).sellSeconds || FUP.stallData.sellSeconds) * (1 - FUP.unlocks.perkSum('stallSpeedCut')) * market * event;
   },
 
   // Will customers buy this dish?

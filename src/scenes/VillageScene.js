@@ -41,6 +41,7 @@ class VillageScene extends Phaser.Scene {
     this.spots.push(...FUP.trapUi.spots('village', FUP.villageMap));
     this._salvageViews = null; this.refreshSalvage();     // scrap piles (src/salvageUi.js, v0.70)
     this._comViews = null; this._comTimers = []; this.drawCommissions();   // villagers' build jobs (VillageCommissions.js)
+    this.startEvents();   // V3: maybe a surprise event (VillageEvents.js)
     this.drawHud();
     this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
     this.input.keyboard.on('keydown-E', () => this.interact());
@@ -312,6 +313,7 @@ class VillageScene extends Phaser.Scene {
   update(time, delta) {
     const dt = Math.min(delta, 100) / 1000;
     FUP.ambience.update(this, dt);   // critters, wind and light keep going while a window is open
+    if (!this.leaving) this.eventTick(dt);   // V3: rain, squirrels, the event ending
     if (this.leaving || this.panel || this.busy) return;
     this.movePlayer(dt);
     this.updatePrompt();
@@ -503,6 +505,7 @@ class VillageScene extends Phaser.Scene {
     if (s.kind === 'trap') { FUP.trapUi.use(this, 'village', s, FUP.villageMap); return; }
     if (s.kind === 'salvage') { FUP.salvageUi.use(this, s, () => { this.refreshSalvage(); this.refreshHud(); }); return; }
     if (s.kind === 'commission') { this.openCommission(s); return; }
+    if (s.kind === 'event') { this.eventUse(s); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => { this.refreshQuestMarks(true); this.refreshHud(); }); return; }
     this.openPanel(s.id);   // villagers, and objects like the Compost Bin
   }

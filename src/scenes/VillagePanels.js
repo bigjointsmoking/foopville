@@ -362,7 +362,22 @@ FUP.villagePanels = {
       }], X, 108, RW, 1, 50);
       this.panelPage = saved;
     } else this.pText(X, 112, 'Nothing today. He says the kitchen is "resting".', 13, c.dim);
-    this.pText(X, 166, 'RIDDLES', 12, c.dim, { fontStyle: '700' });
+    // V3: Chef's Challenge (a village event): bring him one dish
+    const E = FUP.events, ch = E.challengeRecipe();
+    let ry = 166;
+    if (ch) {
+      const C = FUP.cooking, have = E.challengeHave(), dish = have >= 0 ? run.satchel[have] : null, pay = dish ? E.challengeReward(dish) : null;
+      this.panelPage = 0;
+      this.pRows([{
+        pic: null, emoji: '🍽️', name: `CHALLENGE: bring me ${C.title(ch.name)} (any stars)`, color: c.accent,
+        sub: dish ? `You have one. Pays ${pay.coins} 🪙 and ${pay.xp} Cooking XP.` : `You don't have one on you. Pays ${E.def('chef_challenge').coinMult}x what it sells for, and extra Cooking XP.`, subColor: dish ? c.good : c.dim,
+        btn: 'Hand in', disabled: !dish,
+        fn: () => { const r = E.handInChallenge(); if (r) { FUP.audio.sfx('fanfare'); this.speech = Phaser.Utils.Array.GetRandom(FUP.narrator.eventDone.chef_challenge); this.sayLine(`Challenge done: +${r.coins} coins, +${r.xp} Cooking XP.`); } },
+      }], X, 166, RW, 1, 50);
+      this.panelPage = saved;
+      ry = 222;
+    }
+    this.pText(X, ry, 'RIDDLES', 12, c.dim, { fontStyle: '700' });
     const forSale = V.riddlesForSale();
     if (!forSale.length) this.speech = this.speech || FUP.villageData.npcs.chef.allKnown[0];
     const rows = forSale.map(r => {
@@ -378,8 +393,8 @@ FUP.villagePanels = {
         },
       };
     });
-    if (!forSale.length) this.pText(X, 184, 'You\'ve bought or found every secret. Marrowbone is visibly disappointed.', 14, c.dim);
-    this.pRows(rows, X, 182, RW, 5, 46);
+    if (!forSale.length) this.pText(X, ry + 18, 'You\'ve bought or found every secret. Marrowbone is visibly disappointed.', 14, c.dim);
+    this.pRows(rows, X, ry + 16, RW, ch ? 4 : 5, 46);
     const found = FUP.recipeData.list.filter(r => r.secret && cb.discovered[r.name]).length;
     const total = FUP.recipeData.list.filter(r => r.secret).length;
     this.pText(X, 474, `Secret recipes found: ${found} / ${total}. Riddles you bought are in your recipe book at home.`, 12, c.dim, { wordWrap: { width: RW } });
