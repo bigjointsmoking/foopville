@@ -1,7 +1,7 @@
 // Dev stats panel (M1, claude/FIRST_30_MINUTES.md). Hidden: only Jesus knows how to open it.
 // Local only: everything stays in this browser (no network). Read by src/devStats.js.
 FUP.devStatsData = {
-  enabled: true,          // false = the panel and the logging are off
+  enabled: false,         // false = the panel and the logging are off (T1, v1.09: off for v1.0, Jesus; true turns it back on)
   key: 'Backquote',       // the ` key (left of 1) opens / closes it on a computer
   cornerTaps: 3,          // phones: tap the top-left corner of the game this many times...
   cornerSize: 48,         // ...inside this many pixels of the corner...
