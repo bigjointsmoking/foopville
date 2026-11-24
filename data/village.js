@@ -235,7 +235,7 @@ FUP.villageData = {
       reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
         { fact: 'clue:ledgerPage', line: "An older name under ours? Paperwork gets messy. Don't let it keep you up." },
         { fact: 'clue:paymentLedger', line: "No names. Just 'the Resident'. The old shopkeepers kept odd books." },
-        { fact: 'clue:ash', line: "Ash that sparkles? Wipe your boots before you come in." },
+        { fact: 'clue:ash', line: "Ash that glows? Wipe your boots before you come in." },
       ],
       legend: "Oh, everyone knows the story. The dragon came down, great and terrible, and Sir Foop walked out to meet her. Alone. Not a tremble. They fought, the two of them, and when the dust settled he was the one standing. That's how the old shopkeepers always told it. Never a flinch, they said. Good man.",
       greet: [

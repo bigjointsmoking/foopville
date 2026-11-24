@@ -85,6 +85,8 @@ FUP.quests = {
     if (!this.canTake(this.kind(id)) || this.state.active[id]) return false;
     if (this.isQuest(id) ? (this.done(id) || !this.fits(id)) : !this.state.board.includes(id)) return false;
     this.state.active[id] = { n: 0, done: false, step: 0, flags: {}, talked: {}, log: [] };
+    if (this.def(id).ver) this.state.active[id].ver = this.def(id).ver;
+    this.prepStep(id);
     if (FUP.facts) FUP.facts.add('did:quest');   // first-day goals (data/goals.js)
     this.state.board = this.state.board.filter(b => b !== id);
     this.refill();
@@ -202,6 +204,8 @@ FUP.quests = {
     if (!st) return '';
     if (st.taste) return st.goal || `Bring ${this.npcName(st.taste)} a bowl to taste`;
     if (st.guest && st.talk) return `Meet ${this.npcName(st.talk)} (${this.regionName(st.guest.region)})`;
+    if (st.dig) return st.goal || `Dig on ${st.dig.name}`;
+    if (st.search && st.search.work) return st.goal || `Clear ${st.search.name}`;
     if (st.search) return `Search ${st.search.name} (${this.regionName(st.search.region)})` + (st.when === 'night' ? ' at night 🌙' : '');
     if (st.fight && !st.goal) return `Find ${st.fight.name} (${this.regionName(st.fight.region)})`;
     if (st.talkAll) { const left = Object.keys(st.talkAll).filter(k => !s.talked[k]).map(k => this.npcName(k)); return `${st.goal}  (left: ${left.join(', ')})`; }
@@ -231,9 +235,34 @@ FUP.quests = {
   elsewhere(npc, region) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.guest.npc) === npc && st.guest.region !== region; }); },
 
   // 🔍 spots on this map for your quests: [{ id, tx, ty, name }]
+  // (v1.10) a dig step: one spot per square not dug yet, k = which one
   searchesIn(region) {
-    return this.activeIds().filter(id => { const st = this.step(id); return st && st.search && st.search.region === region; })
-      .map(id => ({ id, ...this.step(id).search }));
+    const out = [];
+    for (const id of this.activeIds()) {
+      const st = this.step(id);
+      if (st && st.search && st.search.region === region) out.push({ id, ...st.search });
+      if (st && st.dig && st.dig.region === region) {
+        const d = this.prepStep(id);
+        st.dig.spots.forEach(([tx, ty], k) => { if (!d.dug.includes(k)) out.push({ id, k, tx, ty, name: st.dig.name, dig: true, work: st.dig.work }); });
+      }
+    }
+    return out;
+  },
+  // (v1.10) A dig step picks its right square once, when it starts (kept in the save)
+  prepStep(id, rng = Math.random) {
+    const st = this.step(id), s = this.state.active[id];
+    if (!st || !st.dig) return null;
+    if (!s.dig) s.dig = { right: Math.floor(rng() * st.dig.spots.length), dug: [] };
+    return s.dig;
+  },
+  // (v1.10) A save made before a quest's steps changed: move it to the matching new step (quest ver + oldSteps)
+  upgrade(id, s) {
+    const q = this.def(id);
+    if (!q || !q.ver || (s.ver || 1) === q.ver) return s;
+    const m = (q.oldSteps || {})[s.step || 0];
+    if (m !== undefined) s.step = m;
+    s.ver = q.ver;
+    return s;
   },
   // Quest enemies waiting on this map: [{ id, tx, ty, enemy, group, name }]
   foesIn(region) {
@@ -254,8 +283,16 @@ FUP.quests = {
   // You beat (or charmed) a quest enemy
   foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, '') : null; },
   // Search a 🔍 spot. Returns like doStep (maybe with choices).
-  doSearch(id) {
+  doSearch(id, k = null, rng = Math.random) {
     const st = this.step(id);
+    if (st && st.dig) {   // (v1.10) dig one square: the right one moves the quest on, the rest are just dirt
+      const d = this.prepStep(id);
+      if (k === null || d.dug.includes(k) || !st.dig.spots[k]) return { ok: false, line: '' };
+      if (k === d.right) return this.advance(id, st.say || '');
+      d.dug.push(k);
+      const lines = st.dig.wrong || ['Just dirt.'];
+      return { ok: false, line: lines[Math.floor(rng() * lines.length)], dirt: true };
+    }
     if (!st || !st.search) return { ok: false, line: '' };
     if (st.when && FUP.clock && FUP.clock.phase().id !== st.when) return { ok: false, line: st.notYet || 'Nothing here. Not now, anyway.' };
     if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
@@ -342,7 +379,8 @@ FUP.quests = {
     const q = this.def(id), s = this.state.active[id], st = this.step(id);
     if (st && st.log) (s.log = s.log || []).push(st.log);
     if (st && st.give) { const got = this.grant(st.give, [], id); if (got.length) this.news.push(...got); }   // a step can hand you something (Pip's root seeds, the bowl)
-    s.step = (s.step || 0) + 1; s.n = 0; s.talked = {}; s.tasted = false;
+    s.step = (s.step || 0) + 1; s.n = 0; s.talked = {}; s.tasted = false; delete s.dig;
+    this.prepStep(id);
     if (s.step < q.steps.length) return { ok: true, line };
     const coins = this.finish(id);
     return { ok: true, line, coins, done: q.name, reward: this.isQuest(id) ? this.lastReward : null };

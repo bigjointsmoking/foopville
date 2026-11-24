@@ -157,7 +157,7 @@ FUP.save = {
     get: () => FUP.quests.state,
     set(d) {
       const known = id => !!FUP.questData.quests[id], active = {}, rest = {};   // quests that no longer exist are dropped
-      for (const [id, s] of Object.entries(d.active || {})) if (known(id)) active[id] = s;
+      for (const [id, s] of Object.entries(d.active || {})) if (known(id)) active[id] = FUP.quests.upgrade(id, s);   // v1.10: old step numbers moved
       for (const [id, n] of Object.entries(d.rest || {})) if (known(id)) rest[id] = n;
       FUP.quests.state = { active, board: (d.board || []).filter(known), rest, day: d.day || 0, fresh: !!d.fresh };
     },

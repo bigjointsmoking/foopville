@@ -86,13 +86,18 @@ FUP.questUi = {
 
   // 🔍 action spots for this map (center(tx, ty) → { x, y } in pixels)
   spots(region, center) {
-    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, x: p.x, y: p.y, label: '🔍 Search', reach: 46 }; });
+    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, k: s.dig ? s.k : null, work: s.work, x: p.x, y: p.y, label: this.icon(s) + (s.dig ? ' Dig' : s.work ? ' Clear' : ' Search'), reach: 46 }; });
   },
+  icon(s) { return s.dig || s.work ? '⛏️' : '🔍'; },
   // Search a 🔍 spot (from either kind of map)
+  // (v1.10) Clear / Dig spots are a timed Hoe job first (the farm's swing, where the map has one)
   search(scene, s, after = () => {}) {
-    const r = FUP.quests.doSearch(s.quest);
-    FUP.save.write();
-    this.result(scene, s.quest, r, after);
+    const go = () => {
+      const r = FUP.quests.doSearch(s.quest, s.k);
+      FUP.save.write();
+      this.result(scene, s.quest, r, after);
+    };
+    if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go); else go();
   },
   // A villager's 📜 step (from their window)
   step(scene, id, npc, after = () => {}) {
@@ -110,7 +115,7 @@ FUP.questUi = {
     const sig = [];
     for (const s of FUP.quests.searchesIn(region)) {
       const p = center(s.tx, s.ty);
-      const m = scene.add.text(p.x, p.y - 6, '🔍', { fontSize: '22px' }).setOrigin(0.5).setDepth(p.y + 30);
+      const m = scene.add.text(p.x, p.y - 6, this.icon(s), { fontSize: '22px' }).setOrigin(0.5).setDepth(p.y + 30);
       scene.tweens.add({ targets: m, y: p.y - 14, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       scene._qMarks.push(m); sig.push(s.id);
     }
@@ -125,5 +130,5 @@ FUP.questUi = {
     return sig.join(',');
   },
   // A string that changes when the quest picture changes (so maps only redraw markers when needed)
-  signature(region) { return JSON.stringify([FUP.quests.activeIds().map(id => [id, FUP.quests.state.active[id].step, Object.keys(FUP.quests.state.active[id].talked || {}).length]), FUP.quests.available('quest').length, region]); },
+  signature(region) { return JSON.stringify([FUP.quests.activeIds().map(id => [id, FUP.quests.state.active[id].step, ((FUP.quests.state.active[id].dig || {}).dug || []).length, Object.keys(FUP.quests.state.active[id].talked || {}).length]), FUP.quests.available('quest').length, region]); },
 };

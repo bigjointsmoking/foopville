@@ -368,19 +368,28 @@ Object.assign(FUP.questData.quests, {
   // Spell pieces (fragment) are kept even if you die (data/spell.js). Clues are facts 'clue:<id>' (villagers react).
   // All lines, numbers and spots are PLACEHOLDERS for Jesus.
 
-  deadPlot: { kind: 'story', from: 'seeds', difficulty: 'medium', length: 'short', name: 'Pip\'s Dead Plot',
+  // v1.10: rebuilt from claude/MAIN_QUEST_LINE.md (dragon quest line, quest 1; plans/QL1.md). Pip posts it himself.
+  // Clear the plot (one long Hoe job), dig until you hit the ash (right square picked at random), jar it, back to Pip.
+  // Lines, seconds and spots are PLACEHOLDERS for Jesus. ver 2: old saves holding the jar (old step 3) move to the new step 4.
+  deadPlot: { kind: 'story', from: 'seeds', difficulty: 'easy', length: 'short', name: 'Pip\'s Dead Plot', ver: 2, oldSteps: { 2: 3 },
     req: { facts: { 'region:edge': 1 } },   // posted after your first trip out of the village
-    text: 'Pip had a plot at the east end of the farm once. Nothing grows there now. Not even weeds.',
+    text: 'Pip had a plot at the east end of the farm once. Nothing grows there now. Not even weeds. Well, dead weeds.',
     reward: { coins: 80, xp: { gardening: 80 }, seeds: { heartroot: 3 }, fact: 'clue:ash' },
     afterGreet: ['That jar\'s under my stall. Lid on. Don\'t ask me to open it.', 'Plants don\'t grow there. Plants grow here. Buy some.'],
     steps: [
       { talk: 'seeds', log: 'Pip\'s old plot, at the east end of the farm, is dead. He wants a sample. In a jar. With a lid.',
-        say: 'My old plot. East end of the farm, past the last field. Nothing\'s grown there in years. Bring me some of the dirt. In a jar. With a lid. I\'m not touching it.' },
-      { search: { region: 'village', tx: 53, ty: 55, name: 'Pip\'s old plot' }, log: 'The plot is burned black. You sealed a jar of the ash. It sparkles.',
-        say: 'Black ash, fine as flour. You scoop some into a jar and screw the lid on tight. It sparkles. Ash shouldn\'t sparkle.',
+        say: 'My old plot. East end of the farm, past the last field. Nothing\'s grown there for a long time. Clear the junk off it and dig me up a sample. In a jar. With a lid. I\'m not touching it.' },
+      { search: { region: 'village', tx: 53, ty: 55, name: 'Pip\'s old plot', work: 4 }, goal: 'Clear Pip\'s old plot with your Hoe (east end of the farm)',
+        log: 'You hoed the weeds and rubble off Pip\'s old plot. Under it the ground is black.',
+        say: 'Dead weeds out. Rubble out. Under it all, the ground is black. Somewhere in there is whatever did this.' },
+      { dig: { region: 'village', name: 'Pip\'s old plot', work: 0.7, spots: [[51, 54], [54, 54], [56, 55], [51, 56], [54, 56]],
+          wrong: ['Dirt. Impressive dirt, but dirt.', 'Just dirt. You dig with real conviction anyway.', 'More dirt. Pip will be thrilled.'] },
+        goal: 'Dig around Pip\'s old plot until you find what killed it',
+        log: 'Under one patch: ash that glows. You sealed some in a jar.',
+        say: 'Your hoe hits something soft. Black ash, fine as flour, and it glows faintly. Ash shouldn\'t glow. You scoop some into a jar and screw the lid on tight.',
         give: { items: { ash_jar: 1 } } },
       { bring: { ash_jar: 1 }, to: 'seeds', log: 'Pip held the jar up to the light and went pale.',
-        say: 'He holds it up to the light. Goes pale. "That\'s no house fire. I don\'t know what that is." He puts it under the stall. "Here. Seeds. Good ones. Go away."' },
+        say: 'He holds it up to the light. Goes pale. "That\'s no house fire. Why is it glowing? Why is it still glowing?" He puts it under the stall. "Here. Seeds. Good ones. Go away."' },
     ] },
 
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
