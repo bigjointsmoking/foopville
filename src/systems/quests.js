@@ -209,6 +209,7 @@ FUP.quests = {
     if (st.dig && st.dig.all) return `${st.goal || 'Dig on ' + st.dig.name}  (${((s.dig || {}).dug || []).length}/${st.dig.spots.length})`;
     if (st.dig) return st.goal || `Dig on ${st.dig.name}`;
     if (st.search && st.search.work) return st.goal || `Clear ${st.search.name}`;
+    if (st.search && st.goal) return st.goal;   // (v1.13)
     if (st.search) return `Search ${st.search.name} (${this.regionName(st.search.region)})` + (st.when === 'night' ? ' at night 🌙' : '');
     if (st.fight && !st.goal) return `Find ${st.fight.name} (${this.regionName(st.fight.region)})`;
     if (st.talkAll) { const left = Object.keys(st.talkAll).filter(k => !s.talked[k]).map(k => this.npcName(k)); return `${st.goal}  (left: ${left.join(', ')})`; }
@@ -318,6 +319,11 @@ FUP.quests = {
     }
     if (!st || !st.search) return { ok: false, line: '' };
     if (st.when && FUP.clock && FUP.clock.phase().id !== st.when) return { ok: false, line: st.notYet || 'Nothing here. Not now, anyway.' };
+    if (st.need) {   // (v1.13) things you must carry here; `take` uses them up (the Glass line's lump at the forge)
+      const short = Object.entries(st.need).filter(([k, n]) => this.have(k) < n);
+      if (short.length) return { ok: false, line: st.notYet || `Bring the ${short.map(([k]) => FUP.ingredients[k].name).join(' and ')}.` };
+    }
+    for (const [k, n] of Object.entries(st.take || {})) FUP.run.takeFromBag(Array(n).fill(k));
     if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
     return this.advance(id, st.say || '');
   },

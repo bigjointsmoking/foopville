@@ -453,6 +453,43 @@ Object.assign(FUP.questData.quests, {
         say: 'The Assayer kneels, rubs the black dirt between two fingers. "Dragon residue. It won\'t fade. Not in your lifetime, not in his. Nobody in this village can clear it." Pip sits down on the dirt, then gets up fast. "A dragon. On my plot. ...Here\'s your money. I need to sit down somewhere else."' },
     ] },
 
+  // v1.13: the Glass line (the Carpenter), quests 1-2 (claude/MAIN_QUEST_LINE.md Glass line arc, plans/GL1.md).
+  // A shard shows its moment only at the Blacksmith's forge: a cutscene (data/cutscenes.js) that plays once. Lines are PLACEHOLDERS.
+  glass1: { kind: 'story', from: 'carpenter', difficulty: 'easy', length: 'short', name: 'Melted Stone',
+    req: { facts: { 'repair:well': 1 } },   // posted once the Well is repaired
+    text: 'When the Well was fixed, Planksworth found a lump of stone in the rubble. Melted. He has questions.',
+    reward: { coins: 60, xp: { building: 60 } },
+    afterGreet: ['Stone doesn\'t melt. I keep saying it. Nobody listens.', 'The square, before. I\'d give a lot to see more of that.'],
+    steps: [
+      { talk: 'carpenter', log: 'Planksworth found a lump of melted stone when the Well was fixed. Stone doesn\'t melt.',
+        say: '"Found this in the rubble when we fixed the well. Stone. Melted. Stone doesn\'t melt. Not in any fire I\'ve built. Hold it up to a proper fire. The forge. See what it does."',
+        give: { items: { melted_lump: 1 } } },
+      { search: { region: 'village', tx: 5, ty: 5, name: 'the forge', label: '🔥 Hold it up', icon: '🔥' }, need: { melted_lump: 1 }, take: { melted_lump: 1 },
+        notYet: 'You need the lump to hold it up.', cutscene: 'alarm', goal: 'Hold the Melted Lump up to the Blacksmith\'s forge',
+        log: 'In the forge light, the lump showed the square on the bad day: the alarm, the sky on fire.',
+        say: 'The lump cracks and goes dark. Whatever was in it is gone.' },
+      { talk: 'carpenter', log: 'Planksworth wants to see more of the old village.',
+        say: '"It showed you what? ...The square. Before. I want to see more of that. For the rebuilding. And because I\'m nosy."' },
+    ] },
+  glass2: { kind: 'story', from: 'carpenter', difficulty: 'easy', length: 'short', name: 'More Where That Came From',
+    req: { facts: { 'quest:glass1': 1 } },
+    text: 'Planksworth reckons where it burned hottest, there\'ll be more melted stone.',
+    reward: { coins: 120, xp: { building: 120 } },
+    afterGreet: ['More than one of them. Why does the story only have one?', 'I\'ve started drawing the old square. Badly. But I\'ve started.'],
+    steps: [
+      { talk: 'carpenter', log: 'Planksworth thinks the old burn marks will have more melted stone.',
+        say: '"Where it burned hottest, there\'ll be more. The black marks by the old market, and up by the windmill. Dig."' },
+      { dig: { region: 'village', name: 'the old burn marks', all: true, item: 'glass_shard', work: 0.7, spots: [[39, 27], [47, 29], [47, 4]] },
+        goal: 'Dig up 3 Glass Shards by the old burn marks (the Market and the Windmill)', log: 'You dug three Glass Shards out of the burn marks.',
+        say: 'A sliver of melted stone, glinting. That\'s three.' },
+      { search: { region: 'village', tx: 5, ty: 5, name: 'the forge', label: '🔥 Hold them up', icon: '🔥' }, need: { glass_shard: 3 }, take: { glass_shard: 3 },
+        notYet: 'You need all three shards.', cutscene: 'gather', goal: 'Hold the 3 Glass Shards up to the Blacksmith\'s forge',
+        log: 'The shards showed robed elders gathering at the well. Not one hero. Many.',
+        say: 'The shards go dark one by one.' },
+      { talk: 'carpenter', log: 'You told Planksworth about the elders.',
+        say: '"There\'s more than one of them. The story says Foop was alone." He stares at his workbench for a long time. "Huh."' },
+    ] },
+
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',

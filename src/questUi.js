@@ -87,16 +87,19 @@ FUP.questUi = {
 
   // 🔍 action spots for this map (center(tx, ty) → { x, y } in pixels)
   spots(region, center) {
-    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, k: s.dig ? s.k : null, work: s.work, x: p.x, y: p.y, label: this.icon(s) + (s.dig ? ' Dig' : s.work ? ' Clear' : ' Search'), reach: 46 }; });
+    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, k: s.dig ? s.k : null, work: s.work, x: p.x, y: p.y, label: s.label || this.icon(s) + (s.dig ? ' Dig' : s.work ? ' Clear' : ' Search'), reach: 46 }; });
   },
-  icon(s) { return s.dig || s.work ? '⛏️' : '🔍'; },
+  icon(s) { return s.icon || (s.dig || s.work ? '⛏️' : '🔍'); },
   // Search a 🔍 spot (from either kind of map)
   // (v1.10) Clear / Dig spots are a timed Hoe job first (the farm's swing, where the map has one)
   search(scene, s, after = () => {}) {
     const go = () => {
+      const st = FUP.quests.step(s.quest);
       const r = FUP.quests.doSearch(s.quest, s.k);
       FUP.save.write();
-      this.result(scene, s.quest, r, after);
+      // (v1.13) a step with a cutscene plays it first (the Glass line at the forge)
+      if (r.ok && st && st.cutscene && FUP.cutscene) FUP.cutscene.play(scene, st.cutscene, () => this.result(scene, s.quest, r, after));
+      else this.result(scene, s.quest, r, after);
     };
     if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go); else go();
   },
