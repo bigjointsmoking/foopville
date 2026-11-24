@@ -196,6 +196,17 @@ FUP.villageData = {
       broke: ['Not enough coins. Happens to everyone here, eventually.'],
       full: ['Your bag is full. We can repossess some of it, if you like. That was a joke. Mostly.'],
     },
+    // v1.10: Three Scales' townsfolk (data/region_north.js). Unnamed; stand-in pictures with new colours. Lines are PLACEHOLDERS.
+    ts_guard: { name: 'Gate Guard', sprite: 'npc_clerk_map', portrait: 'npc_clerk', emoji: '🛡️', tint: 0xaab4c8, noRizzSecrets: true,
+      greet: ['Welcome to Three Scales. Wipe your boots. The houses don\'t like mud on their snow.'] },
+    ts_grain: { name: 'Grain House Steward', sprite: 'npc_receiver_map', portrait: 'npc_receiver', emoji: '🌾', tint: 0xe8d090, noRizzSecrets: true,
+      greet: ['The Grain House feeds this town. The other two would tell you otherwise. They\'re wrong.'] },
+    ts_road: { name: 'Road House Steward', sprite: 'npc_pennywise_map', portrait: 'npc_pennywise', emoji: '🐴', tint: 0xc8a888, noRizzSecrets: true,
+      greet: ['Nothing comes up this mountain without us. Not even you.'] },
+    ts_iron: { name: 'Iron House Steward', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '⚒️', tint: 0x9aa0a8, noRizzSecrets: true,
+      greet: ['Three houses, one council, zero agreement. Good for business, though.'] },
+    ts_crier: { name: 'Market Crier', sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '📣', tint: 0xd8b8e0, noRizzSecrets: true,
+      greet: ['Fresh from the low country! Mostly fresh! Some of it!'] },
     smith: {
       restored: ['Village looks decent now. Shame about you, but you can\'t fix everything.'],   // R3: sometimes said once the Fountain is fixed (PLACEHOLDER)
       name: 'The Blacksmith', spot: { tx: 3, ty: 5 }, sprite: 'npc_smith_map', portrait: 'npc_smith', emoji: '🔨',

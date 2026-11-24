@@ -197,6 +197,13 @@ FUP.look = {
       detail: { tuft: 0.8, flower: 0.18, pebble: 0.07, leaf: 0 },
       sand: 'y1',
     },
+    snow: {   // Three Scales (v1.10): snow on the ground, cleared cobbles, grey stone cliffs
+      grass: ['k4', 'k4', 'k4', 'k4'], grassTuft: 'b4', flowers: ['b4'],
+      dirt: ['s3', 's3', 'k4'], dirtEdge: 's2', pebble: 's2',
+      water: ['b1', 'b2', 'b3'], shore: 's3', sparkle: 'k4',
+      pathStyle: 'cobble', floor: 's3', foam: 'k4', bank: 'k1', cliff: ['k2', 's1', 's2', 's3'],
+      detail: { tuft: 0.25, flower: 0.03, pebble: 0.04, leaf: 0 },
+    },
     tollRoad: {
       grass: ['g2', 'g3', 'g3', 'w4'], grassTuft: 'y1', flowers: ['x', 'y1'],
       dirt: ['w1', 'w2', 'w3'], dirtEdge: 'k1', pebble: 's2',
@@ -234,6 +241,8 @@ FUP.look = {
 };
 
 // Colour helpers so data files can say FUP.look.hex('g3') or FUP.look.num('g3').
+// v1.10: falling snow (region weather 'snow', drawn by WorldScene.drawLight)
+FUP.look.snowfall = { flakes: 46, color: 'k4', alpha: 0.85, size: [1.5, 3], fall: [22, 48], drift: 14 };
 FUP.look.hex = k => FUP.look.palette[k] || k;
 FUP.look.num = k => parseInt(FUP.look.hex(k).slice(1), 16);
 // A mood with every role swapped for its '#rrggbb' colour (lists stay lists).

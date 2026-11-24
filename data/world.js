@@ -45,7 +45,10 @@ FUP.worldData = {
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'edge', edge: 'E' }, E: { to: 'deepwoods', edge: 'W' } } },
     deepwoods: { name: 'Deep Woods', kind: 'danger', scene: 'World', box: { col: 2, row: 2 }, band: [9, 13], dropTier: 2,
                  respawn: { enemies: 540 },   // 9 min
-                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'tollroad', edge: 'E' } } },
+                 features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'tollroad', edge: 'E' },
+                          // v1.10: the road north to Three Scales opens once you beat the Mushroom Guardian
+                          N: { to: 'north', edge: 'S', req: { facts: { 'boss:guardian': 1 } }, lockEmoji: '🏰',
+                               lockText: 'The road north climbs to a fortress gate. The guards look at you, then at your bucket. Not today.' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },
@@ -60,6 +63,9 @@ FUP.worldData = {
                           // Phase D: the road east past the Bog Notary opens when "The Right Form" is done
                           E: { to: 'east', edge: 'W', req: { facts: { 'road:east': 1 } }, lockEmoji: '📜',
                                lockText: 'The road east goes past the Notary\'s office. Nobody gets past the Notary without the right form.' } } },
+    // v1.10: Three Scales, the market town north of the Deep Woods. Safe, like the Docks. Map in data/region_north.js
+    north:     { name: 'Three Scales', kind: 'cozy', scene: 'World', box: { col: 2, row: 1 }, features: ['npcs', 'objects'],
+                 links: { S: { to: 'deepwoods', edge: 'N' } } },
     // Phase D (v1.00): the Receiver's town. Safe, like the Docks. Map in data/region_east.js
     east:      { name: 'Ledgerwick', kind: 'cozy', scene: 'World', box: { col: 2, row: 3 }, features: ['npcs', 'objects', 'fishing', 'campfire'],
                  links: { W: { to: 'marsh', edge: 'E' } } },

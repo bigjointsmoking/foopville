@@ -208,6 +208,7 @@ class WorldScene extends Phaser.Scene {
       const x = tx * T + T / 2, y = ty * T + T * 0.85;
       ui.sprite(this, x, y, key, '', 14).setOrigin(0.5, 1).setDepth(y);
     }
+    this.drawTown(T);
 
     // This area's campfire: cook, rest, change gear, head home
     this.campfire = null;
@@ -220,6 +221,30 @@ class WorldScene extends Phaser.Scene {
     ui.sprite(this, cc.x, cc.y, 'campfire', '🔥', 34).setDepth(cc.y + 20);
     FUP.ui.text(this, cc.x, cc.y + 34, 'CAMPFIRE', 13, FUP.ui.colors.accent, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4 }).setOrigin(0.5).setDepth(5000);
     this.campfire = cc;
+  }
+
+  // ---------- Towns built of stone (v1.10, Three Scales: data/region_north.js) ----------
+  // walls: a wall piece on every X square (one picture for runs along a row, one for runs up a column)
+  // buildings: { sprite, tx (middle, in squares), ty (bottom row), size (px wide), label, over (drawn above you: the gate arch) }
+  drawTown(T) {
+    const F = FUP.forest, ui = FUP.ui, c = ui.colors, I = this.info;
+    if (I.walls) for (let ty = 0; ty < F.height(); ty++) for (let tx = 0; tx < F.width(); tx++) {
+      if (F.tileAt(tx, ty) !== 'X') continue;
+      const row = F.tileAt(tx - 1, ty) === 'X' || F.tileAt(tx + 1, ty) === 'X';
+      const x = tx * T + T / 2, y = (ty + 1) * T;
+      const s = ui.sprite(this, x, y, row ? I.walls.along : I.walls.up, '', 10).setOrigin(0.5, 1).setDepth(y);
+      if (!this.textures.exists(row ? I.walls.along : I.walls.up)) { s.destroy(); this.add.rectangle(x, y - T / 2, T, T, FUP.look.num('s1')).setDepth(y); }   // until the painted wall exists
+    }
+    for (const b of I.buildings || []) {
+      const x = b.tx * T, y = (b.ty + 1) * T;
+      let s;
+      if (this.textures.exists(b.sprite)) {
+        s = this.add.image(x, y, b.sprite).setOrigin(0.5, 1);
+        s.setScale((b.size || T * 2) / s.width);
+      } else s = this.add.rectangle(x, y, b.size || T * 2, (b.size || T * 2) * 0.7, FUP.look.num('s2')).setOrigin(0.5, 1);   // placeholder block
+      s.setDepth(b.over ? 6000 : y);
+      if (b.label) ui.text(this, x, y + 2, b.label, 12, c.accent, { fontStyle: '700', stroke: c.stroke, strokeThickness: 4, align: 'center' }).setOrigin(0.5, 0).setDepth(5000);   // name on the street in front
+    }
   }
 
   // ---------- Exit signs: a glowing sign on each linked gap in the map's edge ----------
@@ -459,6 +484,12 @@ class WorldScene extends Phaser.Scene {
         const leaf = this.add.rectangle(rnd() * W, rnd() * H, 7, 4, cols[k % 4]).setScrollFactor(0).setDepth(6600);
         this.weather.push({ o: leaf, vx: -20 - rnd() * 25, vy: 35 + rnd() * 30, sway: rnd() * 6, spin: 90 + rnd() * 120 });
       }
+    } else if (kind === 'snow') {   // v1.10: Three Scales (numbers: data/look.js snowfall)
+      const S = FUP.look.snowfall, col = FUP.look.num(S.color);
+      for (let k = 0; k < S.flakes; k++) {
+        const flake = this.add.circle(rnd() * W, rnd() * H, S.size[0] + rnd() * (S.size[1] - S.size[0]), col, S.alpha).setScrollFactor(0).setDepth(6600);
+        this.weather.push({ o: flake, vx: (rnd() - 0.5) * S.drift, vy: S.fall[0] + rnd() * (S.fall[1] - S.fall[0]), sway: rnd() * 6, spin: 0, snow: true });
+      }
     } else if (kind === 'fireflies' && !FUP.ambience) {   // src/ambience.js does fireflies now (they come out when it's dark)
       for (let k = 0; k < 18; k++) {
         const fly = this.add.circle(rnd() * W, rnd() * H, 2.5, 0xd8ff7a).setScrollFactor(0).setDepth(6600).setBlendMode(Phaser.BlendModes.ADD);
@@ -476,7 +507,7 @@ class WorldScene extends Phaser.Scene {
         o.x += p.vx * dt; o.y += p.vy * dt;
         o.setAlpha(0.3 + 0.7 * Math.max(0, Math.sin(t * 2 + p.blink)));
       } else {
-        o.x += (p.vx + Math.sin(t * 2 + p.sway) * 25) * dt; o.y += p.vy * dt; o.angle += p.spin * dt;
+        o.x += (p.vx + Math.sin(t * 2 + p.sway) * (p.snow ? 8 : 25)) * dt; o.y += p.vy * dt; o.angle += p.spin * dt;
       }
       if (o.x < -10) o.x = W + 10; if (o.x > W + 10) o.x = -10;
       if (o.y > H + 10) o.y = -10; if (o.y < -10) o.y = H + 10;

@@ -375,7 +375,7 @@ Object.assign(FUP.questData.quests, {
     req: { facts: { 'region:edge': 1 } },   // posted after your first trip out of the village
     text: 'Pip had a plot at the east end of the farm once. Nothing grows there now. Not even weeds. Well, dead weeds.',
     reward: { coins: 80, xp: { gardening: 80 }, seeds: { heartroot: 3 }, fact: 'clue:ash' },
-    afterGreet: ['That jar\'s under my stall. Lid on. Don\'t ask me to open it.', 'Plants don\'t grow there. Plants grow here. Buy some.'],
+    afterGreet: ['That plot\'s still dead. I checked. From a distance.', 'Plants don\'t grow there. Plants grow here. Buy some.'],
     steps: [
       { talk: 'seeds', log: 'Pip\'s old plot, at the east end of the farm, is dead. He wants a sample. In a jar. With a lid.',
         say: 'My old plot. East end of the farm, past the last field. Nothing\'s grown there for a long time. Clear the junk off it and dig me up a sample. In a jar. With a lid. I\'m not touching it.' },
@@ -390,6 +390,33 @@ Object.assign(FUP.questData.quests, {
         give: { items: { ash_jar: 1 } } },
       { bring: { ash_jar: 1 }, to: 'seeds', log: 'Pip held the jar up to the light and went pale.',
         say: 'He holds it up to the light. Goes pale. "That\'s no house fire. Why is it glowing? Why is it still glowing?" He puts it under the stall. "Here. Seeds. Good ones. Go away."' },
+    ] },
+
+  // v1.10: dragon quest line, quest 2 (claude/MAIN_QUEST_LINE.md section 7, plans/QL2.md). Pip posts it after quest 1.
+  // Show the jar around: 3 villagers test it in their trade, 3 guess, the Shopkeeper has a lead up north. You keep the jar.
+  // Lines are PLACEHOLDERS for Jesus.
+  askAround: { kind: 'story', from: 'seeds', difficulty: 'easy', length: 'short', name: 'Ask Around',
+    req: { facts: { 'quest:deadPlot': 1 } },   // posted once Pip's Dead Plot is done
+    text: 'Pip wants to know what\'s in that jar. He\'d ask around himself, but that would mean touching it.',
+    reward: { coins: 100, xp: { rizz: 60 } },
+    afterGreet: ['Up north. Past the Deep Woods. Of course it\'s past the Deep Woods.', 'You still have the jar? Good. Keep it. Far from me.'],
+    steps: [
+      { talk: 'seeds', log: 'Pip gave you the jar back. Show it around the village: somebody must know what it is.',
+        say: 'Here. Take the jar. Show it around. Somebody in this village must know what it is. Not me. I sell seeds.',
+        give: { items: { ash_jar: 1 } } },
+      { talkAll: {
+          smith: 'He heats a pinch in the forge. It doesn\'t burn. It doesn\'t melt. It glows brighter, then settles down like nothing happened. "Fire doesn\'t touch it. Never seen that."',
+          chef: 'He drops a pinch on a hot pan. No smell. No smoke. It won\'t cook off. "Not seasoning. Get it out of my kitchen."',
+          carpenter: 'He rubs a little on a plank. No scorch, but it leaves a mark that won\'t sand off. "That\'s not coming out. That plank\'s ruined. Thanks."',
+          oldtimer: '"Fire did that. Old fire. Don\'t ask me whose. I wasn\'t there. Nobody who was there is talking."',
+          banker: 'He weighs it twice. "Can\'t price it. Can\'t price it means worthless, or priceless. Either way, not my problem."',
+          quest: '"Volcano." There is no volcano. "Small one. Underground. Very rare. I\'d post a notice about it."',
+          shop: '"No idea. But my supplier up north deals in odd things. Past the Deep Woods, in Three Scales. If anyone knows, they will."',
+        }, need: { ash_jar: 1 }, notYet: 'Show them what? Bring the jar.',
+        goal: 'Show the jar around the village',
+        log: 'Nobody in the village knows. The Shopkeeper\'s supplier, up north in Three Scales, deals in odd things.' },
+      { talk: 'seeds', log: 'You told Pip about the supplier in Three Scales.',
+        say: '"Up north? Past the Deep Woods? ...Right." He counts out coins without looking at the jar. "Keep it. I don\'t want it under my stall anymore."' },
     ] },
 
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',

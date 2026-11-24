@@ -49,7 +49,7 @@ FUP.ingredients = {
     name: "Dragon's Sneeze Chili", short: 'Chili', emoji: '🌶️', color: '#d8312a', rarity: 'Uncommon', sell: 6, source: 'Forest', price: 6, element: 'fire',
   },
   // v0.82 story quest items (source 'Quest': can't be eaten, cooked or sold for much). Carried in your bag: lost at the grave like anything else.
-  ash_jar:  { name: 'Sealed Jar of Ash', short: 'Ash Jar', emoji: '🫙', color: '#3a3a3a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Ash from Pip\'s old plot, lid screwed tight. It glows. Ash shouldn\'t glow.' },
+  ash_jar:  { name: 'Sealed Jar of Ash', short: 'Ash Jar', emoji: '🫙', color: '#3a3a3a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Ash from Pip\'s old plot, lid screwed tight. It glows. Nobody in Foopville knows why.' },
   old_bowl: { name: 'Licked-Clean Bowl', short: 'Bowl', emoji: '🥣', color: '#a87a4a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A wooden bowl with a little mark on the bottom. Found by the Guardian\'s feeding spot.' },
   right_form: { name: 'The Right Form', short: 'Right Form', emoji: '📜', color: '#e8dcb0', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Form R-1: Passage East. Filled in, signed, dated. Correct in every way. Suspiciously correct.' },   // Phase D: the Archivist drops it
   old_key:  { name: 'Old Key', short: 'Old Key', emoji: '🗝️', color: '#c8a84a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Heavy, plain, older than the village. It opens something down there.' },

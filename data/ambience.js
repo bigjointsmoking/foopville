@@ -136,6 +136,10 @@ FUP.ambienceData = {
       butterflies: 5, birds: 'gulls', motes: 6, fireflies: 'night', clouds: true, dayNight: 1, vignette: 0.4,
       dress: 'coast',
     },
+    north: {   // Three Scales (v1.10): snowy fortress town, no butterflies or flowers
+      critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 0, fireflies: false, clouds: true, dayNight: 1, vignette: 0.4,
+      dress: null,
+    },
     raid: {
       critters: [], butterflies: 0, birds: false, motes: 18, moteColor: 'g5', fireflies: false, clouds: false, dayNight: 0, vignette: 0.7,
       dress: null,

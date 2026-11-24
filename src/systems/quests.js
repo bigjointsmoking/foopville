@@ -351,6 +351,8 @@ FUP.quests = {
     if (!st) return { line: '', ok: false };
     if (st.talkAll) {   // talk to each of them, any order
       if (!npc || !st.talkAll[npc] || s.talked[npc]) return { ok: false, line: '' };
+      const short = Object.entries(st.need || {}).filter(([k, n]) => this.have(k) < n);   // v1.10: things you must carry (shown, not taken)
+      if (short.length) return { ok: false, line: st.notYet || `Bring the ${short.map(([k]) => FUP.ingredients[k].name).join(' and ')}.` };
       s.talked[npc] = true;
       if (Object.keys(st.talkAll).every(k => s.talked[k])) { const r = this.advance(id, st.talkAll[npc]); return r; }
       return { ok: true, line: st.talkAll[npc] };

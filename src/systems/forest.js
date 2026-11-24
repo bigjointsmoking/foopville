@@ -50,7 +50,8 @@ FUP.tilemap = (getData, blocked) => ({
 // The map functions above look at one region at a time: FUP.forest.use(id) points them at it.
 // Ids: 'edge', 'tollroad', 'deepwoods'.
 // F and D = fishing water on the Docks (data/region_docks.js): not walkable either.
-FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFD'), {
+// X = fortress wall, W = a building's ground (Three Scales, v1.10, data/region_north.js).
+FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFDXW'), {
   current: 'edge',
 
   // A region's map data: a Forest area, or another region's (data/region_<id>.js, e.g. the Docks)
