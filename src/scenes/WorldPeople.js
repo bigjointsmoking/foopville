@@ -18,8 +18,8 @@ Object.assign(WorldScene.prototype, {
       const s = FUP.anim.sprite(this, c0.x, c0.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(c0.y + 14);
       if (n.tint && s.setTint) s.setTint(n.tint);   // placeholder looks (Ledgerwick's townsfolk, Phase D)
       this.tweens.add({ targets: s, scaleY: s.scaleY * 1.04, duration: 900 + Math.random() * 400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-      ui.text(this, c0.x, c0.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
-      this.spots.push({ kind: 'npc', id: p.id, x: c0.x, y: c0.y, sprite: s, label: 'Talk' });
+      const tag = ui.text(this, c0.x, c0.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this.spots.push({ kind: 'npc', id: p.id, x: c0.x, y: c0.y, sprite: s, tag, label: 'Talk' });
       this.solid.push({ tx: p.tx, ty: p.ty });
     }
     if (this.feature('objects')) for (const o of info.objects || []) {

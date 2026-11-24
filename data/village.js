@@ -205,6 +205,9 @@ FUP.villageData = {
       greet: ['Nothing comes up this mountain without us. Not even you.'] },
     ts_iron: { name: 'Iron House Steward', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '⚒️', tint: 0x9aa0a8, noRizzSecrets: true,
       greet: ['Three houses, one council, zero agreement. Good for business, though.'] },
+    ts_assayer: { name: 'The Iron House Assayer', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '⚖️', tint: 0xb8c0d0, noRizzSecrets: true,   // v1.12: The Inspector's contact
+      greet: ['Metals, ores, odd materials. If it can be weighed, I\'ve weighed it.', 'The Iron House pays me to say what things are. Mostly they\'re what they look like.'],
+      fight: { hp: 60, def: 4 } },   // standing with you in the wolf fight (PLACEHOLDER numbers)
     ts_crier: { name: 'Market Crier', sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '📣', tint: 0xd8b8e0, noRizzSecrets: true,
       greet: ['Fresh from the low country! Mostly fresh! Some of it!'] },
     smith: {

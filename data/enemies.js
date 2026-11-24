@@ -279,6 +279,19 @@ FUP.enemies = {
       move: { name: 'Run For It', type: 'runAway', tell: '🏃', tellText: 'Running off with your coins (stop him!)' } },
   },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
+  // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
+  // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.
+  ashWolf: {
+    name: 'Ash-Grey Wolf', emoji: '🐺', size: 120, sprite: 'wolf', mapSprite: 'wolf_map',
+    maxHp: 170, atk: 11, def: 5, spd: 14, resolve: 0.30,
+    xp: 160, coins: 30, boss: false, weak: 'frost', resists: ['fire'], questOnly: true,
+    say: { start: 'wolfStart' },
+    moves: [
+      { name: 'Bite', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 4 },
+      { name: 'Savage Bite', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+      { name: 'Lunge at the Assayer', type: 'lungeAlly', power: 1.3, tell: '🐺', tellText: 'Going for the Assayer (Defend!)', weight: 3 },
+    ],
+  },
   mossBear: {
     name: 'Moss Bear', emoji: '🐻', size: 130, sprite: 'mossbear', mapSprite: 'mossbear_map',
     maxHp: 70, atk: 8, def: 4, spd: 8, resolve: 0.30,

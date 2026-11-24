@@ -13,6 +13,7 @@ FUP.questUi = {
   // A step happened: say its line, then a choice card or the quest-complete card if needed
   result(scene, id, r, onDone = () => {}) {
     if (!r) return;
+    if (scene.player && scene._escort) this.escortStart(scene);   // v1.12: someone just joined you, or went home
     if (r.line && scene.sayLine) scene.sayLine(r.line);
     if (r.choices) { this.choices(scene, id, r.line, onDone); return; }
     if (r.reward) { this.complete(scene, r.reward, r.done); onDone(); return; }
@@ -99,6 +100,39 @@ FUP.questUi = {
     };
     if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go); else go();
   },
+  // (v1.12) Someone walking with you for a quest (step.escort): drawn behind you, following along.
+  // Call escortStart(scene) at the end of a map screen's create, escortTick(scene, dt) in its update.
+  escortStart(scene, fresh = false) {
+    if (fresh) { scene._escort = []; scene._escortHome = []; }   // a new visit (Phaser reuses screens: drop last visit's leftovers)
+    (scene._escort || []).forEach(f => { f.s.destroy(); f.tag.destroy(); });
+    scene._escort = [];
+    const p = scene.player, ui = FUP.ui, c = ui.colors;
+    if (!p) return;
+    // Whoever walks with you isn't also standing at home: their home spot is put aside (and back when they go home)
+    const all = (scene.spots || []).concat(scene._escortHome || []);
+    const out = s => s.kind === 'npc' && !s.guest && FUP.quests.isEscorting(s.id);
+    scene._escortHome = all.filter(out);
+    scene.spots = all.filter(s => !out(s));
+    for (const s of all) if (s.kind === 'npc' && !s.guest && s.sprite) { const on = !out(s); s.sprite.setVisible(on); if (s.tag) s.tag.setVisible(on); }
+    FUP.quests.escorting().forEach((e, i) => {
+      const n = FUP.villageData.npcs[e.npc];
+      const s = FUP.anim.sprite(scene, p.x - 30 - i * 26, p.y + 4, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8);
+      if (n.tint && s.setTint) s.setTint(n.tint);
+      const tag = ui.text(scene, s.x, s.y - 40, n.name.replace('The ', ''), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      scene._escort.push({ s, tag, gap: 34 + i * 28 });
+    });
+  },
+  escortTick(scene, dt) {
+    const p = scene.player;
+    for (const f of scene._escort || []) {
+      const dx = p.x - f.s.x, dy = p.y - f.s.y, d = Math.hypot(dx, dy);
+      if (d > 400) { f.s.setPosition(p.x - f.gap, p.y + 4); }   // left far behind (a door, a jump): catch up
+      else if (d > f.gap) { const k = Math.min(1, dt * 5) * (d - f.gap) / d; f.s.x += dx * k; f.s.y += dy * k; if (Math.abs(dx) > 2 && f.s.setFlipX) f.s.setFlipX(dx < 0); }
+      f.s.setDepth(f.s.y + 14);
+      f.tag.setPosition(f.s.x, f.s.y - f.s.displayHeight * 0.8 - 2);
+    }
+  },
+
   // A villager's 📜 step (from their window)
   step(scene, id, npc, after = () => {}) {
     const r = FUP.quests.doStep(id, npc);

@@ -75,6 +75,7 @@ class VillageScene extends Phaser.Scene {
     this.time.delayedCall(450, () => { if (!this.leaving) FUP.awayCard.show(this); });   // "While you were out" (src/awayCard.js)
     // The life layer: extra scenery, wind, chickens and ducks, birds, day/night light, chimney smoke (src/ambience.js)
     FUP.ambience.attach(this, { place: 'village', tiles: M, T: d.tileSize, region: 'village', lamps: 'l' });
+    FUP.questUi.escortStart(this, true);   // v1.12: someone walking with you for a quest
   }
 
   // ---------- The map: ground, trees, little things ----------
@@ -262,7 +263,7 @@ class VillageScene extends Phaser.Scene {
     this.bagText = pb.txt;
     this.questText = fix(ui.text(this, 450, H - 35, '', 14, c.ink).setOrigin(0, 0.5));
     fix(ui.text(this, W - 30, H - 35, FUP.ui.isTouch(this) ? 'Drag to walk · tap the button to talk' : 'Walk: WASD / drag · Talk: E or the button', 12, c.dim).setOrigin(1, 0.5));
-    this._qSig = null; this._qMarks = []; this._awaySpots = [];   // quest markers + villagers away on a quest (reset: Phaser reuses this screen)
+    this._qSig = null; this._qMarks = []; this._awaySpots = []; this._vGuests = [];   // quest markers + villagers away on a quest (reset: Phaser reuses this screen)
     this.goalCard = FUP.goalCard.draw(this, 16, 104);   // first-day checklist (data/goals.js)
     this.tracker = FUP.questTracker.draw(this, 130);   // taken quests, top right (src/questTracker.js)
     this.refreshHud();
@@ -316,6 +317,7 @@ class VillageScene extends Phaser.Scene {
     if (!this.leaving) this.eventTick(dt);   // V3: rain, squirrels, the event ending
     if (this.leaving || this.panel || this.busy) return;
     this.movePlayer(dt);
+    FUP.questUi.escortTick(this, dt);
     this.updatePrompt();
     this.checkEdges();
   }
@@ -524,10 +526,21 @@ class VillageScene extends Phaser.Scene {
     this._qSig = sig;
     const center = (tx, ty) => FUP.villageMap.center(tx, ty);
     // Villagers out of the village for a quest (Pip at the Docks...): hidden until they're back
-    const all = (this.spots || []).concat(this._awaySpots || []);
+    const all = (this.spots || []).concat(this._awaySpots || []).filter(s => !s.guest);
     this._awaySpots = all.filter(s => s.kind === 'npc' && FUP.quests.away(s.id));
     this.spots = all.filter(s => !this._awaySpots.includes(s));
     for (const s of all) if (s.kind === 'npc') { const on = !this._awaySpots.includes(s); s.sprite.setVisible(on); if (s.tag) s.tag.setVisible(on); }
+    // v1.12: villagers waiting somewhere else in the village for a quest step (Pip at his old plot)
+    (this._vGuests || []).forEach(o => o.destroy()); this._vGuests = [];
+    for (const g of FUP.quests.guestsIn('village')) {
+      const n = FUP.villageData.npcs[g.npc], c0 = center(g.tx, g.ty), ui = FUP.ui;
+      if (!n) continue;
+      const s = FUP.anim.sprite(this, c0.x, c0.y, n.sprite, 'idle', n.emoji, 30).setOrigin(0.5, 0.8).setDepth(c0.y + 14);
+      if (n.tint && s.setTint) s.setTint(n.tint);
+      const tag = ui.text(this, c0.x, c0.y - s.displayHeight * 0.8 - 2, n.name.replace('The ', ''), 11, ui.colors.ink, { stroke: ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+      this._vGuests.push(s, tag);
+      this.spots.push({ kind: 'npc', id: g.npc, guest: true, x: c0.x, y: c0.y, sprite: s, label: 'Talk' });
+    }
     FUP.questUi.marks(this, 'village', center, (this.spots || []).filter(s => s.kind === 'npc').map(s => ({ id: s.id, sprite: s.sprite })));
     this.spots = (this.spots || []).filter(s => s.kind !== 'qsearch').concat(FUP.questUi.spots('village', center));
   }

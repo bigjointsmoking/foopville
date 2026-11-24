@@ -65,6 +65,7 @@ class WorldScene extends Phaser.Scene {
     this.stepTimer = 0;
     // The life layer: extra scenery, wind, critters, birds, day/night light (src/ambience.js)
     FUP.ambience.attach(this, { place: this.f.area, tiles: F, T, region: this.f.area });
+    FUP.questUi.escortStart(this, true);   // v1.12: someone walking with you for a quest
     if (FUP.world.justRode) { FUP.world.justRode = false; this.time.delayedCall(700, () => this.say('cartArrive')); }   // came by cart (R3)
   }
 
@@ -662,6 +663,7 @@ class WorldScene extends Phaser.Scene {
     const f = this.f;
     f.time += dt;
     this.movePlayer(dt);
+    FUP.questUi.escortTick(this, dt);
     this.updateAction();
     if (this.tut) this.updateTutorial(dt);
     if (this.leaving) return;
@@ -910,6 +912,8 @@ class WorldScene extends Phaser.Scene {
     const reg = FUP.world.region(this.f.area);
     FUP.run.battle = { index, type: e.type, result: null, mult: this.info.mult, coinMult: this.info.coinMult, areaLevel: this.info.level, dropTier: (reg && reg.dropTier) || 1,
       surprise: opts.surprise || null, sustained: !!opts.refused };   // v0.94: sneak / ambush / caught; refused the newt's waiver
+    const qs = e.questFoe && FUP.quests.step(e.questFoe);
+    if (qs && qs.fight && qs.fight.ally) FUP.run.battle.ally = qs.fight.ally;   // v1.12: someone stands with you in this fight (The Inspector)
     const enemies = e.group ? e.group.slice() : e.count ? new Array(e.count).fill(e.type) : [e.type];
     FUP.audio.sfx(opts.surprise === 'sneak' ? 'sneak' : opts.surprise === 'ambush' ? 'ambush' : 'encounter');
     FUP.fx.shake(this, 'encounter');

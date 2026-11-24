@@ -85,6 +85,7 @@ class BattleScene extends Phaser.Scene {
     this.drawBackground();
     this.drawPlayer();
     this.drawHud();
+    this.setupAlly(rb);   // v1.12: someone standing with you (The Inspector's Assayer)
     this.enemyKeys.forEach(k => this.spawnEnemy(k));
     // Refused the toll (or haggled badly): he starts the fight Enraged (blueprint 18.2)
     if (this.startEnraged) for (const e of this.enemies) {
@@ -94,6 +95,8 @@ class BattleScene extends Phaser.Scene {
     this.setMenu('main');
     const first = this.enemyKeys[0];
     const bossSay = (this.enemyKeys.map(k => FUP.enemies[k]).find(d => d.boss) || {}).say || {};   // the Senior Partner has his own lines (v0.93)
+    const ownSay = (FUP.enemies[first].say || {}).start;   // v1.12: a non-boss with its own opening line (the Ash-Grey Wolf)
+    if (ownSay && !this.isBossFight) this.say(ownSay); else
     this.say(this.isBossFight ? (bossSay.start || 'bossStart') : this.isMiniBoss ? 'godfatherStart' : rb.tutorial ? 'dummyStart' : first === 'pigeon' ? 'pigeonStart' : rb.ambush ? 'raidAmbushStart' : first === 'sporeBouncer' ? 'bouncerStart' : 'start');
     // Spored in a raid hazard room: you start this fight with that many Poison stacks
     const R = this.inRaid && FUP.run.forest.raid;
@@ -1152,6 +1155,8 @@ class BattleScene extends Phaser.Scene {
           this.say('stolenNothing', { enemy: e.name });
         }
       }
+    } else if (m.type === 'lungeAlly') {
+      this.lungeAlly(e, m);   // v1.12: goes for the ally; Defend and you take it instead
     } else if (m.type === 'debuff') {
       // Lowers one of YOUR stats (the Mold Accountant's Itemized Deduction)
       C.addBuff(p, m.stat, m.mult, m.turns, m.label);
@@ -1328,6 +1333,44 @@ class BattleScene extends Phaser.Scene {
     }
   }
 
+  // ---------- v1.12: an ally standing with you (run.battle.ally = a villager id; numbers: data/village.js npcs[id].fight) ----------
+  // They don't act. Moves of type 'lungeAlly' go for them; if you Defended that turn you take it instead.
+  // Knocked out = the fight starts again from the top (your HP and the enemies' as they were). The trip carries on.
+  setupAlly(rb) {
+    this.ally = null;
+    if (!rb.ally) return;
+    const ui = FUP.ui, c = ui.colors, n = FUP.villageData.npcs[rb.ally], f = n.fight || { hp: 60, def: 4 };
+    this.ally = { npc: rb.ally, name: n.name.replace('The ', ''), hp: f.hp, maxHp: f.hp, def: f.def, buffs: [] };
+    this.startHp = this.player.hp;
+    const pic = ui.sprite(this, 118, 352, n.sprite, n.emoji, 56).setOrigin(0.5, 1).setDepth(299);
+    if (this.textures.exists(n.sprite)) pic.setScale(pic.scaleX * 2);
+    if (n.tint && pic.setTint) pic.setTint(n.tint);
+    this.ally.pic = pic;
+    ui.text(this, 118, 360, this.ally.name, 12, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 0).setDepth(301);
+    this.ally.bar = ui.bar(this, 78, 378, 80, 8, c.hp);
+    this.ally.bar.bg.setDepth(301); this.ally.bar.fill.setDepth(302);
+  }
+  lungeAlly(e, m) {
+    const A = this.ally;
+    if (!A || A.hp <= 0) { this.strike(e, m.power, false); return; }
+    if (this.player.defending) { this.say('allyCovered'); this.strike(e, m.power, false); return; }
+    const r = FUP.combat.damage(e, A, m.power);
+    A.hp = Math.max(0, A.hp - r.amount);
+    A.bar.set(A.hp / A.maxHp);
+    this.popup(A.pic, '-' + r.amount, 'bad');
+    FUP.fx.hit(this, A.pic, -1);
+    FUP.audio.sfx('hurt');
+    if (A.hp > 0) { this.say('wolfLunge'); return; }
+    // Knocked out: start the fight again
+    this.say('allyDown');
+    this.bigMoment('TRY AGAIN!', FUP.ui.colors.crit);
+    this.player.hp = this.startHp;
+    A.hp = A.maxHp; A.bar.set(1);
+    for (const o of this.enemies) if (!o.gone) { o.hp = o.maxHp; o.gauge = 0; o.buffs = []; }
+    this.player.gauge = 0;
+    this.saveMidFight();
+  }
+
   // ---------- End of fight ----------
   // result: 'win' | 'charmed' | 'fled' | 'lose' | 'boss' (beat the Guardian)
   endBattle(result, alreadySaid = false) {
@@ -1346,6 +1389,7 @@ class BattleScene extends Phaser.Scene {
       this.tweens.add({ targets: [this.playerSprite, this.weaponSprite], x: '-=400', duration: 600, ease: 'Sine.easeIn' });
     } else if (result === 'lose') {
       this.tweens.add({ targets: [this.playerSprite, this.weaponSprite], angle: -90, alpha: 0.4, duration: 600 });
+      FUP.quests.lostEscort();   // v1.12: anyone walking with you goes back home
     }
     // Music stops; a little tune says how it went
     FUP.audio.stopMusic();

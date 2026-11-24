@@ -396,6 +396,10 @@ FUP.narrator = {
   bearCounter: ['You blocked a bear. Then you hit it back. Hard. Write home.'],
   newtSustain: ['"Sustained!" {enemy} rules in its friends\' favour. Take out the newt.'],
   newtAlone: ['{enemy} shouts "Sustained!" at nobody. Overruled.'],
+  wolfStart: ['Something in the trees has smelled the jar. It\'s grey, it\'s hungry, and it glows a little. That\'s never good.'],   // v1.12 (PLACEHOLDER)
+  wolfLunge: ['It goes for the Assayer. Defend to step in front of them.'],
+  allyDown: ['The Assayer goes down. You both get up, dust off and try that again. The wolf looks delighted.'],
+  allyCovered: ['You step in front of the Assayer and take it. Heroic. Painful.'],
   partnerStart: ['The Senior Partner adjusts his tie. The clock starts. You\'re paying for it.', 'Leech & Leech will see you now. Everything you say will be billed.'],
   partnerPhase1: ['Phase 2: The Associates. He calls in two juniors to do the actual work.'],
   partnerPhase2: ['Phase 3: Settlement Offer. Suddenly he wants to talk. Keep your coins close.'],

@@ -73,7 +73,8 @@ FUP.worldData.areas.north = {
   ],
   walls: { along: 'ts_wall', up: 'ts_wall_v' },   // the picture for an X square in a row / in a column of wall
   npcs: [{ id: 'ts_guard', tx: 21, ty: 25 }, { id: 'ts_grain', tx: 10, ty: 13 }, { id: 'ts_road', tx: 37, ty: 13 },
-         { id: 'ts_iron', tx: 10, ty: 18 }, { id: 'ts_crier', tx: 20, ty: 14 }],
+         { id: 'ts_iron', tx: 10, ty: 18 }, { id: 'ts_crier', tx: 20, ty: 14 },
+         { id: 'ts_assayer', tx: 11, ty: 16 }],   // v1.12: The Inspector's contact, by the Iron House
   objects: [
     { kind: 'sign', tx: 22, ty: 26, text: 'THREE SCALES. Three houses. One council. Mind the ice.' },
     { kind: 'sign', tx: 6, ty: 13, text: 'THE GRAIN HOUSE. Every loaf in Three Scales passes through here. So does every coin for it.' },

@@ -419,6 +419,40 @@ Object.assign(FUP.questData.quests, {
         say: '"Up north? Past the Deep Woods? ...Right." He counts out coins without looking at the jar. "Keep it. I don\'t want it under my stall anymore."' },
     ] },
 
+  // v1.12: dragon quest line, quest 3 (claude/MAIN_QUEST_LINE.md section 7, plans/QL3.md). Pip posts it after Ask Around.
+  // Carry the Shopkeeper's crate north, the Iron House Assayer tests the ash with Frostroot, walk them home
+  // (the Ash-Grey Wolf ambushes you in the Deep Woods), and at Pip's old plot they say what it is. Lines are PLACEHOLDERS.
+  //   spare: Pip hands you another jar if yours is gone, before the walk home (step index < untilStep)
+  //   escort: someone follows you from `home`; if you die they go back there and you fetch them again (talk to them)
+  inspector: { kind: 'story', from: 'seeds', difficulty: 'medium', length: 'long', name: 'The Inspector',
+    req: { facts: { 'quest:askAround': 1 } },   // can show before you can reach the north (Three Scales opens after the Guardian)
+    text: 'Pip wants someone who knows what they\'re talking about to look at his plot. The Shopkeeper\'s supplier is up north. So is everyone else, apparently.',
+    reward: { coins: 300, xp: { melee: 200, rizz: 100 } },
+    spare: { item: 'ash_jar', npc: 'seeds', untilStep: 4, say: '"I kept a second jar. Don\'t tell anyone. Especially me." He hands it over at arm\'s length.' },
+    afterGreet: ['A dragon. On my plot. I\'m still sitting down about it.', 'The Assayer sent a letter. It just says "Still dragon." Thanks, Assayer.'],
+    steps: [
+      { talk: 'shop', log: 'The Shopkeeper gave you a sealed crate for the Iron House in Three Scales. Take the jar too.',
+        say: '"Going north? Take this to the Iron House. Don\'t open it. Don\'t shake it. Don\'t ask."',
+        give: { items: { sealed_crate: 1 } } },
+      { bring: { sealed_crate: 1 }, to: 'ts_assayer', need: { ash_jar: 1 }, notYet: '"The crate, and that jar you\'re waving about. Both, please."',
+        log: 'The Iron House Assayer took the crate and looked at the jar. They need Frostroot to test it.',
+        say: '"The crate, finally. And what\'s this? ...That\'s not ash. Not ordinary ash. I need Frostroot to test it. It grows under the snow here. Three roots."' },
+      { dig: { region: 'north', name: 'the snow', all: true, item: 'frostroot', work: 0.7, spots: [[5, 25], [40, 18], [13, 7]] },
+        goal: 'Dig up 3 Frostroot in the snow around Three Scales', log: 'You dug up three Frostroot.',
+        say: 'Under the snow: a pale root, cold enough to sting. That\'s the last of them.' },
+      { bring: { frostroot: 3 }, to: 'ts_assayer', need: { ash_jar: 1 }, notYet: '"Three Frostroot. And the jar. I can\'t test thin air."',
+        log: 'Frostroot says it\'s dragon-made. The Assayer wants to see Pip\'s plot.',
+        say: 'They grind the Frostroot, add a pinch of ash. It hisses and glows white. "Frostroot doesn\'t lie. This is dragon-made. Fire with magic in it. I need to see the ground it came from. Lead the way."' },
+      { escort: { npc: 'ts_assayer', home: 'north' },
+        fight: { region: 'deepwoods', tx: 13, ty: 2, enemy: 'ashWolf', name: 'the wolf', ally: 'ts_assayer' },
+        goal: 'Walk the Assayer home through the Deep Woods (something is following the jar)', log: 'In the Deep Woods a grey wolf came for the jar. You saw it off.',
+        rejoin: '"Back to it, then. Try not to die this time. I\'d have to walk home again."' },
+      { escort: { npc: 'ts_assayer', home: 'north' }, guest: { region: 'village', tx: 52, ty: 55, npc: 'seeds' }, talk: 'seeds',
+        goal: 'Take the Assayer to Pip\'s old plot (Pip is waiting there)', log: 'At Pip\'s plot the Assayer said it: dragon residue. It won\'t fade.',
+        rejoin: '"Back to it, then. Try not to die this time. I\'d have to walk home again."',
+        say: 'The Assayer kneels, rubs the black dirt between two fingers. "Dragon residue. It won\'t fade. Not in your lifetime, not in his. Nobody in this village can clear it." Pip sits down on the dirt, then gets up fast. "A dragon. On my plot. ...Here\'s your money. I need to sit down somewhere else."' },
+    ] },
+
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',

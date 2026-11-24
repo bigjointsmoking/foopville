@@ -203,7 +203,10 @@ FUP.quests = {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return '';
     if (st.taste) return st.goal || `Bring ${this.npcName(st.taste)} a bowl to taste`;
+    if (st.guest && st.talk && st.goal) return st.goal;   // (v1.12: The Inspector's last step)
     if (st.guest && st.talk) return `Meet ${this.npcName(st.talk)} (${this.regionName(st.guest.region)})`;
+    if (st.escort && !s.with) return `Fetch ${this.npcName(st.escort.npc)} from ${this.regionName(st.escort.home)}`;
+    if (st.dig && st.dig.all) return `${st.goal || 'Dig on ' + st.dig.name}  (${((s.dig || {}).dug || []).length}/${st.dig.spots.length})`;
     if (st.dig) return st.goal || `Dig on ${st.dig.name}`;
     if (st.search && st.search.work) return st.goal || `Clear ${st.search.name}`;
     if (st.search) return `Search ${st.search.name} (${this.regionName(st.search.region)})` + (st.when === 'night' ? ' at night 🌙' : '');
@@ -221,6 +224,8 @@ FUP.quests = {
     return this.activeIds().filter(id => this.isSide(id)).filter(id => {
       const st = this.step(id), s = this.state.active[id];
       if (st && st.guest && region && st.guest.region !== region) return false;
+      if (this.spareFor(id, npc)) return true;
+      if (st && st.escort && !s.with) return st.escort.npc === npc;
       return st && (st.talk === npc || st.taste === npc || ((st.bring || st.show) && st.to === npc) || (st.talkAll && st.talkAll[npc] && !s.talked[npc]));
     }).map(id => ({ id, name: this.def(id).name }));
   },
@@ -230,7 +235,17 @@ FUP.quests = {
       .map(o => ({ id: o.id, npc: o.st.talk || o.st.taste || o.st.guest.npc, tx: o.st.guest.tx, ty: o.st.guest.ty }));
   },
   // Is this villager away from home right now (so the village doesn't draw them)?
-  away(npc) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && st.guest.region !== 'village' && (st.talk || st.taste || st.guest.npc) === npc; }); },
+  away(npc) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.taste || st.guest.npc) === npc; }); },   // (v1.12: a village guest stands somewhere else in the village)
+  // (v1.12) Escorts: someone following you right now (step.escort, and they're with you): [{ id, npc }]
+  escorting() { return this.activeIds().filter(id => { const st = this.step(id); return st && st.escort && this.state.active[id].with; }).map(id => ({ id, npc: this.step(id).escort.npc })); },
+  isEscorting(npc) { return this.escorting().some(e => e.npc === npc); },
+  // You died: anyone walking with you goes back home (talk to them there to set off again)
+  lostEscort() { for (const id of this.activeIds()) { const st = this.step(id); if (st && st.escort) this.state.active[id].with = false; } },
+  // (v1.12) A quest's spare item (Pip's second jar): offered while you don't have one, before step untilStep
+  spareFor(id, npc) {
+    const q = this.def(id), s = this.state.active[id];
+    return !!(q && q.spare && s && q.spare.npc === npc && (s.step || 0) < q.spare.untilStep && this.have(q.spare.item) === 0);
+  },
   // A step waiting at this villager, but they're somewhere else today (a guest step)
   elsewhere(npc, region) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.guest.npc) === npc && st.guest.region !== region; }); },
 
@@ -251,6 +266,7 @@ FUP.quests = {
   // (v1.10) A dig step picks its right square once, when it starts (kept in the save)
   prepStep(id, rng = Math.random) {
     const st = this.step(id), s = this.state.active[id];
+    if (st && st.escort && s.with === undefined) s.with = true;   // (v1.12) they set off with you as the walk starts
     if (!st || !st.dig) return null;
     if (!s.dig) s.dig = { right: Math.floor(rng() * st.dig.spots.length), dug: [] };
     return s.dig;
@@ -266,7 +282,7 @@ FUP.quests = {
   },
   // Quest enemies waiting on this map: [{ id, tx, ty, enemy, group, name }]
   foesIn(region) {
-    return this.activeIds().filter(id => { const st = this.step(id); return st && st.fight && st.fight.region === region; })
+    return this.activeIds().filter(id => { const st = this.step(id); return st && st.fight && st.fight.region === region && (!st.escort || this.state.active[id].with); })
       .map(id => ({ id, ...this.step(id).fight }));
   },
   // Fish a quest wants from this spot right now (step: { event: 'fish', catchAt: spot, match: { id }, when })
@@ -288,6 +304,13 @@ FUP.quests = {
     if (st && st.dig) {   // (v1.10) dig one square: the right one moves the quest on, the rest are just dirt
       const d = this.prepStep(id);
       if (k === null || d.dug.includes(k) || !st.dig.spots[k]) return { ok: false, line: '' };
+      if (st.dig.all) {   // (v1.12) every square counts: each gives st.dig.item, the last one moves the quest on
+        d.dug.push(k);
+        if (st.dig.item) this.news.push(...this.grant({ items: { [st.dig.item]: 1 } }, [], id));
+        if (d.dug.length >= st.dig.spots.length) return this.advance(id, st.say || '');
+        const it = st.dig.item ? FUP.ingredients[st.dig.item].name : 'Something';
+        return { ok: true, line: `${it}! (${d.dug.length}/${st.dig.spots.length})` };
+      }
       if (k === d.right) return this.advance(id, st.say || '');
       d.dug.push(k);
       const lines = st.dig.wrong || ['Just dirt.'];
@@ -349,6 +372,12 @@ FUP.quests = {
   doStep(id, npc = null) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return { line: '', ok: false };
+    if (this.spareFor(id, npc)) { const q = this.def(id); this.news.push(...this.grant({ items: { [q.spare.item]: 1 } }, [], id)); return { ok: true, line: q.spare.say || '' }; }
+    if (st.escort && !s.with) {   // (v1.12) they went home: talk to them there to set off again
+      if (npc !== st.escort.npc) return { ok: false, line: '' };
+      s.with = true;
+      return { ok: true, line: st.rejoin || 'Back on the road.' };
+    }
     if (st.talkAll) {   // talk to each of them, any order
       if (!npc || !st.talkAll[npc] || s.talked[npc]) return { ok: false, line: '' };
       const short = Object.entries(st.need || {}).filter(([k, n]) => this.have(k) < n);   // v1.10: things you must carry (shown, not taken)
@@ -364,6 +393,10 @@ FUP.quests = {
     }
     if (st.choices) return { ok: true, line: st.say || '', choices: this.choiceList(id) };
     if (st.sayIf) for (const [flag, line] of Object.entries(st.sayIf)) if ((s.flags || {})[flag]) { st._say = line; }
+    if (st.need && !st.talkAll) {   // (v1.12) things you must carry for this step (shown, not taken)
+      const short = Object.entries(st.need).filter(([k, n]) => this.have(k) < n);
+      if (short.length) return { ok: false, line: st.notYet || `Bring the ${short.map(([k]) => FUP.ingredients[k].name).join(' and ')}.` };
+    }
     if (st.show) {   // like bring, but you keep it (or they hand it back)
       const short = Object.entries(st.show).filter(([k, n]) => this.have(k) < n);
       if (short.length) return { ok: false, line: st.notYet || `Where's the ${short.map(([k]) => FUP.ingredients[k].name).join(' and ')}? Bring it here.` };
@@ -382,6 +415,7 @@ FUP.quests = {
     if (st && st.log) (s.log = s.log || []).push(st.log);
     if (st && st.give) { const got = this.grant(st.give, [], id); if (got.length) this.news.push(...got); }   // a step can hand you something (Pip's root seeds, the bowl)
     s.step = (s.step || 0) + 1; s.n = 0; s.talked = {}; s.tasted = false; delete s.dig;
+    if (!(this.step(id) || {}).escort) delete s.with;   // (v1.12) the walk is over
     this.prepStep(id);
     if (s.step < q.steps.length) return { ok: true, line };
     const coins = this.finish(id);
