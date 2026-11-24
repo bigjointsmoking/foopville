@@ -43,7 +43,7 @@ FUP.sideRoomData = {
     ingredientFromSell: 2,
     name: 'Hooded Hank',
     emoji: '🥷',   // PLACEHOLDER picture until he gets Blender art
-    hello: [   // claude/CAST_LINES.md
+    hello: [   // archive/story-drafts/CAST_LINES.md
       'Nothing suspicious here. Just a man in a hood, in a bush, selling things.',
       'Lanterns. Very legal. I made sure by not asking.',
     ],

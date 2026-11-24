@@ -1,5 +1,5 @@
 // ============================================================
-// LOOK — every colour and visual number in the game (VISUAL_PLAN.md).
+// LOOK — every colour and visual number in the game (archive/plans-done/VISUAL_PLAN.md).
 // Palette "Old Kingdom" (picked by Jesus 2026-11-09): 32 colours, each
 // ramp goes dark → light. Everything on screen should come from here.
 // ============================================================

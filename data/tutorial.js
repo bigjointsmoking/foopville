@@ -56,7 +56,7 @@ FUP.tutorialData = {
   //   done: the narrator's line when the step is finished.
   // v0.71 (Jesus: friends were lost after the island): every system gets explained, and the
   // captain ends with a numbered first-day plan.
-  // v0.97 (M2 speed pass, claude/FIRST_30_MINUTES.md): same lessons, about half the words and
+  // v0.97 (M2 speed pass, archive/story-drafts/FIRST_30_MINUTES.md): same lessons, about half the words and
   // fewer pages; Wanda's two talks are one. Time it with: jsc tests/isle_time.js
   steps: [
     { kind: 'talk', tutor: 'greeter', goal: 'Talk to Greta the Greeter',

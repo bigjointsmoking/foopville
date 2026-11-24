@@ -362,13 +362,13 @@ Object.assign(FUP.questData.quests, {
         sayIf: { self: 'I picked them. ME. I\'m posting more. For you, obviously. I\'m retired now.', pep: 'I picked them. ME. Here. For the speech. Don\'t tell anyone I needed one.' } },
     ] },
 
-  // ================= v0.82: THE STORY, Phase C (claude/CLAUDE_CODE_HANDOFF.md) =================
+  // ================= v0.82: THE STORY, Phase C (archive/story-drafts/CLAUDE_CODE_HANDOFF.md) =================
   // kind 'story': posted on the board's Story tab in a villager's name; take it there, then go and see them.
   // Gated only by how far you've got (first trip, the East Bridge), never by other quests.
   // Spell pieces (fragment) are kept even if you die (data/spell.js). Clues are facts 'clue:<id>' (villagers react).
   // All lines, numbers and spots are PLACEHOLDERS for Jesus.
 
-  // v1.10: rebuilt from claude/MAIN_QUEST_LINE.md (dragon quest line, quest 1; plans/QL1.md). Pip posts it himself.
+  // v1.10: rebuilt from story/MAIN_QUEST_LINE.md (dragon quest line, quest 1; archive/plans-done/QL1.md). Pip posts it himself.
   // Clear the plot (one long Hoe job), dig until you hit the ash (right square picked at random), jar it, back to Pip.
   // Lines, seconds and spots are PLACEHOLDERS for Jesus. ver 2: old saves holding the jar (old step 3) move to the new step 4.
   deadPlot: { kind: 'story', from: 'seeds', difficulty: 'easy', length: 'short', name: 'Pip\'s Dead Plot', ver: 2, oldSteps: { 2: 3 },
@@ -392,7 +392,7 @@ Object.assign(FUP.questData.quests, {
         say: 'He holds it up to the light. Goes pale. "That\'s no house fire. Why is it glowing? Why is it still glowing?" He puts it under the stall. "Here. Seeds. Good ones. Go away."' },
     ] },
 
-  // v1.10: dragon quest line, quest 2 (claude/MAIN_QUEST_LINE.md section 7, plans/QL2.md). Pip posts it after quest 1.
+  // v1.10: dragon quest line, quest 2 (story/MAIN_QUEST_LINE.md section 7, archive/plans-done/QL2.md). Pip posts it after quest 1.
   // Show the jar around: 3 villagers test it in their trade, 3 guess, the Shopkeeper has a lead up north. You keep the jar.
   // Lines are PLACEHOLDERS for Jesus.
   askAround: { kind: 'story', from: 'seeds', difficulty: 'easy', length: 'short', name: 'Ask Around',
@@ -419,7 +419,7 @@ Object.assign(FUP.questData.quests, {
         say: '"Up north? Past the Deep Woods? ...Right." He counts out coins without looking at the jar. "Keep it. I don\'t want it under my stall anymore."' },
     ] },
 
-  // v1.12: dragon quest line, quest 3 (claude/MAIN_QUEST_LINE.md section 7, plans/QL3.md). Pip posts it after Ask Around.
+  // v1.12: dragon quest line, quest 3 (story/MAIN_QUEST_LINE.md section 7, archive/plans-done/QL3.md). Pip posts it after Ask Around.
   // Carry the Shopkeeper's crate north, the Iron House Assayer tests the ash with Frostroot, walk them home
   // (the Ash-Grey Wolf ambushes you in the Deep Woods), and at Pip's old plot they say what it is. Lines are PLACEHOLDERS.
   //   spare: Pip hands you another jar if yours is gone, before the walk home (step index < untilStep)
@@ -453,7 +453,7 @@ Object.assign(FUP.questData.quests, {
         say: 'The Assayer kneels, rubs the black dirt between two fingers. "Dragon residue. It won\'t fade. Not in your lifetime, not in his. Nobody in this village can clear it." Pip sits down on the dirt, then gets up fast. "A dragon. On my plot. ...Here\'s your money. I need to sit down somewhere else."' },
     ] },
 
-  // v1.13: the Glass line (the Carpenter), quests 1-2 (claude/MAIN_QUEST_LINE.md Glass line arc, plans/GL1.md).
+  // v1.13: the Glass line (the Carpenter), quests 1-2 (story/MAIN_QUEST_LINE.md Glass line arc, archive/plans-done/GL1.md).
   // A shard shows its moment only at the Blacksmith's forge: a cutscene (data/cutscenes.js) that plays once. Lines are PLACEHOLDERS.
   glass1: { kind: 'story', from: 'carpenter', difficulty: 'easy', length: 'short', name: 'Melted Stone',
     req: { facts: { 'repair:well': 1 } },   // posted once the Well is repaired

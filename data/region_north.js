@@ -1,6 +1,6 @@
 // ============================================================
-// THREE SCALES — the market town north of the Deep Woods (v1.10, Jesus 2026-11-24, plans/TS1.md,
-// claude/MAIN_QUEST_LINE.md section 8). A rich mountain fortress in the snow, run by a council of three
+// THREE SCALES — the market town north of the Deep Woods (v1.10, Jesus 2026-11-24, archive/plans-done/TS1.md,
+// story/MAIN_QUEST_LINE.md section 8). A rich mountain fortress in the snow, run by a council of three
 // rival trading houses: the Grain House (land and food), the Road House (the road and the caravans),
 // the Iron House (metal and crafts). House names are placeholders by trade until Jesus names the families.
 // A safe region (no trip, no enemies, no fog). Opens once you beat the Mushroom Guardian (data/world.js).

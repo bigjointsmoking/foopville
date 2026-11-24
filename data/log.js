@@ -1,5 +1,5 @@
 // ============================================================
-// COLLECTION LOG (E2, claude/EXPLORATION_LOOP.md decision 3) — a book of everything you've found.
+// COLLECTION LOG (E2, archive/story-drafts/EXPLORATION_LOOP.md decision 3) — a book of everything you've found.
 // Rules: src/systems/log.js · Window: src/logUi.js (📖 Log in the backpack).
 // Each page lists entries built from the game's own data; an entry fills when its fact is
 // first written (src/systems/facts.js). Per life, like facts: Hardcore wipes it, Normal keeps it.

@@ -1,4 +1,4 @@
-// Dev stats panel (M1, claude/FIRST_30_MINUTES.md). Hidden: only Jesus knows how to open it.
+// Dev stats panel (M1, archive/story-drafts/FIRST_30_MINUTES.md). Hidden: only Jesus knows how to open it.
 // Local only: everything stays in this browser (no network). Read by src/devStats.js.
 FUP.devStatsData = {
   enabled: false,         // false = the panel and the logging are off (T1, v1.09: off for v1.0, Jesus; true turns it back on)
