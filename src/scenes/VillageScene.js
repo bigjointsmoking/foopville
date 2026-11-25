@@ -413,6 +413,8 @@ class VillageScene extends Phaser.Scene {
     const M = FUP.villageMap, s = this.player;
     // Trees, water, buildings... and solid things you've placed (benches)
     const T = FUP.villageData.tileSize, hit = (x, y) => M.blockedBox(x, y, half) || FUP.place.blockedBox('village', x, y, half, T);
+    // (v1.17) Already inside something solid (a building job's site went solid around you): walk freely until you're out
+    if (hit(s.x, s.y)) { s.x += mx; s.y += my; return; }
     if (!hit(s.x + mx, s.y)) s.x += mx;
     if (!hit(s.x, s.y + my)) s.y += my;
   }
