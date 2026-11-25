@@ -444,7 +444,7 @@ Object.assign(FUP.questData.quests, {
         log: 'Frostroot says it\'s dragon-made. The Assayer wants to see Pip\'s plot.',
         say: 'They grind the Frostroot, add a pinch of ash. It hisses and glows white. "Frostroot doesn\'t lie. This is dragon-made. Fire with magic in it. I need to see the ground it came from. Lead the way."' },
       { escort: { npc: 'ts_assayer', home: 'north' },
-        fight: { region: 'deepwoods', tx: 13, ty: 2, enemy: 'ashWolf', name: 'the wolf', ally: 'ts_assayer' },
+        fight: { region: 'deepwoods', tx: 13, ty: 2, surprise: true, enemy: 'ashWolf', name: 'the wolf', ally: 'ts_assayer' },
         goal: 'Walk the Assayer home through the Deep Woods (something is following the jar)', log: 'In the Deep Woods a grey wolf came for the jar. You saw it off.',
         rejoin: '"Back to it, then. Try not to die this time. I\'d have to walk home again."' },
       { escort: { npc: 'ts_assayer', home: 'north' }, guest: { region: 'village', tx: 52, ty: 55, npc: 'seeds' }, talk: 'seeds',

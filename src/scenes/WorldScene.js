@@ -310,7 +310,7 @@ class WorldScene extends Phaser.Scene {
   // so you know which squirrel is the thief and where it waits (Jesus, after a playtest of The Jerky Bandit)
   questFoeTag(f) {
     this._foeTags = this._foeTags || {};
-    if (this._foeTags[f.id]) return;
+    if (this._foeTags[f.id] || f.surprise) return;   // an ambush (fight `surprise: true`, the wolf in The Inspector) stays hidden
     const c0 = FUP.forest.center(f.tx, f.ty), ui = FUP.ui, c = ui.colors;
     const mark = this.add.text(c0.x, c0.y - 44, '❗', { fontSize: '22px' }).setOrigin(0.5).setDepth(7000);
     this.tweens.add({ targets: mark, y: mark.y - 8, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
