@@ -37,6 +37,9 @@ FUP.worldData = {
                         lockText: 'The road south is washed out. Someone should fix that. Someone with coins.', soonText: 'The Docks: still being imagined.' },
                    E: { to: 'marsh', edge: 'W', req: { facts: { 'repair:east_bridge': 1 } }, lockEmoji: '🌉',
                         lockText: 'The east bridge is mostly a suggestion now.' },
+                   // v1.19: the West Road (a repair) opens the Western Ruins (plans/GL3.md)
+                   W: { to: 'west', edge: 'E', req: { facts: { 'repair:west_road': 1 } }, lockEmoji: '🪨',
+                        lockText: 'Rubble fills the old road west. Nobody\'s been west in years. Nobody\'s wanted to.' },
                  } },
     edge:      { name: 'Forest Edge', kind: 'danger', scene: 'World', box: { col: 0, row: 2 }, band: [1, 5], dropTier: 1,
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects'], links: { W: { to: 'village', edge: 'N' }, E: { to: 'tollroad', edge: 'W' } } },
@@ -49,6 +52,10 @@ FUP.worldData = {
                           // v1.10: the road north to Three Scales opens once you beat the Mushroom Guardian
                           N: { to: 'north', edge: 'S', req: { facts: { 'boss:guardian': 1 } }, lockEmoji: '🏰',
                                lockText: 'The road north climbs to a fortress gate. The guards look at you, then at your bucket. Not today.' } } },
+    // v1.19: the Western Ruins, part of the old village never reclaimed (Glass Q3). Map in data/region_west.js
+    west:      { name: 'Western Ruins', kind: 'danger', scene: 'World', box: { col: -1, row: 3 }, band: [12, 16], dropTier: 2,
+                 respawn: { enemies: 540 },   // 9 min
+                 features: ['enemies', 'fog', 'campfire', 'objects'], links: { E: { to: 'village', edge: 'W' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },

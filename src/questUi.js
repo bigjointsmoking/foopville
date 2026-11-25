@@ -87,7 +87,7 @@ FUP.questUi = {
 
   // 🔍 action spots for this map (center(tx, ty) → { x, y } in pixels)
   spots(region, center) {
-    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, k: s.dig ? s.k : null, work: s.work, x: p.x, y: p.y, label: s.label || this.icon(s) + (s.dig ? ' Dig' : s.work ? ' Clear' : ' Search'), reach: 46 }; });
+    return FUP.quests.searchesIn(region).map(s => { const p = center(s.tx, s.ty); return { kind: 'qsearch', quest: s.id, k: s.dig ? s.k : null, work: s.work, pry: s.pry, x: p.x, y: p.y, label: s.label || this.icon(s) + (s.dig ? ' Dig' : s.work ? ' Clear' : ' Search'), reach: 46 }; });
   },
   icon(s) { return s.icon || (s.dig || s.work ? '⛏️' : '🔍'); },
   // Search a 🔍 spot (from either kind of map)
@@ -103,7 +103,25 @@ FUP.questUi = {
       else if (r.ok && st && st.cutscene && FUP.cutscene) FUP.cutscene.play(scene, st.cutscene, () => this.result(scene, s.quest, r, after));
       else this.result(scene, s.quest, r, after);
     };
-    if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go); else go();
+    if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go);
+    else if (s.pry) this.pryJob(scene, s, go);   // (v1.19) prying a shard out of a melted wall
+    else go();
+  },
+  // (v1.19) Stand still and pry for `s.pry` seconds (like a scrap pile), then the search happens
+  pryJob(scene, s, then) {
+    const job = { destroy() {} };
+    scene.panel = job;
+    if (scene.player && scene.player.setFlipX) scene.player.setFlipX(s.x < scene.player.x);
+    const reps = Math.max(2, Math.round(s.pry / 0.35));
+    let n = 0;
+    const tick = scene.time.addEvent({ delay: 350, repeat: reps - 1, callback: () => {
+      n++;
+      FUP.audio.sfx(n % 2 ? 'chop' : 'hit');
+      if (n < reps) return;
+      if (scene.panel === job) scene.panel = null;
+      then();
+    } });
+    job.destroy = () => { tick.remove(); if (scene.panel === job) scene.panel = null; };
   },
   // (v1.12) Someone walking with you for a quest (step.escort): drawn behind you, following along.
   // Call escortStart(scene) at the end of a map screen's create, escortTick(scene, dt) in its update.

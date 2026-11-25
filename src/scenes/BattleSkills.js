@@ -159,6 +159,8 @@ Object.assign(BattleScene.prototype, {
     let m = 1;
     const sig = e.signature;
     if (sig && sig.id === 'bodyguard' && this.liveReal().some(o => o.bodyguard)) m *= sig.takenMult;
+    if (sig && sig.id === 'scrapShield' && e.shieldUp) m *= sig.takenMult;   // (v1.19) the Scrap Goblin hides behind scrap
+    if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -225,12 +227,33 @@ Object.assign(BattleScene.prototype, {
 
   flock() { return this.liveReal().filter(o => o.key === 'pigeon'); },
 
+  // (v1.19) Ruin Rats' Pack Bite: each other rat still standing makes this one's hits `per` harder
+  packMult(e) {
+    const sig = e.signature;
+    if (!sig || sig.id !== 'pack') return 1;
+    return 1 + sig.per * this.liveReal().filter(o => o !== e && o.key === e.key).length;
+  },
+  // (v1.19) The Rubble Crab's shell cracks on a Skill or a critical hit (then it takes normal damage)
+  crackShell(e, kind, crit) {
+    const sig = e.signature;
+    if (!sig || sig.id !== 'shell' || e.cracked) return;
+    if (kind === 'skill' || crit) {
+      e.cracked = true;
+      this.bigMoment('SHELL CRACKED!', FUP.ui.colors.good);
+      this.say('shellCracked', { enemy: e.name });
+    } else if (!this.saidShell) { this.saidShell = true; this.time.delayedCall(450, () => { if (!this.over) this.say('shellTough', { enemy: e.name }); }); }
+  },
+
   // ---------- Enemy plans ----------
   // A signature move this enemy wants to use next, or null (then it picks a normal move).
   planSignature(e) {
     const sig = e.signature;
     if (!sig) return null;
     if (sig.id === 'hoarder' && e.stolen) return sig.eatMove;
+    if (sig.id === 'scrapShield') {   // (v1.19) shield up every `every` moves, then throw it the move after
+      if (e.throwNext) { e.throwNext = false; return sig.throwMove; }
+      if ((e.movesDone + 1) % sig.every === 0) return sig.shieldMove;
+    }
     if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
     if (sig.id === 'windup' && (e.movesDone + 1) % sig.every === 0) return sig.move;   // the Moss Bear's big swipe (v0.93)
     if (sig.id === 'bodyguard') {
@@ -246,7 +269,7 @@ Object.assign(BattleScene.prototype, {
 
   // Start of an enemy's turn: burning hurts, and last move's guard / audit ends. Returns false if it died.
   enemyTurnStart(e) {
-    e.stance = false; e.ledger = false; e.audit = null;
+    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false;   // (v1.19) the Scrap Goblin's shield lasts until its next move
     // The Mosquito Intern's Overtime: the last one standing hits harder (Marsh, W2)
     const sig = e.signature;
     if (sig && sig.id === 'overtime' && !e.overtime && this.startCount > 1 && this.liveReal().length === 1) {
@@ -296,6 +319,12 @@ Object.assign(BattleScene.prototype, {
         FUP.audio.sfx('eat');
         return true;
       }
+      case 'scrapShield':   // (v1.19) the Scrap Goblin: hits do half until its next move, which throws the scrap
+        e.shieldUp = true; e.throwNext = true;
+        this.popup(e.view, '🛡️ SCRAP SHIELD', 'info');
+        this.say('scrapShieldUp', { enemy: e.name });
+        FUP.audio.sfx('guard');
+        return true;
       case 'ledger':
         e.ledger = true;
         this.popup(e.view, '📒 LEDGER UP', 'info');

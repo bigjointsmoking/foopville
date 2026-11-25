@@ -220,6 +220,14 @@ FUP.look = {
       detail: { tuft: 0.35, flower: 0.08, pebble: 0.04, leaf: 0.1 },
       light: { color: 'b3', alpha: 0.55, blend: 'MULTIPLY' },
     },
+    ruins: {   // the Western Ruins (v1.19): old cobbles, grey-brown rubble, dry grass, a dusky orange light. PLACEHOLDER
+      grass: ['g2', 'w3', 'g2', 'w4'], grassTuft: 'y1', flowers: ['y1', 'x'],
+      dirt: ['s1', 's2', 's2'], dirtEdge: 'k1', pebble: 's3',
+      water: ['b1', 'b2', 'b3'], shore: 's2', sparkle: 'b4',
+      pathStyle: 'cobble', floor: 's1', foam: 'b4', bank: 'k0',
+      detail: { tuft: 0.5, flower: 0.04, pebble: 0.12, leaf: 0 },
+      light: { color: 'x', alpha: 0.12, blend: 'MULTIPLY' },
+    },
     marsh: {   // the Soggy Marsh (W2): murky greens and browns, foggy
       grass: ['g1', 'g2', 'g2', 'g3'], grassTuft: 'g4', flowers: ['b4', 'y1'],
       dirt: ['w1', 'w2', 'w3'], dirtEdge: 'k1', pebble: 'k3',

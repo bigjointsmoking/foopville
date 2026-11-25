@@ -96,10 +96,11 @@ FUP.audioData = {
 
   playlists: {
     title: ['title'], village: ['village', 'village2'], home: ['home'], campfire: ['campfire'], docks: ['docks'],
-    edge: ['edge'], tollroad: ['tollroad'], deepwoods: ['deepwoods'], marsh: ['marsh'], north: ['village2'],   // north = Three Scales (v1.10, placeholder song)
+    edge: ['edge'], tollroad: ['tollroad'], deepwoods: ['deepwoods'], marsh: ['marsh'], north: ['village2'], west: ['deepwoods'],   // west = the Western Ruins (v1.19, placeholder song)
+      // north = Three Scales (v1.10, placeholder song)
     battle: ['battle', 'battle2'], boss: ['boss'], raid: ['raid'],
   },
-  regionSongs: { village: 'village', docks: 'docks', isle: 'docks', edge: 'edge', tollroad: 'tollroad', deepwoods: 'deepwoods', marsh: 'marsh', north: 'north' },
+  regionSongs: { village: 'village', docks: 'docks', isle: 'docks', edge: 'edge', tollroad: 'tollroad', deepwoods: 'deepwoods', marsh: 'marsh', north: 'north', west: 'west' },
 
   sfx: {
     // Menus

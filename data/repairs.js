@@ -44,6 +44,11 @@ FUP.repairData = {
       site: { tx: 48, ty: 2, w: 3, h: 2, talk: { tx: 49, ty: 4 } }, ruinEmoji: '🏚️', ruinPicture: 'ruin_burned', doneEmoji: '🌬️', doneSprite: 'build_windmill', block: true,
       scorch: [{ tx: 47, ty: 4 }, { tx: 51, ty: 4 }, { tx: 46, ty: 2 }],
       clutter: [{ tx: 47, ty: 3, emoji: '🌿' }, { tx: 51, ty: 3, emoji: '🪨' }, { tx: 50, ty: 4, emoji: '🌿' }] },
+    // v1.19 (plans/GL3.md): clear the rubble from the old road west: opens the Western Ruins (Glass Q3 goes there). Cost PLACEHOLDER
+    { id: 'west_road', name: 'The West Road', emoji: '🧱', req: { facts: { 'boss:guardian': 1 }, skills: { building: 8 } }, cost: { coins: 1200, items: { plank: 10 } },
+      unlocks: 'The Western Ruins: the part of the old village nobody reclaimed.',
+      site: { tx: 1, ty: 23, w: 1, h: 2, talk: { tx: 2, ty: 23 } }, ruinEmoji: '🪨', blockWhenRuined: true,
+      clutter: [{ tx: 2, ty: 22, emoji: '🪨' }, { tx: 2, ty: 25, emoji: '🌿' }, { tx: 3, ty: 24, emoji: '🪨' }] },
     { id: 'fountain', name: 'The Fountain', emoji: '⛲', req: { facts: { 'repair:well': 1, 'repair:south_road': 1, 'repair:east_bridge': 1, 'repair:cart_stop': 1, 'repair:market': 1, 'repair:windmill': 1 }, skills: { building: 20 } },
       cost: { coins: 9000, items: { plank: 30 } }, unlocks: 'A title, a bigger quest board, and respect. Possibly.',
       site: { tx: 29, ty: 19, w: 2, h: 2, talk: { tx: 30, ty: 21 } }, ruinEmoji: '🕳️', doneEmoji: '⛲', doneSprite: 'build_fountain', block: true,   // (R3: spot is a PLACEHOLDER)

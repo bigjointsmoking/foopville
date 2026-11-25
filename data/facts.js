@@ -12,6 +12,7 @@ FUP.factData = {
     'repair:well': 'Repair the Well',
     'repair:south_road': 'Repair the South Road',
     'repair:east_bridge': 'Repair the East Bridge',
+    'repair:west_road': 'Repair the West Road',
     'repair:cart_stop': 'Repair the Cart Stop',
     'repair:market': 'Repair the Market',
     'repair:windmill': 'Repair the Windmill',

@@ -20,6 +20,9 @@
 //   ring: { x, y, w, h, color, dur }      a ring of light growing on the ground (stage x)
 //   embers: { n, dur }                    sparks drifting up
 //   edges: { color, alpha }               fire glow at both sides of the screen
+//   grow: { id, h, dur }                  (v1.19) scale a picture up to height h (the dragon coming closer)
+//   barrier: { id, x, y, w, h, color, dur }  (v1.19) a shimmering wall of light rising from the ground (stage x; feet at y)
+//   shatter: { id }                       (v1.19) the wall flares, cracks into pieces and they fall away
 //   shake: { ms, power }  flash: { color, ms }  sfx: 'name'
 // ============================================================
 window.FUP = window.FUP || {};
@@ -61,6 +64,43 @@ FUP.cutsceneData = {
         { t: 12.6, embers: { n: 40, dur: 6 } },
         { t: 13.4, caption: 'Somewhere in the glass, a bell is still ringing.' },
         { t: 18.4, flash: { color: 'k4', ms: 900 } },
+      ],
+    },
+    // Shard 3 (Glass Q3 "The Western Ruins", v1.19): the repelling spell. The elders' side only; ends before the
+    // last stand (no main staff, no last spell). Captions PLACEHOLDER.
+    repel: {
+      backdrop: { key: 'cs_edge', height: 430, bottom: 480 },
+      sky: 'r2', ground: 'w2', pan: [-60, -340], length: 22, tint: 'w5',
+      steps: [
+        { t: 0.2, caption: 'The edge of the village. Dusk, and something coming.' },
+        { t: 0.3, add: { id: 'drg', key: 'cs_dragon_front', emoji: '🐉', x: 1000, y: 470, h: 120, alpha: 0, depth: true } },
+        { t: 0.4, fade: { id: 'drg', alpha: 0.9, dur: 3 } },
+        { t: 0.5, grow: { id: 'drg', h: 330, dur: 9 } },
+        { t: 2.8, add: { id: 'e1', key: 'cs_elder', emoji: '🧙', x: 300, y: 476, h: 128 } },
+        { t: 2.9, move: { id: 'e1', x: 560, y: 476, dur: 2.2 } },
+        { t: 3.4, add: { id: 'e2', key: 'cs_elder', emoji: '🧙', x: 260, y: 462, h: 120 } },
+        { t: 3.5, move: { id: 'e2', x: 640, y: 462, dur: 2.4 } },
+        { t: 4.0, add: { id: 'e3', key: 'cs_elder', emoji: '🧙', x: 280, y: 488, h: 134 } },
+        { t: 4.1, move: { id: 'e3', x: 720, y: 488, dur: 2.4 } },
+        { t: 4.6, add: { id: 'e4', key: 'cs_elder', emoji: '🧙', x: 240, y: 468, h: 122 } },
+        { t: 4.7, move: { id: 'e4', x: 800, y: 468, dur: 2.5 } },
+        { t: 5.4, caption: 'They made a line.' },
+        { t: 7.6, swap: { id: 'e1', key: 'cs_elder_cast' } }, { t: 7.8, swap: { id: 'e2', key: 'cs_elder_cast' } },
+        { t: 8.0, swap: { id: 'e3', key: 'cs_elder_cast' } }, { t: 8.2, swap: { id: 'e4', key: 'cs_elder_cast' } },
+        { t: 8.3, barrier: { id: 'wall', x: 900, y: 490, w: 70, h: 330, color: 'b4', dur: 1.6 } },
+        { t: 8.4, sfx: 'spell' },
+        { t: 9.0, caption: 'A wall of light. Not to hurt her. To push her back.' },
+        { t: 10.4, move: { id: 'drg', x: 1060, y: 470, dur: 1.4 } },
+        { t: 10.4, shake: { ms: 500, power: 0.006 } },
+        { t: 11.4, caption: 'She faltered.' },
+        { t: 13.2, move: { id: 'drg', x: 930, y: 470, dur: 1.6 } },
+        { t: 13.4, edges: { color: 'r3', alpha: 0.55 } },
+        { t: 13.6, embers: { n: 60, dur: 5 } },
+        { t: 13.8, sfx: 'phase' },
+        { t: 14.4, shatter: { id: 'wall' } },
+        { t: 14.4, shake: { ms: 1100, power: 0.016 } },
+        { t: 15.0, caption: 'It held. For a breath.' },
+        { t: 19.6, flash: { color: 'k4', ms: 900 } },
       ],
     },
     // Shard 2 (Glass Q2 "More Where That Came From"): the elders gather

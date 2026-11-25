@@ -544,6 +544,33 @@ Object.assign(FUP.questData.quests, {
         say: '"Not normal wood. Not normal damage. And the two go together. It wasn\'t just broken. Or burned. Something happened to it. Don\'t ask me what. I\'m a blacksmith. I hit things. This is the first thing that\'s ever hit back."' },
     ] },
 
+  // v1.19: Glass line quest 3 (plans/GL3.md, Jesus's doc + answers). The Western Ruins open by a repair (the West Road);
+  // this posts once that's done and Q2 is done. 4 shards pried out of melted walls; the vision: the repelling spell.
+  // The old village's name is never said. Lines are PLACEHOLDERS.
+  glass3: { kind: 'story', from: 'carpenter', difficulty: 'medium', length: 'medium', name: 'The Western Ruins',
+    req: { facts: { 'quest:glass2': 1, 'repair:west_road': 1 } },
+    text: 'Planksworth thinks the glass follows the old edge of the village. West, where nobody has cleared anything.',
+    reward: { coins: 250, xp: { building: 250 } },
+    afterGreet: ['They were pushing her back. Not hurting her. Pushing.', 'I\'m starting to see where everything stood. Not enough to rebuild. Enough to stop guessing.'],
+    steps: [
+      { talk: 'carpenter', log: 'Planksworth thinks the elders stood at the old edge of the village. He wants glass from the Western Ruins.',
+        say: '"The glass isn\'t scattered. Where we found it, it follows the old edge of the village. If they tried to keep her out, they\'d have stood there. West. Nobody\'s cleared it. Bring the stones back in one piece, preferably. And you."' },
+      { dig: { region: 'west', name: 'the melted walls', all: true, item: 'glass_shard', pry: 1.4, spots: [
+          [6, 5, { label: '✨ Pry it out', icon: '✨', say: 'You work a shard out of a wall gone smooth as a window.' }],
+          [31, 5, { label: '✨ Pry it out', icon: '✨', say: 'A shard, set in the stone like it grew there. It comes loose with a click.' }],
+          [38, 16, { label: '✨ Pry it out', icon: '✨', say: 'Glass in a doorframe. Someone stood here once. You take the glass.' }],
+          [7, 22, { label: '✨ Pry it out', icon: '✨', say: 'A shard from a melted wall, still faintly warm. Probably the sun. Probably.' }],
+        ] },
+        goal: 'Pry 4 Glass Shards out of melted walls in the Western Ruins', log: 'You pried four Glass Shards out of the melted walls in the west.',
+        say: 'That\'s four. The ruins seem quieter without them. Or you\'re imagining it.' },
+      { search: { region: 'village', tx: 5, ty: 5, name: 'the forge', label: '🔥 Hold them up', icon: '🔥' }, need: { glass_shard: 4 }, take: { glass_shard: 4 },
+        notYet: 'You need all four shards.', cutscene: 'repel', goal: 'Hold the 4 Glass Shards up to the Blacksmith\'s forge',
+        log: 'The shards showed the elders in a line at the edge of the village, pushing her back with a wall of light. It held. For a breath.',
+        say: 'The shards go dark one by one.' },
+      { talk: 'carpenter', log: 'You told Planksworth about the wall of light.',
+        say: '"They were pushing her back. Not hurting her. Pushing. And it barely worked." He shows you a sketch: the old streets, the edge, a line of little figures. "I\'m starting to see where everything stood. Not enough to rebuild it. Enough to stop guessing."' },
+    ] },
+
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',

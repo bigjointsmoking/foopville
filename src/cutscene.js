@@ -71,6 +71,26 @@ FUP.cutscene = {
       if (st.move && actors[st.move.id]) scene.tweens.add({ targets: actors[st.move.id], x: st.move.x, y: st.move.y, duration: st.move.dur * 1000, ease: 'Sine.easeInOut' });
       if (st.swap && actors[st.swap.id] && scene.textures.exists(st.swap.key)) { const o = actors[st.swap.id]; o.setTexture(st.swap.key); o.setScale(o.hFor / o.height); }
       if (st.swing && actors[st.swing.id]) scene.tweens.add({ targets: actors[st.swing.id], angle: { from: -st.swing.angle, to: st.swing.angle }, duration: st.swing.dur * 1000, yoyo: true, repeat: st.swing.times, ease: 'Sine.easeInOut', onComplete: function () { this.targets[0].setAngle(0); } });
+      if (st.grow && actors[st.grow.id]) { const o = actors[st.grow.id]; scene.tweens.add({ targets: o, scale: o.scale * st.grow.h / o.hFor, duration: st.grow.dur * 1000, ease: 'Sine.easeIn' }); o.hFor = st.grow.h; }
+      if (st.barrier) {   // (v1.19) a wall of light, rising, then shimmering
+        const b = st.barrier, r = scene.add.rectangle(b.x, b.y, b.w, b.h, num(b.color), 0.4).setOrigin(0.5, 1).setBlendMode(Phaser.BlendModes.ADD).setScale(1, 0.02);
+        r.setStrokeStyle(4, num(b.color), 0.9); stage.add(r); actors[b.id] = r;
+        scene.tweens.add({ targets: r, scaleY: 1, duration: b.dur * 1000, ease: 'Cubic.easeOut' });
+        scene.tweens.add({ targets: r, alpha: 0.65, duration: 260, yoyo: true, repeat: -1, delay: b.dur * 1000 });
+      }
+      if (st.shatter && actors[st.shatter.id]) {   // (v1.19) the wall breaks: a flare, pieces falling away
+        const r = actors[st.shatter.id]; scene.tweens.killTweensOf(r);
+        r.setAlpha(1); r.setFillStyle(num('k4'), 0.9);
+        scene.time.delayedCall(160, () => {
+          if (done) return;
+          for (let k = 0; k < 10; k++) {
+            const p = scene.add.rectangle(r.x + (Math.random() - 0.5) * r.width, r.y - Math.random() * r.height, 12 + Math.random() * 16, 18 + Math.random() * 30, num('b4'), 0.8).setBlendMode(Phaser.BlendModes.ADD);
+            stage.add(p);
+            scene.tweens.add({ targets: p, x: p.x - 80 - Math.random() * 160, y: p.y + 120 + Math.random() * 160, angle: (Math.random() - 0.5) * 360, alpha: 0, duration: 900 + Math.random() * 700 });
+          }
+          r.setVisible(false);
+        });
+      }
       if (st.fade && actors[st.fade.id]) scene.tweens.add({ targets: actors[st.fade.id], alpha: st.fade.alpha, duration: st.fade.dur * 1000 });
       if (st.sweep) {
         const sw = st.sweep, o = fix(picture(sw.key, sw.emoji, sw.h), 6).setOrigin(0.5).setPosition(sw.from, sw.y).setAlpha(0.85);

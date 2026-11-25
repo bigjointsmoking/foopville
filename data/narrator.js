@@ -483,6 +483,16 @@ FUP.narrator = {
   ],
 
   // ---------- Repairs: the run-down village (data/repairs.js) ----------
+  // v1.19: the Western Ruins (plans/GL3.md). Lines PLACEHOLDER. The old village's name is never said here.
+  forestEnter_west: [
+    'The Western Ruins. Streets with no houses. Houses with no roofs. Roofs with no excuses.',
+    'Nobody lives here any more. Something still does, though. Several somethings.',
+    'Old streets, broken walls, and stone gone smooth as glass. Mind your step. The walls do not.',
+  ],
+  ruinRubble: ['A wall gives up. Mostly on you.', 'Rubble. On your head. The ruins have opinions about visitors.', 'The wall falls. You were the floor it chose.'],
+  scrapShieldUp: ['The {enemy} hides behind a sheet of scrap. It will be throwing that at you shortly.', 'The {enemy} raises a rusty sheet. Hit it now and you mostly hit scrap.'],
+  shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],
+  shellCracked: ['The {enemy}\'s shell cracks open. It looks very soft and very annoyed.', 'Crack! The {enemy} is just a crab now. An angry, naked crab.'],
   forestEnter_marsh: [   // arriving in the Soggy Marsh (W2)
     'The Soggy Marsh. Every step goes squelch. Every squelch has opinions.',
     'Mud, fog, and the distant sound of paperwork. Welcome to the Marsh.',

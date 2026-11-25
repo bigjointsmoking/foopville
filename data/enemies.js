@@ -278,6 +278,44 @@ FUP.enemies = {
     signature: { id: 'runner',
       move: { name: 'Run For It', type: 'runAway', tell: '🏃', tellText: 'Running off with your coins (stop him!)' } },
   },
+  // ---------- The Western Ruins (v1.19, plans/GL3.md, Lv 12-16; the area multiplies these by 1.4). Numbers PLACEHOLDER ----------
+  // Ruin Rat: always a pack of 3. Pack Bite: each other rat still standing makes its hits 10% harder.
+  ruinRat: {
+    name: 'Ruin Rat', emoji: '🐀', size: 72, row: 'front', sprite: 'ruinrat', mapSprite: 'ruinrat_map',
+    maxHp: 14, atk: 4.5, def: 1, spd: 13, resolve: 0.05,
+    xp: 22, coins: 5, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Nibble', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Scurry Bite', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'pack', per: 0.10 },
+  },
+  // Scrap Goblin: strips the ruins for anything it can sell. Every 3rd move it hides behind a sheet of scrap
+  // (your hits do takenMult), then throws it at you next move (a heavy hit: Defend for a Perfect Block).
+  scrapGoblin: {
+    name: 'Scrap Goblin', emoji: '👺', size: 100, sprite: 'scrapgoblin', mapSprite: 'scrapgoblin_map',
+    maxHp: 34, atk: 6, def: 3, spd: 11, resolve: 0.10,
+    xp: 50, coins: 14, boss: false, weak: 'acid', resists: [],
+    moves: [
+      { name: 'Pipe Whack', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Rusty Jab', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'scrapShield', every: 3, takenMult: 0.5,
+      shieldMove: { name: 'Scrap Shield', type: 'scrapShield', tell: '🛡️', tellText: 'Hiding behind scrap (half damage)' },
+      throwMove: { name: 'Scrap Toss', type: 'attack', power: 2.0, tell: '🥏', tellText: 'Throwing the scrap (Defend!)' } },
+  },
+  // Rubble Crab: wears broken bricks as a shell. Brick Shell: takes takenMult damage until a Skill
+  // or a critical hit cracks the shell; then it takes normal damage for the rest of the fight.
+  rubbleCrab: {
+    name: 'Rubble Crab', emoji: '🦀', size: 110, sprite: 'rubblecrab', mapSprite: 'rubblecrab_map',
+    maxHp: 42, atk: 5, def: 4, spd: 8, resolve: 0.15,
+    xp: 60, coins: 16, boss: false, weak: 'acid', resists: [],
+    moves: [
+      { name: 'Pinch', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Brick Slam', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'shell', takenMult: 0.3 },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

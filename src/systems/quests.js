@@ -262,7 +262,7 @@ FUP.quests = {
       if (st && st.dig && st.dig.region === region) {
         const d = this.prepStep(id);
         // (v1.14) a square may carry its own { label, icon, say } as a third entry (the Blacksmith's three jobs)
-        st.dig.spots.forEach(([tx, ty, o], k) => { if (!d.dug.includes(k)) out.push({ id, k, tx, ty, name: st.dig.name, dig: true, work: st.dig.work, ...(o ? { label: o.label, icon: o.icon } : {}) }); });
+        st.dig.spots.forEach(([tx, ty, o], k) => { if (!d.dug.includes(k)) out.push({ id, k, tx, ty, name: st.dig.name, dig: true, work: st.dig.work, pry: st.dig.pry, ...(o ? { label: o.label, icon: o.icon } : {}) }); });   // (v1.19) pry: seconds of prying first
       }
     }
     return out;

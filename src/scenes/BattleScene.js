@@ -61,6 +61,7 @@ class BattleScene extends Phaser.Scene {
     this.shotYet = false;   // Opening Shot perk: the first shot each fight
     this.saidShoot = false;
     this.saidBack = false;  // the back-row hint (once a fight)
+    this.saidShell = false; // (v1.19) the Rubble Crab's 'shell too tough' hint (once a fight)
     this.sweetGifts = [];   // what Sweet Talk got you this fight (for the results screen)
     this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz'), ranged: FUP.skills.level('ranged') };
     FUP.progressUi.attach(this);
@@ -983,6 +984,7 @@ class BattleScene extends Phaser.Scene {
     if (!this.saidBack && this.rowMult(e, o) < 1) { this.saidBack = true; this.time.delayedCall(500, () => { if (!this.over) this.say('backRow'); }); }
     let em = o.element ? this.elementMult(e, o.element) : { mult: 1 };
     if (o.ranged && em.tag === 'weak') em = { ...em, mult: U.perkBest('ammoWeak', R.weakMult) };   // Weak Spot perk
+    this.crackShell(e, kind, r.crit);   // (v1.19) the Rubble Crab: a Skill or a crit cracks its shell first
     r.amount = Math.max(1, Math.round(r.amount * em.mult * this.takenMult(e)));
     if (guard.bounce) {
       // Arms Crossed: it bounces back at you
@@ -1141,7 +1143,7 @@ class BattleScene extends Phaser.Scene {
     if (this.actSignature(e, m)) {
       // handled: ledger, stance, audit, formation, bodyguard, eating your snack, Last Warning
     } else if (m.type === 'attack' || m.type === 'steal') {
-      const landed = this.strike(e, m.power * (1 + (e.billable || 0)), m.power >= 1.5, !!m.slam, m.counterMult || 1);   // Perfect Block / Riposte can stop it (billable: the Senior Partner)
+      const landed = this.strike(e, m.power * (1 + (e.billable || 0)) * this.packMult(e), m.power >= 1.5, !!m.slam, m.counterMult || 1);   // Perfect Block / Riposte can stop it (billable: the Senior Partner)
       if (landed && m.poison && !this.over) this.addPoison(m.poison);
       if (m.type === 'steal' && landed && !this.over) {
         if (this.satchel.length) {

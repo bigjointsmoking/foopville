@@ -43,6 +43,7 @@ class WorldScene extends Phaser.Scene {
     this.drawThings();
     this.drawPeople();          // villagers, signs, traps, fishing water (WorldPeople.js; only where `features` say so)
     if (this.scene.key === 'World') this.drawSideRooms();   // Forest side rooms (WorldSideRooms.js, E3)
+    if (this.scene.key === 'World') this.drawRubble();      // (v1.19) the Western Ruins' crumbling walls (WorldRubble.js)
     this.drawHole();
     this.drawGrave();
     this.fogTex = null;
@@ -691,6 +692,7 @@ class WorldScene extends Phaser.Scene {
     if (this.leaving) return;
     this.pickUpItems();
     this.moveEnemies(dt);
+    if (this.updateRubble) this.updateRubble(dt);   // (v1.19) crumbling walls (WorldRubble.js)
     this.updateFog();
     this.updateSight();
     if (!this.leaving) this.checkCampfire();
