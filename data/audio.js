@@ -154,6 +154,7 @@ FUP.audioData = {
     // v0.89 moments (the recordings above play first; these are the fallback)
     shrine:    { wave: 'triangle', from: 98,   dur: 0.5,  vol: 0.35, notes: [0, 12, 0], step: 0.3 },
     spell:     { wave: 'sine',     from: 1047, dur: 0.18, vol: 0.25, notes: [0, 7, 12, 19], step: 0.09 },
+    staffHum:  { wave: 'sawtooth', from: 70,   to: 150,  dur: 1.1,  vol: 0.18 },   // (v1.14) the broken staff flares: a low hum climbing. PLACEHOLDER
     questStep: { noise: true,      from: 2500, to: 900,  dur: 0.12, vol: 0.15 },
     questDone: { wave: 'square',   from: 523,  dur: 0.18, vol: 0.28, notes: [0, 4, 7, 12, 7, 12, 16], step: 0.1 },
     place:     { noise: true,      from: 600,  to: 150,  dur: 0.1,  vol: 0.35 },

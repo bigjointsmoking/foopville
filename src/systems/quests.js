@@ -243,9 +243,10 @@ FUP.quests = {
   // You died: anyone walking with you goes back home (talk to them there to set off again)
   lostEscort() { for (const id of this.activeIds()) { const st = this.step(id); if (st && st.escort) this.state.active[id].with = false; } },
   // (v1.12) A quest's spare item (Pip's second jar): offered while you don't have one, before step untilStep
+  // (v1.14) and from step fromStep on (the staff: only once the Blacksmith has handed it to you)
   spareFor(id, npc) {
     const q = this.def(id), s = this.state.active[id];
-    return !!(q && q.spare && s && q.spare.npc === npc && (s.step || 0) < q.spare.untilStep && this.have(q.spare.item) === 0);
+    return !!(q && q.spare && s && q.spare.npc === npc && (s.step || 0) < q.spare.untilStep && (s.step || 0) >= (q.spare.fromStep || 0) && this.have(q.spare.item) === 0);
   },
   // A step waiting at this villager, but they're somewhere else today (a guest step)
   elsewhere(npc, region) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.guest.npc) === npc && st.guest.region !== region; }); },
@@ -259,7 +260,8 @@ FUP.quests = {
       if (st && st.search && st.search.region === region) out.push({ id, ...st.search });
       if (st && st.dig && st.dig.region === region) {
         const d = this.prepStep(id);
-        st.dig.spots.forEach(([tx, ty], k) => { if (!d.dug.includes(k)) out.push({ id, k, tx, ty, name: st.dig.name, dig: true, work: st.dig.work }); });
+        // (v1.14) a square may carry its own { label, icon, say } as a third entry (the Blacksmith's three jobs)
+        st.dig.spots.forEach(([tx, ty, o], k) => { if (!d.dug.includes(k)) out.push({ id, k, tx, ty, name: st.dig.name, dig: true, work: st.dig.work, ...(o ? { label: o.label, icon: o.icon } : {}) }); });
       }
     }
     return out;
@@ -309,7 +311,8 @@ FUP.quests = {
         d.dug.push(k);
         if (st.dig.item) this.news.push(...this.grant({ items: { [st.dig.item]: 1 } }, [], id));
         if (d.dug.length >= st.dig.spots.length) return this.advance(id, st.say || '');
-        const it = st.dig.item ? FUP.ingredients[st.dig.item].name : 'Something';
+        const it = st.dig.item ? FUP.ingredients[st.dig.item].name : 'Something', o = st.dig.spots[k][2];
+        if (o && o.say) return { ok: true, line: `${o.say} (${d.dug.length}/${st.dig.spots.length})` };
         return { ok: true, line: `${it}! (${d.dug.length}/${st.dig.spots.length})` };
       }
       if (k === d.right) return this.advance(id, st.say || '');

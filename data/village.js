@@ -460,6 +460,8 @@ FUP.villageData = {
     { sprite: 'deco_signpost', tx: 13, ty: 2, text: 'FOOPVILLE, in thick, proud paint. Under it, faint scratches of some other word. You can\'t make it out.' },
     // Pip's old plot (story Phase C, v0.82): burned black, nothing grows. Stays dead (a later quest fixes it).
     { sprite: 'deco_scorch', tx: 53, ty: 55 }, { sprite: 'deco_scorch', tx: 54, ty: 55 }, { sprite: 'deco_scorch', tx: 53, ty: 56 }, { sprite: 'deco_scorch', tx: 54, ty: 56 },
+    // v1.14: the Blacksmith's find from the old ruins, on a bench beside the forge (staff thread; clear of Sparky's kennel site at 8, 4). The bench shows empty while you carry it.
+    { sprite: 'prop_staff_bench', empty: 'prop_staff_bench_empty', staff: true, tx: 10, ty: 4, solid: true },
     { sprite: 'prop_telescope', tx: 33, ty: 11, text: "You look through the telescope. Far off, a light flickers in the Deep Woods. Something down there is still awake." },
     { sprite: 'prop_flag', tx: 32, ty: 10 },
     { sprite: 'prop_bench', tx: 29, ty: 11, solid: true },

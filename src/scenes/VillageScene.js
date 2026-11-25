@@ -25,7 +25,7 @@ class VillageScene extends Phaser.Scene {
     this.walkTo = null; this.path = null;
     this.leaving = false;
     this.busy = false;        // doing a farm job (stand still)
-    this.farmViews = null; this.spots = null; this.farmText = null; this._placeViews = null; this._stallMarks = null; this.buildBtn = null; this.repairBits = null; this.boardSprite = null; this.repairSprites = {};   // drawn fresh below (old ones were destroyed)
+    this.farmViews = null; this.spots = null; this.farmText = null; this._placeViews = null; this._stallMarks = null; this.buildBtn = null; this.repairBits = null; this.boardSprite = null; this.repairSprites = {}; this._staff = null;   // drawn fresh below (old ones were destroyed)
     this.stepTimer = 0;
     FUP.looks.apply(this, FUP.run.hero.look);
     FUP.world.arriveHome();   // however you got here (walked, died, the chute, the boss)
@@ -160,9 +160,41 @@ class VillageScene extends Phaser.Scene {
     const T = FUP.villageData.tileSize, ui = FUP.ui;
     for (const p of FUP.villageData.props || []) {
       const x = p.tx * T + T / 2, y = p.ty * T + T * 0.92;
+      if (p.staff) { this.drawStaffBench(p, x, y); continue; }
       const s = ui.sprite(this, x, y, p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
       if (p.text) this.spots.push({ kind: 'read', x, y: p.ty * T + T / 2, sprite: s, label: '📜 Read', text: p.text });
     }
+  }
+
+  // ---------- (v1.14) The broken staff on its bench by the forge (staff thread) ----------
+  // Shows empty while the staff is in your bag; staffTick swaps it when that changes.
+  drawStaffBench(p, x, y) {
+    const ui = FUP.ui, carried = FUP.run.bagCount('broken_staff') > 0;
+    const s = ui.sprite(this, x, y, carried ? p.empty : p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
+    const glow = this.add.ellipse(x, y - 12, 50, 14, 0xff8a20, 0.35).setDepth(y + 1).setBlendMode(Phaser.BlendModes.ADD).setVisible(!carried);
+    this.tweens.add({ targets: glow, alpha: { from: 0.5, to: 1 }, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // a soft pulse
+    this._staff = { p, s, glow, carried };
+  }
+  staffTick() {
+    const b = this._staff; if (!b || !b.s.scene) return;
+    const carried = FUP.run.bagCount('broken_staff') > 0;
+    if (carried === b.carried) return;
+    b.carried = carried;
+    if (b.s.setTexture && this.textures.exists(carried ? b.p.empty : b.p.sprite)) b.s.setTexture(carried ? b.p.empty : b.p.sprite);
+    b.glow.setVisible(!carried);
+  }
+  // The failed repair: the cracks blaze orange, the hum climbs, the ground shakes, then `done`
+  staffFlare(done) {
+    const b = this._staff;
+    this.busy = true;
+    FUP.audio.sfx('staffHum');
+    if (FUP.fx && FUP.fx.shake) FUP.fx.shake(this, 'hit');
+    if (b && b.s.scene) {
+      const flash = this.add.ellipse(b.glow.x, b.glow.y, 30, 12, 0xffb040, 0.9).setDepth(b.glow.depth + 1).setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({ targets: flash, scaleX: 3.2, scaleY: 3.6, alpha: 0, duration: 900, ease: 'Quad.easeOut', onComplete: () => flash.destroy() });
+      if (b.s.setTint) { b.s.setTint(0xffc080); this.time.delayedCall(700, () => b.s.scene && b.s.clearTint()); }
+    }
+    this.time.delayedCall(1000, () => { this.busy = false; done(); });
   }
 
   // ---------- Villagers, your door, the gate, and you ----------
@@ -318,6 +350,7 @@ class VillageScene extends Phaser.Scene {
     if (this.leaving || this.panel || this.busy) return;
     this.movePlayer(dt);
     FUP.questUi.escortTick(this, dt);
+    this.staffTick();   // (v1.14) the staff bench shows empty while you carry the staff
     this.updatePrompt();
     this.checkEdges();
   }

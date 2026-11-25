@@ -97,8 +97,10 @@ FUP.questUi = {
       const st = FUP.quests.step(s.quest);
       const r = FUP.quests.doSearch(s.quest, s.k);
       FUP.save.write();
+      // (v1.14) a step with `flare` makes the Blacksmith's staff blaze once it's done (the failed repair), then the line
+      if (r.ok && st && st.flare && FUP.quests.step(s.quest) !== st && scene.staffFlare) scene.staffFlare(() => this.result(scene, s.quest, r, after));
       // (v1.13) a step with a cutscene plays it first (the Glass line at the forge)
-      if (r.ok && st && st.cutscene && FUP.cutscene) FUP.cutscene.play(scene, st.cutscene, () => this.result(scene, s.quest, r, after));
+      else if (r.ok && st && st.cutscene && FUP.cutscene) FUP.cutscene.play(scene, st.cutscene, () => this.result(scene, s.quest, r, after));
       else this.result(scene, s.quest, r, after);
     };
     if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go); else go();

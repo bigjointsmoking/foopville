@@ -53,6 +53,9 @@ FUP.ingredients = {
   // v1.13: the Glass line (the Carpenter): stone melted by her fire. Hold it up at the forge to see a moment of the bad day.
   melted_lump: { name: 'Melted Lump', short: 'Lump', emoji: '🪨', color: '#5a7a8a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Stone from the well, melted smooth as glass. Stone doesn\'t melt. This did.' },
   glass_shard: { name: 'Glass Shard', short: 'Shard', emoji: '🔷', color: '#7aa8c8', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A sliver of melted stone. Something moves in it if you hold it to a flame.' },
+  // v1.14: the staff thread (the Blacksmith). You carry the staff to the Carpenter; it goes back on the bench after.
+  broken_staff: { name: 'Broken Battle Staff', short: 'Staff', emoji: '🪵', color: '#3a2418', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'The Blacksmith\'s find from the old ruins. Cracked, warm, humming. Orange in the cracks. You can\'t use it. You checked.' },
+  wood_sample: { name: 'Wood Sample', short: 'Sample', emoji: '🪵', color: '#b88a58', rarity: 'Common', sell: 0, source: 'Quest', throw: 1, blurb: 'Ordinary wood. Dry, plain, boring. That\'s the point.' },
   // v1.12: The Inspector (ash line quest 3)
   sealed_crate: { name: 'Sealed Crate', short: 'Crate', emoji: '📦', color: '#8a6a40', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Sealed. Heavy. Addressed to the Iron House. Not to you.' },
   frostroot: { name: 'Frostroot', short: 'Frostroot', emoji: '🥕', color: '#d8e4ee', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A pale root that only grows under the snow. Cold enough to sting.' },
