@@ -16,7 +16,23 @@
 window.FUP = window.FUP || {};
 
 FUP.save = {
-  KEY: 'foopville_save_v2',
+  // (v1.20, Jesus) Player slots: separate characters on one device (3 slots, picked on the title screen, no lock).
+  // Slot 0 keeps the old save's name, so the save from before slots is slot 1. Each slot also has its own
+  // tutorial-seen flag, one-time hints and spell pieces (playerKey).
+  SLOTS: 3,
+  SLOT_KEY: 'foopville_slot',   // which slot played last (browser storage)
+  slot: 0,
+  keyFor(n) { return n === 0 ? 'foopville_save_v2' : 'foopville_save_v2_p' + (n + 1); },
+  get KEY() { return this.keyFor(this.slot); },
+  // A browser-storage name that belongs to the player in this slot (slot 0 keeps the plain name)
+  playerKey(base) { return this.slot === 0 ? base : base + '_p' + (this.slot + 1); },
+  // Switch to slot n (the title screen does this before Play / New character)
+  use(n) {
+    this.slot = n;
+    try { localStorage.setItem(this.SLOT_KEY, String(n)); } catch (e) { /* private window: this visit only */ }
+    if (FUP.spell) FUP.spell.state = null;   // the next player's spell pieces load fresh
+  },
+  lastSlot() { try { const n = +localStorage.getItem(this.SLOT_KEY); return n >= 0 && n < this.SLOTS ? n : 0; } catch (e) { return 0; } },
   VERSION: 2,
   OLD_KEYS: ['fupville_save_v1'],   // saves from before version 2: deleted, not converted
   // v0.75 (Jesus, 2026-11-17): the boss and its things got new code names. Saves from before
@@ -53,23 +69,23 @@ FUP.save = {
     return raw;
   },
 
-  read() {
+  read(n = this.slot) {
     try {
-      const raw = localStorage.getItem(this.KEY);
+      const raw = localStorage.getItem(this.keyFor(n));
       const data = raw && JSON.parse(this.convert(raw));
       return data && data.v === this.VERSION && data.parts && data.parts.run ? data : null;
     } catch (e) { return null; }
   },
 
   // Short info for the Start screen ("Continue as Pib, 3 runs, 120 coins"), or null.
-  summary() {
-    const d = this.read();
+  summary(n = this.slot) {
+    const d = this.read(n);
     if (!d) return null;
     const run = d.parts.run, hero = run.hero || {}, skills = d.parts.skills || {};
     const lv = id => (skills[id] || { level: 1 }).level;
     // The 4 highest built skills (ties: list order)
     const levels = FUP.skills.list().filter(id => FUP.skills.built(id)).map(id => ({ id, level: lv(id) })).sort((a, b) => b.level - a.level).slice(0, 4);
-    return { name: hero.name || 'You', runs: run.runs || 0, day: (d.parts.clock && d.parts.clock.day) || 1, coins: run.coins || 0,
+    return { name: hero.name || 'You', runs: run.runs || 0, melee: lv('melee'), day: (d.parts.clock && d.parts.clock.day) || 1, coins: run.coins || 0,
       weapon: run.weapon, mode: hero.mode, look: hero.look, levels,
       title: (() => { const t = (d.parts.cosmetics || {}).title, T = FUP.cosmeticData && FUP.cosmeticData.titles[t]; return T ? T.text : ''; })() };
   },
@@ -94,6 +110,7 @@ FUP.save = {
 
   wipe() { try { localStorage.removeItem(this.KEY); } catch (e) { /* nothing to delete */ } },
 };
+FUP.save.slot = FUP.save.lastSlot();   // (v1.20) start on whoever played last
 
 // ---------- The parts (this file loads after every system) ----------
 (() => {

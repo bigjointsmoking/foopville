@@ -1,8 +1,8 @@
 // ============================================================
 // START SCREEN — the title. Foopville at dusk in front of the dark
 // Forest, the Mushroom Guardian looming behind the trees and a dragon
-// in the sky. Continue your saved life, or start a new one
-// (which opens the character creator).
+// in the sky. Pick a player slot (v1.20: 3 slots, one card each): Play a saved life,
+// or start a new one (which opens the character creator).
 // Colours and positions: data/look.js (title).
 // ============================================================
 class StartScene extends Phaser.Scene {
@@ -54,7 +54,7 @@ class StartScene extends Phaser.Scene {
     this.tweens.add({ targets: logo, alpha: 1, scale: logo.type === 'Image' ? FUP.ui.artScale(LG.scale) : LG.scale, duration: LG.dropMs, ease: 'Back.easeOut', delay: 250,
       onComplete: () => { FUP.fx.shake(this, 'kill'); FUP.fx.burst(this, W / 2 - 200, LG.y + 30, 'coins', 11); FUP.fx.burst(this, W / 2 + 200, LG.y + 30, 'coins', 11);
         this.tweens.add({ targets: logo, y: LG.y - 4, duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } });
-    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v1.19', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
+    ui.text(this, W / 2, LG.y + 58, 'HARDCORE OR NORMAL MODE · v1.20', 13, c.dim, { letterSpacing: 3, stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(10);
     this.startQuips(W);
 
     ui.muteButton(this, W - 30, 30);
@@ -192,26 +192,32 @@ class StartScene extends Phaser.Scene {
     this.time.delayedCall(900, () => { show(); this.time.addEvent({ delay: Q.everyMs, loop: true, callback: show }); });
   }
 
-  // ---------- Buttons ----------
+  // ---------- Buttons: one card per player slot (v1.20, Jesus: separate characters on one iPad) ----------
   drawButtons() {
-    const ui = FUP.ui, c = ui.colors, W = this.scale.width, s = this.saved;
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, S = FUP.save;
     if (this.group) this.group.destroy(true);
     const g = this.group = this.add.group();
     const btn = (x, y, w, h, label, fn, opts) => { const b = ui.button(this, x, y, w, h, label, fn, opts); [b.rect, b.txt].forEach(o => o.setDepth(20)); g.addMultiple([b.rect, b.txt]); return b; };
-
-    if (s) {
-      btn(W / 2 - 160, 268, 320, 56, `▶ Continue as ${s.name}${s.title ? ' ' + s.title : ''}`, () => this.continueLife(), { hot: true, size: 21 });
-      const M = FUP.runData.modes[s.mode] || FUP.runData.modes.hardcore;
-      g.add(ui.text(this, W / 2, 334, `${M.emoji} ${M.name} · Day ${s.day} · 🪙 ${s.coins}\n${s.levels.map(l => `${FUP.skillData.skills[l.id].emoji} ${FUP.skillData.skills[l.id].name} ${l.level}`).join(' · ')}`,
-        14, c.ink, { align: 'center', lineSpacing: 4, stroke: c.stroke, strokeThickness: 4 }).setOrigin(0.5, 0).setDepth(20));
-      btn(W / 2 - 90, 384, 180, 36, 'New life', () => this.confirmNew(), { size: 16 });
-    } else {
-      btn(W / 2 - 140, 290, 280, 60, '✨ New life', () => this.scene.start('Create'), { hot: true, size: 24 });
+    const CW = 600, CH = 54, X = W / 2 - CW / 2, Y0 = 246;
+    for (let n = 0; n < S.SLOTS; n++) {
+      const s = S.summary(n), y = Y0 + n * (CH + 10), last = n === S.slot;
+      g.add(ui.panel(this, X, y, CW, CH, last ? 'tooltip' : 'inset').setDepth(19).setAlpha(0.92));
+      if (s) {
+        const M = FUP.runData.modes[s.mode] || FUP.runData.modes.hardcore;
+        g.add(ui.text(this, X + 16, y + 9, `${s.name}${s.title ? ' ' + s.title : ''}`, 17, c.accent, { fontStyle: '700', stroke: c.stroke, strokeThickness: 3 }).setDepth(20));
+        g.add(ui.text(this, X + 16, y + 31, `${M.emoji} ${M.name} · Day ${s.day} · Melee ${s.melee} · 🪙 ${s.coins}`, 13, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setDepth(20));
+        btn(X + CW - 236, y + 10, 120, 34, '▶ Play', () => this.continueLife(n), { hot: last, size: 17 });
+        btn(X + CW - 108, y + 10, 96, 34, 'New life', () => this.confirmNew(n), { size: 13 });
+      } else {
+        g.add(ui.text(this, X + 16, y + CH / 2, `Player ${n + 1}: empty`, 15, c.dim, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0, 0.5).setDepth(20));
+        btn(X + CW - 216, y + 10, 204, 34, '✨ New character', () => { S.use(n); this.scene.start('Create'); }, { hot: !S.summary(S.slot) && last, size: 16 });
+      }
     }
   }
 
-  continueLife() {
+  continueLife(n = FUP.save.slot) {
     FUP.audio.sfx('select');
+    FUP.save.use(n);   // (v1.20) this player's slot
     const res = FUP.save.load();
     if (!res) { this.saved = null; this.drawButtons(); return; }
     // Saved mid-trip (v0.73): back exactly where you stood, in the Forest or the basement
@@ -222,15 +228,17 @@ class StartScene extends Phaser.Scene {
   }
 
   // Starting over deletes the saved hero, so ask first.
-  confirmNew() {
+  confirmNew(n = FUP.save.slot) {
+    const who = FUP.save.summary(n);
+    if (!who) return;
     const ui = FUP.ui, c = ui.colors, W = this.scale.width;
     const g = this.add.group();
     const add = o => { g.add(o); return o.setDepth(100); };
     add(FUP.ui.shade(this, 0.7));
     add(FUP.ui.panel(this, W / 2 - 230, 200, 460, 200, 'panel'));
-    add(ui.text(this, W / 2, 230, `Abandon ${this.saved.name}?`, 24, c.bad, { fontStyle: '700' }).setOrigin(0.5, 0));
+    add(ui.text(this, W / 2, 230, `Abandon ${who.name}?`, 24, c.bad, { fontStyle: '700' }).setOrigin(0.5, 0));
     add(ui.text(this, W / 2, 272, 'Their levels, coins, gear and cookbook are deleted.\nThere is no undo. That\'s the whole point.', 15, c.ink, { align: 'center', lineSpacing: 4 }).setOrigin(0.5, 0));
-    const yes = ui.button(this, W / 2 - 200, 340, 190, 40, 'Yes, start over', () => { FUP.save.wipe(); this.scene.start('Create'); }, { size: 16 });
+    const yes = ui.button(this, W / 2 - 200, 340, 190, 40, 'Yes, start over', () => { FUP.save.use(n); FUP.save.wipe(); this.scene.start('Create'); }, { size: 16 });
     const no = ui.button(this, W / 2 + 10, 340, 190, 40, 'Keep playing', () => g.destroy(true), { hot: true, size: 16 });
     for (const b of [yes, no]) { b.rect.setDepth(101); b.txt.setDepth(102); g.addMultiple([b.rect, b.txt]); }
   }

@@ -35,8 +35,8 @@ FUP.tutorial = {
   reached(test) { const i = this.indexOf(test); return i >= 0 && this.state.step >= i; },
 
   // ---------- Browser memory: "finished it once" (survives a Hardcore wipe; not in the save) ----------
-  seenBefore() { try { return localStorage.getItem(this.data().seenKey) === '1'; } catch (e) { return false; } },
-  markSeen() { try { localStorage.setItem(this.data().seenKey, '1'); } catch (e) { /* private window: fine */ } },
+  seenBefore() { try { return localStorage.getItem(FUP.save.playerKey(this.data().seenKey)) === '1'; } catch (e) { return false; } },
+  markSeen() { try { localStorage.setItem(FUP.save.playerKey(this.data().seenKey), '1'); } catch (e) { /* private window: fine */ } },
   wanted() { return !this.seenBefore(); },
 
   // ---------- Start: right after FUP.run.newLife ----------

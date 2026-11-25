@@ -815,11 +815,11 @@ class WorldScene extends Phaser.Scene {
   // One-time hints (once per browser, own storage like the tutorial flag). Returns true if it was already seen.
   hintOnce(kind) {
     let seen = {};
-    try { seen = JSON.parse(localStorage.getItem('fupville_hints') || '{}'); } catch (err) { /* private window: show it anyway */ }
+    try { seen = JSON.parse(localStorage.getItem(FUP.save.playerKey('fupville_hints')) || '{}'); } catch (err) { /* private window: show it anyway */ }
     if (seen[kind] || (this.hintsShown && this.hintsShown[kind])) return true;
     (this.hintsShown = this.hintsShown || {})[kind] = true;
     seen[kind] = 1;
-    try { localStorage.setItem('fupville_hints', JSON.stringify(seen)); } catch (err) { /* fine */ }
+    try { localStorage.setItem(FUP.save.playerKey('fupville_hints'), JSON.stringify(seen)); } catch (err) { /* fine */ }
     this.say('hint' + kind[0].toUpperCase() + kind.slice(1));
     return false;
   }

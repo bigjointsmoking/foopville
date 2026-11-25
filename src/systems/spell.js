@@ -9,10 +9,10 @@ FUP.spell = {
   state: null,   // { questId: true }
   load() {
     if (this.state) return this.state;
-    try { this.state = JSON.parse(localStorage.getItem(FUP.spellData.storageKey) || '{}') || {}; } catch (e) { this.state = {}; }
+    try { this.state = JSON.parse(localStorage.getItem(FUP.save.playerKey(FUP.spellData.storageKey)) || '{}') || {}; } catch (e) { this.state = {}; }
     return this.state;
   },
-  write() { try { localStorage.setItem(FUP.spellData.storageKey, JSON.stringify(this.state)); } catch (e) { /* private window: kept for this visit only */ } },
+  write() { try { localStorage.setItem(FUP.save.playerKey(FUP.spellData.storageKey), JSON.stringify(this.state)); } catch (e) { /* private window: kept for this visit only */ } },
   has(id) { return !!this.load()[id]; },
   count() { return Object.keys(this.load()).length; },
   size() { return FUP.spellData.size; },
