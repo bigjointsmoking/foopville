@@ -691,13 +691,14 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
   // ---------- Quest Board (v0.78: tabs per kind, data/quests.js kinds) ----------
   renderQuests(X, RW) {
     const ui = FUP.ui, c = ui.colors, Q = FUP.quests, D = FUP.questData;
-    if (!this.panelTab || !D.kinds[this.panelTab]) this.panelTab = 'quest';
+    if (!this.panelTab || !D.kinds[this.panelTab] || D.kinds[this.panelTab].inTab) this.panelTab = 'quest';
     const kind = this.panelTab;
     this.pText(X, 36, 'QUEST BOARD', 20, c.accent, { fontStyle: '700' });
     if (Q.dayCheck() || Q.state.fresh) { this.talk('shuffled'); Q.state.fresh = false; }   // V2: a new day shuffled the offers
     // Tabs: Side Stories / Challenges / Story
-    Object.entries(D.kinds).forEach(([k, K], i) => {
-      const n = Q.activeIds(k).length;
+    // (v1.18) a kind with `inTab` (story) has no tab: it's listed in that tab instead
+    Object.entries(D.kinds).filter(([k, K]) => !K.inTab).forEach(([k, K], i) => {
+      const n = Q.activeIds(k).length + (k === 'quest' ? Q.activeIds('story').length : 0);
       this.pBtn(X + i * 128, 62, 122, 28, `${K.name}${n ? ` (${n})` : ''}`, () => { this.panelTab = k; this.panelPage = 0; }, { hot: k === kind, size: 12 });
     });
     this.pText(X, 98, D.kinds[kind].blurb + (kind === 'story' || kind === 'quest' ? '' : `  Taken: ${Q.activeIds(kind).length}/${D.maxActive}.`), 12, c.dim, { wordWrap: { width: kind === 'quest' ? 350 : RW - 10 } });
@@ -737,19 +738,21 @@ Catch zone +${nxt.rodZone}, bites ${Math.round(nxt.biteCut * 100)}% sooner.` + (
   },
 
   // The Quests tab (v0.79, RuneScape-style): every villager quest with its Requirements; yours first, with the journal
-  // (v0.82) the Story tab too: the same list, but story quests only start here (no ❗ over the villager)
+  // (v1.18) story quests are listed here too (no Story tab any more), same look, and start from the villager's ❗ as well
   renderQuestTab(X, RW, kind = 'quest') {
     const c = FUP.ui.colors, Q = FUP.quests, D = FUP.questData, story = kind === 'story';
-    const all = Object.keys(D.quests).filter(id => Q.kind(id) === kind);
+    const kinds = kind === 'quest' ? ['quest', 'story'] : [kind];   // (v1.18) story quests sit in the Quests tab, same look
+    const all = Object.keys(D.quests).filter(id => kinds.includes(Q.kind(id)));
     const doneN = all.filter(id => Q.done(id)).length;
     const lenText = id => (D.lengths || {})[Q.def(id).length] || '';
-    const rows = Q.activeIds(kind).map(id => {
+    const rows = kinds.flatMap(k => Q.activeIds(k)).map(id => {
       const q = Q.def(id), j = Q.journal(id);
       return { name: `▶ ${q.name}  ·  ${Q.label(id)}  ·  from ${Q.npcName(q.from)}`, color: c.accent, sub: `${j.slice(-2).join(' ')}\nNext: ${Q.stepText(id)}`, subColor: c.info,
         btn2: 'Drop', fn2: () => Q.drop(id) };
-    }).concat(Q.available(kind).map(id => {
-      const q = Q.def(id), miss = FUP.req.missing(q.req);
-      if (story && miss.length) return null;   // story posts only go up once they fit (first trip, the bridge...)
+    // (v1.18) quests you can start now come before ones you can't do yet (story or not, they read the same)
+    }).concat(kinds.flatMap(k => Q.available(k)).sort((a, b) => FUP.req.missing(Q.def(a).req).length - FUP.req.missing(Q.def(b).req).length).map(id => {
+      const q = Q.def(id), miss = FUP.req.missing(q.req), isStory = Q.kind(id) === 'story';
+      if (isStory && miss.length) return null;   // story posts only go up once they fit (first trip, the bridge...)
       return { name: `${q.name}  ·  ${Q.label(id)}  ·  ${lenText(id)}  ·  from ${Q.npcName(q.from)}`, color: miss.length ? c.dim : c.ink,
         sub: `${q.text}\n${miss.length ? 'Needs: ' + miss.join(', ') : story ? `Posted by ${Q.npcName(q.from)}. Take it here, then go and see them.` : 'Requirements: none you lack. Or talk to ' + Q.npcName(q.from) + ' (❗).'}`, subColor: miss.length ? c.bad : c.dim,
         btn: story ? 'Take' : 'Start', disabled: !!miss.length, fn: () => { if (Q.take(id)) { FUP.audio.sfx('select'); this.sayLine(`Started: ${q.name}. ${Q.stepText(id)}.`); } } };

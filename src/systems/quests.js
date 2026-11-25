@@ -25,7 +25,7 @@ FUP.quests = {
   kind(id) { const q = this.def(id); return (q && q.kind) || 'challenge'; },
   // Side stories (errands) and Quests both work in steps
   isSide(id) { const k = this.kind(id); return k === 'side' || k === 'quest' || k === 'story'; },
-  // Quests and the Story (v0.82) are done once, RuneScape-style. Story quests start only on the board's Story tab.
+  // Quests and the Story (v0.82) are done once, RuneScape-style. (v1.18) Story quests sit in the board's Quests tab and start there or from the villager's ❗, like any quest.
   isQuest(id) { const k = this.kind(id); return k === 'quest' || k === 'story'; },
   isStory(id) { return this.kind(id) === 'story'; },
   done(id) { return FUP.facts.has('quest:' + id); },
@@ -76,7 +76,8 @@ FUP.quests = {
     this.dayCheck(); this.refill(); return this.state.board.filter(id => !kind || this.kind(id) === kind);
   },
   // Quests you could start right now with this villager (the ❗ over their head)
-  startsAt(npc) { return this.available('quest').filter(id => this.def(id).from === npc && this.fits(id)); },
+  // (v1.18, Jesus) story quests too: every quest starts from the board or from the villager's ❗
+  startsAt(npc) { return this.available('quest').concat(this.available('story')).filter(id => this.def(id).from === npc && this.fits(id)); },
   activeIds(kind = null) { return Object.keys(this.state.active).filter(id => this.def(id) && (!kind || this.kind(id) === kind)); },
   // maxActive is per kind: side stories don't crowd out challenges
   canTake(kind = 'challenge') { return kind === 'quest' || kind === 'story' || this.activeIds(kind).length < FUP.questData.maxActive; },

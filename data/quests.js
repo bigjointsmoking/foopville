@@ -41,7 +41,7 @@ FUP.questData = {
     quest:     { name: 'Quests',       tag: 'QUEST',     blurb: 'Villagers\' own stories. Check the Requirements. Or talk to anyone with a ❗.' },
     side:      { name: 'Errands',      tag: 'ERRAND',    blurb: 'Quick odd jobs for coins. Take one, then go see who asked.' },
     challenge: { name: 'Challenges',   tag: 'CHALLENGE', blurb: 'Prove yourself. Do it, then hand it in here.' },
-    story:     { name: 'Story',        tag: 'STORY',     blurb: 'The village\'s own story, posted in the villagers\' names. Done once.' },
+    story:     { name: 'Story',        tag: 'STORY',     blurb: 'The village\'s own story, posted in the villagers\' names. Done once.', inTab: 'quest' },   // (v1.18, Jesus) no tab of its own: listed in the Quests tab, same look
   },
   restAfter: 3,   // a finished quest comes back after you hand in this many others
   // Difficulty labels on the board

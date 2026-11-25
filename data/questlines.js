@@ -363,7 +363,7 @@ Object.assign(FUP.questData.quests, {
     ] },
 
   // ================= v0.82: THE STORY, Phase C (archive/story-drafts/CLAUDE_CODE_HANDOFF.md) =================
-  // kind 'story': posted on the board's Story tab in a villager's name; take it there, then go and see them.
+  // kind 'story': posted in a villager's name; since v1.18 listed in the board's Quests tab (same look) and startable from their ❗ too.
   // Gated only by how far you've got (first trip, the East Bridge), never by other quests.
   // Spell pieces (fragment) are kept even if you die (data/spell.js). Clues are facts 'clue:<id>' (villagers react).
   // All lines, numbers and spots are PLACEHOLDERS for Jesus.
