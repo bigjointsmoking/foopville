@@ -18,6 +18,7 @@ class WorldScene extends Phaser.Scene {
 
   create() {
     const F = FUP.forest, d = FUP.forestData, T = d.tileSize;
+    this._foeTags = {};   // (v1.15) quest enemies' ❗ + name tags: drawn fresh each visit (Phaser reuses this screen)
     this.f = FUP.world.here();                  // your trip, or a visit to a safe region (the Docks)
     this.safe = !!this.f.safe;
     this.tiles = F;                             // the map you walk on (the Raid uses FUP.raid)
@@ -90,6 +91,7 @@ class WorldScene extends Phaser.Scene {
       enemy.alive = false;
       if (this.enemySprites[b.index]) this.enemySprites[b.index].destroy();
       if (enemy.questFoe) {   // a quest enemy: the quest moves on (v0.79)
+        this.dropFoeTag(enemy.questFoe);   // (v1.15) its ❗ and name go too
         const r = FUP.quests.foeBeaten(enemy.questFoe);
         this.time.delayedCall(400, () => FUP.questUi.result(this, enemy.questFoe, r, () => this.refreshQuestMarks(true)));
         return;
@@ -292,12 +294,32 @@ class WorldScene extends Phaser.Scene {
   placeQuestFoes() {
     const A = this.A;
     if (!A || !this.enemySprites) return;
-    for (const f of FUP.quests.foesIn(this.f.area)) {
-      if (A.enemies.some(e => e.questFoe === f.id && e.alive)) continue;
-      const c0 = FUP.forest.center(f.tx, f.ty);
-      const e = { type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id };
-      A.enemies.push(e); this.enemySprites.push(this.enemySprite(e));
+    const foes = FUP.quests.foesIn(this.f.area);
+    for (const f of foes) {
+      if (!A.enemies.some(e => e.questFoe === f.id && e.alive)) {
+        const c0 = FUP.forest.center(f.tx, f.ty);
+        const e = { type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id };
+        A.enemies.push(e); this.enemySprites.push(this.enemySprite(e));
+      }
+      this.questFoeTag(f);
     }
+    // (v1.15) a tag whose quest step has moved on goes away
+    for (const id of Object.keys(this._foeTags || {})) if (!foes.some(f => f.id === id)) this.dropFoeTag(id);
+  }
+  // (v1.15) Every quest enemy out here wears a bobbing ❗ and its name, shown through the fog,
+  // so you know which squirrel is the thief and where it waits (Jesus, after a playtest of The Jerky Bandit)
+  questFoeTag(f) {
+    this._foeTags = this._foeTags || {};
+    if (this._foeTags[f.id]) return;
+    const c0 = FUP.forest.center(f.tx, f.ty), ui = FUP.ui, c = ui.colors;
+    const mark = this.add.text(c0.x, c0.y - 44, '❗', { fontSize: '22px' }).setOrigin(0.5).setDepth(7000);
+    this.tweens.add({ targets: mark, y: mark.y - 8, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    const tag = ui.text(this, c0.x, c0.y - 22, f.name.charAt(0).toUpperCase() + f.name.slice(1), 11, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(7000);
+    this._foeTags[f.id] = [mark, tag];
+  }
+  dropFoeTag(id) {
+    ((this._foeTags || {})[id] || []).forEach(o => o.destroy());
+    if (this._foeTags) delete this._foeTags[id];
   }
 
   enemySprite(e) {
