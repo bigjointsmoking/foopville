@@ -245,9 +245,11 @@ FUP.quests = {
   lostEscort() { for (const id of this.activeIds()) { const st = this.step(id); if (st && st.escort) this.state.active[id].with = false; } },
   // (v1.12) A quest's spare item (Pip's second jar): offered while you don't have one, before step untilStep
   // (v1.14) and from step fromStep on (the staff: only once the Blacksmith has handed it to you)
+  // (v1.21) spare can be a list (the staff's Q3: the clay print and the letter); returns the one to hand over, or null
   spareFor(id, npc) {
     const q = this.def(id), s = this.state.active[id];
-    return !!(q && q.spare && s && q.spare.npc === npc && (s.step || 0) < q.spare.untilStep && (s.step || 0) >= (q.spare.fromStep || 0) && this.have(q.spare.item) === 0);
+    if (!q || !q.spare || !s) return null;
+    return [].concat(q.spare).find(sp => sp.npc === npc && (s.step || 0) < sp.untilStep && (s.step || 0) >= (sp.fromStep || 0) && this.have(sp.item) === 0) || null;
   },
   // A step waiting at this villager, but they're somewhere else today (a guest step)
   elsewhere(npc, region) { return this.activeIds().some(id => { const st = this.step(id); return st && st.guest && (st.talk || st.guest.npc) === npc && st.guest.region !== region; }); },
@@ -382,7 +384,7 @@ FUP.quests = {
   doStep(id, npc = null) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return { line: '', ok: false };
-    if (this.spareFor(id, npc)) { const q = this.def(id); this.news.push(...this.grant({ items: { [q.spare.item]: 1 } }, [], id)); return { ok: true, line: q.spare.say || '' }; }
+    { const sp = this.spareFor(id, npc); if (sp) { this.news.push(...this.grant({ items: { [sp.item]: 1 } }, [], id)); return { ok: true, line: sp.say || '' }; } }
     if (st.escort && !s.with) {   // (v1.12) they went home: talk to them there to set off again
       if (npc !== st.escort.npc) return { ok: false, line: '' };
       s.with = true;

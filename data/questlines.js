@@ -544,6 +544,54 @@ Object.assign(FUP.questData.quests, {
         say: '"Not normal wood. Not normal damage. And the two go together. It wasn\'t just broken. Or burned. Something happened to it. Don\'t ask me what. I\'m a blacksmith. I hit things. This is the first thing that\'s ever hit back."' },
     ] },
 
+  // v1.21: the staff thread, quest 3 (plans/ST3.md, BEGINNER_QUEST_THREADS.md section 3). A maker's mark on the staff's bands;
+  // the Iron House Steward opens the old registry for the Blacksmith's letter; you pick the matching order from the clues.
+  // He learns: an important order, made to survive fire, one piece (the head cap) missing. No magic, no dragon, no names. Lines are PLACEHOLDERS.
+  //   spare: lost the letter or the print (the grave)? The Blacksmith makes another, until you've used it
+  staff3: { kind: 'story', from: 'smith', difficulty: 'medium', length: 'medium', name: 'The Mark',
+    req: { facts: { 'quest:staff2': 1 } },   // can show before you can reach the north (Three Scales opens after the Guardian)
+    text: 'There\'s a maker\'s mark under the soot on the staff\'s bands. The Blacksmith wants to know whose. He\'s writing a letter. Several, so far.',
+    reward: { coins: 250, xp: { melee: 250 } },
+    afterGreet: ['Somebody paid a lot for that staff. Somebody wanted it to last.', 'Two pieces. There should be three. I keep counting.'],
+    spare: [
+      { item: 'smith_letter', npc: 'smith', fromStep: 2, untilStep: 3, say: '"You lost a LETTER? It\'s paper. It weighs nothing." He writes it again, angrily. Draft four. It\'s the best one yet.' },
+      { item: 'clay_print', npc: 'smith', fromStep: 2, untilStep: 6, say: '"Lost the clay too. Of course you did." He presses the mark again and hands it over without looking at you.' },
+    ],
+    steps: [
+      { talk: 'smith', log: 'Under the soot, the staff\'s metal bands carry a maker\'s mark. The Blacksmith wants to know whose.',
+        say: '"Scraped the soot off the bands. Look. A mark. Stamped in. Smiths sign their work, and I know every mark from here to the coast. Except this one. Somebody knows whose it is. Help me get it on paper. And on clay. Mostly clay. My handwriting is a known problem."' },
+      { dig: { region: 'village', name: 'the forge', all: true, spots: [
+          [10, 5, { label: '🧽 Scrub the band', icon: '🧽', say: 'You scrub the band until the mark stands out: a little hammer over three lines. The staff hums the whole time, like it\'s being tickled and doesn\'t approve.' }],
+          [7, 2, { label: '🟫 Press the clay', icon: '🟫', say: 'You press a lump of clay over the mark. It comes away clean. So does a thumbprint. Not yours.' }],
+          [2, 3, { label: '🗑 Check the bin', icon: '🗑', say: 'Draft one, in the bin: "DEER IRON HOWSE. I am a smith. Wot is this mark." Draft two, under it: "Most esteemed and honourable masters..." He\'s crossed it out and written "NO" next to it.' }],
+        ] }, give: { items: { clay_print: 1, smith_letter: 1 } },
+        goal: 'At the bench: scrub the band, press the clay, check the bin', log: 'You pressed the mark into clay. The Blacksmith wrote his letter. Three times.',
+        say: 'Draft three: "To the Iron House. This is your mark. I want to know who you made it for. Smith to smith. Don\'t make me come up there." He folds it. "That one."' },
+      { bring: { smith_letter: 1 }, to: 'ts_iron', need: { clay_print: 1 }, notYet: '"A letter, you say. From a blacksmith. And a clay print of the mark. I see neither."',
+        goal: 'Take the letter and the clay print to the Iron House Steward in Three Scales', log: 'The Steward wouldn\'t open the old registry for a stranger. Then he read the letter.',
+        say: '"The old registry is for members of the House. You are not a member. You are barely a customer." He reads the letter. He reads it again. "...Smith to smith. Well. That\'s different. Registry\'s by the door. Don\'t lick your fingers."' },
+      { search: { region: 'north', tx: 8, ty: 18, name: 'the old registry', label: '📖 Read the registry', icon: '📖' }, need: { clay_print: 1 },
+        notYet: 'You need the clay print to match against the entries.',
+        goal: 'Find the order that matches the staff. Clues: a staff, not a weapon. Very old. A metal that survives fire.',
+        log: 'The clues from the staff: it\'s a staff, not a weapon. It\'s very old. Its metal has been through fire and come out fine.',
+        say: 'Hundreds of entries in a hand much better than the Blacksmith\'s. Four have the same little hammer over three lines. Which one is the staff?',
+        choices: [
+          { label: 'Sword fittings, hard steel, for a captain of the guard', retry: true, say: 'A sword. The staff isn\'t a sword, whatever it hits like. And the ink\'s too fresh. Think again.' },
+          { label: 'Staff fittings, fire-proof metal, very old, a name blotted out', say: 'A staff. Very old. A metal made to go through fire. The rest of the line is a black smear of ink.' },
+          { label: 'Staff fittings, plain bronze, for a shepherd', retry: true, say: 'Bronze would have melted in whatever this staff went through. The shepherd is fine, presumably. Think again.' },
+          { label: 'Oven-door hinges, fire-proof metal, very old', retry: true, say: 'Fire-proof and old, yes. But it\'s a door. You\'re holding a print off a staff. Think again.' },
+        ] },
+      { talk: 'ts_iron', log: 'The order was for three fittings. The staff only has two. The head cap is missing.',
+        goal: 'Ask the Steward to read the entry',
+        say: 'The Steward reads it out. "Three fittings. Band, ferrule, head cap. Our fire-proof metal, the expensive one. For a staff, for someone in..." He squints. "The buyer\'s name is blotted out. So is the village. Somebody did that on purpose. Long time ago." He looks at your print, then at you. "Three made. How many has your smith got?"' },
+      { search: { region: 'village', tx: 10, ty: 5, name: 'the bench', label: '🟫 Hold up the print', icon: '🟫' }, need: { clay_print: 1 }, take: { clay_print: 1 },
+        notYet: 'You need the clay print.', goal: 'Back at the forge: hold the clay print against the staff',
+        log: 'The print matches the mark. The band and the ferrule are there. The head cap isn\'t.',
+        say: 'The print fits the mark exactly. Band: there. Ferrule, the cap on the bottom end: there. The top of the staff ends in bare, cracked wood. Something used to sit there.' },
+      { talk: 'smith', log: 'The Blacksmith: someone important ordered it, to survive fire. One piece is missing.',
+        say: '"Fire-proof metal. The expensive one. Nobody pays for that unless they expect a fire." He looks at the bare top of the staff for a long time. "Someone important. Someone who knew. And the top\'s gone." He puts his hammer down. He doesn\'t pick it back up.' },
+    ] },
+
   // v1.19: Glass line quest 3 (plans/GL3.md, Jesus's doc + answers). The Western Ruins open by a repair (the West Road);
   // this posts once that's done and Q2 is done. 4 shards pried out of melted walls; the vision: the repelling spell.
   // The old village's name is never said. Lines are PLACEHOLDERS.

@@ -142,8 +142,10 @@ FUP.villagePanels = {
 
     const X = 270, RW = W - 40 - X;
     if (out) { this.renderAway(X, RW); return; }
-    ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, orders: this.renderOrders, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary,
-       receiver: this.renderReceiver, clerk: this.renderQuests, pennywise: this.renderTownShop })[this.panelId].call(this, X, RW);   // (Phase D: Ledgerwick; the Clerk keeps the same quest board)
+    // (v1.21) Three Scales' townsfolk have no shop yet: nothing on the right (this used to crash and hide their quest lines)
+    const right = ({ smith: this.renderSmith, shop: this.renderShop, chef: this.renderChef, quest: this.renderQuests, carpenter: this.renderCarpenter, farmhand: this.renderFarmhand, seeds: this.renderSeeds, compost: this.renderCompost, orders: this.renderOrders, fishmonger: this.renderFishmonger, oldtimer: this.renderOldtimer, banker: this.renderBanker, notary: this.renderNotary,
+       receiver: this.renderReceiver, clerk: this.renderQuests, pennywise: this.renderTownShop })[this.panelId];
+    if (right) right.call(this, X, RW);   // (Phase D: Ledgerwick; the Clerk keeps the same quest board)
   },
 
   // ---------- A villager out of the village for a quest: no shop out here ----------
