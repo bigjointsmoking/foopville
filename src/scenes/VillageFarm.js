@@ -221,7 +221,9 @@ Object.assign(VillageScene.prototype, {
         if (!r || !r.got) { FUP.audio.sfx('error'); this.say('gardenBagFull'); return; }
         const ing = FUP.ingredients[r.id];
         this.say(r.left ? 'gardenBagFull' : 'gardenHarvest', { item: `${r.got} ${ing.short || ing.name}` });
-        if (r.seed) this.sayLine(this.narratorText.text + ` You also got a ${ing.short || ing.name} seed back.`);
+        const seedIng = FUP.ingredients[r.crop || r.id];   // (v1.23) Hillwood: poles in the bag, a Hillwood seed back
+        if (r.seed) this.sayLine(this.narratorText.text + ` You also got a ${seedIng.short || seedIng.name} seed back.`);
+        if (r.extra) this.sayLine(this.narratorText.text + ` And some ${FUP.ingredients[r.extra].name}. Sticky.`);
         if (r.golden) this.sayLine(this.narratorText.text + ' And a golden Heartroot. Golden Harvest says hi.');
         if (r.scared) this.sayLine(this.narratorText.text + ' The scarecrow got you one extra. It takes no credit. It has no mouth.');
         if (r.giant) this.sayLine(this.narratorText.text + ' From one giant. It took some lifting.');

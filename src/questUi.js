@@ -103,7 +103,8 @@ FUP.questUi = {
       else if (r.ok && st && st.cutscene && FUP.cutscene) FUP.cutscene.play(scene, st.cutscene, () => this.result(scene, s.quest, r, after));
       else this.result(scene, s.quest, r, after);
     };
-    if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go);
+    if (FUP.quests.lowSkills(FUP.quests.step(s.quest)).length) go();   // (v1.23) skill too low: say so now, no standing about first
+    else if (s.work && scene.farmWork) scene.farmWork(s.work, 'hoe', s, go);
     else if (s.pry) this.pryJob(scene, s, go);   // (v1.19) prying a shard out of a melted wall
     else go();
   },

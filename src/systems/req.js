@@ -39,10 +39,15 @@ FUP.req = {
     return coins && opts && opts.npc ? FUP.village.buyPrice(coins, opts.npc) : coins;
   },
 
+  // (v1.23) Things that can pay for `id` instead (ingredients with countsAs: id), e.g. Straight Poles for Planks
+  standIns(id) { return Object.keys(FUP.ingredients).filter(k => FUP.ingredients[k].countsAs === id); },
+  // How many of `id` you can pay with: your own plus its stand-ins
+  payCount(id) { return this.itemCount(id) + this.standIns(id).reduce((t, k) => t + this.itemCount(k), 0); },
+
   canPay(cost, opts) {
     if (!cost) return true;
     if (FUP.run.coins < this.coinPrice(cost, opts)) return false;
-    for (const [id, n] of Object.entries(cost.items || {})) if (this.itemCount(id) < n) return false;
+    for (const [id, n] of Object.entries(cost.items || {})) if (this.payCount(id) < n) return false;
     // Each gear key needs its own piece (two of the same key = two pieces)
     const spare = this.gearSpots().flat().map(g => g.key);
     for (const key of cost.gear || []) {
@@ -61,6 +66,9 @@ FUP.req = {
     run.coins -= this.coinPrice(cost, opts);
     for (const [id, want] of Object.entries(cost.items || {})) {
       let n = want;
+      // (v1.23) the real thing first; whatever's short comes out of its stand-ins (Straight Poles for Planks)
+      const short = Math.max(0, n - this.itemCount(id));
+      if (short) { let left = short; for (const k of this.standIns(id)) { const m = Math.min(left, this.itemCount(k)); if (m) { this.pay({ items: { [k]: m } }); left -= m; } } n -= short; if (!n) continue; }
       if (FUP.mats && FUP.mats.is(id)) { const m = Math.min(n, FUP.mats.count(id)); if (m) FUP.mats.take(id, m); n -= m; if (!n) continue; }
       const fromBag = Math.min(n, run.bag[id] || 0);
       if (fromBag) { run.bag[id] -= fromBag; if (!run.bag[id]) delete run.bag[id]; }

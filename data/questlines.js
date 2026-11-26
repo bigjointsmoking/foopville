@@ -592,6 +592,55 @@ Object.assign(FUP.questData.quests, {
         say: '"Fire-proof metal. The expensive one. Nobody pays for that unless they expect a fire." He looks at the bare top of the staff for a long time. "Someone important. Someone who knew. And the top\'s gone." He puts his hammer down. He doesn\'t pick it back up.' },
     ] },
 
+  // v1.23: the staff thread, quest 4 (plans/ST4.md, BEGINNER_QUEST_THREADS.md section 3). The hum leads uphill: the Western Ruins,
+  // then the Old Hill Road (data/region_hill.js; its 3 figures are in the way, fights optional) to the high clearing.
+  // Examine 3 old trunks (cut with care, the trees left alive), tend 3 failing trees (Gardening 10, checked at the trees:
+  // trim the dead wood, then dress the scars), a sliver that matches the staff, and the staff warms facing back down the road.
+  // He learns: made with care, from living trees, by people who tended what they took. No dragon, no names, no magic. Lines are PLACEHOLDERS.
+  //   spare: lost the staff on the road (the grave)? The Blacksmith has it back, same as Q2
+  staff4: { kind: 'story', from: 'smith', difficulty: 'hard', length: 'long', name: 'The Tended Wood',
+    req: { facts: { 'quest:staff3': 1, 'repair:west_road': 1 } },   // the road starts at the back of the Western Ruins
+    text: 'The staff hums louder on one side of the forge. The Blacksmith has walked it round the room more times than he\'ll admit. The loud side faces the hills.',
+    reward: { coins: 500, xp: { melee: 300, gardening: 300 }, seeds: { hillwood: 1 } },
+    afterGreet: ['Somebody looked after those trees. Somebody looked after this staff. I\'m starting to feel judged.', 'One limb. Leave the tree. I\'ve been saying it to the coal scuttle. It doesn\'t listen either.'],
+    spare: { item: 'broken_staff', npc: 'smith', fromStep: 1, untilStep: 7, say: '"A shepherd found it on the road and walked it all the way down. Said it hummed at his sheep. Don\'t drop it again. The sheep are upset."' },
+    steps: [
+      { talk: 'smith', log: 'The staff hums loudest facing the hills. The Blacksmith handed it over: take it uphill.',
+        say: '"I walked it round the forge. Twice. Fine, nine times. The hum\'s quiet by the door, quiet by the bellows, loud facing the hills. Every time. Past the old ruins there\'s a road going up. Nobody uses it. Take it uphill." He hands you the staff. "Bring it back. Bring yourself back too, if it\'s no trouble."',
+        give: { items: { broken_staff: 1 } } },
+      { dig: { region: 'hill', name: 'the old trunks', all: true, spots: [
+          [8, 3, { label: '🔍 Look at the trunk', icon: '🔍', say: 'An old trunk, wide as a cart. One limb taken off with a clean saw cut, long ago. The cut healed over. The tree went on living. Somebody did that carefully.' }],
+          [14, 2, { label: '🔍 Look at the trunk', icon: '🔍', say: 'Another clean cut, healed over, one limb gone. Only one. Whoever took it left the rest. The staff hums against your back like it\'s nodding.' }],
+          [21, 4, { label: '🔍 Look at the trunk', icon: '🔍', say: 'One limb, one cut, healed. Round the roots, old scorch marks, layer on layer. Fires lit here again and again, over a long, long time. Not one of them touched the tree.' }],
+        ] },
+        goal: 'Follow the hum: through the Western Ruins, up the Old Hill Road to the clearing. Look at the 3 old trunks', log: 'Up at the clearing: old trunks, each with one limb cut cleanly and healed. Scorch marks from many fires, none on the trees.',
+        say: 'Three trees, three clean cuts, three trees still standing. Somebody came up here a lot, lit a lot of fires, and never once burned what they were cutting. The trees nearby aren\'t so lucky. They\'re dying.' },
+      { dig: { region: 'hill', name: 'the failing trees', all: true, pry: 3, spots: [
+          [10, 4, { label: '✂️ Trim the dead wood', icon: '✂️', say: 'You trim the dead wood off. It comes away in grey handfuls. The tree looks smaller and somehow pleased about it.' }],
+          [17, 3, { label: '✂️ Trim the dead wood', icon: '✂️', say: 'Dead branches off. You are, for once, the right person for the job. Don\'t get used to it.' }],
+          [23, 3, { label: '✂️ Trim the dead wood', icon: '✂️', say: 'Snip, snip, snap. The last dead limb falls on your foot. The tree had to get one in.' }],
+        ] }, skills: { gardening: 10 }, lowSkill: 'You look at the dying tree. It looks at you. Neither of you is confident. (Tending these needs Gardening 10.)',
+        goal: 'Tend the 3 failing trees: trim the dead wood (Gardening 10)', log: 'You trimmed the dead wood off the three failing trees.',
+        say: 'The dead wood\'s off all three. What\'s left is raw and cracked. Trimming was the easy part. Now the scars.' },
+      { dig: { region: 'hill', name: 'the failing trees', all: true, pry: 3, spots: [
+          [10, 4, { label: '🩹 Dress the scars', icon: '🩹', say: 'You pack the cracks with moss and mud and bind them. It looks terrible. Trees don\'t mind looking terrible.' }],
+          [17, 3, { label: '🩹 Dress the scars', icon: '🩹', say: 'Moss, mud, a strip of cloth from somewhere you won\'t mention. The tree creaks. You decide that\'s gratitude.' }],
+          [23, 3, { label: '🩹 Dress the scars', icon: '🩹', say: 'You dress the last scar and step back. Three ugly bandaged trees. Somebody used to do this every year. You can tell.' }],
+        ] }, skills: { gardening: 10 }, lowSkill: 'The scars need someone who knows what they\'re doing. (Gardening 10.)',
+        goal: 'Tend the 3 failing trees: dress the scars (Gardening 10)', log: 'You dressed the scars on all three trees.',
+        say: 'All three tended. Nothing happens. Trees don\'t say thank you. Then, on the middle one, a sliver of bark lifts away by itself, clean and healthy.' },
+      { search: { region: 'hill', tx: 17, ty: 3, name: 'the middle tree', label: '🪵 Take the sliver', icon: '🪵' }, need: { broken_staff: 1 },
+        notYet: 'You need the staff with you to check the sliver against it.',
+        goal: 'Take the healthy sliver from the middle tree', log: 'The sliver\'s grain matches the staff\'s exactly.', give: { items: { hill_sliver: 1 } },
+        say: 'You hold the sliver against the staff. The grain swirls, stops and swirls back, exactly the same. This is where the staff\'s wood came from. Not a fallen branch. A living tree, looked after.' },
+      { search: { region: 'hill', tx: 15, ty: 6, name: 'the top of the road', label: '🧭 Turn round', icon: '🧭' }, need: { broken_staff: 1 },
+        notYet: 'You need the staff for this.',
+        goal: 'Turn round at the top of the road', log: 'Facing back down the road, the staff went warm. It points toward the old village.',
+        say: 'You turn to go. The staff goes warm in your hands. Not hot. Warm, like a hand on your shoulder. It\'s facing back down the road, past the ruins, toward where the old village used to be. It stays warm the whole way down.' },
+      { bring: { broken_staff: 1, hill_sliver: 1 }, to: 'smith', log: 'The Blacksmith held the sliver to the staff. Made with care, from living trees, by people who tended what they took.',
+        say: 'He puts the sliver against the staff. Same grain. He doesn\'t say anything for a while. "Somebody cut this off a living tree. And looked after the tree. Every year, probably. Made with care, this. Not just made." He puts a cutting in your hand. "Hillwood. Plant it. Take one limb. Leave the tree."' },
+    ] },
+
   // v1.19: Glass line quest 3 (plans/GL3.md, Jesus's doc + answers). The Western Ruins open by a repair (the West Road);
   // this posts once that's done and Q2 is done. 4 shards pried out of melted walls; the vision: the repelling spell.
   // The old village's name is never said. Lines are PLACEHOLDERS.

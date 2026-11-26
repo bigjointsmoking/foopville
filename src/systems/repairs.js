@@ -43,7 +43,7 @@ FUP.repairs = {
     if (out.length) return out;
     if (FUP.run.coins < FUP.req.coinPrice(cost, this.payOpts())) out.push('Not enough coins');
     for (const [item, n] of Object.entries(cost.items || {})) {
-      if (FUP.req.itemCount(item) < n) out.push(`Not enough ${((FUP.ingredients[item] || {}).name || item).toLowerCase()}s (${FUP.req.itemCount(item)}/${n})`);
+      if (FUP.req.payCount(item) < n) out.push(`Not enough ${((FUP.ingredients[item] || {}).name || item).toLowerCase()}s (${FUP.req.payCount(item)}/${n})`);   // (v1.23) Straight Poles count as Planks
     }
     return out;
   },

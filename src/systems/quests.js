@@ -185,7 +185,7 @@ FUP.quests = {
       if (it) { if (FUP.run.addGear(it)) got.push(`${it.emoji} ${it.name} (in your backpack)`); else { FUP.house.state.gear = FUP.house.state.gear || []; FUP.house.state.gear.push(it); got.push(`${it.emoji} ${it.name} (sent home: backpack full)`); } }
     }
     for (const [k, line] of Object.entries(b.keyRing || {})) { FUP.facts.add('key:' + k); got.push(`🗝️ ${line} (on your key ring)`); }
-    for (const [k, n] of Object.entries(b.seeds || {})) { FUP.garden.state.seeds[k] = FUP.garden.seedCount(k) + n; got.push(`🌱 ${n} ${FUP.ingredients[k].name} seeds (seed pouch)`); }
+    for (const [k, n] of Object.entries(b.seeds || {})) { FUP.garden.state.seeds[k] = FUP.garden.seedCount(k) + n; got.push(`🌱 ${n} ${FUP.ingredients[k].name} seed${n === 1 ? '' : 's'} (seed pouch)`); }
     if (b.fact) FUP.facts.add(b.fact);
     if (b.title && FUP.cosmeticData.titles[b.title]) got.push(`🏷️ Title: "${FUP.cosmeticData.titles[b.title].text}" (Wardrobe)`);
     if (b.perk) got.push(b.perk);
@@ -304,9 +304,13 @@ FUP.quests = {
   waitingFor(type) { return this.activeIds().some(id => { const st = this.step(id); return st && st.event === type; }); },
   // You beat (or charmed) a quest enemy
   foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, '') : null; },
+  // (v1.23) The skill levels a step still wants: [[skill, level], ...] (empty = good to go)
+  lowSkills(st) { return Object.entries((st && st.skills) || {}).filter(([sk, lv]) => FUP.skills.level(sk) < lv); },
   // Search a 🔍 spot. Returns like doStep (maybe with choices).
   doSearch(id, k = null, rng = Math.random) {
     const st = this.step(id);
+    // (v1.23) a step can need skill levels to do it (Staff Q4: tending the trees needs Gardening 10, checked at the trees)
+    { const low = this.lowSkills(st); if (low.length) return { ok: false, line: st.lowSkill || `You need ${low.map(([sk, lv]) => `${FUP.skillData.skills[sk].name} ${lv}`).join(' and ')} for this.` }; }
     if (st && st.dig) {   // (v1.10) dig one square: the right one moves the quest on, the rest are just dirt
       const d = this.prepStep(id);
       if (k === null || d.dug.includes(k) || !st.dig.spots[k]) return { ok: false, line: '' };

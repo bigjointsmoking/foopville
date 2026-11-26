@@ -72,6 +72,10 @@ FUP.gardenData = {
     // v0.81 quest crops: shop false = Pip never sells it (Grandmother's Soup gives the seeds); req = sold once it's met
     bitterroot:           { level: 1,  growSeconds: 10 * 60, plantXp: 5, harvestXp: 15,  seedPrice: 5, shop: false },
     sea_kale:             { level: 6,  growSeconds: 12 * 60, plantXp: 7, harvestXp: 22,  seedPrice: 7, req: { facts: { 'quest:neverSeenSea': 1 } } },
+    // v1.23 Staff Q4 reward (plans/ST4.md): a harvest gives `gives` (Straight Poles, always yieldMin-yieldMax, no level bonus) instead of
+    // the crop, with a small chance of `extra` (Hillwood Sap). Pip sells it once The Tended Wood is done. Numbers are PLACEHOLDERS.
+    hillwood:             { level: 20, growSeconds: 45 * 60, plantXp: 20, harvestXp: 80, seedPrice: 30, req: { facts: { 'quest:staff4': 1 } },
+                            gives: 'straight_pole', yieldMin: 1, yieldMax: 3, extra: { id: 'hillwood_sap', chance: 0.15 } },
   },
 
   // ---------- Companion crops (Farming 2.0 F-B, v0.87): plant these side by side (touching edges) ----------

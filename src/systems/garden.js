@@ -220,10 +220,10 @@ FUP.garden = {
     if (useCompost) this.compostState().ready--;
     this.state.seeds[id]--;
     if (!this.state.seeds[id]) delete this.state.seeds[id];
-    const max = this.maxYield();
+    const c = G.crops[id], min = c.yieldMin || G.yieldMin, max = c.yieldMax || this.maxYield();   // (v1.23) a crop can fix its own range (Hillwood: 1-3 poles)
     Object.assign(p, this.fresh(), {
       s: 'crop', crop: id, need: this.growTime(id),
-      yield: G.yieldMin + Math.floor(rng() * (max - G.yieldMin + 1)) + (rng() < FUP.unlocks.perkSum('bonusYieldChance') ? 1 : 0),   // Green Thumb
+      yield: min + Math.floor(rng() * (max - min + 1)) + (rng() < FUP.unlocks.perkSum('bonusYieldChance') ? 1 : 0),   // Green Thumb
     });
     if (useCompost) { p.need = Math.round(p.need * (1 - G.compost.growFaster)); p.yield += G.compost.bonusYield; p.composted = true; }
     p.left = p.yield;
@@ -283,9 +283,10 @@ FUP.garden = {
     if (!p.paid && !p.scared) { p.scared = true; const h = this.helperNear(tx, ty, 'scarecrow'); if (h && rng() < h.def.chance) { p.left++; scared = true; } }
     let buzzed = false;   // a beehive nearby (F-B, v0.87): its own chance of one extra
     if (!p.paid && !p.buzzed) { p.buzzed = true; const h = this.helperNear(tx, ty, 'hive'); if (h && rng() < h.def.chance) { p.left++; buzzed = true; } }
+    const def = FUP.gardenData.crops[id], item = def.gives || id;   // (v1.23) Hillwood gives Straight Poles, not itself
     let got = 0;
-    while (p.left > 0 && FUP.run.addToBag(id)) { p.left--; got++; }
-    let seed = false, golden = false, ammo = null;
+    while (p.left > 0 && FUP.run.addToBag(item)) { p.left--; got++; }
+    let seed = false, golden = false, ammo = null, extra = null;
     if (!p.paid && got > 0) {
       p.paid = true;
       this.xp(FUP.gardenData.crops[id].harvestXp, where);
@@ -295,10 +296,11 @@ FUP.garden = {
       // Slingshot ammo from some crops (v1.01, data/ranged.js harvest): Ember Seeds, Lemon Pips
       const ah = FUP.rangedData && FUP.rangedData.harvest[id];
       if (ah) { const n = FUP.run.addAmmo(ah.ammo, ah.count); if (n) ammo = { id: ah.ammo, n }; }
+      if (def.extra && rng() < def.extra.chance && FUP.run.addToBag(def.extra.id)) extra = def.extra.id;   // (v1.23) Hillwood Sap, sometimes
     }
     const left = p.left;
     if (left <= 0) Object.assign(p, this.fresh(), { s: 'soil' });
-    return { id, got, left, seed, golden, scared, buzzed, ammo, pal: p.pal || null };
+    return { id: item, crop: id, got, left, seed, golden, scared, buzzed, ammo, extra, pal: p.pal || null };
   },
 
   fillCan() {

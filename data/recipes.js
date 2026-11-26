@@ -114,6 +114,7 @@ FUP.recipeData = {
     { level: 20, name: 'Honey Cake',          ids: ['honey', 'egg', 'milk'], method: 'bake', xp: 100, heal: 50, buffs: [{ stat: 'spd', pct: 0.10, turns: 3 }], throw: 8, sell: 36 },
     { level: 14, name: 'Grumbleplum Jam',     ids: ['grumbleplum', 'grumbleplum'], method: 'boil', xp: 72, heal: 34, throw: 8, sell: 24 },
     { level: 19, name: 'Plum-Glazed Jerky',   ids: ['grumbleplum', 'squirrel_jerky'], method: 'grill', xp: 96, heal: 30, buffs: [{ stat: 'atk', pct: 0.10, turns: 3 }], throw: 10, sell: 20 },
+    { level: 30, name: 'Hillwood Sap Cake',   ids: ['hillwood_sap', 'grumbleplum', 'rock_salt'], method: 'bake', xp: 168, heal: 70, throw: 16, sell: 40 },   // v1.23 (Jesus picked the dish; numbers PLACEHOLDER)
     { level: 26, name: 'Sourapple Slaw',      ids: ['sourapple', 'tear_jerk_onion', 'sea_kale'], method: 'raw', xp: 140, heal: 40, buffs: [{ stat: 'spd', pct: 0.10, turns: 3 }], throw: 10, sell: 35 },
     { level: 33, name: 'Sourapple Crumble',   ids: ['sourapple', 'sourapple', 'flour', 'grumpleberry'], method: 'bake', xp: 170, heal: 80, throw: 16, sell: 48 },
     { level: 12, name: 'Sea Kale Broth',    ids: ['sea_kale', 'salty_sardine'], method: 'boil', xp: 64, heal: 34, throw: 10, sell: 17 },
