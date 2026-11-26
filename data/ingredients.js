@@ -56,6 +56,7 @@ FUP.ingredients = {
   // v1.14: the staff thread (the Blacksmith). You carry the staff to the Carpenter; it goes back on the bench after.
   broken_staff: { name: 'Broken Battle Staff', short: 'Staff', emoji: '🪵', color: '#3a2418', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'The Blacksmith\'s find from the old ruins. Cracked, warm, humming. Orange in the cracks. You can\'t use it. You checked.' },
   wood_sample: { name: 'Wood Sample', short: 'Sample', emoji: '🪵', color: '#b88a58', rarity: 'Common', sell: 0, source: 'Quest', throw: 1, blurb: 'Ordinary wood. Dry, plain, boring. That\'s the point.' },
+  head_cap: { name: 'The Staff\'s Head Cap', short: 'Head Cap', emoji: '🔩', color: '#b8a070', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'The third fitting. Fire-proof metal, the little hammer over three lines. Warm. It wants to be on the staff.' },   // v1.24 staff Q5
   // v1.23 staff Q4 (The Tended Wood): the sliver off the tended tree, and the Hillwood crop (data/garden.js) with what it gives
   hill_sliver: { name: 'Sliver of Hillwood', short: 'Sliver', emoji: '🪵', color: '#6a4a2a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Off the tree you tended at the high clearing. Same grain as the staff. Swirls, stops, swirls back.' },
   hillwood: { name: 'Hillwood', short: 'Hillwood', emoji: '🌳', color: '#5a7a3a', rarity: 'Rare', sell: 0, source: 'Quest', blurb: 'It\'s a tree. A very well looked-after one.' },   // the crop itself (you plant it; a harvest gives Straight Poles)

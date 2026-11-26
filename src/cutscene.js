@@ -69,7 +69,7 @@ FUP.cutscene = {
         o.hFor = a.h; actors[a.id] = o;
       }
       if (st.move && actors[st.move.id]) scene.tweens.add({ targets: actors[st.move.id], x: st.move.x, y: st.move.y, duration: st.move.dur * 1000, ease: 'Sine.easeInOut' });
-      if (st.swap && actors[st.swap.id] && scene.textures.exists(st.swap.key)) { const o = actors[st.swap.id]; o.setTexture(st.swap.key); o.setScale(o.hFor / o.height); }
+      if (st.swap && actors[st.swap.id] && scene.textures.exists(st.swap.key)) { const o = actors[st.swap.id]; o.setTexture(st.swap.key); if (st.swap.h) o.hFor = st.swap.h; o.setScale(o.hFor / o.height); }   // (v1.24) h: a new height (a raised staff makes the picture taller)
       if (st.swing && actors[st.swing.id]) scene.tweens.add({ targets: actors[st.swing.id], angle: { from: -st.swing.angle, to: st.swing.angle }, duration: st.swing.dur * 1000, yoyo: true, repeat: st.swing.times, ease: 'Sine.easeInOut', onComplete: function () { this.targets[0].setAngle(0); } });
       if (st.grow && actors[st.grow.id]) { const o = actors[st.grow.id]; scene.tweens.add({ targets: o, scale: o.scale * st.grow.h / o.hFor, duration: st.grow.dur * 1000, ease: 'Sine.easeIn' }); o.hFor = st.grow.h; }
       if (st.barrier) {   // (v1.19) a wall of light, rising, then shimmering

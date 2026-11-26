@@ -13,7 +13,7 @@
 //   sky: { color, dur }                   the sky behind the backdrop fades to a palette colour
 //   add: { id, key, emoji, x, y, h, flip, alpha, screen, depth, top }   a picture (h = height on screen, feet at y; top = hangs from y)
 //   move: { id, x, y, dur }               slide it there
-//   swap: { id, key }                     change its picture (an elder raising a staff)
+//   swap: { id, key, h }                  change its picture (an elder raising a staff); h = new height (optional, v1.24)
 //   swing: { id, angle, dur, times }      rock it back and forth (the bell)
 //   fade: { id, alpha, dur }
 //   sweep: { key, emoji, y, h, dur, from, to, shadow, flip }   a huge shape crosses the whole screen (shadow: drawn dark, the dragon's shadow)
@@ -64,6 +64,44 @@ FUP.cutsceneData = {
         { t: 12.6, embers: { n: 40, dur: 6 } },
         { t: 13.4, caption: 'Somewhere in the glass, a bell is still ringing.' },
         { t: 18.4, flash: { color: 'k4', ms: 900 } },
+      ],
+    },
+    // (v1.24) Staff Q5 "The Last Stand": fitting the head cap at the melted square. The eldest raises the whole staff;
+    // the spell cuts out in a white flash of fire. Does NOT show that it worked or needed her fire. Captions PLACEHOLDER.
+    laststand: {
+      backdrop: { key: 'cs_edge', height: 430, bottom: 480 },
+      sky: 'r3', ground: 'w2', pan: [-60, -300], length: 21, tint: 'w5',
+      steps: [
+        { t: 0.2, caption: 'The square. The same day. Later.' },
+        { t: 0.2, edges: { color: 'r3', alpha: 0.35 } },
+        { t: 0.3, embers: { n: 30, dur: 6 } },
+        { t: 0.4, add: { id: 'e1', key: 'cs_elder', emoji: '🧙', x: 560, y: 474, h: 120 } },
+        { t: 0.4, add: { id: 'e2', key: 'cs_elder', emoji: '🧙', x: 650, y: 486, h: 126 } },
+        { t: 0.4, add: { id: 'e3', key: 'cs_elder', emoji: '🧙', x: 830, y: 480, h: 124 } },
+        { t: 0.4, add: { id: 'e4', key: 'cs_elder', emoji: '🧙', x: 910, y: 468, h: 118 } },
+        { t: 1.6, add: { id: 'eld', key: 'cs_elder', emoji: '🧙', x: 600, y: 500, h: 146 } },
+        { t: 1.7, move: { id: 'eld', x: 740, y: 500, dur: 2.4 } },
+        { t: 3.0, caption: 'Fewer of them now. The eldest stepped to the front.' },
+        { t: 3.2, sweep: { key: 'title_dragon', shadow: true, flip: true, emoji: '🐉', y: 220, h: 300, dur: 2.8, from: 1200, to: -500 } },
+        { t: 3.3, sfx: 'phase' },
+        { t: 3.5, shake: { ms: 800, power: 0.01 } },
+        { t: 6.4, swap: { id: 'eld', key: 'cs_elder_cast', h: 200 } },
+        { t: 6.5, sfx: 'staffHum' },
+        { t: 6.6, caption: 'The eldest raised the staff. Whole, then. Capped.' },
+        { t: 7.6, swap: { id: 'e1', key: 'cs_elder_cast', h: 162 } }, { t: 7.8, swap: { id: 'e2', key: 'cs_elder_cast', h: 170 } },
+        { t: 8.0, swap: { id: 'e3', key: 'cs_elder_cast', h: 167 } }, { t: 8.2, swap: { id: 'e4', key: 'cs_elder_cast', h: 159 } },
+        { t: 8.6, ring: { x: 740, y: 500, w: 520, h: 90, color: 'k4', dur: 3 } },
+        { t: 8.7, sfx: 'spell' },
+        { t: 10.0, caption: 'Everything they had, into one last spell.' },
+        { t: 12.4, edges: { color: 'r3', alpha: 0.7 } },
+        { t: 12.6, embers: { n: 80, dur: 5 } },
+        { t: 13.0, flash: { color: 'k4', ms: 1400 } },
+        { t: 13.0, shake: { ms: 1300, power: 0.02 } },
+        { t: 13.2, fade: { id: 'eld', alpha: 0, dur: 1.2 } },
+        { t: 13.2, fade: { id: 'e1', alpha: 0, dur: 1.2 } }, { t: 13.2, fade: { id: 'e2', alpha: 0, dur: 1.2 } },
+        { t: 13.2, fade: { id: 'e3', alpha: 0, dur: 1.2 } }, { t: 13.2, fade: { id: 'e4', alpha: 0, dur: 1.2 } },
+        { t: 14.6, caption: 'White fire. Then nothing.' },
+        { t: 18.6, flash: { color: 'k4', ms: 900 } },
       ],
     },
     // Shard 3 (Glass Q3 "The Western Ruins", v1.19): the repelling spell. The elders' side only; ends before the

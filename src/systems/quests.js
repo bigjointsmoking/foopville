@@ -303,7 +303,7 @@ FUP.quests = {
   // Is a quest step waiting for this event right now? (v0.82: the hole shows its tracks while The Bowl wants it)
   waitingFor(type) { return this.activeIds().some(id => { const st = this.step(id); return st && st.event === type; }); },
   // You beat (or charmed) a quest enemy
-  foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, '') : null; },
+  foeBeaten(id) { const st = this.step(id); return st && st.fight ? this.advance(id, st.say || '') : null; },   // (v1.24) a fight step can end with a line (Dunn)
   // (v1.23) The skill levels a step still wants: [[skill, level], ...] (empty = good to go)
   lowSkills(st) { return Object.entries((st && st.skills) || {}).filter(([sk, lv]) => FUP.skills.level(sk) < lv); },
   // Search a 🔍 spot. Returns like doStep (maybe with choices).

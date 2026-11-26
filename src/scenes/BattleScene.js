@@ -286,15 +286,16 @@ class BattleScene extends Phaser.Scene {
     const rb = FUP.run.battle || {}, mult = rb.mult;
     // Raid enemies can be worth more than usual (Stray Shroom you meet, not the ones the boss calls)
     if (rb.raid) Object.assign(e, (FUP.raidData.raidEnemy || {})[key] || {});
-    if (mult && mult !== 1 && !e.boss) {
+    const own = e.boss || e.ownLevel;   // (v1.24) Gravel-Hand Dunn: his own level, not the area's
+    if (mult && mult !== 1 && !own) {
       for (const k of ['maxHp', 'atk', 'def', 'xp']) if (e[k]) e[k] = Math.round(e[k] * mult);
       e.hp = e.maxHp;
     }
     // Coins: each Forest area has its own coin multiplier (v0.40); the raid uses its normal one. x coinRate (v0.41)
-    const cm = (e.boss ? 1 : (rb.coinMult || mult || 1)) * FUP.balance.coinRate;
+    const cm = (own ? 1 : (rb.coinMult || mult || 1)) * FUP.balance.coinRate;
     if (e.coins) e.coins = Math.max(1, Math.round(e.coins * cm));
     // Enemies scale with you: +HP/ATK for every Melee level you are above the area's level (v0.41)
-    const ES = FUP.balance.enemyScale, above = FUP.skills.level('melee') - (e.boss ? (e.level || 15) : (rb.areaLevel || 1));
+    const ES = FUP.balance.enemyScale, above = FUP.skills.level('melee') - (own ? (e.level || 15) : (rb.areaLevel || 1));
     if (above > 0) {
       const k = 1 + Math.min(ES.max, ES.perLevel * above);
       e.maxHp = Math.round(e.maxHp * k); e.hp = e.maxHp; e.atk = e.atk * k;

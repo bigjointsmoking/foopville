@@ -176,6 +176,7 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'scrapShield' && e.shieldUp) m *= sig.takenMult;   // (v1.19) the Scrap Goblin hides behind scrap
     if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
     if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
+    if (sig && sig.id === 'hum' && e.staggered) m *= sig.staggerMult;        // (v1.24) Dunn off balance after you Defended his swing
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -281,6 +282,10 @@ Object.assign(BattleScene.prototype, {
       if (e.throwNext) { e.throwNext = false; return sig.throwMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.liftMove;
     }
+    if (sig.id === 'hum') {   // (v1.24) Dunn: the staff hums every `every` moves, then he swings
+      if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
+      if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
+    }
     if (sig.id === 'mark' && !this.marked && e.movesDone % sig.every === 0) return sig.markMove;   // (v1.22) Old Carrow
     if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
     if (sig.id === 'windup' && (e.movesDone + 1) % sig.every === 0) return sig.move;   // the Moss Bear's big swipe (v0.93)
@@ -297,7 +302,7 @@ Object.assign(BattleScene.prototype, {
 
   // Start of an enemy's turn: burning hurts, and last move's guard / audit ends. Returns false if it died.
   enemyTurnStart(e) {
-    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false;   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
+    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false; e.staggered = false;   // (v1.24) Dunn finds his feet   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
     // The Mosquito Intern's Overtime: the last one standing hits harder (Marsh, W2)
     const sig = e.signature;
     if (sig && sig.id === 'overtime' && !e.overtime && this.startCount > 1 && this.liveReal().length === 1) {
@@ -380,6 +385,22 @@ Object.assign(BattleScene.prototype, {
         this.popup(e.view, e.rolling ? '🏃 STILL CHASING' : '🪨 GOT IT BACK', 'info');
         if (e.rolling) this.say('stoneChase', { enemy: e.name });
         return true;
+      case 'staffHum':   // (v1.24) the staff you carry warns you: his next move is the big swing
+        e.swingNext = true;
+        this.popup(this.playerSprite, '🎶 THE STAFF HUMS', 'info', -40);
+        this.say('staffHumWarn', { enemy: e.name });
+        FUP.audio.sfx('staffHum');
+        return true;
+      case 'shovelSwing': {   // Defend it and he's off balance until his next move
+        const guarded = this.player.defending;
+        this.strike(e, m.power, true);
+        if (guarded && !this.over && !e.gone) {
+          e.staggered = true;
+          this.bigMoment('OFF BALANCE!', FUP.ui.colors.good);
+          this.say('dunnStagger', { enemy: e.name });
+        }
+        return true;
+      }
       case 'mark':   // (v1.22) Old Carrow: his hits climb while you're marked; Defend clears it
         this.marked = 1;
         this.popup(this.playerSprite, '🎯 MARKED', 'bad', -40);

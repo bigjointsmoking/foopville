@@ -501,6 +501,10 @@ FUP.narrator = {
   stoneLifted: ['The {enemy} heaves the stone overhead. His middle is wide open. So is the stone\'s flight path. Yours.'],
   stoneRolls: ['You catch the worst of it. The stone rolls off down the hill. The {enemy} sighs and plods after it. "Nearly there," he says, going the wrong way.'],
   stoneChase: ['The {enemy} is still walking after his stone.'],
+  // v1.24: Staff Q5, Gravel-Hand Dunn (PLACEHOLDER lines)
+  dunnStart: ['A broad man climbs out of a hole with a shovel. "Orders. Nobody gets the piece. Nothing personal. I\'ve been digging for weeks and I\'m in a mood."'],
+  staffHumWarn: ['The staff on your back hums, low and urgent. Dunn is winding up something big.', 'The staff hums against your spine. Whatever Dunn does next, Defend it.'],
+  dunnStagger: ['The shovel rings off your guard. Dunn stumbles, wide open.', 'You take the swing on your guard. Dunn staggers like he dug one hole too many.'],
   markSet: ['The {enemy} marks you. You can feel his eyes on the spot between your shoulders.'],
   markCleared: ['You get your guard up and step out of his sight line. The mark is gone.'],
   shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],

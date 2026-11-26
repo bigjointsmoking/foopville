@@ -364,6 +364,24 @@ FUP.enemies = {
     signature: { id: 'mark', every: 3, perStep: 0.25,
       markMove: { name: "Hunter's Mark", type: 'mark', tell: '🎯', tellText: 'Marking you (Defend clears it)' } },
   },
+  // ---------- Staff Q5 "The Last Stand" (v1.24, plans/ST5.md, boss ~Melee 25-30). Quest-only, in the Western Ruins ----------
+  // Gravel-Hand Dunn: a digger hired by a house in Three Scales. He has the staff's head cap; orders say never hand it over.
+  // ownLevel: ignores the ruins' strength and scales from his own `level`, like a boss (src/scenes/BattleScene.js).
+  // The staff's warning: every `every` moves the staff you carry hums (his next move is the big swing). Defend the swing and he's
+  // off balance until his next move: your hits do staggerMult. Not charmable (orders). Numbers PLACEHOLDER.
+  dunn: {
+    name: 'Gravel-Hand Dunn', emoji: '⛏️', size: 140, sprite: 'dunn', mapSprite: 'dunn_map',
+    maxHp: 380, atk: 17, def: 9, spd: 10, resolve: 0.45, noCharm: true, questOnly: true, ownLevel: true, level: 28,   // a step past the Bog Notary (Lv 22: 340 / 13 / 8)
+    xp: 420, coins: 120, boss: false, weak: 'frost', resists: [],
+    say: { start: 'dunnStart' },
+    moves: [
+      { name: 'Shovel Jab', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Clod of Earth', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'hum', every: 3, staggerMult: 2,
+      humMove: { name: 'The Staff Hums', type: 'staffHum', tell: '🎶', tellText: 'The staff is humming (Defend his next swing!)' },
+      swingMove: { name: 'Big Shovel Swing', type: 'shovelSwing', power: 2.4, tell: '💥', tellText: 'BIG SWING (Defend!)' } },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

@@ -641,6 +641,48 @@ Object.assign(FUP.questData.quests, {
         say: 'He puts the sliver against the staff. Same grain. He doesn\'t say anything for a while. "Somebody cut this off a living tree. And looked after the tree. Every year, probably. Made with care, this. Not just made." He puts a cutting in your hand. "Hillwood. Plant it. Take one limb. Leave the tree."' },
     ] },
 
+  // v1.24: the staff thread, quest 5 (plans/ST5.md). The staff warms toward the Western Ruins: the elders' stand-site.
+  // Dig marks lead to Gravel-Hand Dunn, a digger for a house in Three Scales (a scavenger sold them fire-proof scrap), who has the
+  // head cap. The staff hums before his big swing (data/enemies.js dunn). Beaten, he gives it up. Fit it at the stand-site: the last stand.
+  // He learns: the elders made their last stand with it. NOT that the spell worked or needed her fire. No names. Lines are PLACEHOLDERS.
+  //   spare: lost the staff or the cap (the grave)? The Blacksmith has it back, same as Q2 and Q4
+  staff5: { kind: 'story', from: 'smith', difficulty: 'hard', length: 'long', name: 'The Last Stand',
+    req: { facts: { 'quest:staff4': 1 } },
+    text: 'Since the hills, the staff won\'t settle. It warms toward the old ruins and stays warm. The Blacksmith has stopped pretending he isn\'t worried.',
+    reward: { coins: 900, xp: { melee: 500 } },
+    afterGreet: ['It\'s whole. It\'s quiet. I keep checking it\'s still there. It always is.', 'They didn\'t make it to win. I can\'t stop thinking about that.'],
+    spare: [
+      { item: 'broken_staff', npc: 'smith', fromStep: 1, untilStep: 6, say: '"Someone left it on my bench in the night. With a note: SORRY. Spelled right, which rules you out." He hands it back.' },
+      { item: 'head_cap', npc: 'smith', fromStep: 4, untilStep: 5, say: '"A big man with a shovel dropped this off. Said he\'d lost it again and didn\'t want it on his conscience." He hands you the cap.' },
+    ],
+    steps: [
+      { talk: 'smith', log: 'Since the hills, the staff warms toward the Western Ruins. The Blacksmith handed it over.',
+        say: '"It\'s been like this since you got back. Warm. Warmer on the west side of the bench. It wants to go back to the ruins, and I\'d like it to stop wanting things." He holds it out. "Find out what it wants. Then bring it home."',
+        give: { items: { broken_staff: 1 } } },
+      { search: { region: 'west', tx: 30, ty: 9, name: 'the melted square', label: '🔍 Follow the warmth', icon: '🔍' }, need: { broken_staff: 1 },
+        notYet: 'The staff is how you\'d find it. You don\'t have the staff.',
+        goal: 'Follow the staff\'s warmth into the Western Ruins', log: 'The staff led you to a wide square of melted stone. It\'s hottest here. Someone has been digging.',
+        say: 'A wide square where the stone ran like wax and set again. The staff is almost hot here. This is where it was meant to be. And someone has been digging. Recently. Badly.' },
+      { dig: { region: 'west', name: 'the dig marks', all: true, spots: [
+          [38, 13, { label: '🔍 Fresh digging', icon: '🔍', say: 'Fresh holes, dug and filled, dug and filled. Somebody\'s been looking for something small. The holes lead off south-east.' }],
+          [42, 19, { label: '🔍 A campsite', icon: '🔍', say: 'A cold campfire, a bedroll, a shovel-shaped dent in the dirt where somebody leans it at night. He\'s been out here a long time.' }],
+          [42, 22, { label: '🔍 A half-eaten meal', icon: '🔍', say: 'Half a loaf and a sausage with one bite out of it. He left in a hurry, or he heard you coming. Digging noises, close. South-east.' }],
+        ] },
+        goal: 'Read the dig marks: fresh digging, a campsite, a half-eaten meal', log: 'Fresh holes, a camp, a meal left half-eaten. The trail ends at a dig in the south-east corner.',
+        say: 'The trail ends at a dig in the south-east corner. Somebody is in the hole, and they\'re humming. No. That\'s the staff.' },
+      { fight: { region: 'west', tx: 44, ty: 25, enemy: 'dunn', name: 'Gravel-Hand Dunn' },
+        goal: 'Face the digger in the south-east corner of the ruins (the staff hums before his big swing: Defend it)',
+        log: 'Gravel-Hand Dunn digs for a house in Three Scales. A scavenger sold them fire-proof scrap; they sent him for more. He gave up the head cap.',
+        say: 'Dunn sits down in his own hole. "Orders said don\'t hand it over. Didn\'t say don\'t lose." He digs in his coat. "A house up in Three Scales hired me. Scavenger sold them a bit of scrap off these ruins. Metal that won\'t melt. They know what that\'s worth. Sent me for the rest." He drops a fitting in your hand: a cap, the little hammer over three lines. "Found it under the square. Tell them I lost it. I\'m going home."',
+        give: { items: { head_cap: 1 } } },
+      { search: { region: 'west', tx: 30, ty: 9, name: 'the melted square', label: '🔩 Fit the cap', icon: '🔩' }, need: { broken_staff: 1, head_cap: 1 }, take: { head_cap: 1 },
+        notYet: 'You need the staff and the head cap.', cutscene: 'laststand',
+        goal: 'Back at the melted square: fit the head cap on the staff', log: 'The cap fit. The staff blazed, and you saw it: the elders, here, on the bad day, and the last thing they tried.',
+        say: 'The cap slides onto the bare top of the staff like it never left. The orange in the cracks goes white for a heartbeat, then settles to a steady glow. The hum stops. It\'s the first quiet you\'ve heard from it.' },
+      { bring: { broken_staff: 1 }, to: 'smith', log: 'The staff is whole, on the Blacksmith\'s bench. They made their last stand with it.',
+        say: 'He turns the staff in his hands, cap and all. Whole. Quiet. "So that\'s what it was for." He sets it on the bench, gently, like it might wake up. "They didn\'t make this to win. They made it hoping they\'d never have to use it." He doesn\'t pick up his hammer for the rest of the day.' },
+    ] },
+
   // v1.19: Glass line quest 3 (plans/GL3.md, Jesus's doc + answers). The Western Ruins open by a repair (the West Road);
   // this posts once that's done and Q2 is done. 4 shards pried out of melted walls; the vision: the repelling spell.
   // The old village's name is never said. Lines are PLACEHOLDERS.

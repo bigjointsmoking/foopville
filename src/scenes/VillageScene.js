@@ -172,7 +172,9 @@ class VillageScene extends Phaser.Scene {
     const ui = FUP.ui, carried = FUP.run.bagCount('broken_staff') > 0;
     const s = ui.sprite(this, x, y, carried ? p.empty : p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
     const glow = this.add.ellipse(x, y - 12, 50, 14, 0xff8a20, 0.35).setDepth(y + 1).setBlendMode(Phaser.BlendModes.ADD).setVisible(!carried);
-    this.tweens.add({ targets: glow, alpha: { from: 0.5, to: 1 }, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // a soft pulse
+    // (v1.24) whole again after Staff Q5: a steady glow, no pulse
+    if (FUP.facts && FUP.facts.has('quest:staff5')) glow.setAlpha(0.85);
+    else this.tweens.add({ targets: glow, alpha: { from: 0.5, to: 1 }, duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });   // a soft pulse
     this._staff = { p, s, glow, carried };
   }
   staffTick() {
