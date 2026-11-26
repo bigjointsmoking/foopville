@@ -691,6 +691,8 @@ Object.assign(FUP.questData.quests, {
     text: 'Planksworth thinks the glass follows the old edge of the village. West, where nobody has cleared anything.',
     reward: { coins: 250, xp: { building: 250 } },
     afterGreet: ['They were pushing her back. Not hurting her. Pushing.', 'I\'m starting to see where everything stood. Not enough to rebuild. Enough to stop guessing.'],
+    // (v1.26) lost the shards (the grave)? Planksworth has all 4 back, until they're used at the forge (the pry spots don't come back)
+    spare: { item: 'glass_shard', n: 4, npc: 'carpenter', fromStep: 2, untilStep: 3, say: '"Someone found these by the gate. Glass that warm, everyone knows whose it is." He tips four shards into your hand.' },
     steps: [
       { talk: 'carpenter', log: 'Planksworth thinks the elders stood at the old edge of the village. He wants glass from the Western Ruins.',
         say: '"The glass isn\'t scattered. Where we found it, it follows the old edge of the village. If they tried to keep her out, they\'d have stood there. West. Nobody\'s cleared it. Bring the stones back in one piece, preferably. And you."' },
