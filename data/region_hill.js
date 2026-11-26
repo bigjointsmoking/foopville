@@ -9,7 +9,7 @@
 //
 // MAP KEY (like the Forest, data/forest.js):
 //   #  trees (can't walk)   =  the old road   .  long grass
-// Squares: tx = column, ty = row, from 0 at the top-left. Map is 30 x 40. South gap = cols 14-15 (to the Western Ruins).
+// Squares: tx = column, ty = row, from 0 at the top-left. Map is 30 x 40. South gap = cols 14-15 (to the Western Ruins). North gap = cols 14-15 (v1.27: the Old Quarry, opens with Glass Q5).
 // The clearing is the open grass at the top (rows 1-6). Check with: tests/world_maps.js
 // Name, map, numbers: PLACEHOLDERS.
 // ============================================================
@@ -19,7 +19,7 @@ FUP.worldData.areas.hill = {
   id: 'hill', name: 'Old Hill Road',
   tileSize: 40,
   map: [
-    '##############################',
+    '##############..##############',   // v1.27: north gap cols 14-15, the way up to the Old Quarry
     '######..................######',
     '####......................####',
     '###........................###',

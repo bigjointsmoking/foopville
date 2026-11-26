@@ -59,7 +59,14 @@ FUP.worldData = {
     // v1.22: the Old Hill Road, from the back of the Western Ruins up to the high clearing (Staff Q4). Map in data/region_hill.js
     hill:      { name: 'Old Hill Road', kind: 'danger', scene: 'World', box: { col: -1, row: 2 }, band: [18, 22], dropTier: 3,
                  respawn: { enemies: 540 },   // 9 min (PLACEHOLDER)
-                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'west', edge: 'N' } } },
+                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'west', edge: 'N' },
+                          // v1.27: the way up to the Old Quarry opens once Glass Q5 is taken (Jesus)
+                          N: { to: 'quarry', edge: 'S', req: { quests: ['glass5'] }, lockEmoji: '🪨',
+                               lockText: 'Fallen rock and old timber block the track above the clearing. Nobody has been up there in a long, long time. Nobody has had a reason.' } } },
+    // v1.27: the Old Quarry, above the clearing (Glass Q5). Only Jarvin the Stone Warden lives there. Map in data/region_quarry.js
+    quarry:    { name: 'The Old Quarry', kind: 'danger', scene: 'World', box: { col: -1, row: 1 }, band: [25, 30], dropTier: 3,
+                 respawn: { enemies: 540 },   // PLACEHOLDER
+                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'hill', edge: 'N' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },

@@ -177,6 +177,7 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
     if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
     if (sig && sig.id === 'hum' && e.staggered) m *= sig.staggerMult;        // (v1.24) Dunn off balance after you Defended his swing
+    if (sig && sig.id === 'plates' && !this.platesOpen(e)) m *= sig.takenMult; // (v1.27) Jarvin behind his stone plates
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -255,9 +256,21 @@ Object.assign(BattleScene.prototype, {
     if (!sig || sig.id !== 'mark' || !this.marked) return 1;
     return 1 + sig.perStep * (this.marked - 1);
   },
+  // (v1.27) Jarvin's plates are open from the crack until he has packed them back on
+  platesOpen(e) { return e.platesUntil != null && (e.movesDone < e.platesUntil || !!e.resetNext); },
   // (v1.19) The Rubble Crab's shell cracks on a Skill or a critical hit (then it takes normal damage)
+  // (v1.27) Jarvin's plates the same way, but they only stay open for `openMoves` of his moves
   crackShell(e, kind, crit) {
     const sig = e.signature;
+    if (sig && sig.id === 'plates') {
+      if (this.platesOpen(e)) return;
+      if (kind === 'skill' || crit) {
+        e.platesUntil = e.movesDone + sig.openMoves; e.resetNext = false;
+        this.bigMoment('PLATES CRACKED!', FUP.ui.colors.good);
+        this.say('platesCracked', { enemy: e.name });
+      } else if (!this.saidShell) { this.saidShell = true; this.time.delayedCall(450, () => { if (!this.over) this.say('platesTough', { enemy: e.name }); }); }
+      return;
+    }
     if (!sig || sig.id !== 'shell' || e.cracked) return;
     if (kind === 'skill' || crit) {
       e.cracked = true;
@@ -285,6 +298,10 @@ Object.assign(BattleScene.prototype, {
     if (sig.id === 'hum') {   // (v1.24) Dunn: the staff hums every `every` moves, then he swings
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
+    }
+    if (sig.id === 'plates') {   // (v1.27) Jarvin: plates back on once his open moves are used up; the Quarry Slam every `slamEvery`
+      if (e.platesUntil != null && !e.resetNext && e.movesDone >= e.platesUntil) { e.resetNext = true; return sig.resetMove; }
+      if ((e.movesDone + 1) % sig.slamEvery === 0) return sig.slamMove;
     }
     if (sig.id === 'mark' && !this.marked && e.movesDone % sig.every === 0) return sig.markMove;   // (v1.22) Old Carrow
     if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
@@ -401,6 +418,12 @@ Object.assign(BattleScene.prototype, {
         }
         return true;
       }
+      case 'platesReset':   // (v1.27) Jarvin packs his stone plates back on: hits barely scratch him again
+        e.platesUntil = null; e.resetNext = false;
+        this.popup(e.view, '🪨 PLATES BACK ON', 'info');
+        this.say('platesReset', { enemy: e.name });
+        FUP.audio.sfx('guard');
+        return true;
       case 'mark':   // (v1.22) Old Carrow: his hits climb while you're marked; Defend clears it
         this.marked = 1;
         this.popup(this.playerSprite, '🎯 MARKED', 'bad', -40);
@@ -658,6 +681,7 @@ Object.assign(BattleScene.prototype, {
     if (e.settled) f.push('📑 settled');
     if (e.chewing) f.push('📄 eating pages');
     if (e.dodge) f.push('🦋 dodgy');
+    if (e.signature && e.signature.id === 'plates') f.push(this.platesOpen(e) ? '💔 plates cracked' : '🪨 stone plates');   // (v1.27) Jarvin
     const SH = e.bossRules && e.bossRules.shelves;
     if (SH && this.liveReal().some(o => o.key === SH.foe)) f.push('🗄️ behind shelves');
     if (e.signature && e.signature.id === 'share' && this.boss()) f.push('💸');

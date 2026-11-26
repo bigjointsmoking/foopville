@@ -1,6 +1,6 @@
 // ============================================================
 // REQUIREMENTS + COSTS — one format for "what you need" and "what it costs".
-//   req:  { skills: { melee: 10 }, combat: 20, facts: { 'repair:well': 1 }, not: ['flag:x'] }
+//   req:  { skills: { melee: 10 }, combat: 20, facts: { 'repair:well': 1 }, not: ['flag:x'], quests: ['glass5'] }
 //   cost: { coins: 500, items: { bark: 4 }, gear: ['weapon_2'] }
 // Any data entry can carry them. No drawing here.
 // ============================================================
@@ -23,6 +23,11 @@ FUP.req = {
       if (FUP.facts.get(key) < n) out.push(FUP.facts.label(key) + (n > 1 ? ` x${n}` : ''));
     }
     for (const key of req.not || []) if (FUP.facts.get(key) !== 0) out.push(`Not after: ${FUP.facts.label(key)}`);
+    // (v1.27) quests: taken (or finished). The Old Quarry opens with Glass Q5
+    for (const id of req.quests || []) {
+      const Q = FUP.quests, ok = Q && ((Q.state && Q.state.active && Q.state.active[id]) || Q.done(id));
+      if (!ok) out.push('A reason to go up there (a quest)');   // no quest name: it would spoil it
+    }
     return out;
   },
   met(req) { return this.missing(req).length === 0; },

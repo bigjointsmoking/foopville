@@ -396,6 +396,24 @@ FUP.enemies = {
       humMove: { name: 'The Staff Hums', type: 'staffHum', tell: '🎶', tellText: 'The staff is humming (Defend his next swing!)' },
       swingMove: { name: 'Big Shovel Swing', type: 'shovelSwing', power: 2.4, tell: '💥', tellText: 'BIG SWING (Defend!)' } },
   },
+  // v1.27 (plans/GL5.md, Glass Q5): Jarvin the Stone Warden, the Old Quarry's last guard. Set to guard it long ago; the quarry
+  // closed, nobody came back to relieve him, and he never left. He grew into the stone plates he wears. Anyone cutting stone is a thief.
+  // Stone Plates: he takes takenMult damage until a Skill or a critical hit cracks them; then he's exposed for openMoves of his moves,
+  // then spends a move packing them back on (resetMove). Every slamEvery moves: the Quarry Slam (Defend it: a counter).
+  // Quest-only, one time (Jesus: gone for good). Numbers PLACEHOLDER, a step past Dunn (Lv 28: 380 / 17 / 9).
+  jarvin: {
+    name: 'Jarvin the Stone Warden', emoji: '🗿', size: 220, sprite: 'jarvin', mapSprite: 'jarvin_map',
+    maxHp: 520, atk: 19, def: 11, spd: 8, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 30,
+    xp: 600, coins: 160, boss: false, weak: 'acid', resists: [],
+    say: { start: 'jarvinStart' },
+    moves: [
+      { name: 'Stone Fist', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Shoulder Charge', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'plates', takenMult: 0.3, openMoves: 3, slamEvery: 4,
+      resetMove: { name: 'Re-set the Stone', type: 'platesReset', tell: '🪨', tellText: 'Packing his plates back on (hit him now!)' },
+      slamMove: { name: 'Quarry Slam', type: 'attack', power: 2.6, counterMult: 2, tell: '💥', tellText: 'QUARRY SLAM (Defend!)' } },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

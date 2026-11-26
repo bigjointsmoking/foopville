@@ -140,6 +140,10 @@ FUP.ambienceData = {
       critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 0, fireflies: false, clouds: true, dayNight: 1, vignette: 0.4,
       dress: null,
     },
+    quarry: {   // the Old Quarry (v1.27): dead and quiet, bare stone. Nothing lives here but Jarvin
+      critters: [], butterflies: 0, dragonflies: 0, birds: false, motes: 8, moteColor: 's3', fireflies: false, clouds: true, dayNight: 0.9, vignette: 0.55,
+      dress: null,
+    },
     raid: {
       critters: [], butterflies: 0, birds: false, motes: 18, moteColor: 'g5', fireflies: false, clouds: false, dayNight: 0, vignette: 0.7,
       dress: null,

@@ -509,6 +509,11 @@ FUP.narrator = {
   markSet: ['The {enemy} marks you. You can feel his eyes on the spot between your shoulders.'],
   markCleared: ['You get your guard up and step out of his sight line. The mark is gone.'],
   shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],
+  // (v1.27) Jarvin the Stone Warden (Glass Q5). He's serious; the narrator stays dry but doesn't joke about him. PLACEHOLDER lines
+  jarvinStart: ['Something huge stands up out of the quarry floor. Stone plates grind against each other. "No one cuts here. No one has, for a long time. No one will."'],
+  platesTough: ['That bounced off his plates. A Skill, or a lucky crit, might crack them.'],
+  platesCracked: ['The stone plates split. Underneath, he is very much a man, and very angry about it.', 'Crack! The plates come apart. Hit him while you can.'],
+  platesReset: ['He packs the broken stone back over himself, piece by piece. He has done this before. Many times.', 'The plates are back on. Back to cracking them.'],
   shellCracked: ['The {enemy}\'s shell cracks open. It looks very soft and very annoyed.', 'Crack! The {enemy} is just a crab now. An angry, naked crab.'],
   forestEnter_marsh: [   // arriving in the Soggy Marsh (W2)
     'The Soggy Marsh. Every step goes squelch. Every squelch has opinions.',
