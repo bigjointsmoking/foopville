@@ -61,7 +61,7 @@ FUP.worldData.areas.quarry = {
   objects: [],
   trees: { quarry_wall: 5, quarry_wall_tall: 3, quarry_wall_cut: 2 },   // what stands on the # squares
   decorations: { deco_rubble: 0.05, deco_quarry_tools: 0.015 },
-  ground: { ...FUP.look.mood('quarry'), treeShade: 0.4, pathChars: '=' },
+  ground: { ...FUP.look.mood('quarry'), pathStyle: 'dirt', treeShade: 0.4, pathChars: '=' },   // a dirt cart track (cobbles drew like a wall)
   light: FUP.look.mood('quarry').light,
   weather: null,
   fog: { sight: 5, memory: 0.6, campfire: 7 },

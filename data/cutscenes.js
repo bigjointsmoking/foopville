@@ -96,6 +96,31 @@ FUP.cutsceneData = {
         { t: 19.6, flash: { color: 'k4', ms: 900 } },
       ],
     },
+    // (v1.28) Glass Q5 "Her, Whole": the Great Shard from under Foop's statue. After the fire, the square ruined and quiet, she stands
+    // alone where the statue is now, crying. Behind her the protection charm glows, set and never set off, doing nothing. No Foop.
+    // Pictures cs_square_ruin / cs_dragon_cry / cs_charm. Captions PLACEHOLDER. Stage x: the charm at 560, her at 920; the camera ends showing about 360-1260.
+    whole: {
+      backdrop: { key: 'cs_square_ruin', height: 430, bottom: 480 },
+      sky: 'k0', ground: 'k1', pan: [-60, -360], length: 24, tint: 'b4',
+      steps: [
+        { t: 0.2, caption: 'After.' },
+        { t: 0.3, edges: { color: 'r2', alpha: 0.15 } },
+        { t: 0.4, embers: { n: 8, dur: 10 } },
+        { t: 0.5, add: { id: 'charm', key: 'cs_charm', emoji: '🔮', x: 560, y: 470, h: 90, alpha: 0 } },
+        { t: 1.0, fade: { id: 'charm', alpha: 0.9, dur: 2 } },
+        { t: 2.4, caption: 'The fire was out. The square was very quiet.' },
+        { t: 3.6, add: { id: 'drg', key: 'cs_dragon_cry', emoji: '🐉', x: 920, y: 600, h: 500, alpha: 0, depth: true } },
+        { t: 3.7, fade: { id: 'drg', alpha: 1, dur: 3 } },
+        { t: 6.4, caption: 'She didn\'t leave right away.' },
+        { t: 9.4, caption: 'She stood here. Where the statue is now.' },
+        { t: 12.4, caption: 'She was crying.' },
+        { t: 15.6, fade: { id: 'charm', alpha: 0.5, dur: 1 } },
+        { t: 16.0, caption: 'Behind her, the elders\' charm was still glowing.' },
+        { t: 16.6, fade: { id: 'charm', alpha: 1, dur: 1 } },
+        { t: 19.0, caption: 'It never did anything.' },
+        { t: 22.4, flash: { color: 'k4', ms: 900 } },
+      ],
+    },
     // (v1.24) Staff Q5 "The Last Stand": fitting the head cap at the melted square. The eldest raises the whole staff;
     // the spell cuts out in a white flash of fire. Does NOT show that it worked or needed her fire. Captions PLACEHOLDER.
     laststand: {

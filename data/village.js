@@ -475,7 +475,9 @@ FUP.villageData = {
     { sprite: 'prop_beehive', tx: 8, ty: 28, solid: true },
     { sprite: 'deco_signpost', tx: 6, ty: 28, text: "Hollis's Orchard. The apples are for looking at. Hollis counts them every night. Twice." },
     // Plaque wording: the draft from the story chats (2026-11-17). PLACEHOLDER: the final wording is still open.
-    { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL."' },
+    { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL."',
+      // (v1.28) after Glass Q5 it goes back up, bigger (Jesus). PLACEHOLDER text
+      after: { fact: 'quest:glass5', sprite: 'prop_statue_big', text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL." Same words. Bigger letters. You know what\'s under it.' } },
     { sprite: 'prop_bench', tx: 15, ty: 27, solid: true },
     { sprite: 'prop_bench', tx: 19, ty: 27, solid: true },
     { sprite: 'prop_flowerbed', tx: 15, ty: 29 },

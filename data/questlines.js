@@ -744,6 +744,42 @@ Object.assign(FUP.questData.quests, {
         say: 'He listens, and for once doesn\'t interrupt. Then he puts down his pencil. "They weren\'t keeping her out. They were keeping her company."' },
     ] },
 
+  // v1.28: Glass line quest 5, the last (plans/GL5.md, Jesus's picks 2026-11-26). The biggest glass formed where she stood; Foop's statue
+  // was built on that scorch. Planksworth offers to "restore" the statue; the village wants it bigger, so he needs a huge block from the
+  // Old Quarry (data/region_quarry.js; opens once this quest is taken). Jarvin the Stone Warden guards it (data/enemies.js jarvin, gone for
+  // good once beaten). Cut the block; his helpers haul it. He lifts the old base in front of everyone: the Great Glass Shard. At the forge:
+  // cutscene `whole`, after the fire, her alone, crying, the charm glowing behind her doing nothing. The statue goes back up, bigger
+  // (data/village.js statue `after`). Lines are PLACEHOLDERS.
+  //   spare: lost the Great Shard (the grave)? Planksworth has it back until it's used at the forge
+  glass5: { kind: 'story', from: 'carpenter', difficulty: 'hard', length: 'long', name: 'Her, Whole',
+    req: { facts: { 'quest:glass4': 1 } },
+    text: 'Planksworth has a new sketch. It\'s Founder\'s Hill. Specifically, it\'s what\'s under the statue. He won\'t say why he drew it.',
+    reward: { coins: 1000, xp: { melee: 600, building: 1000 }, gear: 'stoneplate' },
+    afterGreet: ['Bigger statue. Bigger lie. I built it straight, at least.', 'Every time someone admires it, I think about what was under it. I let them admire it.'],
+    spare: { item: 'great_shard', npc: 'carpenter', fromStep: 4, untilStep: 5, say: '"Somebody brought this back. Wrapped it in a blanket first. Nobody wants to touch it bare." He hands you the Great Shard.' },
+    steps: [
+      { talk: 'carpenter', log: 'Planksworth thinks the biggest glass is under Foop\'s statue. To get at it, he\'ll "restore" the statue. The village wants it bigger. He needs a huge block from the Old Quarry.',
+        say: '"Every shard so far was where she burned hottest. So where did she stand longest?" He taps the sketch. Founder\'s Hill. "I can\'t just dig up the founder. But I can offer to restore him." He sighs. "I asked around. They want him bigger. Of course they do. For that I need one huge block of stone, and the only stone that big is in the old quarry above the hill road. Nobody\'s been up there in years. There\'s a reason. Nobody remembers it."' },
+      { fight: { region: 'quarry', tx: 15, ty: 5, enemy: 'jarvin', name: 'Jarvin the Stone Warden' },
+        goal: 'Go up past the Old Hill Road clearing into the Old Quarry. Something guards it', log: 'Jarvin the Stone Warden guarded the Old Quarry long after everyone else left. He doesn\'t now.',
+        say: 'Jarvin goes down on one knee, then the other. The plates crack all the way through. "Nobody came," he says. "Nobody ever came to say I could stop." He doesn\'t get up again. The quarry is very quiet.' },
+      { dig: { region: 'quarry', name: 'the quarry face', all: true, pry: 4, spots: [
+          [15, 2, { label: '⛏️ Cut the block', icon: '⛏️', say: 'You find the old wedge lines and follow them. Hours of it. The block comes free with a sound like a door closing. Much too big to carry. That\'s what helpers are for.' }],
+        ] },
+        goal: 'Cut a huge block from the quarry face (the back of the pit)', log: 'You cut one huge block out of the quarry face. Planksworth\'s helpers are hauling it down.',
+        say: 'Planksworth\'s helpers turn up with ropes, rollers and a lot of complaining. The block starts down the hill road, slowly. Go home. They\'ll get there. Eventually.' },
+      { search: { region: 'village', tx: 17, ty: 29, name: 'the statue', label: '🗿 Lift the old base', icon: '🗿' },
+        goal: 'Meet Planksworth at the statue on Founder\'s Hill', log: 'In front of half the village, Planksworth lifted the old base. Under it: the biggest shard of all.',
+        give: { items: { great_shard: 1 } },
+        say: 'Half the village watches Planksworth lever up the old base. Under it: scorched ground, and a sheet of glass as wide as a door. "Old drainage," he says loudly, and slides it to you under a blanket. To find the truth, he had to make the lie bigger.' },
+      { search: { region: 'village', tx: 5, ty: 5, name: 'the forge', label: '🔥 Hold it up', icon: '🔥' }, need: { great_shard: 1 }, take: { great_shard: 1 },
+        notYet: 'You need the Great Glass Shard.', cutscene: 'whole', goal: 'Hold the Great Glass Shard up to the Blacksmith\'s forge',
+        log: 'The great shard showed her after the fire, alone in the ruined square, crying, where the statue stands now. Behind her, the protection charm glowed and did nothing.',
+        say: 'The glass goes dark slowly, like it doesn\'t want to.' },
+      { talk: 'carpenter', log: 'You told Planksworth what the great shard showed. The new statue went up anyway, bigger.',
+        say: 'He listens to all of it. Outside, his helpers are hoisting the new founder into place, twice the size, pointing heroically at nothing. He watches it go up. "That\'s where the statue stands now. No pit. No trap. My family never built anything."' },
+    ] },
+
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',

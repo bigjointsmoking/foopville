@@ -161,8 +161,10 @@ class VillageScene extends Phaser.Scene {
     for (const p of FUP.villageData.props || []) {
       const x = p.tx * T + T / 2, y = p.ty * T + T * 0.92;
       if (p.staff) { this.drawStaffBench(p, x, y); continue; }
-      const s = ui.sprite(this, x, y, p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
-      if (p.text) this.spots.push({ kind: 'read', x, y: p.ty * T + T / 2, sprite: s, label: '📜 Read', text: p.text });
+      const A = p.after && FUP.facts && FUP.facts.has(p.after.fact) ? p.after : null;   // (v1.28) a prop that changes after a quest (the statue, Glass Q5)
+      const s = ui.sprite(this, x, y, A ? A.sprite : p.sprite, '', 10).setOrigin(0.5, 1).setDepth(y);
+      const text = A ? A.text : p.text;
+      if (text) this.spots.push({ kind: 'read', x, y: p.ty * T + T / 2, sprite: s, label: '📜 Read', text });
     }
   }
 
