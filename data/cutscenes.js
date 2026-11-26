@@ -66,6 +66,36 @@ FUP.cutsceneData = {
         { t: 18.4, flash: { color: 'k4', ms: 900 } },
       ],
     },
+    // (v1.25) Glass Q4 "A Meeting": an ordinary day at the high clearing. Gold set out, the elders sitting with her, the translation
+    // spell, talking. No fire, no Foop, no bad day. Pictures cs_clearing / cs_dragon_rest / cs_gold / cs_elder_sit. Captions PLACEHOLDER.
+    // Stage x: the backdrop's stone ring sits at about 800-1560 (centre ~1180); the camera pans across it.
+    meeting: {
+      backdrop: { key: 'cs_clearing', height: 430, bottom: 480 },
+      sky: 'b2', ground: 'g2', pan: [-560, -960], length: 22, tint: 'w5',
+      steps: [
+        { t: 0.2, caption: 'The clearing at the top of the road. Long ago.' },
+        { t: 0.3, add: { id: 'gold', key: 'cs_gold', emoji: '🪙', x: 1180, y: 478, h: 54 } },
+        { t: 0.4, add: { id: 's1', key: 'cs_elder_sit', emoji: '🧙', x: 930, y: 484, h: 84 } },
+        { t: 0.4, add: { id: 's2', key: 'cs_elder_sit', emoji: '🧙', x: 1030, y: 494, h: 90 } },
+        { t: 0.4, add: { id: 's3', key: 'cs_elder_sit', emoji: '🧙', x: 1290, y: 494, h: 88 } },
+        { t: 0.4, add: { id: 's4', key: 'cs_elder_sit', emoji: '🧙', x: 1370, y: 482, h: 82 } },
+        { t: 2.4, sky: { color: 'r2', dur: 4 } },
+        { t: 2.6, add: { id: 'drg', key: 'cs_dragon_rest', emoji: '🐉', x: 1820, y: 610, h: 440, alpha: 0, flip: true, depth: true } },   // the picture has lots of empty space: drawn big and low so she sits on the grass
+        { t: 2.7, fade: { id: 'drg', alpha: 1, dur: 2.6 } },
+        { t: 2.8, move: { id: 'drg', x: 1650, y: 610, dur: 3 } },
+        { t: 3.4, caption: 'She came and settled at the edge of the ring.' },
+        { t: 6.4, caption: 'Gold on the stones. Not payment. Manners.' },
+        { t: 8.4, add: { id: 'e1', key: 'cs_elder_cast', emoji: '🧙', x: 1110, y: 500, h: 150 } },
+        { t: 8.5, ring: { x: 1180, y: 488, w: 620, h: 80, color: 'b4', dur: 2.6 } },
+        { t: 8.6, sfx: 'spell' },
+        { t: 9.4, caption: 'A small spell, so words could go both ways.' },
+        { t: 11.6, fade: { id: 'e1', alpha: 0, dur: 1.2 } },
+        { t: 12.4, embers: { n: 14, dur: 4 } },
+        { t: 12.6, caption: 'They talked. She answered. The stones warmed where she breathed.' },
+        { t: 15.6, caption: 'They had done this many times.' },
+        { t: 19.6, flash: { color: 'k4', ms: 900 } },
+      ],
+    },
     // (v1.24) Staff Q5 "The Last Stand": fitting the head cap at the melted square. The eldest raises the whole staff;
     // the spell cuts out in a white flash of fire. Does NOT show that it worked or needed her fire. Captions PLACEHOLDER.
     laststand: {

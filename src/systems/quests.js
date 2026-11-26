@@ -388,7 +388,8 @@ FUP.quests = {
   doStep(id, npc = null) {
     const st = this.step(id), s = this.state.active[id];
     if (!st) return { line: '', ok: false };
-    { const sp = this.spareFor(id, npc); if (sp) { this.news.push(...this.grant({ items: { [sp.item]: 1 } }, [], id)); return { ok: true, line: sp.say || '' }; } }
+    { const sp = this.spareFor(id, npc); if (sp) { this.news.push(...this.grant({ items: { [sp.item]: sp.n || 1 } }, [], id));   // (v1.25) n: several at once (Glass Q4's 3 shards)
+ return { ok: true, line: sp.say || '' }; } }
     if (st.escort && !s.with) {   // (v1.12) they went home: talk to them there to set off again
       if (npc !== st.escort.npc) return { ok: false, line: '' };
       s.with = true;

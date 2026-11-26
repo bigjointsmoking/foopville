@@ -222,9 +222,10 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFDXW'), {
     // Quest enemies: keep only the ones a quest still wants; beaten ones never respawn as random enemies
     const wanted = new Set((FUP.quests && FUP.quests.foesIn ? FUP.quests.foesIn(id) : []).map(q => q.id));
     A.enemies = A.enemies.filter(e => !(e.questFoe && (!e.alive || !wanted.has(e.questFoe))) && !(e.godfather && !e.alive) && !(e.side && !e.alive));   // side-room guards (E3) come back with the next day's roll
+    const replaced = new Set((FUP.quests && FUP.quests.foesIn ? FUP.quests.foesIn(id) : []).map(q => q.replaces).filter(Boolean));   // (v1.25) stepped aside for a quest
     let n = 0;
     A.enemies.forEach((e, k) => {
-      if (e.alive || e.godfather || now - e.deadAt < R.enemies) return;
+      if (e.alive || e.godfather || now - e.deadAt < R.enemies || (e.fixed && replaced.has(e.fixed))) return;
       const s = e.spot || { tx: Math.floor(e.homeX / T), ty: Math.floor(e.homeY / T) };
       if (!clear(this.center(s.tx, s.ty))) return;
       A.enemies[k] = e.bridge ? { ...this.makeEnemy('goblin', s, a, rng), still: true, bridge: true }

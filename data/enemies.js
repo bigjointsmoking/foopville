@@ -332,6 +332,20 @@ FUP.enemies = {
     signature: { id: 'gate',
       shutMove: { name: 'Gate Shut', type: 'gateShut', tell: '🚪', tellText: 'Shutting his gate (blocks everything)' } },
   },
+  // (v1.25) Glass Q4 "A Meeting" (plans/GL4.md): Gurrow decides you're the password problem and won't move. Quest-only, tougher,
+  // his own level (not the road's x1.6). Same gate trick. While the quest wants him, the everyday Gurrow steps aside (fight.replaces).
+  gurrowQuest: {
+    name: 'Gurrow, the Gate-Troll', emoji: '🧌', size: 140, sprite: 'gurrow', mapSprite: 'gurrow_map',
+    maxHp: 230, atk: 17, def: 9, spd: 9, resolve: 0.40, noCharm: true, questOnly: true, ownLevel: true, level: 22,   // ATK 17: half his moves are spent behind the gate
+    xp: 300, coins: 60, boss: false, weak: 'fire', resists: [],
+    say: { start: 'gurrowQuestStart' },
+    moves: [
+      { name: 'Gatepost Swing', type: 'attack', power: 1.1, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Slab Slam', type: 'attack', power: 1.6, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'gate',
+      shutMove: { name: 'Gate Shut', type: 'gateShut', tell: '🚪', tellText: 'Shutting his gate (blocks everything)' } },
+  },
   // Brannock, the Penitent Ogre: swore long ago to carry his stone to the top. Forgot why. Polite, until you're in the way.
   // Stone: plain Attacks bounce off it (attackMult). Every `every` moves he lifts it (one move of warning: you hit for liftedMult),
   // then throws it. Defend the throw: the stone rolls downhill and he walks after it for rollMoves moves (no stone: normal damage).

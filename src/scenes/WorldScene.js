@@ -297,6 +297,12 @@ class WorldScene extends Phaser.Scene {
     if (!A || !this.enemySprites) return;
     const foes = FUP.quests.foesIn(this.f.area);
     for (const f of foes) {
+      // (v1.25) fight.replaces: the everyday one on this road steps aside while the quest version stands there (Glass Q4's Gurrow)
+      if (f.replaces) A.enemies.forEach((e, i) => {
+        if (e.fixed !== f.replaces || !e.alive) return;
+        e.alive = false;
+        const s = this.enemySprites[i]; if (s) { if (s.mark) s.mark.destroy(); s.destroy(); this.enemySprites[i] = null; }
+      });
       if (!A.enemies.some(e => e.questFoe === f.id && e.alive)) {
         const c0 = FUP.forest.center(f.tx, f.ty);
         const e = { type: f.enemy, group: f.group ? f.group.slice() : null, x: c0.x, y: c0.y, homeX: c0.x, homeY: c0.y, alive: true, still: true, questFoe: f.id };

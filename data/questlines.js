@@ -710,6 +710,38 @@ Object.assign(FUP.questData.quests, {
         say: '"They were pushing her back. Not hurting her. Pushing. And it barely worked." He shows you a sketch: the old streets, the edge, a line of little figures. "I\'m starting to see where everything stood. Not enough to rebuild it. Enough to stop guessing."' },
     ] },
 
+  // v1.25: Glass line quest 4 (plans/GL4.md, Jesus's picks 2026-11-26). His Q3 sketches show a road uphill to nowhere: the Old Hill Road.
+  // Gurrow won't let you by this time (a quest version; the everyday one steps aside: fight.replaces). Clear the growth off the
+  // scorched ring at the clearing (3 shards) → the forge → cutscene `meeting`: an ordinary day, gold set out, the elders sitting
+  // with her, the translation spell. They knew her. No Foop, no bad day. Lines are PLACEHOLDERS.
+  //   spare: lost the shards (the grave)? Planksworth has them back, all 3, until they're used at the forge
+  glass4: { kind: 'story', from: 'carpenter', difficulty: 'hard', length: 'long', name: 'A Meeting',
+    req: { facts: { 'quest:glass3': 1 } },
+    text: 'Planksworth\'s sketches of the old village have a road running off the top of the page. Uphill. To nothing. He can\'t stop looking at it.',
+    reward: { coins: 500, xp: { building: 500 } },
+    afterGreet: ['They sat with her. On purpose. More than once.', 'I keep drawing that ring of stones. I don\'t know why. I do know why.'],
+    spare: { item: 'glass_shard', n: 3, npc: 'carpenter', fromStep: 3, untilStep: 4, say: '"Someone found these by the gate. Glass that warm, everyone knows whose it is." He tips three shards into your hand.' },
+    steps: [
+      { talk: 'carpenter', log: 'Planksworth\'s sketches show an old road running uphill from the old village, to nowhere. He wants to know what was up there.',
+        say: '"Look." He spreads out the sketches: streets, the edge, the line of little figures. And a road, off the top of the page. "Up the hill behind the ruins. To nothing. Nobody builds a road to nothing. Go up it. Bring back whatever burned up there."' },
+      { fight: { region: 'hill', tx: 18, ty: 32, enemy: 'gurrowQuest', name: 'Gurrow, the Gate-Troll', replaces: 'gurrow' },
+        goal: 'Get past Gurrow at the bottom of the Old Hill Road (through the Western Ruins)', log: 'Gurrow wouldn\'t let you up the road. Now he will.',
+        say: 'Gurrow lowers his gate. "...Password accepted," he mutters, which it wasn\'t. He shuffles aside. The road climbs on into the hills.' },
+      { dig: { region: 'hill', name: 'the stone ring', all: true, item: 'glass_shard', pry: 2, spots: [
+          [12, 5, { label: '🌿 Clear the growth', icon: '🌿', say: 'You tear back the brambles. Under them, a curved stone, scorched black, and a shard of glass set in it like a window.' }],
+          [15, 4, { label: '🌿 Clear the growth', icon: '🌿', say: 'More stones under the weeds, set in a ring. Scorched, all of them, on the side facing in. Another shard.' }],
+          [18, 5, { label: '🌿 Clear the growth', icon: '🌿', say: 'The last of the growth comes away. A whole ring of stones, scorched in a ring. Not a fire that burned once. A fire that came back, again and again.' }],
+        ] },
+        goal: 'Clear the growth off the old stone ring at the clearing (3 shards)', log: 'At the top of the road, under the brambles: a ring of scorched stones, and three Glass Shards set in them.',
+        say: 'Three shards, three scorch marks, one ring of stones. Something warm and very large used to sit at the edge of it. Often.' },
+      { search: { region: 'village', tx: 5, ty: 5, name: 'the forge', label: '🔥 Hold them up', icon: '🔥' }, need: { glass_shard: 3 }, take: { glass_shard: 3 },
+        notYet: 'You need all three shards.', cutscene: 'meeting', goal: 'Hold the 3 Glass Shards up to the Blacksmith\'s forge',
+        log: 'The shards showed an ordinary day at the clearing: gold set out, the elders sitting with her, a spell so they could talk.',
+        say: 'The shards go dark one by one. No fire in this one. No screaming. Just talking.' },
+      { talk: 'carpenter', log: 'You told Planksworth about the meeting.',
+        say: 'He listens, and for once doesn\'t interrupt. Then he puts down his pencil. "They weren\'t keeping her out. They were keeping her company."' },
+    ] },
+
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',

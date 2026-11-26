@@ -494,6 +494,7 @@ FUP.narrator = {
   // v1.22: the Old Hill Road (PLACEHOLDER lines; Gurrow's and Brannock's are from Jesus's claude.ai draft)
   gurrowStart: ['Gurrow plants his gate across the road. "Password? ...No. Don\'t tell me. I\'ll know it."'],
   brannockStart: ['Brannock sets his stone down, very politely, right where you were going. "Nearly there. Been nearly there a while."'],
+  gurrowQuestStart: ['Gurrow plants his gate square across the road. "No. Not today. I\'ve thought about it, and you ARE the password problem."'],   // v1.25 Glass Q4 (PLACEHOLDER)
   carrowStart: ['Old Carrow lowers his bow an inch and looks you over. You are not what he\'s hunting. He seems to think you\'ll do.'],
   gateShut: ['The {enemy} swings his gate shut. "Password?" Nothing gets through that. Not even your best idea.', 'The {enemy} hides behind his gate and waits for a password nobody remembers.'],
   gateBlocked: ['Your hit thuds into the gate. The {enemy} looks pleased with his gate.'],
