@@ -316,6 +316,54 @@ FUP.enemies = {
     ],
     signature: { id: 'shell', takenMult: 0.3 },
   },
+  // ---------- The Old Hill Road (v1.22, plans/ST4.md, Lv ~20; the area multiplies these). One of each lives on the road,
+  // standing still at its own spot (data/region_hill.js fixedFoes). Old-folklore figures, sincere, not jokes. Numbers PLACEHOLDER ----------
+  // Gurrow, the Gate-Troll: told to hold a gate and let nobody through without the password. The gate's gone. So's the password.
+  // Gate: every other move he shuts his slab of gate (blocks EVERY hit until his next move); then it swings open and he attacks.
+  gurrow: {
+    name: 'Gurrow, the Gate-Troll', emoji: '🧌', size: 130, sprite: 'gurrow', mapSprite: 'gurrow_map',
+    maxHp: 85, atk: 8, def: 6, spd: 9, resolve: 0.25,
+    xp: 140, coins: 30, boss: false, weak: 'fire', resists: [],
+    say: { start: 'gurrowStart' },
+    moves: [
+      { name: 'Gatepost Swing', type: 'attack', power: 1.1, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Slab Slam', type: 'attack', power: 1.6, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'gate',
+      shutMove: { name: 'Gate Shut', type: 'gateShut', tell: '🚪', tellText: 'Shutting his gate (blocks everything)' } },
+  },
+  // Brannock, the Penitent Ogre: swore long ago to carry his stone to the top. Forgot why. Polite, until you're in the way.
+  // Stone: plain Attacks bounce off it (attackMult). Every `every` moves he lifts it (one move of warning: you hit for liftedMult),
+  // then throws it. Defend the throw: the stone rolls downhill and he walks after it for rollMoves moves (no stone: normal damage).
+  brannock: {
+    name: 'Brannock, the Penitent Ogre', emoji: '🪨', size: 150, sprite: 'brannock', mapSprite: 'brannock_map',
+    maxHp: 130, atk: 9, def: 5, spd: 6, resolve: 0.35,
+    xp: 180, coins: 36, boss: false, weak: 'acid', resists: [],
+    say: { start: 'brannockStart' },
+    moves: [
+      { name: 'Shoulder Shove', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Stone Bump', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'boulder', every: 3, attackMult: 0.15, liftedMult: 2, rollMoves: 2,
+      liftMove: { name: 'Lift the Stone', type: 'liftStone', tell: '🪨', tellText: 'Lifting the stone overhead (hit him now!)' },
+      throwMove: { name: 'Stone Throw', type: 'stoneThrow', power: 2.2, tell: '💥', tellText: 'Throwing the stone (Defend!)' },
+      chaseMove: { name: 'After the Stone', type: 'chaseStone', tell: '🏃', tellText: 'Walking down after his stone' } },
+  },
+  // Old Carrow, the Huntsman: still hunting something that died generations ago. Now he's tracking you.
+  // Mark: every `every` moves (if you're not marked) he marks you; while marked, each of his hits is perStep harder than the last.
+  // Defending clears the mark.
+  carrow: {
+    name: 'Old Carrow, the Huntsman', emoji: '🏹', size: 130, sprite: 'carrow', mapSprite: 'carrow_map',
+    maxHp: 75, atk: 9, def: 3, spd: 15, resolve: 0.20,
+    xp: 150, coins: 32, boss: false, weak: 'frost', resists: [],
+    say: { start: 'carrowStart' },
+    moves: [
+      { name: 'Loosed Arrow', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Heavy Draw', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'mark', every: 3, perStep: 0.25,
+      markMove: { name: "Hunter's Mark", type: 'mark', tell: '🎯', tellText: 'Marking you (Defend clears it)' } },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

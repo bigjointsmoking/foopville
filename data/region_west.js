@@ -10,7 +10,7 @@
 //   #  broken wall / toppled house (can't walk)   =  old street   .  overgrown yard
 //   w  street under a crumbling wall: step in and rubble falls a moment later (src/scenes/WorldRubble.js)
 //   C  the campfire   e  a spot where an enemy MIGHT appear
-// Squares: tx = column, ty = row, from 0 at the top-left. Map is 48 x 28. East gap = rows 13-14 (to the village).
+// Squares: tx = column, ty = row, from 0 at the top-left. Map is 48 x 28. East gap = rows 13-14 (to the village). North gap = cols 6-7 (v1.22: the Old Hill Road).
 // Check with: tests/world_maps.js
 // ============================================================
 window.FUP = window.FUP || {};
@@ -19,8 +19,8 @@ FUP.worldData.areas.west = {
   id: 'west', name: 'Western Ruins',
   tileSize: 40,
   map: [
-    '################################################',
-    '################################################',
+    '######==########################################',
+    '######==########################################',
     '##==========e===============wwwwww==#####=====##',
     '##============.===============e=====#####===e=##',
     '##==##.###==#....#==#....#==#....#==#####==#####',

@@ -491,6 +491,18 @@ FUP.narrator = {
   ],
   ruinRubble: ['A wall gives up. Mostly on you.', 'Rubble. On your head. The ruins have opinions about visitors.', 'The wall falls. You were the floor it chose.'],
   scrapShieldUp: ['The {enemy} hides behind a sheet of scrap. It will be throwing that at you shortly.', 'The {enemy} raises a rusty sheet. Hit it now and you mostly hit scrap.'],
+  // v1.22: the Old Hill Road (PLACEHOLDER lines; Gurrow's and Brannock's are from Jesus's claude.ai draft)
+  gurrowStart: ['Gurrow plants his gate across the road. "Password? ...No. Don\'t tell me. I\'ll know it."'],
+  brannockStart: ['Brannock sets his stone down, very politely, right where you were going. "Nearly there. Been nearly there a while."'],
+  carrowStart: ['Old Carrow lowers his bow an inch and looks you over. You are not what he\'s hunting. He seems to think you\'ll do.'],
+  gateShut: ['The {enemy} swings his gate shut. "Password?" Nothing gets through that. Not even your best idea.', 'The {enemy} hides behind his gate and waits for a password nobody remembers.'],
+  gateBlocked: ['Your hit thuds into the gate. The {enemy} looks pleased with his gate.'],
+  stoneBounce: ['It bounces off the {enemy}\'s stone. He apologises. To the stone.'],
+  stoneLifted: ['The {enemy} heaves the stone overhead. His middle is wide open. So is the stone\'s flight path. Yours.'],
+  stoneRolls: ['You catch the worst of it. The stone rolls off down the hill. The {enemy} sighs and plods after it. "Nearly there," he says, going the wrong way.'],
+  stoneChase: ['The {enemy} is still walking after his stone.'],
+  markSet: ['The {enemy} marks you. You can feel his eyes on the spot between your shoulders.'],
+  markCleared: ['You get your guard up and step out of his sight line. The mark is gone.'],
   shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],
   shellCracked: ['The {enemy}\'s shell cracks open. It looks very soft and very annoyed.', 'Crack! The {enemy} is just a crab now. An angry, naked crab.'],
   forestEnter_marsh: [   // arriving in the Soggy Marsh (W2)

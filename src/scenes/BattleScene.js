@@ -62,6 +62,8 @@ class BattleScene extends Phaser.Scene {
     this.saidShoot = false;
     this.saidBack = false;  // the back-row hint (once a fight)
     this.saidShell = false; // (v1.19) the Rubble Crab's 'shell too tough' hint (once a fight)
+    this.marked = 0;        // (v1.22) Old Carrow's mark on you (0 = none; counts his hits since)
+    this.saidGate = false; this.saidStone = false;   // (v1.22) Gurrow's gate / Brannock's stone hints (once a fight)
     this.sweetGifts = [];   // what Sweet Talk got you this fight (for the results screen)
     this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz'), ranged: FUP.skills.level('ranged') };
     FUP.progressUi.attach(this);
@@ -773,6 +775,7 @@ class BattleScene extends Phaser.Scene {
   doDefend() {
     this.act(() => {
       this.player.defending = true;
+      if (this.marked) { this.marked = 0; this.popup(this.playerSprite, 'MARK CLEARED', 'good', -40); this.say('markCleared', { enemy: 'Huntsman' }); }   // (v1.22) Old Carrow
       if (this.deductMult < 1) this.player.defendMult = 0.75;   // audited: a weak guard
       this.addLimit(FUP.balance.limitPerDefend);
       this.popup(this.playerSprite, 'GUARD', 'info');
@@ -1143,7 +1146,9 @@ class BattleScene extends Phaser.Scene {
     if (this.actSignature(e, m)) {
       // handled: ledger, stance, audit, formation, bodyguard, eating your snack, Last Warning
     } else if (m.type === 'attack' || m.type === 'steal') {
-      const landed = this.strike(e, m.power * (1 + (e.billable || 0)) * this.packMult(e), m.power >= 1.5, !!m.slam, m.counterMult || 1);   // Perfect Block / Riposte can stop it (billable: the Senior Partner)
+      const mk = this.markMult(e);   // (v1.22) Old Carrow: marked, his hits climb
+      const landed = this.strike(e, m.power * (1 + (e.billable || 0)) * this.packMult(e) * mk, m.power * mk >= 1.5, !!m.slam, m.counterMult || 1);
+      if (this.marked && e.signature && e.signature.id === 'mark') this.marked++;   // Perfect Block / Riposte can stop it (billable: the Senior Partner)
       if (landed && m.poison && !this.over) this.addPoison(m.poison);
       if (m.type === 'steal' && landed && !this.over) {
         if (this.satchel.length) {

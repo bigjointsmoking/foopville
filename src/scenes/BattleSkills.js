@@ -120,7 +120,21 @@ Object.assign(BattleScene.prototype, {
         return { blocked: true };
       }
     }
+    // (v1.22) Gurrow's gate, shut: nothing gets through until his next move
+    if (e.gateShut) {
+      this.popup(e.view, '🚪 BLOCKED', 'info');
+      if (!this.saidGate) { this.saidGate = true; this.say('gateBlocked', { enemy: e.name }); }
+      FUP.audio.sfx('guard');
+      return { blocked: true };
+    }
     if (e.fake || o.kind === 'counter' || o.kind === 'limit') return { mult: 1 };
+    // (v1.22) Brannock's stone: plain Attacks bounce off it (not while he's lifting it, or chasing it)
+    const BS = e.signature && e.signature.id === 'boulder' ? e.signature : null;
+    if (BS && o.kind === 'attack' && !e.lifted && !(e.rolling > 0)) {
+      this.popup(e.view, '🪨 BOUNCES', 'info');
+      if (!this.saidStone) { this.saidStone = true; this.say('stoneBounce', { enemy: e.name }); }
+      return { mult: BS.attackMult };
+    }
     // Phase D: Paper Moths dodge; after an Ink Splash your hits can miss
     const miss = (e.dodge || 0) * (o.ranged ? FUP.rangedData.dodgeMult : 1) + (this.inked > 0 ? this.inkMiss : 0);   // shots: moths dodge half as often (Jesus, v1.01)
     if (miss > 0 && Math.random() < miss) {
@@ -161,6 +175,7 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'bodyguard' && this.liveReal().some(o => o.bodyguard)) m *= sig.takenMult;
     if (sig && sig.id === 'scrapShield' && e.shieldUp) m *= sig.takenMult;   // (v1.19) the Scrap Goblin hides behind scrap
     if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
+    if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -233,6 +248,12 @@ Object.assign(BattleScene.prototype, {
     if (!sig || sig.id !== 'pack') return 1;
     return 1 + sig.per * this.liveReal().filter(o => o !== e && o.key === e.key).length;
   },
+  // (v1.22) Old Carrow's mark: each of his hits while you're marked is perStep harder than the last
+  markMult(e) {
+    const sig = e.signature;
+    if (!sig || sig.id !== 'mark' || !this.marked) return 1;
+    return 1 + sig.perStep * (this.marked - 1);
+  },
   // (v1.19) The Rubble Crab's shell cracks on a Skill or a critical hit (then it takes normal damage)
   crackShell(e, kind, crit) {
     const sig = e.signature;
@@ -254,6 +275,13 @@ Object.assign(BattleScene.prototype, {
       if (e.throwNext) { e.throwNext = false; return sig.throwMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.shieldMove;
     }
+    if (sig.id === 'gate' && e.movesDone % 2 === 0) return sig.shutMove;    // (v1.22) Gurrow: shut, open, shut...
+    if (sig.id === 'boulder') {   // (v1.22) Brannock: chasing his stone / throwing it / lifting it every `every` moves
+      if (e.rolling > 0) return sig.chaseMove;
+      if (e.throwNext) { e.throwNext = false; return sig.throwMove; }
+      if ((e.movesDone + 1) % sig.every === 0) return sig.liftMove;
+    }
+    if (sig.id === 'mark' && !this.marked && e.movesDone % sig.every === 0) return sig.markMove;   // (v1.22) Old Carrow
     if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
     if (sig.id === 'windup' && (e.movesDone + 1) % sig.every === 0) return sig.move;   // the Moss Bear's big swipe (v0.93)
     if (sig.id === 'bodyguard') {
@@ -269,7 +297,7 @@ Object.assign(BattleScene.prototype, {
 
   // Start of an enemy's turn: burning hurts, and last move's guard / audit ends. Returns false if it died.
   enemyTurnStart(e) {
-    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false;   // (v1.19) the Scrap Goblin's shield lasts until its next move
+    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false;   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
     // The Mosquito Intern's Overtime: the last one standing hits harder (Marsh, W2)
     const sig = e.signature;
     if (sig && sig.id === 'overtime' && !e.overtime && this.startCount > 1 && this.liveReal().length === 1) {
@@ -324,6 +352,38 @@ Object.assign(BattleScene.prototype, {
         this.popup(e.view, '🛡️ SCRAP SHIELD', 'info');
         this.say('scrapShieldUp', { enemy: e.name });
         FUP.audio.sfx('guard');
+        return true;
+      case 'gateShut':   // (v1.22) Gurrow: blocks every hit until his next move
+        e.gateShut = true;
+        this.popup(e.view, '🚪 GATE SHUT', 'info');
+        this.say('gateShut', { enemy: e.name });
+        FUP.audio.sfx('guard');
+        return true;
+      case 'liftStone':   // (v1.22) Brannock: wide open until the throw
+        e.lifted = true; e.throwNext = true;
+        this.popup(e.view, '🪨 STONE UP', 'info');
+        this.say('stoneLifted', { enemy: e.name });
+        return true;
+      case 'stoneThrow': {   // Defend it and the stone rolls away downhill; he follows it
+        const guarded = p.defending;
+        e.lifted = false;
+        this.strike(e, m.power, true);
+        if (guarded && !this.over && !e.gone) {
+          e.rolling = e.signature.rollMoves;
+          this.bigMoment('IT ROLLS AWAY!', FUP.ui.colors.good);
+          this.say('stoneRolls', { enemy: e.name });
+        }
+        return true;
+      }
+      case 'chaseStone':
+        e.rolling = Math.max(0, (e.rolling || 0) - 1);
+        this.popup(e.view, e.rolling ? '🏃 STILL CHASING' : '🪨 GOT IT BACK', 'info');
+        if (e.rolling) this.say('stoneChase', { enemy: e.name });
+        return true;
+      case 'mark':   // (v1.22) Old Carrow: his hits climb while you're marked; Defend clears it
+        this.marked = 1;
+        this.popup(this.playerSprite, '🎯 MARKED', 'bad', -40);
+        this.say('markSet', { enemy: e.name });
         return true;
       case 'ledger':
         e.ledger = true;

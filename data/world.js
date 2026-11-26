@@ -55,7 +55,11 @@ FUP.worldData = {
     // v1.19: the Western Ruins, part of the old village never reclaimed (Glass Q3). Map in data/region_west.js
     west:      { name: 'Western Ruins', kind: 'danger', scene: 'World', box: { col: -1, row: 3 }, band: [12, 16], dropTier: 2,
                  respawn: { enemies: 540 },   // 9 min
-                 features: ['enemies', 'fog', 'campfire', 'objects'], links: { E: { to: 'village', edge: 'W' } } },
+                 features: ['enemies', 'fog', 'campfire', 'objects'], links: { E: { to: 'village', edge: 'W' }, N: { to: 'hill', edge: 'S' } } },   // v1.22: N = the Old Hill Road
+    // v1.22: the Old Hill Road, from the back of the Western Ruins up to the high clearing (Staff Q4). Map in data/region_hill.js
+    hill:      { name: 'Old Hill Road', kind: 'danger', scene: 'World', box: { col: -1, row: 2 }, band: [18, 22], dropTier: 3,
+                 respawn: { enemies: 540 },   // 9 min (PLACEHOLDER)
+                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'west', edge: 'N' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },

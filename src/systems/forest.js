@@ -89,6 +89,8 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFDXW'), {
     const enemies = !on('enemies') ? [] : shuffle(this.find('e')).slice(0, a.enemiesPerRun).map(s => this.makeEnemy(this.pickWeighted(a.enemyTypes, rng), s, a, rng));
     // The Toll Bridge: a Moss Goblin always stands on "B" and never wanders off it
     if (on('enemies')) for (const s of this.find('B')) enemies.push({ ...this.makeEnemy('goblin', s, a, rng), still: true, bridge: true });
+    // (v1.22) The Old Hill Road: one of each named foe on its own square, standing its ground (area.fixedFoes: { char: enemy })
+    if (on('enemies')) for (const [ch, type] of Object.entries(a.fixedFoes || {})) for (const s of this.find(ch)) enemies.push({ ...this.makeEnemy(type, s, a, rng), still: true, fixed: type });
     // The hidden hole: one of the "H" spots, picked once and kept (E1a, Jesus: it stays where you find it)
     const holes = this.find('H');
     const hole = holes.length ? holes[Math.floor(rng() * holes.length)] : null;
@@ -226,6 +228,7 @@ FUP.forest = Object.assign(FUP.tilemap(() => FUP.forest.area(), '#~rFDXW'), {
       const s = e.spot || { tx: Math.floor(e.homeX / T), ty: Math.floor(e.homeY / T) };
       if (!clear(this.center(s.tx, s.ty))) return;
       A.enemies[k] = e.bridge ? { ...this.makeEnemy('goblin', s, a, rng), still: true, bridge: true }
+        : e.fixed ? { ...this.makeEnemy(e.fixed, s, a, rng), still: true, fixed: e.fixed }   // (v1.22) the same one comes back
         : this.makeEnemy(this.pickWeighted(a.enemyTypes, rng), s, a, rng);
       n++;
     });
