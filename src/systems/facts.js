@@ -37,6 +37,7 @@ FUP.facts = {
       boss: FUP.enemies, kill: FUP.enemies,
       quest: FUP.questData && FUP.questData.quests,
     }[prefix];
+    if (prefix === 'logDone') { const pg = FUP.logData && FUP.logData.pages.find(p => p.id === id); return pg ? pg.name : id; }   // (v1.34) collection log pages
     return (from && from[id] && from[id].name) || id;
   },
 };

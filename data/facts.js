@@ -20,6 +20,7 @@ FUP.factData = {
     'got:rightForm': 'Find the Right Form (the Vault, under the Old Storehouse)',   // Phase D
     'road:east': 'Get past the Bog Notary',
     'vault:open': 'Open the iron door in the Guardian\'s Hall',
+    'title:witness': 'Help the Quest Board Keeper with His First Quest',   // (v1.34: showed as "title:witness")
   },
   // Fallback by prefix. {name} = the thing's own name (enemy, quest...) or its id.
   prefixes: {
@@ -28,5 +29,6 @@ FUP.factData = {
     quest: 'Finish "{name}"',
     repair: 'Repair: {name}',
     region: 'Visit {name}',
+    logDone: 'Fill the {name} page of the 📖 Collection log',   // (v1.34: showed as "logDone:fish")
   },
 };
