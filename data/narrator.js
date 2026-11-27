@@ -401,6 +401,11 @@ FUP.narrator = {
   allyDown: ['The Assayer goes down. You both get up, dust off and try that again. The wolf looks delighted.'],
   allyCovered: ['You step in front of the Assayer and take it. Heroic. Painful.'],
   // v1.39 the Causeway Serpent (OT-B). PLACEHOLDER lines
+  // v1.40 Old Cinderback (OT-C). PLACEHOLDER lines
+  cinderStart: ['Something huge backs out of the roots. Its stripes glow like coals. It has been eating very well.', 'A badger. Of course. Why would it be a small one.'],
+  cinderGlow: ['Its stripes glow hotter. The air around it shimmers.', 'Old Cinderback burns brighter. Something is coming. Defend.'],
+  cinderHot: ['Old Cinderback burns white-hot.'],
+  cinderWin: ['It stops moving. The orange goes out of its stripes, one ember at a time.'],
   serpentStart: ['The water under the old causeway bulges. Then it keeps bulging. Then it has teeth.', 'Something long and scaled rises out of the channel. It was here first. It would like you to know that.'],
   serpentPhase1: ['Phase 2: Deep Water. It spends more time under than over. You spend more time worried.'],
   serpentPhase2: ['Phase 3: Thrashing. It\'s hurt, and it\'s barely staying up long enough to bite.'],

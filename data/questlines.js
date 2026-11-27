@@ -286,6 +286,36 @@ Object.assign(FUP.questData.quests, {
         sayIf: { guessed: 'Your soup. Not hers. She\'d have liked that. Put your name on it. ...That taste, though. She used to sit me down with a bowl and tell me about the dragon. "She wasn\'t roaring," she\'d say. "She was sobbing." Like she\'d seen it.' } },
     ] },
 
+  // v1.40 (plans/OT.md OT-C, plans/OT3-5_lines_draft.md approved): the Old-timer's Q3. Night raids on the village stores:
+  // three damage spots, then The Bowl's old tracking route (Forest Edge, Toll Road) to the scorched dead tree in the Deep Woods.
+  // Old Cinderback fights at its den and dies. Spots PLACEHOLDERS.
+  oldtimer3: { kind: 'story', from: 'oldtimer', difficulty: 'medium', length: 'long', name: 'The Thing From the Fire',
+    req: { skills: { melee: 12 }, facts: { 'quest:grandmaSoup': 1 } },
+    text: 'Something big has been in the village stores at night. Scorched claw marks. The Old-timer has a theory. Nobody else wants it.',
+    reward: { coins: 300, xp: { melee: 300 } },
+    afterGreet: ['So Gran was right. All those years they laughed.', 'The stores are safe. I keep checking anyway. Habit.'],
+    steps: [
+      { talk: 'oldtimer', log: 'Something huge raids the stores at night. The Old-timer thinks it\'s Gran\'s "thing from the fire".',
+        say: '"Something\'s been in the stores at night. Big. Scorched claw marks. Gran\'s story. The thing that came out of the fire. It\'s still alive." A giant badger. Of course. Why would it be a small one.' },
+      { search: { region: 'village', tx: 20, ty: 36, name: 'Pip\'s seed store' }, goal: 'Look at the damage: Pip\'s seed store',
+        log: 'Pip\'s seed store: every sack opened, then eaten.', say: 'Every sack opened. Neatly. Then eaten. Not neatly. Pip, from behind his stall: "It ate the sacks too."' },
+      { search: { region: 'village', tx: 7, ty: 8, name: 'Marrowbone\'s kitchen door' }, goal: 'Look at the damage: Marrowbone\'s kitchen',
+        log: 'Marrowbone\'s kitchen door: black, burned scratches.', say: 'The kitchen door is covered in black, burned scratches. Marrowbone: "It took the stew. And the pot. I liked that pot."' },
+      { search: { region: 'village', tx: 10, ty: 40, name: 'the farm fence' }, goal: 'Look at the damage: the farm fence',
+        log: 'Under the farm fence: warm earth where something dug through.', say: 'Something dug under the fence here. The ground is still warm. That\'s not a thing ground does.' },
+      { search: { region: 'edge', tx: 4, ty: 14, name: 'huge paw prints' }, goal: 'Follow the tracks into the Forest Edge',
+        log: 'Huge paw prints in the Forest Edge, the grass singed around them.', say: 'Huge paw prints. The grass around them is singed.' },
+      { search: { region: 'tollroad', tx: 6, ty: 19, name: 'the tracks' }, goal: 'Follow the tracks across the Goblin Toll Road',
+        log: 'The tracks cross the Toll Road toward the Deep Woods.', say: 'The tracks cross the road. The goblins have stopped charging tolls on this bit. Wise.' },
+      { search: { region: 'deepwoods', tx: 33, ty: 14, name: 'the scorched dead tree' }, goal: 'Follow the tracks to the scorched dead tree in the Deep Woods',
+        log: 'Under the scorched dead tree, something breathes.', say: 'Under the Big Dead Tree, something breathes. The roots glow orange with it.' },
+      { fight: { region: 'deepwoods', tx: 32, ty: 13, enemy: 'cinderback', name: 'Old Cinderback' },
+        goal: 'Fight the thing under the tree (when it glows white-hot, Defend)', log: 'Old Cinderback is dead.',
+        say: 'It lies still. The glow fades out of its stripes, slowly, like a fire going out. It was there that day. Now nothing is.' },
+      { talk: 'oldtimer', log: 'The Old-timer\'s family story was true.',
+        say: '"So Gran was right. All those years they laughed." A long pause. "I thought I\'d feel better." You were right to do it. It doesn\'t feel like it.' },
+    ] },
+
   // ---------------- Pip the Seed Seller ----------------
   // Pip believes nothing he hasn't seen. Not dragons, not the sea.
   neverSeenSea: { kind: 'quest', from: 'seeds', difficulty: 'easy', length: 'medium', name: 'Never Seen the Sea',

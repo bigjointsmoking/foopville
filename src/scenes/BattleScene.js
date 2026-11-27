@@ -1085,7 +1085,7 @@ class BattleScene extends Phaser.Scene {
     const bossDead = this.killed.some(k => k.boss);
     if (bossDead) { this.say((this.killed.find(k => k.boss).say || {}).win || 'bossWin'); this.endBattle('boss', true); return; }
     this.endBattle(this.killed.length || !this.charmed.length ? 'win' : 'charmed', true);   // (a Debt Runner that ran off: still 'win')
-    if (this.killed.length) this.say('win', { enemy: this.killed[this.killed.length - 1].name });
+    if (this.killed.length) { const k = this.killed[this.killed.length - 1]; this.say((k.say && k.say.win) || 'win', { enemy: k.name }); }   // (v1.40) a foe can have its own win line (Old Cinderback)
   }
 
   // ---------- Enemy turns ----------

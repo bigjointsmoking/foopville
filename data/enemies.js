@@ -473,6 +473,22 @@ FUP.enemies = {
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.
+  // v1.40 (plans/OT.md OT-C): Old Cinderback, the Old-timer's Q3. An ordinary badger that crawled out of Dragonsafe's ashes;
+  // her fire soaked into it and it grew huge over generations. Quest-only, boss-strength (Melee ~12-16). It dies when beaten.
+  // Glows hotter as it's hurt: each time it glows up (below 66% and 33% HP) its next move is the white-hot swipe (Defend it:
+  // Perfect Block counter); at its brightest the swipe comes every 3rd move. Name Jesus's; numbers and lines PLACEHOLDERS.
+  cinderback: {
+    name: 'Old Cinderback', emoji: '🦡', size: 150, sprite: 'cinderback', mapSprite: 'cinderback_map',
+    maxHp: 280, atk: 12, def: 6, spd: 10, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 15,
+    xp: 300, coins: 0, boss: false, weak: 'frost', resists: ['fire'],
+    say: { start: 'cinderStart', win: 'cinderWin' },
+    moves: [
+      { name: 'Scorched Claws', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Burrowing Bite', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'glow', stages: [0.66, 0.33], hotEvery: 3, tints: ['#ffb060', '#fff0c0'],
+      move: { name: 'White-Hot Swipe', type: 'attack', power: 2.4, counterMult: 2, tell: '🔥', tellText: 'WHITE-HOT (Defend!)' } },
+  },
   ashWolf: {
     name: 'Ash-Grey Wolf', emoji: '🐺', size: 120, sprite: 'wolf', mapSprite: 'wolf_map',
     maxHp: 170, atk: 11, def: 5, spd: 14, resolve: 0.30,

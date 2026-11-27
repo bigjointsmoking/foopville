@@ -309,6 +309,18 @@ Object.assign(BattleScene.prototype, {
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
     }
+    if (sig.id === 'glow') {   // (v1.40) Old Cinderback: glows up as it's hurt (its next move is the white-hot swipe); at its brightest, every `hotEvery`
+      const stage = sig.stages.filter(t => e.hp / e.maxHp < t).length;
+      if (e.glowStage && e.pic && e.pic.setTint) e.pic.setTint(Phaser.Display.Color.HexStringToColor(sig.tints[e.glowStage - 1]).color);   // a hit flash may have cleared it
+      if (stage > (e.glowStage || 0)) {
+        e.glowStage = stage;
+        if (e.pic && e.pic.setTint) e.pic.setTint(Phaser.Display.Color.HexStringToColor(sig.tints[stage - 1]).color);
+        this.bigMoment(stage === sig.stages.length ? 'WHITE-HOT!' : 'GLOWING!', FUP.ui.colors.bad);
+        this.say(stage === sig.stages.length ? 'cinderHot' : 'cinderGlow', { enemy: e.name });
+        return sig.move;
+      }
+      if (stage === sig.stages.length && (e.movesDone + 1) % sig.hotEvery === 0) return sig.move;
+    }
     if (sig.id === 'vanish') {   // (v1.31) Old Whitepaw: vanish every `every` moves (more often when hurt), then pounce
       if (e.pounceNext) return sig.pounceMove;
       if (e.noSinkNext) { e.noSinkNext = false; return null; }   // (v1.39) forced up by a dish: one normal move first
