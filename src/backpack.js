@@ -143,6 +143,12 @@ FUP.backpack = {
     const n0 = FUP.spell.count();
     add(ui.text(s, PX + PW / 2, y0 + size + 30, n0 ? D.lines[Math.min(n0, D.lines.length) - 1] : 'Empty. The old stories in the village might fill it. Somebody should ask around.', 14, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: PW - 160 } }).setOrigin(0.5, 0), 2);
     add(ui.text(s, PX + PW / 2, y0 + size + 100, 'Pieces stay with you even if you die. The spell does nothing until it\'s whole.', 12, c.dim, { align: 'center' }).setOrigin(0.5, 0), 2);
+    // (v1.32) Keepsakes (data/spell.js keepsakes): the First Spark, from Ash Q5
+    const keeps = (D.keepsakes || []).filter(k => FUP.facts && FUP.facts.has(k.fact));
+    if (keeps.length) {
+      add(ui.text(s, PX + PW / 2, y0 + size + 136, 'KEEPSAKES', 13, c.dim, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+      keeps.forEach((k, i) => add(ui.text(s, PX + PW / 2, y0 + size + 160 + i * 24, `${k.emoji} ${k.name}: ${k.text}`, 13, c.accent, { align: 'center', wordWrap: { width: PW - 120 } }).setOrigin(0.5, 0), 2));
+    }
   },
 
   drawWardrobe(bp, add, btn, PX, PY, PW) {

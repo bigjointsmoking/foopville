@@ -478,6 +478,9 @@ FUP.villageData = {
     { sprite: 'prop_beehive', tx: 8, ty: 28, solid: true },
     { sprite: 'deco_signpost', tx: 6, ty: 28, text: "Hollis's Orchard. The apples are for looking at. Hollis counts them every night. Twice." },
     // Plaque wording: the draft from the story chats (2026-11-17). PLACEHOLDER: the final wording is still open.
+    // (v1.32) Ash Q5: one plain brown patch on Pip's black plot, and the elders' tool hanging by Pip's stall (only after the quest)
+    { sprite: null, tx: 53, ty: 55, after: { fact: 'quest:ash5', sprite: 'prop_brown_patch', text: 'One square of plain brown dirt in the middle of the black. Pip waters it every morning. Nothing grows. He waters it anyway.' } },
+    { sprite: null, tx: 20, ty: 38, after: { fact: 'quest:ash5', sprite: 'prop_tool_hook', text: 'The elders\' tool hangs on a hook by Pip\'s stall, glowing faintly. A sign under it: NOT FOR SALE. NOT A BACK SCRATCHER.' } },
     { sprite: 'prop_statue', tx: 17, ty: 28, solid: true, text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL."',
       // (v1.28) after Glass Q5 it goes back up, bigger (Jesus). PLACEHOLDER text
       after: { fact: 'quest:glass5', sprite: 'prop_statue_big', text: 'The plaque reads: "IN HONOR OF SIR REGINALD FOOP, WHO ENDED THE DRAGON. WE ARE FOREVER GRATEFUL." Same words. Bigger letters. You know what\'s under it.' } },

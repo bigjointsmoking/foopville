@@ -10,6 +10,11 @@
 window.FUP = window.FUP || {};
 
 FUP.spellData = {
+  // (v1.32) Keepsakes: magic you've found that isn't a piece of the page. Shown under the page while you have the fact.
+  // Facts survive a Normal-mode death; Hardcore (a new life) wipes them (Jesus, Ash Q5). PLACEHOLDER text.
+  keepsakes: [
+    { fact: 'keepsake:spark', emoji: '✨', name: 'The First Spark', text: 'A little of her fire, drawn out of Pip\'s field. Warm. It does nothing yet.' },
+  ],
   size: 7,                      // slots on the page (Jesus: 7; Phase C fills 3)
   storageKey: 'fupville_spell', // browser storage (survives death and a new life)
   title: 'An Old Spell',

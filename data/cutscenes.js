@@ -96,6 +96,33 @@ FUP.cutsceneData = {
         { t: 19.6, flash: { color: 'k4', ms: 900 } },
       ],
     },
+    // (v1.32) Ash Q5 "Full Ground": at Pip's dead plot at dusk, the elders' tool is drawn across the ash. Orange light crawls up into it and
+    // gathers in the cupped hand as one spark; one patch turns plain brown. The field is NOT fixed. Pip watches.
+    // Pictures cs_plot / cs_rod / cs_spark / cs_patch (+ Pip's own picture). Captions PLACEHOLDER. Stage x: the plot spans about 300-1200.
+    spark: {
+      backdrop: { key: 'cs_plot', height: 430, bottom: 480 },
+      sky: 'w4', ground: 'k1', pan: [-120, -320], length: 18, tint: 'w5',
+      steps: [
+        { t: 0.2, caption: 'Pip\'s old plot. Dusk.' },
+        { t: 0.3, add: { id: 'pip', key: 'npc_seeds', emoji: '🌰', x: 520, y: 476, h: 120 } },
+        { t: 0.4, add: { id: 'rod', key: 'cs_rod', emoji: '🪄', x: 900, y: 470, h: 150, alpha: 0 } },
+        { t: 0.8, fade: { id: 'rod', alpha: 1, dur: 1.2 } },
+        { t: 2.4, caption: 'Dead ground isn\'t empty.' },
+        { t: 3.4, move: { id: 'rod', x: 760, y: 470, dur: 3 } },
+        { t: 3.6, embers: { n: 18, dur: 5 } },
+        { t: 3.8, ring: { x: 780, y: 480, w: 260, h: 40, color: 'x', dur: 3 } },
+        { t: 5.4, caption: 'It came up slowly, like it didn\'t want to.' },
+        { t: 7.6, add: { id: 'spark', key: 'cs_spark', emoji: '✨', x: 740, y: 474, h: 34, alpha: 0 } },   // in the cupped hand at the bottom of the rod
+        { t: 7.7, fade: { id: 'spark', alpha: 1, dur: 1.4 } },
+        { t: 9.4, move: { id: 'spark', x: 740, y: 430, dur: 2.4 } },   // it lifts a little
+        { t: 8.0, sfx: 'spell' },
+        { t: 8.6, add: { id: 'patch', key: 'cs_patch', emoji: '🟫', x: 800, y: 496, h: 60, alpha: 0 } },
+        { t: 8.7, fade: { id: 'patch', alpha: 1, dur: 2 } },
+        { t: 9.6, caption: 'One spark. Hers.' },
+        { t: 12.6, caption: 'Under it, one patch of plain brown dirt. The rest stayed black.' },
+        { t: 16.4, flash: { color: 'k4', ms: 900 } },
+      ],
+    },
     // (v1.28) Glass Q5 "Her, Whole": the Great Shard from under Foop's statue. After the fire, the square ruined and quiet, she stands
     // alone where the statue is now, crying. Behind her the protection charm glows, set and never set off, doing nothing. No Foop.
     // Pictures cs_square_ruin / cs_dragon_cry / cs_charm. Captions PLACEHOLDER. Stage x: the charm at 560, her at 920; the camera ends showing about 360-1260.

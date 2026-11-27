@@ -488,6 +488,38 @@ Object.assign(FUP.questData.quests, {
         say: 'Pip listens to all of it without interrupting once, which has never happened. Then: "So we need a pelt off something nobody\'s ever touched. Fine. I\'ve grown worse things." He hasn\'t. Here\'s your money.' },
     ] },
 
+  // v1.32: the Ash line, quest 5, the last (plans/AL5.md, Jesus's picks 2026-11-26). Old Whitepaw at its cave (data/enemies.js whitepaw,
+  // gone for good). The pelt to Lord Ormsby for the "back scratcher": really a rod of the elders' dark wood with a carved cupped hand.
+  // At Pip's plot (Pip there): cutscene `spark`. One spark drawn out of her ash (a keepsake, never lost: fact keepsake:spark, backpack);
+  // one patch goes plain brown (data/village.js prop `after`). The field is NOT fixed. Pip keeps the tool (by his stall). Lines PLACEHOLDER
+  // except Pip's closing line (approved).
+  ash5: { kind: 'story', from: 'seeds', difficulty: 'hard', length: 'long', name: 'Full Ground',
+    req: { facts: { 'quest:ash4': 1 } },
+    text: 'Pip has run out of ways to put it off. He\'s written "PELT" on a piece of paper and pinned it to his stall, facing you.',
+    reward: { coins: 1000, xp: { melee: 600, gardening: 600 }, fact: 'keepsake:spark', perk: '✨ The First Spark (a keepsake: 🎒 backpack, ✨ Spell page)' },
+    afterGreet: ['I always said it never happened. I still say it sometimes. Out of habit.', 'One brown patch. I water it. Nothing grows. I water it anyway.'],
+    spare: [
+      { item: 'whitepaw_pelt', npc: 'seeds', fromStep: 2, untilStep: 3, say: '"Someone dragged this to my stall in the night. Didn\'t leave a name. Left a lot of fur." He hands you the pelt.' },
+      { item: 'back_scratcher', npc: 'seeds', fromStep: 3, untilStep: 4, say: '"Ormsby\'s man brought this down. Said his lord didn\'t want it back, he\'s got a pelt now." He hands it over, at arm\'s length.' },
+    ],
+    steps: [
+      { talk: 'seeds', log: 'Pip is ready, or as ready as he gets. Bring back Old Whitepaw\'s pelt.',
+        say: '"I\'ve been putting this off. I\'ve been very good at it." He looks at the north road. "The cat. The cave. The pelt. Go on. I\'ll be here, being brave from a distance."' },
+      { fight: { region: 'highsnows', tx: 20, ty: 5, enemy: 'whitepaw', name: 'Old Whitepaw' },
+        goal: 'Climb the High Snows to Old Whitepaw\'s cave (when it vanishes, Defend)', log: 'Old Whitepaw is dead. You have its pelt.',
+        say: 'The great cat lies down in the snow outside its cave, slowly, the way old things do. It doesn\'t get up. The snow starts covering it straight away. You take the pelt. It\'s heavier than it looks.',
+        give: { items: { whitepaw_pelt: 1 } } },
+      { bring: { whitepaw_pelt: 1 }, to: 'ts_ormsby', log: 'Lord Ormsby took the pelt and handed over the back scratcher: a rod of dark wood with a carved cupped hand, warm.',
+        say: 'Ormsby holds the pelt up to the light. "THE Old Whitepaw. They\'ll choke on their soup." He hands over the back scratcher without looking at it. Up close: a long rod of strange dark wood, ending in a small carved cupped hand. Warm. Not for scratching. It never was.',
+        give: { items: { back_scratcher: 1 } } },
+      { search: { region: 'village', tx: 53, ty: 55, name: 'Pip\'s old plot', label: '🪄 Draw it across the ash', icon: '🪄' }, guest: { region: 'village', tx: 51, ty: 55, npc: 'seeds' },
+        need: { back_scratcher: 1 }, take: { back_scratcher: 1 }, notYet: 'You need the back scratcher.', cutscene: 'spark',
+        goal: 'Take the back scratcher to Pip\'s old plot (Pip is waiting there)', log: 'At Pip\'s plot the tool drew one spark out of the ash. One patch went plain brown. Pip kept the tool.',
+        say: 'The spark sits in your hand, warm, the size of a seed. The patch under the tool is plain brown dirt now. The rest of the plot is as black as ever. Pip takes the tool from you very carefully and doesn\'t say anything for a long time.' },
+      { talk: 'seeds', log: 'Pip\'s field isn\'t fixed. But it isn\'t empty either.',
+        say: 'Pip turns the tool over in his hands. "I always said it never happened. I was wrong about that. I\'m starting to think everyone\'s wrong about the rest of it too."' },
+    ] },
+
   // v1.13: the Glass line (the Carpenter), quests 1-2 (story/MAIN_QUEST_LINE.md Glass line arc, archive/plans-done/GL1.md).
   // A shard shows its moment only at the Blacksmith's forge: a cutscene (data/cutscenes.js) that plays once. Lines are PLACEHOLDERS.
   glass1: { kind: 'story', from: 'carpenter', difficulty: 'easy', length: 'short', name: 'Melted Stone',
