@@ -481,13 +481,30 @@ FUP.enemies = {
     name: 'Old Cinderback', emoji: '🦡', size: 150, sprite: 'cinderback', mapSprite: 'cinderback_map',
     maxHp: 280, atk: 12, def: 6, spd: 10, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 15,
     xp: 300, coins: 0, boss: false, weak: 'frost', resists: ['fire'],
-    say: { start: 'cinderStart', win: 'cinderWin' },
+    say: { start: 'cinderStart', win: 'cinderWin', counter: 'bigCounter' },
     moves: [
       { name: 'Scorched Claws', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
       { name: 'Burrowing Bite', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
     ],
     signature: { id: 'glow', stages: [0.66, 0.33], hotEvery: 3, tints: ['#ffb060', '#fff0c0'],
       move: { name: 'White-Hot Swipe', type: 'attack', power: 2.4, counterMult: 2, tell: '🔥', tellText: 'WHITE-HOT (Defend!)' } },
+  },
+  // v1.41 (plans/OT.md OT-D): Old Mossback, the Old-timer's Q4. A giant old snapping turtle in the flooded stone shelter on the
+  // old road east through the Marsh. A plain animal, no dragon magic. Quest-only, Hard (~Melee 20). Beaten, it retreats into the water.
+  // Every `every` moves it pulls into its shell (you do x`takenMult` damage), then comes out with a big snap: Defend it (counter x2).
+  // Name Jesus's; numbers and lines PLACEHOLDERS.
+  mossback: {
+    name: 'Old Mossback', emoji: '🐢', size: 170, sprite: 'mossback', mapSprite: 'mossback_map',
+    maxHp: 420, atk: 15, def: 9, spd: 7, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 21,
+    xp: 500, coins: 0, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'mossbackStart', win: 'mossbackWin', counter: 'bigCounter' },
+    moves: [
+      { name: 'Snapping Lunge', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Shell Shove', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'tuck', every: 4, takenMult: 0.1,
+      tuckMove: { name: 'Into the Shell', type: 'tuck', tell: '🐢', tellText: 'Pulling into its shell' },
+      snapMove: { name: 'The Big Snap', type: 'snap', power: 2.6, counterMult: 2, tell: '💥', tellText: 'BIG SNAP (Defend!)' } },
   },
   ashWolf: {
     name: 'Ash-Grey Wolf', emoji: '🐺', size: 120, sprite: 'wolf', mapSprite: 'wolf_map',

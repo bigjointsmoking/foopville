@@ -52,7 +52,7 @@ FUP.worldData.areas.east = {
   ],
   fish: { F: 'tollRiver', '~': 'tollRiver' },   // PLACEHOLDER: the Toll River's fish until the town gets its own
   // Townsfolk (their windows: data/village.js npcs + src/scenes/VillagePanels.js)
-  npcs: [{ id: 'receiver', tx: 18, ty: 7 }, { id: 'clerk', tx: 8, ty: 11 }, { id: 'pennywise', tx: 31, ty: 11 }],
+  npcs: [{ id: 'receiver', tx: 18, ty: 7 }, { id: 'clerk', tx: 8, ty: 11 }, { id: 'pennywise', tx: 31, ty: 11 }, { id: 'rowanfamily', tx: 10, ty: 6 }],   // v1.41: Rowan's family (placeholder)
   objects: [
     { kind: 'sign', tx: 3, ty: 12, text: 'LEDGERWICK. Population: counted. Dues: due. Have a pleasant stay. It will be itemised.' },
     { kind: 'sign', tx: 23, ty: 7, text: 'THE COUNTING HOUSE. Office of the Resident Receiver. All payments welcome. All payments expected.' },

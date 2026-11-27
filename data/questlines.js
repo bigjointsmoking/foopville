@@ -316,6 +316,32 @@ Object.assign(FUP.questData.quests, {
         say: '"So Gran was right. All those years they laughed." A long pause. "I thought I\'d feel better." You were right to do it. It doesn\'t feel like it.' },
     ] },
 
+  // v1.41 (plans/OT.md OT-D, plans/OT3-5_lines_draft.md approved): the Old-timer's Q4. Rowan's letters (read when he hands
+  // them over, Jesus) stop mid-sentence at an old stone shelter on the Marsh road east; Old Mossback sits in its doorway.
+  // The scratched name, then Rowan's family in Ledgerwick (Foop hint 2; they're the eldest's grandchildren). Spots PLACEHOLDERS.
+  oldtimer4: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'Letters From the East',
+    req: { skills: { melee: 20 }, facts: { 'quest:oldtimer3': 1 } },
+    text: 'People listen to the Old-timer now. He has a bundle of letters from Gran\'s brother, and they stop in the middle of a sentence.',
+    reward: { coins: 500, xp: { melee: 500 } },
+    afterGreet: ['The eldest\'s. Gran never said. Maybe she didn\'t know how to.', 'Without a mark on him. I keep looking at that statue.'],
+    steps: [
+      { talk: 'oldtimer', log: 'Rowan\'s letters stop mid-sentence at an old stone shelter on the road east through the Soggy Marsh.',
+        say: '"People listen to me now. Strange feeling. Gran\'s brother wrote from the east, years of letters. They stop in the middle of a sentence. I\'d like to know the rest." He hands you the bundle. The first: "Dear Gwendy, the road east is long and wet..." The last: "...a shelter of old stones, half in the water. I will sleep here tonight and write the rest in the..." It stops.',
+        give: { items: { keepsake_letters: 1 } } },
+      { search: { region: 'marsh', tx: 30, ty: 11, name: 'the old stone shelter' }, goal: 'Find the old stone shelter on the road east through the Soggy Marsh',
+        log: 'The shelter: something enormous sits in the doorway.', say: 'Old stones, half sunk. Something enormous is sitting in the doorway. It has moss on it. It IS the doorway.' },
+      { fight: { region: 'marsh', tx: 31, ty: 11, enemy: 'mossback', name: 'Old Mossback' },
+        goal: 'Get the thing out of the doorway (when it pulls into its shell, wait; Defend the big snap)', log: 'Old Mossback slid off into the deep water.',
+        say: 'Old Mossback slides off into the deep water, unhurried, as if this was its idea.' },
+      { search: { region: 'marsh', tx: 32, ty: 11, name: 'the shelter door' }, goal: 'Look round the shelter',
+        log: 'By the door: ROWAN, scratched in the stone, and an arrow pointing east.', say: 'By the door, scratched deep into the stone: ROWAN. And under it, an arrow pointing east.' },
+      { show: { keepsake_letters: 1 }, to: 'rowanfamily', goal: 'Take the letters east to Ledgerwick: find Rowan\'s family',
+        log: 'Rowan\'s family kept their half. They\'ve always known they were the eldest\'s grandchildren.',
+        say: '"Gwendy? We have her name in our letters too." They bring out a box of their own. "Our side always said we were the eldest\'s grandchildren. The village forgot. We didn\'t." A pause. "And our side always said the hero walked out of the fire without a mark on him."' },
+      { bring: { keepsake_letters: 1 }, to: 'oldtimer', goal: 'Bring the letters home to the Old-timer', log: 'He knows now who his family were.',
+        say: '"The eldest\'s. Gran never said. Maybe she didn\'t know how to." He looks at the statue for a long time. "Without a mark on him." He\'s sat by that statue every day of his life. He\'s looking at it differently now.' },
+    ] },
+
   // ---------------- Pip the Seed Seller ----------------
   // Pip believes nothing he hasn't seen. Not dragons, not the sea.
   neverSeenSea: { kind: 'quest', from: 'seeds', difficulty: 'easy', length: 'medium', name: 'Never Seen the Sea',

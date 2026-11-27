@@ -406,6 +406,12 @@ FUP.narrator = {
   cinderGlow: ['Its stripes glow hotter. The air around it shimmers.', 'Old Cinderback burns brighter. Something is coming. Defend.'],
   cinderHot: ['Old Cinderback burns white-hot.'],
   cinderWin: ['It stops moving. The orange goes out of its stripes, one ember at a time.'],
+  // v1.41 Old Mossback (OT-D). PLACEHOLDER lines (the tuck and snap ones are from the approved draft)
+  bigCounter: ['You take the big one on your guard and hit straight back. It did not see that coming.', 'Blocked. Then returned, with interest.'],   // v1.41 PLACEHOLDER
+  mossbackStart: ['Old stones, half sunk. Something enormous is sitting in the doorway. It has moss on it. It IS the doorway.'],
+  mossbackTuck: ['Old Mossback pulls into its shell. You are now hitting a rock.'],
+  mossbackSnap: ['The shell opens. So does the mouth.'],
+  mossbackWin: ['Old Mossback slides off into the deep water, unhurried, as if this was its idea.'],
   serpentStart: ['The water under the old causeway bulges. Then it keeps bulging. Then it has teeth.', 'Something long and scaled rises out of the channel. It was here first. It would like you to know that.'],
   serpentPhase1: ['Phase 2: Deep Water. It spends more time under than over. You spend more time worried.'],
   serpentPhase2: ['Phase 3: Thrashing. It\'s hurt, and it\'s barely staying up long enough to bite.'],
