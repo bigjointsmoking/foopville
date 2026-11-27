@@ -30,7 +30,7 @@ FUP.logData = {
     sporeBouncer: 'The Old Storehouse', moldAccountant: 'The Old Storehouse', guardian: 'The bottom of the Old Storehouse',
     godfather: 'Upset enough pigeons and he finds you', seniorPartner: 'His office in the Soggy Marsh', nutsy: 'A quest',
     goblin: 'The Goblin Toll Road',
-    bogNotary: 'His office in the Soggy Marsh',
+    bogNotary: 'His office in the Soggy Marsh', causewaySerpent: 'The old causeway, east end of the Soggy Marsh',
   },
   // Areas page: regions in this order (+ the Old Storehouse, fact 'region:raid' written when you climb down)
   areas: ['edge', 'tollroad', 'deepwoods', 'docks', 'marsh', 'raid', 'east'],

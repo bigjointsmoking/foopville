@@ -38,6 +38,14 @@ Object.assign(WorldScene.prototype, {
         this.spots.push({ kind: 'office', o, x: c0.x, y: c0.y, label: o.label || 'Office' });
         this.solid.push({ tx: o.tx, ty: o.ty });
       }
+      if (o.kind === 'lair') {   // (v1.39) a boss in the open (the Causeway Serpent): fight it there, free; it rests after each win
+        const boss = FUP.enemies[o.boss];
+        const pic = ui.sprite(this, c0.x, c0.y, boss.mapSprite, boss.emoji, 30).setDepth(c0.y + 10);
+        this.tweens.add({ targets: pic, y: c0.y - 3, duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+        ui.text(this, c0.x, c0.y - 24, 'DEEP WATER', 10, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);
+        this.spots.push({ kind: 'lair', o, x: c0.x, y: c0.y, label: o.label || 'Look' });
+        this.solid.push({ tx: o.tx, ty: o.ty });
+      }
     }
     // The old shrine (v0.82): after your first Guardian win (v1.38), feed the Guardian a dish here (src/systems/shrine.js)
     const SH = FUP.raidData.shrine;
@@ -114,6 +122,35 @@ Object.assign(WorldScene.prototype, {
       this.time.delayedCall(930, () => this.scene.start('Battle', { enemies: ['guardian'] }));
     }, k === 0));
     btn(list.length, 'Not now', close, false);
+  },
+
+  // (v1.39) Seconds of play until a lair boss is back (0 = ready). Fact 'lair:<boss>' = play second of the last win (+1).
+  lairWait(o) { const at = FUP.facts.get('lair:' + o.boss); return at ? Math.max(0, (o.restSeconds || 0) - (FUP.clock.now() - (at - 1))) : 0; },
+  // (v1.39) A boss in the open (the Causeway Serpent): free fight; after a win it rests `restSeconds` of play
+  openLair(o) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000;
+    const boss = FUP.enemies[o.boss], wait = this.lairWait(o);
+    if (wait > 0) { this.sayLine(Phaser.Utils.Array.GetRandom(FUP.narrator[o.lines.rest]).replace('{min}', Math.max(1, Math.ceil(wait / 60)))); FUP.audio.sfx('error'); return; }
+    const g = [], add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+    const close = () => { g.forEach(x => x.destroy()); this.panel = null; };
+    this.panel = { destroy: close };   // walking stops while it's open
+    add(ui.shade(this, 0.6));
+    add(ui.panel(this, W / 2 - 260, H / 2 - 120, 520, 240, 'panel'), 1);
+    add(ui.text(this, W / 2, H / 2 - 104, `${boss.emoji} ${boss.name}`, 18, c.accent, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 - 74, Phaser.Utils.Array.GetRandom(FUP.narrator[o.lines.look]) + '\n\nA boss fight: no running away.', 13, c.ink, { fontStyle: 'italic', align: 'center', wordWrap: { width: 470 } }).setOrigin(0.5, 0), 2);
+    const btn = (x, label, fn, hot) => { const b = ui.button(this, x, H / 2 + 60, 220, 42, label, fn, { size: 14, hot }); [b.rect, b.txt].forEach(q => add(q, 3)); b.txt.setDepth(Z + 4); };
+    btn(W / 2 - 235, '⚔️ Fight it', () => {
+      close();
+      this.saveHere();
+      this.leaving = true;
+      const reg = FUP.world.region(this.f.area);
+      FUP.run.battle = { index: -1, type: o.boss, result: null, worldOffice: true, lair: { boss: o.boss, opens: o.opens }, dropTier: (reg && reg.dropTier) || 1 };
+      FUP.audio.sfx('encounter');
+      FUP.fx.shake(this, 'boss');
+      this.cameras.main.fadeOut(700, 0, 20, 30);
+      this.time.delayedCall(730, () => this.scene.start('Battle', { enemies: [o.boss] }));
+    }, true);
+    btn(W / 2 + 15, 'Leave', close, false);
   },
 
   // A boss's office (v0.93, the Senior Partner): the receptionist books you in for o.cost, every visit
@@ -211,6 +248,7 @@ Object.assign(WorldScene.prototype, {
     if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
     if (s.kind === 'shrine') { this.openShrine(); return; }
     if (s.kind === 'office') { this.openOffice(s.o); return; }
+    if (s.kind === 'lair') { this.openLair(s.o); return; }
     if (s.kind === 'stash') { this.digStash(s.room); return; }   // side rooms (E3, WorldSideRooms.js)
     if (s.kind === 'hank') { this.openHank(s.room); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }

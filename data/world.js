@@ -78,7 +78,7 @@ FUP.worldData = {
                  respawn: { enemies: 600 },   // 10 min
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'],
                  links: { W: { to: 'village', edge: 'E' },
-                          // v1.38: the road east opens by beating the Causeway Serpent (plans/OT.md OT-B, not built yet); saves that opened it keep it
+                          // v1.39 (OT-B): the road east opens by beating the Causeway Serpent at the old causeway (data/region_marsh.js lair)
                           E: { to: 'east', edge: 'W', req: { facts: { 'road:east': 1 } }, lockEmoji: '📜',
                                lockText: 'The old road east is blocked for now. Something big lives where it crosses the deep water.' } } },
     // v1.10: Three Scales, the market town north of the Deep Woods. Safe, like the Docks. Map in data/region_north.js

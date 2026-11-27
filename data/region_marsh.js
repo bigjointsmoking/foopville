@@ -3,7 +3,7 @@
 // Cross the repaired East Bridge (village east gap) into a foggy maze of reeds and
 // bog water: Mosquito Interns, Leech Lawyers and Filing Frogs. One campfire, 4 fishing
 // spots (F), and the Bog Notary's office at the east end. Past him (rows 13-14, east edge) the road
-// east to the Receiver's town (v1.38: opens by beating the Causeway Serpent, OT-B; was "The Right Form", cut).
+// east to the Receiver's town (v1.39: opens by beating the Causeway Serpent, the lair below; was "The Right Form", cut).
 //
 // MAP KEY (like the Forest, data/forest.js):
 //   #  reeds / wall (can't walk)   .  mud   =  path   ~  bog water (can't walk)
@@ -75,6 +75,10 @@ FUP.worldData.areas.marsh = {
       freeText: 'The Notary is waiting inside, behind a very large desk. "Come in. Close the door. We\'ll settle this the old way."',
       text: 'OFFICE OF THE BOG NOTARY. Rematches by appointment. Appointments cost three Stamped Forms. Each.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },
+    // v1.39 (plans/OT.md OT-B): the Causeway Serpent's channel by the old causeway east. Your first win opens the road east
+    // (fact 'road:east'); rematches are free, 20 minutes of play after each win. Spot PLACEHOLDER.
+    { kind: 'lair', tx: 45, ty: 14, boss: 'causewaySerpent', opens: 'road:east', restSeconds: 1200, label: 'Deep water',
+      lines: { look: 'serpentLair', rest: 'serpentResting' } },   // data/narrator.js
     // The Senior Partner's office (v0.93): his receptionist books you in for 3 Stamped Forms (data/enemies.js seniorPartner)
     { kind: 'office', tx: 44, ty: 25, boss: 'seniorPartner', cost: { stamped_form: 3 }, emoji: '🚪', label: 'Office',
       text: 'LEECH & LEECH, ATTORNEYS. The Senior Partner will see you now. For three Stamped Forms. Each visit.' },

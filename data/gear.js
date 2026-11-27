@@ -96,6 +96,7 @@ FUP.gearData = {
     sling_4: { slot: 'ranged', tier: 4, name: 'The Long Argument',     emoji: '🏹', stats: { ratk: 11 }, price: 4200, req: { skills: { ranged: 30 } } },
     // Phase D (v1.00): the Archivist and the Bog Notary. Names, stats and effects PLACEHOLDERS.
     dog_eared_bookmark: { slot: 'trinket', tier: 3, chase: true, name: 'Dog-Eared Bookmark', emoji: '🔖', stats: { atk: 2, crit: 0.03 }, effect: 'bookmark', price: 0 },
+    serpent_charm:      { slot: 'trinket', tier: 3, chase: true, name: 'Serpent Scale Charm', emoji: '🐍', stats: { def: 3 }, price: 0 },   // the Causeway Serpent (v1.39; name + bonus PLACEHOLDER: 'a little extra DEF')
     stamp_of_approval:  { slot: 'trinket', tier: 3, chase: true, name: 'Stamp of Approval', emoji: '✅', stats: { def: 4 }, effect: 'approval', price: 0 },
     mycelium_mantle: { slot: 'body', tier: 3, chase: true, name: 'Mycelium Mantle', emoji: '🍄', stats: { def: 9, hp: 15, resistPoison: 0.30 }, effect: 'thorns', price: 0, req: { combat: 15 } },
   },
@@ -106,6 +107,7 @@ FUP.gearData = {
   bossDrops: {
     godfather: [{ key: 'pigeon_pin', rate: 1 / 8 }, { hat: 'don_fedora', rate: 1 / 20 }, { place: 'golden_perch', rate: 1 / 30 }],
     seniorPartner: [{ key: 'retainer', rate: 1 / 8 }],   // v0.93 (PLACEHOLDER rate)
+    causewaySerpent: [{ key: 'serpent_charm', rate: 1 / 8 }],   // v1.39 (Jesus: a trinket, 1 in 8)
     bogNotary: [{ key: 'stamp_of_approval', rate: 1 / 8 }],    // Phase D (PLACEHOLDER rate)
     guardian:  [{ key: 'master_key', rate: 1 / 8 }, { key: 'mycelium_mantle', rate: 1 / 12 }, { hat: 'guardian_cap', rate: 1 / 20 }, { place: 'framed_warning', rate: 1 / 30 }],
   },

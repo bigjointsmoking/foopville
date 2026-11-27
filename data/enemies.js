@@ -553,6 +553,34 @@ FUP.enemies = {
   // ============================================================
   // PHASE D (v1.00): the Bog Notary's fight. Melee ~22. (v1.38: the Vault's creatures and the Archivist are gone.) PLACEHOLDERS.
   // ============================================================
+  // ---------- The Causeway Serpent (v1.39, plans/OT.md OT-B; Jesus 2026-11-26/27) ----------
+  // A plain swamp monster (no paperwork jokes) in the deep channel where the old causeway crosses at the Marsh's east edge.
+  // Beat it once and the road east opens for that life. About the Senior Partner's strength (Melee ~18).
+  // Sinks and strikes: every few moves it sinks (can't be hit), then bursts up with a big strike: Defend it (Perfect Block,
+  // and it's stunned and wide open). A thrown dish while it's under forces it up early (no strike). Sinks more often each phase.
+  // Rematch free, 20 minutes of play after each win (data/region_marsh.js lair). Name Jesus's; numbers and lines PLACEHOLDERS.
+  causewaySerpent: {
+    name: 'The Causeway Serpent', emoji: '🐍', size: 170, sprite: 'serpent', mapSprite: 'serpent_map',
+    maxHp: 300, atk: 13, def: 7, spd: 12, resolve: 0.5, noCharm: true, level: 18,
+    xp: 450, coins: 200, boss: true, weak: 'frost', resists: ['poison'],
+    winTitle: 'SERPENT DEFEATED', say: { start: 'serpentStart', win: 'serpentWin', lose: 'serpentLose', phase: 'serpentPhase', flee: 'serpentFlee' },
+    moves: [
+      { name: 'Snapping Bite', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Tail Lash', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    bossRules: {
+      phases: [
+        { name: 'The Causeway', below: 1.00 },
+        { name: 'Deep Water', below: 0.66 },
+        { name: 'Thrashing', below: 0.33 },
+      ],
+    },
+    signature: { id: 'vanish', everyByPhase: [4, 3, 2], openMult: 1.6, surfaceOnDish: true, icon: '🌊',
+      lines: { vanish: 'serpentSink', gone: 'serpentGone', stunned: 'serpentStunned', surface: 'serpentSurface' },
+      vanishMove: { name: 'Sinks', type: 'vanish', tell: '🌊', tellText: 'Under the water... (Defend!)' },
+      pounceMove: { name: 'Bursts Up', type: 'pounce', power: 2.6, tell: '💥', tellText: 'BURSTS UP (Defend!)' } },
+  },
+
   // ---------- The Bog Notary (Melee ~22; v1.38: his office is open, first fight free) ----------
   // A giant toad in his office in the Soggy Marsh's east end (the old W3 plan).
   // Phase 1 Intake: every `every` of his turns STAMP: a hit that stuns you (your turn bar drops to `stunGauge`).

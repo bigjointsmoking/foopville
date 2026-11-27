@@ -848,6 +848,14 @@ class BattleScene extends Phaser.Scene {
       if (e.ledger) { e.ledger = false; e.gauge = 0; this.questNews.push(...FUP.quests.event('ledger')); this.bigMoment('LEDGER RIPPED!'); this.say('ledgerRip', { enemy: e.name }); }
       // The Archivist eating pages (Phase D): a thrown dish makes it spit them out
       if (e.chewing) { e.chewing = null; this.bigMoment('SPAT OUT!', FUP.ui.colors.good); this.say('archivistSpit', { enemy: e.name }); }
+      // (v1.39) the Causeway Serpent under the water: a dish forces it up early, and it loses its big strike
+      if (e.hidden && e.signature && e.signature.surfaceOnDish) {
+        e.hidden = false; e.pounceNext = false; e.noSinkNext = true;   // and it doesn't dive straight back under
+        if (e.view) { this.tweens.killTweensOf(e.view); this.tweens.add({ targets: e.view, alpha: 1, duration: 150 }); }
+        this.bigMoment('FORCED UP!', FUP.ui.colors.good);
+        this.say(e.signature.lines.surface, { enemy: e.name });
+        this.planMove(e);
+      }
       const em = this.elementMult(e, dish.element);
       const amount = Math.max(1, Math.round(dish.throwDamage * em.mult * this.takenMult(e) * this.deductMult));
       this.applyDamage(e, amount);
@@ -1104,6 +1112,7 @@ class BattleScene extends Phaser.Scene {
     else if (e.phase === 0 && n % b.summonEvery === 0 && minions < b.maxMinions) e.nextMove = b.special.summon;
     else if (e.phase === 2 && n % b.feedEvery === 0) e.nextMove = b.special.feed;
     else if (this.phaseMove(e, n)) e.nextMove = this.phaseMove(e, n);   // Phase D bosses: a set move every few turns in a phase
+    else if (e.signature && (e.sigPlan = this.planSignature(e))) e.nextMove = e.sigPlan;   // (v1.39) a boss with a signature trick (the Causeway Serpent)
     else FUP.combat.planEnemyMove(e);
   }
 
@@ -1493,7 +1502,13 @@ class BattleScene extends Phaser.Scene {
     // raid sent you back to the Deep Woods and never counted for The Bowl. Map offices now use `worldOffice`.
     const shrine = !!(run.battle && (run.battle.shrine || run.battle.worldOffice));   // fed at the Forest Edge shrine (v0.82) / a boss office in a region (v0.93): the trip goes on
     if (result === 'boss') for (const k of this.killed.filter(o => o.boss)) this.questNews.push(...FUP.quests.event('bossDown', { enemy: k.key }));   // any boss (the Notary, the shrine Guardian...)
-    if (result === 'boss' && run.forest && run.battle && run.battle.worldOffice) { /* the Senior Partner / the Notary: nothing extra, back to the region */ }
+    if (result === 'boss' && run.forest && run.battle && run.battle.worldOffice) {   // the Senior Partner / the Notary / (v1.39) a lair boss: back to the region
+      const L = run.battle.lair;
+      if (L) {   // (v1.39) the Causeway Serpent: it rests 20 minutes of play; the first win opens the road east
+        FUP.facts.set('lair:' + L.boss, Math.floor(FUP.clock.now()) + 1);
+        if (L.opens && !FUP.facts.has(L.opens)) { FUP.facts.set(L.opens, 1); lines.push('🛤️ The old road east is open.'); }
+      }
+    }
     else if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
       if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));

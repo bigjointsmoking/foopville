@@ -400,6 +400,19 @@ FUP.narrator = {
   wolfLunge: ['It goes for the Assayer. Defend to step in front of them.'],
   allyDown: ['The Assayer goes down. You both get up, dust off and try that again. The wolf looks delighted.'],
   allyCovered: ['You step in front of the Assayer and take it. Heroic. Painful.'],
+  // v1.39 the Causeway Serpent (OT-B). PLACEHOLDER lines
+  serpentStart: ['The water under the old causeway bulges. Then it keeps bulging. Then it has teeth.', 'Something long and scaled rises out of the channel. It was here first. It would like you to know that.'],
+  serpentPhase1: ['Phase 2: Deep Water. It spends more time under than over. You spend more time worried.'],
+  serpentPhase2: ['Phase 3: Thrashing. It\'s hurt, and it\'s barely staying up long enough to bite.'],
+  serpentWin: ['The Causeway Serpent slides back into the channel, beaten. The old road east is clear. For now.', 'It sinks, slowly, and stays sunk. The way east is open.'],
+  serpentLose: ['Dragged under. The Marsh keeps what it catches. Mostly.', 'You went into the water. The water won.'],
+  serpentFlee: ['The channel goes still. Ripples, then nothing.'],
+  serpentSink: ['It sinks under the black water. The ripples stop. That\'s worse.', 'Gone under. Somewhere below, it\'s lining you up.'],
+  serpentGone: ['There\'s only water to hit. Defend, and wait for it. Or throw something in.'],
+  serpentStunned: ['It bursts up into your guard and reels back, stunned. Now.', 'Your guard holds. It hangs there, dazed, wide open.'],
+  serpentSurface: ['A dish splashes down on its head. It surfaces early, sputtering and very annoyed.'],
+  serpentLair: ['The old causeway east, half under black water. Something big lives in the channel below.'],
+  serpentResting: ['The water is still. It\'s down there somewhere, sulking. Come back in {min} min.'],
   partnerStart: ['The Senior Partner adjusts his tie. The clock starts. You\'re paying for it.', 'Leech & Leech will see you now. Everything you say will be billed.'],
   partnerPhase1: ['Phase 2: The Associates. He calls in two juniors to do the actual work.'],
   partnerPhase2: ['Phase 3: Settlement Offer. Suddenly he wants to talk. Keep your coins close.'],
@@ -654,7 +667,7 @@ FUP.narrator = {
   ammoHarvest: ['{item}'],
   officeClosed: ['{item}'],
   officeWon: ['You walk out of the office. Nobody stops you. Nobody makes eye contact either.', 'Meeting adjourned. By force.'],
-  eastLocked: ['The road east is blocked. Whatever lives under the old causeway disagrees with you going.'],   // v1.38 PLACEHOLDER
+  eastLocked: ['The road east is blocked. Whatever lives under the old causeway disagrees with you going.'],   // v1.38 PLACEHOLDER (beat the Causeway Serpent)
 };
 
 // ---------- Village surprise events (V3, data/events.js). PLACEHOLDER lines. ----------

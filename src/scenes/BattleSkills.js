@@ -120,10 +120,11 @@ Object.assign(BattleScene.prototype, {
         return { blocked: true };
       }
     }
-    // (v1.31) Old Whitepaw in the snow: nothing to hit
+    // (v1.31) Old Whitepaw in the snow / (v1.39) the Causeway Serpent under the water: nothing to hit
     if (e.hidden) {
-      this.popup(e.view, '❄️ NOT THERE', 'info');
-      if (!this.saidHidden) { this.saidHidden = true; this.say('whitepawGone', { enemy: e.name }); }
+      const VL = (e.signature && e.signature.lines) || {};
+      this.popup(e.view, `${(e.signature && e.signature.icon) || '❄️'} NOT THERE`, 'info');
+      if (!this.saidHidden) { this.saidHidden = true; this.say(VL.gone || 'whitepawGone', { enemy: e.name }); }
       return { blocked: true };
     }
     // (v1.22) Gurrow's gate, shut: nothing gets through until his next move
@@ -310,7 +311,9 @@ Object.assign(BattleScene.prototype, {
     }
     if (sig.id === 'vanish') {   // (v1.31) Old Whitepaw: vanish every `every` moves (more often when hurt), then pounce
       if (e.pounceNext) return sig.pounceMove;
-      const every = e.hp / e.maxHp < sig.lowBelow ? sig.everyLow : sig.every;
+      if (e.noSinkNext) { e.noSinkNext = false; return null; }   // (v1.39) forced up by a dish: one normal move first
+      const every = sig.everyByPhase ? sig.everyByPhase[Math.min(e.phase || 0, sig.everyByPhase.length - 1)]   // (v1.39) the Serpent: sinks more often each phase
+        : e.hp / e.maxHp < sig.lowBelow ? sig.everyLow : sig.every;
       if ((e.movesDone + 1) % every === 0) return sig.vanishMove;
     }
     if (['headbutt', 'latch', 'swoop'].includes(sig.id) && (e.movesDone + 1) % sig.every === 0 && !(sig.id === 'latch' && this.latched)) return sig.move;   // (v1.29) the High Snows' animals
@@ -433,21 +436,23 @@ Object.assign(BattleScene.prototype, {
         }
         return true;
       }
-      case 'vanish':   // (v1.31) Old Whitepaw melts into the snow: can't be hit until it pounces
+      case 'vanish': {   // (v1.31) Old Whitepaw melts into the snow / (v1.39) the Serpent sinks: can't be hit until it pounces
+        const VL = (e.signature && e.signature.lines) || {};
         e.hidden = true; e.pounceNext = true;
         if (e.view) this.tweens.add({ targets: e.view, alpha: 0.15, duration: 400 });
-        this.popup(e.view, '❄️ GONE', 'info');
-        this.say('whitepawVanish', { enemy: e.name });
+        this.popup(e.view, `${(e.signature && e.signature.icon) || '❄️'} GONE`, 'info');
+        this.say(VL.vanish || 'whitepawVanish', { enemy: e.name });
         return true;
+      }
       case 'pounce': {   // (v1.31) the huge hit out of the snow. Defend it: stunned and wide open until its next move
         const guarded = p.defending;
         e.hidden = false; e.pounceNext = false;
-        if (e.view) this.tweens.add({ targets: e.view, alpha: 1, duration: 150 });
+        if (e.view) { this.tweens.killTweensOf(e.view); this.tweens.add({ targets: e.view, alpha: 1, duration: 150 }); }
         this.strike(e, m.power, true);
         if (guarded && !this.over && !e.gone) {
           e.stunnedOpen = true; e.gauge = 0;
           this.bigMoment('STUNNED!', FUP.ui.colors.good);
-          this.say('whitepawStunned', { enemy: e.name });
+          this.say(((e.signature && e.signature.lines) || {}).stunned || 'whitepawStunned', { enemy: e.name });
         }
         return true;
       }
