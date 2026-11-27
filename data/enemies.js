@@ -414,6 +414,45 @@ FUP.enemies = {
       resetMove: { name: 'Re-set the Stone', type: 'platesReset', tell: '🪨', tellText: 'Packing his plates back on (hit him now!)' },
       slamMove: { name: 'Quarry Slam', type: 'attack', power: 2.6, counterMult: 2, tell: '💥', tellText: 'QUARRY SLAM (Defend!)' } },
   },
+  // ---------- The High Snows (v1.29, plans/AL4.md, Lv ~21; the area multiplies these). Mountain animals (Jesus picked the set). Numbers PLACEHOLDER ----------
+  // Ridge Goat: every `every` moves it lowers its horns and headbutts. Not Defended: you're dazed (your turn bar drops back).
+  ridgeGoat: {
+    name: 'Ridge Goat', emoji: '🐐', size: 110, sprite: 'ridgegoat', mapSprite: 'ridgegoat_map',
+    maxHp: 70, atk: 8, def: 5, spd: 10, resolve: 0.25,
+    xp: 95, coins: 18, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Hoof Kick', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Shove', type: 'attack', power: 1.3, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'headbutt', every: 3,
+      move: { name: 'Headbutt', type: 'headbutt', power: 1.7, stunGauge: -60, tell: '🐐', tellText: 'Lowering its horns (Defend!)' } },
+  },
+  // Frost Wolverine: every `every` moves it bites and hangs on. While it's latched, you lose perTurn of your max HP at the start of
+  // each of your turns, until you hit it (or it goes down).
+  frostWolverine: {
+    name: 'Frost Wolverine', emoji: '🦡', size: 90, sprite: 'frostwolverine', mapSprite: 'frostwolverine_map',
+    maxHp: 55, atk: 9, def: 4, spd: 14, resolve: 0.3,
+    xp: 90, coins: 16, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Claw', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Snarl and Slash', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'latch', every: 3, perTurn: 0.05,
+      move: { name: 'Locking Bite', type: 'latch', power: 1.1, tell: '🦡', tellText: 'Going for a grip (hit it to shake it off)' } },
+  },
+  // Highland Eagle: back row. Every `every` moves it dives (a big hit; Defend it). After the dive it's on the ground until its
+  // next move: easy to reach and it takes landedMult damage.
+  highlandEagle: {
+    name: 'Highland Eagle', emoji: '🦅', size: 100, row: 'back', sprite: 'highlandeagle', mapSprite: 'highlandeagle_map',
+    maxHp: 45, atk: 9, def: 3, spd: 15, resolve: 0.2,
+    xp: 85, coins: 15, boss: false, weak: 'frost', resists: [],
+    moves: [
+      { name: 'Talon Rake', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Wing Buffet', type: 'attack', power: 1.2, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'swoop', every: 3, landedMult: 1.5,
+      move: { name: 'Dive', type: 'swoop', power: 2.0, tell: '🦅', tellText: 'DIVING (Defend!)' } },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

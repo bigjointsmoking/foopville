@@ -140,6 +140,10 @@ FUP.ambienceData = {
       critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 0, fireflies: false, clouds: true, dayNight: 1, vignette: 0.4,
       dress: null,
     },
+    highsnows: {   // the High Snows (v1.29): cold, white, a few birds high up, no flowers
+      critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 0, fireflies: false, clouds: true, dayNight: 1, vignette: 0.45,
+      dress: null,
+    },
     quarry: {   // the Old Quarry (v1.27): dead and quiet, bare stone. Nothing lives here but Jarvin
       critters: [], butterflies: 0, dragonflies: 0, birds: false, motes: 8, moteColor: 's3', fireflies: false, clouds: true, dayNight: 0.9, vignette: 0.55,
       dress: null,

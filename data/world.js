@@ -83,7 +83,14 @@ FUP.worldData = {
                                lockText: 'The road east goes past the Notary\'s office. Nobody gets past the Notary without the right form.' } } },
     // v1.10: Three Scales, the market town north of the Deep Woods. Safe, like the Docks. Map in data/region_north.js
     north:     { name: 'Three Scales', kind: 'cozy', scene: 'World', box: { col: 2, row: 1 }, features: ['npcs', 'objects'],
-                 links: { S: { to: 'deepwoods', edge: 'N' } } },
+                 links: { S: { to: 'deepwoods', edge: 'N' },
+                          // v1.29: the north gate opens once Ash Q4 sends you (Jesus)
+                          N: { to: 'highsnows', edge: 'S', req: { quests: ['ash4'] }, lockEmoji: '🏔️',
+                               lockText: 'The north gate guards cross their spears. "Highlands. Nobody goes up without a reason, and nobody comes back with one."' } } },
+    // v1.29: the High Snows, above Three Scales (Ash Q4). Map in data/region_highsnows.js
+    highsnows: { name: 'The High Snows', kind: 'danger', scene: 'World', box: { col: 2, row: 0 }, band: [18, 24], dropTier: 3,
+                 respawn: { enemies: 540 },   // PLACEHOLDER
+                 features: ['enemies', 'fog', 'campfire', 'objects'], links: { S: { to: 'north', edge: 'N' } } },
     // Phase D (v1.00): the Receiver's town. Safe, like the Docks. Map in data/region_east.js
     east:      { name: 'Ledgerwick', kind: 'cozy', scene: 'World', box: { col: 2, row: 3 }, features: ['npcs', 'objects', 'fishing', 'campfire'],
                  links: { W: { to: 'marsh', edge: 'E' } } },

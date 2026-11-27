@@ -509,6 +509,11 @@ FUP.narrator = {
   markSet: ['The {enemy} marks you. You can feel his eyes on the spot between your shoulders.'],
   markCleared: ['You get your guard up and step out of his sight line. The mark is gone.'],
   shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],
+  // (v1.29) the High Snows' animals. PLACEHOLDER lines
+  goatDaze: ['The {enemy} headbutts you square. You see three goats. All of them are smug.', 'Horns to the chest. You\'ll get your breath back. Eventually.'],
+  latchOn: ['The {enemy} bites down and does not let go. Hit it, or keep bleeding.', 'Teeth in your arm, and it\'s settling in. Hit it.'],
+  latchFree: ['You knock the {enemy} loose. It looks offended about it.'],
+  eagleLanded: ['The {enemy} lands after its dive, wings out, catching its breath. Within reach, for once.'],
   // (v1.27) Jarvin the Stone Warden (Glass Q5). He's serious; the narrator stays dry but doesn't joke about him. PLACEHOLDER lines
   jarvinStart: ['Something huge stands up out of the quarry floor. Stone plates grind against each other. "No one cuts here. No one has, for a long time. No one will."'],
   platesTough: ['That bounced off his plates. A Skill, or a lucky crit, might crack them.'],

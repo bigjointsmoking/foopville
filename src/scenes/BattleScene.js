@@ -63,6 +63,7 @@ class BattleScene extends Phaser.Scene {
     this.saidBack = false;  // the back-row hint (once a fight)
     this.saidShell = false; // (v1.19) the Rubble Crab's 'shell too tough' hint (once a fight)
     this.marked = 0;        // (v1.22) Old Carrow's mark on you (0 = none; counts his hits since)
+    this.latched = null;    // (v1.29) a Frost Wolverine hanging on to you
     this.saidGate = false; this.saidStone = false;   // (v1.22) Gurrow's gate / Brannock's stone hints (once a fight)
     this.sweetGifts = [];   // what Sweet Talk got you this fight (for the results screen)
     this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz'), ranged: FUP.skills.level('ranged') };
@@ -634,7 +635,7 @@ class BattleScene extends Phaser.Scene {
   // ---------- Rows (v1.01, data/balance.js rows) ----------
   // Melee on a back-row enemy while any front-row enemy still stands: x0.6. Shots: full (Mastery: +25% on the back row).
   rowMult(e, o = {}) {
-    if (e.row !== 'back') return 1;
+    if (e.row !== 'back' || e.landed) return 1;   // (v1.29) a Highland Eagle on the ground is in reach
     if (o.ranged) return FUP.unlocks.perkBest('backBonus', 1);
     if (o.kind === 'throw') return 1;
     return this.liveReal().some(x => x !== e && x.row !== 'back') ? FUP.balance.rows.meleeBackMult : 1;
@@ -695,6 +696,10 @@ class BattleScene extends Phaser.Scene {
       const dmg = Math.round(p.maxHp * FUP.balance.poisonPerStack * p.poison * (1 - res));
       if (dmg > 0) this.hurtPlayer({ amount: dmg, crit: false }, false, '☠️ ');
     }
+    // (v1.29) a Frost Wolverine still latched on bites again
+    const L = this.latched;
+    if (L && (L.by.hp <= 0 || L.by.gone)) this.latched = null;
+    else if (L && !this.over) this.hurtPlayer({ amount: Math.max(1, Math.round(p.maxHp * L.pct)), crit: false }, false, '🦡 ');
   }
 
   // Best protection against an element: from food you ate, or from your gear (whichever is bigger).

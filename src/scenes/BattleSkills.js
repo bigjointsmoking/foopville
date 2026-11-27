@@ -178,6 +178,7 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
     if (sig && sig.id === 'hum' && e.staggered) m *= sig.staggerMult;        // (v1.24) Dunn off balance after you Defended his swing
     if (sig && sig.id === 'plates' && !this.platesOpen(e)) m *= sig.takenMult; // (v1.27) Jarvin behind his stone plates
+    if (sig && sig.id === 'swoop' && e.landed) m *= sig.landedMult;           // (v1.29) the Highland Eagle on the ground after its dive
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -262,6 +263,7 @@ Object.assign(BattleScene.prototype, {
   // (v1.27) Jarvin's plates the same way, but they only stay open for `openMoves` of his moves
   crackShell(e, kind, crit) {
     const sig = e.signature;
+    if (this.latched && this.latched.by === e) { this.latched = null; this.popup(this.playerSprite, '🦡 SHAKEN OFF', 'good', -60); this.say('latchFree', { enemy: e.name }); }   // (v1.29) any hit on the Frost Wolverine
     if (sig && sig.id === 'plates') {
       if (this.platesOpen(e)) return;
       if (kind === 'skill' || crit) {
@@ -299,6 +301,7 @@ Object.assign(BattleScene.prototype, {
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
     }
+    if (['headbutt', 'latch', 'swoop'].includes(sig.id) && (e.movesDone + 1) % sig.every === 0 && !(sig.id === 'latch' && this.latched)) return sig.move;   // (v1.29) the High Snows' animals
     if (sig.id === 'plates') {   // (v1.27) Jarvin: plates back on once his open moves are used up; the Quarry Slam every `slamEvery`
       if (e.platesUntil != null && !e.resetNext && e.movesDone >= e.platesUntil) { e.resetNext = true; return sig.resetMove; }
       if ((e.movesDone + 1) % sig.slamEvery === 0) return sig.slamMove;
@@ -319,7 +322,7 @@ Object.assign(BattleScene.prototype, {
 
   // Start of an enemy's turn: burning hurts, and last move's guard / audit ends. Returns false if it died.
   enemyTurnStart(e) {
-    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false; e.staggered = false;   // (v1.24) Dunn finds his feet   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
+    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false; e.staggered = false; e.landed = false;   // (v1.24) Dunn finds his feet   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
     // The Mosquito Intern's Overtime: the last one standing hits harder (Marsh, W2)
     const sig = e.signature;
     if (sig && sig.id === 'overtime' && !e.overtime && this.startCount > 1 && this.liveReal().length === 1) {
@@ -418,6 +421,20 @@ Object.assign(BattleScene.prototype, {
         }
         return true;
       }
+      case 'headbutt': {   // (v1.29) the Ridge Goat: not Defended, you're dazed (your turn bar drops back)
+        const landed = this.strike(e, m.power, true);
+        if (landed && !this.over) { p.gauge = Math.min(p.gauge, m.stunGauge); this.popup(this.playerSprite, '💫 DAZED', 'bad', -70); this.say('goatDaze', { enemy: e.name }); }
+        return true;
+      }
+      case 'latch': {   // (v1.29) the Frost Wolverine hangs on: you lose HP each turn until you hit it
+        const landed = this.strike(e, m.power, false);
+        if (landed && !this.over && !e.gone) { this.latched = { by: e, pct: e.signature.perTurn }; this.popup(this.playerSprite, '🦡 LATCHED ON', 'bad', -70); this.say('latchOn', { enemy: e.name }); }
+        return true;
+      }
+      case 'swoop':   // (v1.29) the Highland Eagle dives, then sits on the ground until its next move
+        this.strike(e, m.power, true);
+        if (!this.over && !e.gone) { e.landed = true; this.popup(e.view, '🪶 ON THE GROUND', 'info'); this.say('eagleLanded', { enemy: e.name }); }
+        return true;
       case 'platesReset':   // (v1.27) Jarvin packs his stone plates back on: hits barely scratch him again
         e.platesUntil = null; e.resetNext = false;
         this.popup(e.view, '🪨 PLATES BACK ON', 'info');
@@ -681,6 +698,8 @@ Object.assign(BattleScene.prototype, {
     if (e.settled) f.push('📑 settled');
     if (e.chewing) f.push('📄 eating pages');
     if (e.dodge) f.push('🦋 dodgy');
+    if (e.landed) f.push('🪶 on the ground');   // (v1.29) the Highland Eagle
+    if (this.latched && this.latched.by === e) f.push('🦡 latched on');
     if (e.signature && e.signature.id === 'plates') f.push(this.platesOpen(e) ? '💔 plates cracked' : '🪨 stone plates');   // (v1.27) Jarvin
     const SH = e.bossRules && e.bossRules.shelves;
     if (SH && this.liveReal().some(o => o.key === SH.foe)) f.push('🗄️ behind shelves');

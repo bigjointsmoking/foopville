@@ -136,6 +136,7 @@ FUP.look = {
     edge:      { sky: ['b3', 'b4', 'b4', 'k4'], far: 'g3', farTop: 'g4', trees: ['tree_birch', 'tree_round', 'tree_pine'], ground: ['g4', 'g3', 'g3'], front: 'g2', light: null, clouds: true },
     tollroad:  { sky: ['w4', 'w5', 'w5', 'k4'], far: 'w3', farTop: 'x',  trees: ['tree_autumn', 'tree_autumn_red', 'tree_dead'], ground: ['g3', 'g2', 'w3'], front: 'g1', light: null, clouds: true },
     deepwoods: { sky: ['k0', 'b1', 'b1', 'b2'], far: 'g1', farTop: 't',  trees: ['tree_dark', 'tree_spruce_dark', 'tree_dead'], ground: ['g2', 'g1', 'g1'], front: 'k0', light: { color: 'b3', alpha: 0.25 } },
+    highsnows: { sky: ['b2', 'b3', 'b4', 'k4'], far: 's2', farTop: 'k4', trees: ['tree_pine_snow'], ground: ['k4', 'k4', 's3'], front: 's3', light: null, clouds: true },   // (v1.29) the High Snows
     boss:      { sky: ['k0', 'p1', 'p1', 'p2'], far: 'k1', farTop: 'p1', trees: ['tree_dead', 'tree_dark'], ground: ['k2', 'k1', 'k1'], front: 'k0', light: null },
     treeAlpha: 1, cloudCount: 3, cloudColor: 'k4', cloudAlpha: 0.35, cloudDriftMs: 40000,
   },

@@ -13,7 +13,7 @@
 //   X  the fortress wall (can't walk; a wall piece is drawn on each square)
 //   W  a building's ground (can't walk; the picture comes from `buildings`)
 // Terraces are hills (src/systems/hills.js): the market terrace, and the council terrace on top of it.
-// Check with: tests/north_town.js
+// North gap = cols 40-41 (v1.29: the High Snows). Check with: tests/north_town.js
 // ============================================================
 window.FUP = window.FUP || {};
 
@@ -21,7 +21,7 @@ FUP.worldData.areas.north = {
   id: 'north', name: 'Three Scales',
   tileSize: 40,
   map: [
-      '#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX#',
+      '#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==XXXXX#',   // v1.29: the north gate (cols 40-41), up to the High Snows
       '#X............................................X#',
       '#X............................................X#',
       '#X..........WWWW....WWWWWWWW....WWWW..........X#',
@@ -53,13 +53,14 @@ FUP.worldData.areas.north = {
       '#######################==#######################',
   ],
   hills: [
-    { tx: 2, ty: 1, w: 44, h: 19, stairs: [[23, 19], [24, 19]] },   // the market terrace
+    { tx: 2, ty: 1, w: 44, h: 19, stairs: [[23, 19], [24, 19], [40, 1], [41, 1]] },   // the market terrace (v1.29: steps up to the north gate)
     { tx: 10, ty: 2, w: 28, h: 7, stairs: [[23, 8], [24, 8]] },     // the council terrace, on top of it
   ],
   // Pictures standing on the W squares: tx = the building's middle (in squares), ty = its bottom row
   buildings: [
     { sprite: 'ts_tower', tx: 21.5, ty: 28, size: 120 }, { sprite: 'ts_tower', tx: 26.5, ty: 28, size: 120 },
     { sprite: 'ts_gate', tx: 24, ty: 28, size: 110, over: true },
+    { sprite: 'ts_gate', tx: 41, ty: 0, size: 90, over: true },   // v1.29: the north gate, up to the High Snows (opens with Ash Q4)
     { sprite: 'ts_grain_hall', tx: 7, ty: 12, size: 240, label: 'THE GRAIN HOUSE' },
     { sprite: 'ts_road_hall', tx: 41, ty: 12, size: 240, label: 'THE ROAD HOUSE' },
     { sprite: 'ts_iron_hall', tx: 7, ty: 17, size: 240, label: 'THE IRON HOUSE' },
