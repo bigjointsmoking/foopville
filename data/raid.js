@@ -26,22 +26,22 @@ FUP.raidData = {
   dropTier: 3,             // random gear drops use shop items up to tier 3 (G1)
 
   // ---------- The shrine (story Phase C, v0.82; Jesus 2026-11-18) ----------
-  // After The Bowl, leave a cooked dish at the old shrine in the Forest Edge and the Guardian comes up
+  // After you've beaten the Guardian once (v1.38: was after The Bowl, cut), leave a cooked dish at the old shrine in the Forest Edge and the Guardian comes up
   // to fight you there: the full boss, no raid. Once per day. More stars on the dish = better extra loot.
   // Rules: src/systems/shrine.js. All numbers PLACEHOLDERS.
   shrine: {
     region: 'edge', tx: 4, ty: 13,
-    needQuest: 'theBowl',
+    needFact: 'boss:guardian',               // v1.38 (Jesus): unlocks after your first Guardian win
     cooldownSeconds: 1200,                  // once every 20 minutes of PLAY (v0.86: was once per in-game day, and Sleep skipped days)
     coinsPerStar: 30,                       // extra coins: 30 per star
     matsPerStar: 1, mats: ['plank', 'nails', 'stone'],   // building materials: 1 per star, random
     gearAtStars: 4,                         // 4-5 stars: one extra gear roll (Rare or better)
-    lines: {
-      locked: 'A mossy little shrine. Someone leaves a bowl here in the evenings. For the Quiet One, apparently.',
-      fed: 'The bowl is still licked clean. It\'s full. Allegedly. Come back in {min} min.',
-      noFood: 'The bowl is empty and so are your pockets. Cook something first.',
-      ask: 'You set down the bowl. Something far below goes very quiet. Which dish?',
-      summon: 'The ground shudders. The bowl is snatched down a crack. Then the crack gets bigger.',
+    lines: {   // v1.38: no bowl, no "Quiet One" (cut). PLACEHOLDER wording
+      locked: 'A mossy little shrine in the trees. Something big lives under these woods. You haven\'t met it yet.',
+      fed: 'Your last dish is gone. Something down there is still chewing. Come back in {min} min.',
+      noFood: 'The shrine wants a cooked dish. Your pockets disagree. Cook something first.',
+      ask: 'You kneel at the shrine. Something far below goes very quiet. Which dish?',
+      summon: 'The ground shudders. The dish is snatched down a crack. Then the crack gets bigger.',
     },
   },
   mult: 1.4,               // raid enemies: HP / ATK / DEF and their XP + coins x1.4 (not the Guardian)
@@ -52,7 +52,7 @@ FUP.raidData = {
   arriveGraceSeconds: 1.5, // enemies leave you alone this long after you walk in
 
   // Which letter is which enemy
-  enemyLetters: { t: 'strayShroom', s: 'sporeBouncer', m: 'moldAccountant', b: 'bookworm', p: 'paperMoth', i: 'inkSlime' },   // b p i: the Vault (Phase D)
+  enemyLetters: { t: 'strayShroom', s: 'sporeBouncer', m: 'moldAccountant' },
   // Stray Shroom you meet in the raid are worth something (the Guardian's summoned ones aren't)
   raidEnemy: { strayShroom: { xp: 10, coins: 2 } },
 
@@ -224,6 +224,8 @@ FUP.raidData = {
   // ---------- The boss room ----------
   office: {
     name: "The Guardian's Hall", kind: 'office',
+    // v1.38 (Jesus 2026-11-26): the Vault is gone; the iron door stays shut until Main Quest 1 ("The Quiet Room"). Line PLACEHOLDER.
+    lore: [{ tx: 3, ty: 4, text: 'An iron door behind the Guardian\'s desk. It doesn\'t open. Not yet.' }],
     map: [
       '####################',
       '#..................#',
@@ -240,118 +242,5 @@ FUP.raidData = {
       '#..................#',
       '#########<##########',
     ],
-  },
-  // ============================================================
-  // THE VAULT (Phase D, v1.00, Jesus 2026-11-19): behind an iron door in the Guardian's Hall.
-  // Beat the Guardian with the Old Key on your key ring (finish The Bowl), or in your bag, and the results
-  // screen offers the iron door as well as the Exit Chute. After the first time the door stays open for the
-  // rest of that life (fact 'vault:open'). Three rooms, always in this order, then the Archivist, then the chute.
-  // One-way, like the raid. Meant for Melee ~20. All names, numbers and lines are PLACEHOLDERS.
-  // Extra map letters (besides the raid's):
-  //   h  a bookshelf (can't walk through)     b  Bookworm   p  Paper Moth swarm   i  Ink Slime
-  //   w  a tipping shelf's aisle (the Stacks): step in and that stretch of shelf tips over after `shelves.delay`
-  //   u  an ink puddle: you walk at `ink.slow` speed on it
-  // lore: [{ tx, ty, text }] = ledger pages on the wall; walk next to one and the narrator reads it.
-  // ============================================================
-  vault: {
-    mult: 1.0,             // the Vault's creatures are already built for Melee ~20 (data/enemies.js)
-    level: 20,             // Melee level it's meant for (enemy scaling)
-    dropTier: 3,
-    order: ['reading', 'stacks', 'ledgers'],
-    doorButton: '🗝️ The iron door',
-    form: { item: 'right_form', fact: 'got:rightForm' },   // the Archivist drops the Right Form once per life
-    spell: 'archivist',                                     // and a spell piece (data/spell.js pieces)
-    // The Stacks: shelves tip into the aisle ('w'). Each stretch of `chunk` aisle squares tips on its own.
-    shelves: { chunk: 3, delay: 0.9, down: 2.5, damage: 0.08, safeSeconds: 1 },   // never below 1 HP (like every hazard)
-    ink: { slow: 0.55 },
-    rooms: {
-      reading: {
-        name: 'The Reading Room', kind: 'fight',
-        groups: { bookworm: [{ w: 2, foes: ['bookworm'] }, { w: 1, foes: ['bookworm', 'paperMoth'] }],
-                  inkSlime: [{ w: 1, foes: ['inkSlime'] }, { w: 1, foes: ['inkSlime', 'paperMoth'] }] },
-        lore: [{ tx: 1, ty: 7, text: 'A ledger page, pinned to the wall: "To R. Paid." Then the same line, a hundred times, in a hundred hands.' }],
-        map: [
-          '#########>##########',
-          '#..................#',
-          '#.hh....hh....hh...#',
-          '#..................#',
-          '#....b........b....#',
-          '#..................#',
-          '#.hh....hh....hh...#',
-          '#..................#',
-          '#.......i..........#',
-          '#..................#',
-          '#.hh....hh....hh...#',
-          '#..................#',
-          '#..................#',
-          '#########<##########',
-        ],
-      },
-      stacks: {
-        name: 'The Stacks', kind: 'hazard', hazard: 'shelves',
-        lore: [{ tx: 18, ty: 12, text: 'Scratched into a shelf: "R. came for the payment again. Called it a receipt. Smiled the whole time."' }],
-        map: [
-          '#########>##########',
-          '#hhhhhhhh.hhhhhhhhh#',
-          '#wwwwwwwwwwwwwwwwww#',
-          '#hhhhhhhhhhhhhhhh..#',
-          '#.....u............#',
-          '#..hhhhhhhhhhhhhhhh#',
-          '#wwwwwwwwwwwwwwwwww#',
-          '#hhhhhhhhhhhhhhhh..#',
-          '#..........u.......#',
-          '#..hhhhhhhhhhhhhhhh#',
-          '#wwwwwwwwwwwwwwwwww#',
-          '#hhhhhhhhhhhhhhhh..#',
-          '#..................#',
-          '#########<##########',
-        ],
-      },
-      ledgers: {
-        name: 'The Ledger Hall', kind: 'fight',
-        groups: { paperMoth: [{ w: 1, foes: ['paperMoth', 'paperMoth', 'paperMoth'] }, { w: 1, foes: ['paperMoth', 'paperMoth', 'paperMoth', 'paperMoth'] }],
-                  bookworm: [{ w: 1, foes: ['bookworm', 'paperMoth'] }, { w: 1, foes: ['bookworm', 'inkSlime'] }],
-                  inkSlime: [{ w: 1, foes: ['inkSlime', 'paperMoth', 'paperMoth'] }] },
-        lore: [{ tx: 1, ty: 4, text: 'A ledger page: "To R. Paid late. Interest added. Interest on the interest added."' },
-               { tx: 18, ty: 9, text: 'A ledger page: "To R., the Receiver. For quiet. Forwarded east, then up the mountain."' }],
-        map: [
-          '#########>##########',
-          '#..................#',
-          '#..hh..........hh..#',
-          '#..hh....p.....hh..#',
-          '#..................#',
-          '#.......b..........#',
-          '#..................#',
-          '#..hh..........hh..#',
-          '#..hh.....p....hh..#',
-          '#..................#',
-          '#....i.............#',
-          '#..................#',
-          '#..................#',
-          '#########<##########',
-        ],
-      },
-    },
-    // The boss room (kind 'office': lit, carpeted). L = the Archivist.
-    archive: {
-      name: 'The Archive', kind: 'office', boss: 'archivist', foes: ['archivist', 'filingShelf', 'filingShelf'],
-      lore: [{ tx: 3, ty: 4, text: 'A sign on the desk: RECORDS. DO NOT FEED THE ARCHIVIST. Someone has fed the Archivist.' }],
-      map: [
-        '####################',
-        '#..................#',
-        '#.hh...ddddd....hh.#',
-        '#..................#',
-        '#........L.........#',
-        '#..................#',
-        '#.hh............hh.#',
-        '#..................#',
-        '#..................#',
-        '#.hh............hh.#',
-        '#..................#',
-        '#..................#',
-        '#..................#',
-        '#########<##########',
-      ],
-    },
   },
 };

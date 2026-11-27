@@ -39,7 +39,7 @@ Object.assign(WorldScene.prototype, {
         this.solid.push({ tx: o.tx, ty: o.ty });
       }
     }
-    // The old shrine (v0.82): after The Bowl, feed the Guardian a dish here (src/systems/shrine.js)
+    // The old shrine (v0.82): after your first Guardian win (v1.38), feed the Guardian a dish here (src/systems/shrine.js)
     const SH = FUP.raidData.shrine;
     if (SH && SH.region === this.f.area) {
       const c0 = at(SH.tx, SH.ty);
@@ -119,8 +119,9 @@ Object.assign(WorldScene.prototype, {
   // A boss's office (v0.93, the Senior Partner): the receptionist books you in for o.cost, every visit
   openOffice(o) {
     const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.req, Q = FUP.quests;
-    // Phase D (the Bog Notary): `free` = no fee while that quest is on that step; `openAfter` = shut until that quest is done
-    const free = o.free && Q.state.active[o.free.quest] && (Q.state.active[o.free.quest].step || 0) === o.free.step;
+    // Phase D (the Bog Notary): `free` = no fee while that quest is on that step; `freeFirst` = no fee until you've beaten that boss once (v1.38);
+    // `openAfter` = shut until that quest is done
+    const free = (o.free && Q.state.active[o.free.quest] && (Q.state.active[o.free.quest].step || 0) === o.free.step) || (o.freeFirst && !FUP.facts.has('boss:' + o.boss));
     if (o.openAfter && !free && !Q.done(o.openAfter)) { this.say('officeClosed', { item: o.closedText || 'Closed.' }); FUP.audio.sfx('error'); return; }
     if (free) o = { ...o, cost: {}, text: o.freeText || o.text };
     const boss = FUP.enemies[o.boss], cost = { items: o.cost }, ok = R.canPay(cost);

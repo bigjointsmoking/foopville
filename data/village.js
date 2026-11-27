@@ -127,10 +127,9 @@ FUP.villageData = {
       ],
       legend: "My grandmother used to say that when the dragon flew off, she wasn't roaring. She was sobbing. Like a little one who'd had her toy taken. Nobody believed her. Said it was the wind in the pass. But Grandmother was there on the hill that day, or her mother was, and she never changed her story.",
       noRizzSecrets: true,   // no Rizz 10/20/30 secrets: his Rizz reward is the legend (Jesus, 2026-11-18: leave it that way)
-      legendRizz: 10, legendQuest: 'theBowl',   // guarded: tells it only at Rizz 10 or while his quest is taken (the quest comes in story Phase C)
+      legendRizz: 10, legendQuest: 'grandmaSoup',   // guarded: tells it only at Rizz 10 or while his soup quest is taken (v1.38: was The Bowl, cut)
       brushOff: ['Foop? He\'s the one on the plinth. That\'s all I know.', 'Old stories are for people I know. I don\'t know you yet.'],
       reacts: [   // PLACEHOLDER lines (see the Quest Board Keeper)
-        { fact: 'clue:bowl', line: "So something does eat it. Grandmother would be pleased. Or frightened. Hard to tell with her." },
         { fact: 'clue:ledgerPage', line: "Another name, eh? Grandmother never said one. She'd have liked to know." },
       ],
     },
@@ -358,7 +357,6 @@ FUP.villageData = {
       reacts: [   // PLACEHOLDER lines: said after the legend once you've found the clue (facts 'clue:*', added by the story quests)
         { fact: 'clue:ledgerPage', line: "A scratched-out NAME? On an OFFICIAL page? Somebody should complain. Not me." },
         { fact: 'clue:paymentLedger', line: "Gold paid for QUIET? This board has never been quiet. Not once." },
-        { fact: 'clue:bowl', line: "You went DOWN there? For a BOWL? I'll file it under 'odd'." },
       ],
       legend: "Folk always argue over the details, but the old board records agree on one thing: the roar. Foop let out a war cry so loud the whole valley shook. The dragon flinched. The sky went dark and she breathed fire, and he roared again and cut straight through it. Nobody's ever matched that shout since, though plenty have tried.",
       greet: [

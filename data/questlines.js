@@ -25,6 +25,15 @@ window.FUP = window.FUP || {};
 
 FUP.questData.lengths = { short: '⏱ Short', medium: '⏱ Medium', long: '⏱ Long' };
 
+// v1.38 (plans/OT.md OT-A, Jesus 2026-11-26): quests and things that are gone. An old save loses them on load
+// (FUP.quests.retireOld): The Bowl's key + bowl, the Vault's open door, The Right Form and its paper. Coins and XP earned stay.
+// The road east stays open for saves that already opened it.
+FUP.questData.retired = {
+  quests: ['theBowl', 'rightForm'],
+  facts: ['key:storehouse', 'clue:bowl', 'vault:open', 'got:rightForm', 'region:vault'],
+  items: ['old_bowl', 'old_key', 'right_form'],
+};
+
 Object.assign(FUP.questData.quests, {
 
   // ---------------- Chef Marrowbone ----------------
@@ -197,9 +206,40 @@ Object.assign(FUP.questData.quests, {
   // ================= v0.81: the last four (pitched one at a time with Jesus, 2026-11-18) =================
 
   // ---------------- The Old-timer ----------------
+  // v1.38 (plans/OT.md OT-A, plans/OT1_keepsakes_draft.md approved): the Old-timer's Q1. Pigeons took the shiny bits
+  // out of his keepsake box; find 4 round the village, each goes back with its family story. He keeps them (the key is yours in Q5).
+  oldtimer1: { kind: 'story', from: 'oldtimer', difficulty: 'easy', length: 'short', name: "Gran's Keepsake Box",
+    text: 'The Old-timer nodded off on his bench with his family keepsake box open. The pigeons did the rest.',
+    reward: { coins: 100, xp: { rizz: 60 } },
+    afterGreet: ['Four keepsakes, back in the box. The box stays shut now. Pigeons.', 'Gran\'s things. Nobody believes the stories. I tell them anyway.'],
+    steps: [
+      { talk: 'oldtimer', log: 'Pigeons carried off the shiny things from the Old-timer\'s keepsake box. Four of them, somewhere round the village.',
+        say: '"I shut my eyes for one minute. One. The box was open. Gran\'s things. The pigeons took every shiny bit and dropped them all over the village." He points at the sky, accusingly. An old man, a box of junk and a flock of thieves. Adventure.' },
+      { search: { region: 'village', tx: 13, ty: 10, name: 'the old well' }, goal: 'Look round the village for the Old-timer\'s keepsakes (start at the old well)',
+        log: 'On the rim of the old well: an iron key, worn smooth.', say: 'On the rim of the well, where a pigeon dropped it: an iron key, worn smooth.',
+        give: { items: { keepsake_key: 1 } } },
+      { bring: { keepsake_key: 1 }, to: 'oldtimer', goal: 'Bring the key back to the Old-timer', log: 'Gran\'s key. It opens nothing.',
+        say: '"Gran\'s key. Opens nothing in this house. Nothing in any house. She kept it anyway, and so do I." He tucks it back in the box. "Three more. Try the Shop roof. Pigeons love a roof."' },
+      { search: { region: 'village', tx: 26, ty: 4, name: 'the Shop\'s roof' }, goal: 'Search the Shop\'s roof',
+        log: 'In the Shop\'s gutter: a bundle of letters tied with faded string.', say: 'Wedged in the Shop\'s gutter: a bundle of old letters, tied with faded string.',
+        give: { items: { keepsake_letters: 1 } } },
+      { bring: { keepsake_letters: 1 }, to: 'oldtimer', goal: 'Bring the letters back to the Old-timer', log: 'Letters from Gran\'s big brother, who walked east.',
+        say: '"From her big brother. He walked east after the fire. Wrote home for years. Then he didn\'t." A passer-by leans in: "Lovely man. Lovely stories. None of them true." "Two more," he says, louder. "Up a lamp post, I\'d bet."' },
+      { search: { region: 'village', tx: 10, ty: 12, name: 'the lamp post' }, goal: 'Search the lamp post by the well',
+        log: 'On top of a lamp post: a little wooden charm on a cord.', say: 'Hooked on top of the lamp post: a little carved wooden charm on a cord.',
+        give: { items: { keepsake_charm: 1 } } },
+      { bring: { keepsake_charm: 1 }, to: 'oldtimer', goal: 'Bring the charm back to the Old-timer', log: 'Gran took it from the old shrine in the trees, the day she hid there.',
+        say: '"She hid by the old shrine in the trees that day. Took this off it so she\'d have something to hold. Shrine\'s never missed it." He turns it over. "Last one. They like the hay by the seed stall."' },
+      { search: { region: 'village', tx: 26, ty: 37, name: 'the hay bale' }, goal: 'Search the hay bale near the seed stall',
+        log: 'In the hay: a little rag doll, one arm burned short.', say: 'Pushed into the hay: a little rag doll. One arm is burned short.',
+        give: { items: { keepsake_doll: 1 } } },
+      { bring: { keepsake_doll: 1 }, to: 'oldtimer', goal: 'Bring the doll back to the Old-timer', log: 'Four keepsakes, four stories, back in the box.',
+        say: '"Hers. She said she saw something crawl out of the fire. Alive. Glowing. Nobody believed that one either." A passer-by, not quietly: "He\'s told you the doll one? Nod. It\'s quicker." He shuts the box. Four keepsakes, four stories, zero proof. He looks happier than you\'ve ever looked.' },
+    ] },
+
   // A cooking puzzle: three clues → three ingredients. The twist: the "warm" was never pepper, it was a root from Pip's stall.
-  grandmaSoup: { kind: 'quest', from: 'oldtimer', difficulty: 'medium', length: 'medium', name: "Grandmother's Soup",
-    req: { skills: { cooking: 10 } },
+  grandmaSoup: { kind: 'story', from: 'oldtimer', difficulty: 'easy', length: 'medium', name: "Grandmother's Soup",
+    req: { facts: { 'quest:oldtimer1': 1 } },   // v1.38 (plans/OT.md OT-A): the Old-timer's Q2, after his keepsake box; Cooking 10 dropped (Jesus)
     text: 'The Old-timer misses his grandmother\'s soup. Nobody wrote it down. He only remembers how it tasted.',
     reward: { coins: 220, xp: { cooking: 180, gardening: 80 }, recipe: "Grandmother's Soup",
       bonus: [{ flag: 'guessed', renameRecipe: { from: "Grandmother's Soup", to: "{hero}'s Soup" }, line: 'He wrote your name on the recipe. Then crossed it out. Then wrote it again, bigger.' }] },
@@ -242,8 +282,8 @@ Object.assign(FUP.questData.quests, {
           { label: '"No. I guessed."', flag: 'guessed', say: 'He laughs, properly, for the first time. "She guessed too. Every time."' },
         ] },
       { talk: 'oldtimer', log: 'He has something to say about the soup.',
-        say: 'Grandmother\'s Soup. Write it down this time. Somebody should.',
-        sayIf: { guessed: 'Your soup. Not hers. She\'d have liked that. Put your name on it. She never wrote anything down either.' } },
+        say: 'Grandmother\'s Soup. Write it down this time. Somebody should. ...That taste. She used to sit me down with a bowl and tell me about the dragon. "She wasn\'t roaring," she\'d say. "She was sobbing." I\'d forgotten she said it like that. Like she\'d seen it.',
+        sayIf: { guessed: 'Your soup. Not hers. She\'d have liked that. Put your name on it. ...That taste, though. She used to sit me down with a bowl and tell me about the dragon. "She wasn\'t roaring," she\'d say. "She was sobbing." Like she\'d seen it.' } },
     ] },
 
   // ---------------- Pip the Seed Seller ----------------
@@ -850,7 +890,7 @@ Object.assign(FUP.questData.quests, {
   tollRecords: { kind: 'story', from: 'banker', difficulty: 'medium', length: 'medium', name: 'Toll Records',
     req: { skills: { melee: 5 } },   // the Toll Road is Lv 5-9
     text: 'The goblins on the Toll Road charge everyone. Mr. Tally has never seen a coin of it come back to the village.',
-    reward: { coins: 220, xp: { melee: 200, rizz: 60 }, gearDrop: { tier: 2, rarity: 'Uncommon' }, fragment: true, fact: 'clue:ledgerPage' },
+    reward: { coins: 220, xp: { melee: 200, rizz: 60 }, gearDrop: { tier: 2, rarity: 'Uncommon' }, fact: 'clue:ledgerPage' },
     afterGreet: ['An older name. Under ours. I\'ve stopped counting. ...No I haven\'t. Forty-one.', 'Somebody\'s getting rich. It still isn\'t us.'],
     steps: [
       { talk: 'banker', log: 'Mr. Tally wants the goblins\' old ledger pages. Where does all the toll money go?',
@@ -860,32 +900,10 @@ Object.assign(FUP.questData.quests, {
         say: 'Tolls, tolls, tolls... Wait. This one\'s old. The village is named here. Only it isn\'t "Foopville". Something else, scratched out. "Foopville" is written over it. In newer ink.' },
     ] },
 
-  theBowl: { kind: 'story', from: 'oldtimer', difficulty: 'medium', length: 'long', name: 'The Bowl',
-    req: { skills: { melee: 9 } },   // the Deep Woods is Lv 9-13
-    text: 'Every evening someone leaves a bowl at the old shrine in the Forest Edge, "for the Quiet One". Lately it comes back empty.',
-    reward: { coins: 300, xp: { melee: 300 }, gearDrop: { tier: 1, rarity: 'Rare' }, fragment: true, fact: 'clue:bowl', keyRing: { storehouse: 'The Old Key' } },
-    afterGreet: ['I put the bowl out again last night. Empty by morning. Good.', 'The Quiet One. Grandmother would be pleased. Or frightened. Hard to tell with her.'],
-    steps: [
-      { talk: 'oldtimer', log: 'The bowl left at the Forest Edge shrine for "the Quiet One" comes back licked clean. The Old-timer wants to know who\'s eating.',
-        say: 'Every evening somebody leaves a bowl at the old shrine in the Forest Edge. For the Quiet One, Grandmother said. Lately it comes back empty. Licked clean. Go and look.' },
-      { search: { region: 'edge', tx: 4, ty: 14, name: 'the old shrine' }, log: 'At the shrine: an empty bowl and big, careful tracks heading east.',
-        say: 'A mossy little shrine. The bowl is gone. Big tracks lead east, toward the Toll Road. Careful tracks. Polite, almost.' },
-      { search: { region: 'tollroad', tx: 6, ty: 19, name: 'the tracks' }, log: 'The tracks cross the Toll Road and head for the Deep Woods.',
-        say: 'The same tracks, crossing the road. The goblins have drawn a little fence around them. Nobody pays a toll on these.' },
-      { event: 'holeDown', goal: 'Follow the tracks (🐾) to the hole in the Deep Woods and climb down', log: 'The tracks ended at a hole. You climbed down.' },
-      { event: 'boss', goal: 'Beat the Guardian at the bottom of the Old Storehouse',
-        say: 'By its feeding spot, a worn sign: KEEP FED. Its last words: "Visitor logged. Please close the door." In the crumbs: a bowl, and an old key.',
-        log: 'You beat the Guardian. By its feeding spot: a KEEP FED sign, the bowl, and an old key.',
-        give: { items: { old_bowl: 1, old_key: 1 } } },
-      { bring: { old_bowl: 1, old_key: 1 }, to: 'oldtimer', log: 'Back to the Old-timer with the bowl.',
-        again: { event: 'boss', items: { old_bowl: 1, old_key: 1 }, say: 'The bowl and the key are back by the feeding spot. Of course they are.' },
-        say: 'He turns the bowl over. "Grandmother\'s mark. So something down there was eating it. All these years." He keeps the bowl. "I\'ll put it back out. Somebody should." The key he gives back. "That\'s yours. Don\'t ask me what it opens."' },
-    ] },
-
   oldAccounts: { kind: 'story', from: 'shop', difficulty: 'medium', length: 'medium', name: 'The Old Accounts',
     req: { facts: { 'repair:east_bridge': 1 } },   // the Marsh is open
     text: 'The old shopkeepers kept odd books. Payments to somebody, for something. The Bog Notary files a copy of everything.',
-    reward: { coins: 260, xp: { rizz: 150 }, fragment: true, fact: 'clue:paymentLedger' },
+    reward: { coins: 260, xp: { rizz: 150 }, fact: 'clue:paymentLedger' },
     afterGreet: ['Gold paid for quiet. Hm. I\'d have charged more.', 'The old books are back under the counter. Where old books belong.'],
     steps: [
       { talk: 'shop', log: 'The old shopkeepers paid someone, every year, for years. The Bog Notary in the Marsh files a copy of everything.',
@@ -894,25 +912,5 @@ Object.assign(FUP.questData.quests, {
         say: 'Three forms. Stamped. ...Correctly. Nobody does it correctly. He opens a drawer, sighs, and copies a page out by hand. "Payments. To the Resident. For quiet. No names. Filed." He hands it over like it hurts.' },
       { talk: 'shop', log: 'You brought the copied ledger to the Shopkeeper. Gold, paid to "the Resident", for "quiet".',
         say: 'No names. Just "the Resident". Gold paid for quiet. Every year. ...The old shopkeepers kept odd books. Don\'t let it keep you up. It\'s keeping me up.' },
-    ] },
-  // ---------- Phase D (v1.00, Jesus 2026-11-19, design/phase-d.md): the Right Form ----------
-  // The Archivist in the Vault drops the Right Form. The Notary reads it, finds it correct, refuses to stamp it,
-  // and fights you in his office. Beat him and he stamps it: the road east opens (fact 'road:east').
-  // After the quest his office takes 3 Stamped Forms a fight (data/region_marsh.js office). Lines PLACEHOLDERS.
-  rightForm: { kind: 'story', from: 'notary', difficulty: 'hard', length: 'medium', name: 'The Right Form',
-    req: { facts: { 'got:rightForm': 1 } },
-    text: 'Nobody gets past the Bog Notary without the right form. You have the right form. That might be the problem.',
-    reward: { coins: 500, xp: { melee: 400 }, fragment: true, fact: 'road:east' },
-    afterGreet: ['Form? ...Oh. You. The road is open. Use it. Quietly.', 'Approved. Don\'t make me say it twice. I\'m not allowed to say it twice.'],
-    steps: [
-      { show: { right_form: 1 }, to: 'notary', goal: 'Show the Right Form to the Bog Notary (Soggy Marsh, east end)',
-        log: 'The Notary read the Right Form. It is correct. That is why he won\'t stamp it.',
-        say: '"Form R-1. Passage East. Filled in. Signed. Dated." He reads it again. "Correct. Completely correct. Nobody has ever had the right form. There is no procedure for the right form." He goes into his office. From inside: "Come in. We\'ll settle this the old way."' },
-      { event: 'bossDown', match: { enemy: 'bogNotary' }, goal: 'Beat the Bog Notary in his office (Soggy Marsh, east end)',
-        log: 'You beat the Bog Notary in his own office.',
-        say: 'The Notary, flat on his desk, holds out a webbed hand. "Form. Give me the form."' },
-      { show: { right_form: 1 }, to: 'notary', goal: 'Give the Right Form back to the Bog Notary to stamp',
-        log: 'He stamped it. The road east is open. Someone called the Receiver will want to meet you.',
-        say: '"Fine. FINE." STAMP. "Passage East: approved. The road past my office is open." He blots the ink. "The Resident Receiver will want to meet you. He meets everybody. Eventually. Usually about money."' },
     ] },
 });

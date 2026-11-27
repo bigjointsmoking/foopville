@@ -20,13 +20,10 @@ FUP.spellData = {
   title: 'An Old Spell',
   blurb: 'A page in a language nobody speaks any more. Some of the words have come back.',
   // Which quest gives which piece (in page order). Unknown ones show as "?".
-  pieces: [
-    { quest: 'tollRecords', word: 'NAME' },
-    { quest: 'theBowl',     word: 'HUNGER' },
-    { quest: 'oldAccounts', word: 'QUIET' },
-    { quest: 'archivist',   word: 'OWED' },     // Phase D: beat the Archivist in the Vault (src/systems/raid.js vaultReward). Word PLACEHOLDER
-    { quest: 'rightForm',   word: 'SIGNED' },   // Phase D: the quest "The Right Form" (the Bog Notary). Word PLACEHOLDER
-  ],
+  // v1.38 (Jesus 2026-11-26, story/MAIN_QUEST_LINE.md 2c): the 7 pieces come only from the main quest (Quests 1-7, not built yet).
+  pieces: [],
+  // Pieces the old story quests used to give (cut or changed in v1.38): cleared from old saves on load.
+  retired: ['tollRecords', 'theBowl', 'oldAccounts', 'archivist', 'rightForm'],
   // What the narrator says when a piece lands (by how many you have)
   lines: [
     'A word floats off the page and settles in your head. You don\'t know what it means. It seems to know you.',

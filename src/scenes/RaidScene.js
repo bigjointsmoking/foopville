@@ -59,11 +59,10 @@ class RaidScene extends WorldScene {
   hudLabel() {
     const n = this.raid.index + 1, total = this.raid.rooms.length;
     if (this.info.kind === 'office') return this.info.name;
-    if (this.raid.vault && n > this.raid.vaultStart) return `${this.info.name} (Vault ${n - this.raid.vaultStart}/${total - this.raid.vaultStart - 1})`;
     return `${this.info.name} (${n}/${total - 1})`;
   }
-  // The Vault's numbers (Phase D) or the raid's
-  zone() { return this.raid.vault && this.raid.index >= this.raid.vaultStart ? FUP.raidData.vault : FUP.raidData; }
+  // The raid's numbers (v1.38: the Vault and its own numbers are gone)
+  zone() { return FUP.raidData; }
   fogData() { return FUP.gear.withSight(FUP.raidData.fog); }
 
   // ---------- Arriving, or coming back from a fight ----------
@@ -94,8 +93,7 @@ class RaidScene extends WorldScene {
   // First steps into a room: the door behind you slams shut.
   arriveFresh() {
     const kind = this.info.kind;
-    const vault = this.raid.vault && this.raid.index >= this.raid.vaultStart;
-    this.say(this.raid.index === 0 ? 'raidEnter' : this.A.id === 'archive' ? 'archiveEnter' : vault && this.raid.index === this.raid.vaultStart ? 'vaultEnter'
+    this.say(this.raid.index === 0 ? 'raidEnter'
       : kind === 'office' ? 'officeEnter' : kind === 'fight' ? 'raidFightRoom' : 'raidHazard_' + this.info.hazard);
     if (this.backDoor) {
       const d = this.backDoor;
@@ -110,7 +108,7 @@ class RaidScene extends WorldScene {
     const R = FUP.raid, T = R.size(), C = FUP.raidData.colors, ui = FUP.ui;
     const g = this.add.graphics().setDepth(-10);
     const noise = (x, y, k = 0) => { const n = Math.sin(x * 12.9898 + y * 78.233 + k * 37.719) * 43758.5453; return n - Math.floor(n); };
-    const office = this.info.kind === 'office', laundry = this.A.id === 'laundry', vault = !!FUP.raidData.vault.rooms[this.A.id] || this.A.id === 'archive';
+    const office = this.info.kind === 'office', laundry = this.A.id === 'laundry';
     for (let ty = 0; ty < R.height(); ty++) {
       for (let tx = 0; tx < R.width(); tx++) {
         const ch = R.tileAt(tx, ty), x = tx * T, y = ty * T;
@@ -182,8 +180,8 @@ class RaidScene extends WorldScene {
         }
       }
     }
-    // The KEEP FED sign by its feeding spot (story Phase C, v0.82). Spot is a PLACEHOLDER.
-    if (office && this.A.id === 'office') { const p = R.center(3, 4); ui.text(this, p.x, p.y, '🪧\nKEEP FED', 11, FUP.ui.colors.ink, { fontStyle: '700', align: 'center', stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(p.y + 5); }
+    // v1.38: the iron door behind the Guardian's desk, shut until Main Quest 1 (data/raid.js office lore). Spot is a PLACEHOLDER.
+    if (office && this.A.id === 'office') { const p = R.center(3, 4); ui.text(this, p.x, p.y, '🚪\nIRON DOOR', 11, FUP.ui.colors.ink, { fontStyle: '700', align: 'center', stroke: FUP.ui.colors.stroke, strokeThickness: 3 }).setOrigin(0.5).setDepth(p.y + 5); }
     // The Guardian's desk (the "d" squares)
     const desk = R.find('d');
     if (desk.length) {
@@ -214,7 +212,7 @@ class RaidScene extends WorldScene {
     this.exitDoor = this.add.rectangle(c.x, c.y, T * 0.9, T, C.door).setStrokeStyle(3, C.clutterEdge).setDepth(c.y);
     this.exitLamp = this.add.circle(c.x, c.y - 4, 6, C.doorLocked).setDepth(c.y + 1);
     const next = this.raid.rooms[this.raid.index + 1];
-    const label = next === 'office' ? "The Guardian's Hall ↑" : next === 'archive' ? 'The Archive ↑' : 'Next room ↑';
+    const label = next === 'office' ? "The Guardian's Hall ↑" : 'Next room ↑';
     this.exitText = FUP.ui.text(this, c.x, c.y + 30, '', 13, FUP.ui.colors.ink, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4 }).setOrigin(0.5).setDepth(5000);
     this.exitLabel = label;
     this.showDoor(R.locked(this.A));
@@ -263,7 +261,7 @@ class RaidScene extends WorldScene {
 
   enemySprite(e) {
     if (!e.guardian) return super.enemySprite(e);
-    const data = FUP.enemies[e.type];   // the Guardian, or the Archivist (Phase D)
+    const data = FUP.enemies[e.type];   // the Guardian
     return FUP.ui.sprite(this, e.x, e.y, data.mapSprite, data.emoji, 52).setOrigin(0.5, 0.8).setDepth(e.y + 16);
   }
 
@@ -279,12 +277,12 @@ class RaidScene extends WorldScene {
     if (this.leaving) return;
     this.saveHere();   // closed during the fight = back here (v0.73)
     this.leaving = true;
-    const e = this.A.enemies[index], D = this.zone();   // the raid's numbers, or the Vault's
+    const e = this.A.enemies[index], D = this.zone();
     if (e.guardian) {
-      // The Section 12 fight, unchanged (no raid multiplier). The Archivist brings his Filing Shelves (Phase D).
+      // The Section 12 fight, unchanged (no raid multiplier).
       // (v1.00: no `office` flag here any more; that one is for boss offices out in the regions, `worldOffice`)
       FUP.run.battle = { index, type: e.type, result: null, raidBoss: true, dropTier: D.dropTier };
-      this.say(e.type === 'archivist' ? 'archiveFight' : 'officeFight');
+      this.say('officeFight');
       FUP.audio.sfx('encounter');
       this.cameras.main.fadeOut(650, 30, 0, 40);
       const foes = this.info.foes || [e.type];
@@ -292,7 +290,7 @@ class RaidScene extends WorldScene {
       return;
     }
     FUP.run.battle = { index, type: e.type, result: null, mult: D.mult, raid: true, areaLevel: D.level, dropTier: D.dropTier };
-    this.launch(e.group || [e.type]);   // a Vault group (moth swarms), or just this one
+    this.launch(e.group || [e.type]);
   }
 
   launch(enemies) {
@@ -340,16 +338,6 @@ class RaidScene extends WorldScene {
     this.crackAt = {};
     for (const k of this.cracks) this.crackAt[k.tx + ',' + k.ty] = k;
 
-    // The Stacks (Phase D): each stretch of `chunk` aisle squares in a row is one tipping shelf
-    const SH = FUP.raidData.vault.shelves;
-    this.tips = [];
-    this.tipAt = {};
-    for (let ty = 0; ty < R.height(); ty++) {
-      let run = [];
-      const flush = () => { while (run.length) { const part = run.splice(0, SH.chunk); const tip = { squares: part, state: 'idle', t: 0, g: this.add.graphics().setDepth(-2) }; this.tips.push(tip); for (const q of part) this.tipAt[q.tx + ',' + q.ty] = tip; } };
-      for (let tx = 0; tx < R.width(); tx++) { if (R.tileAt(tx, ty) === 'w') run.push({ tx, ty }); else flush(); }
-      flush();
-    }
     this.pipes = (this.info.pipes || []).map(p => {
       const rail = this.add.graphics().setDepth(1);
       const row = R.rows()[p.row], y = p.row * T;
@@ -359,35 +347,17 @@ class RaidScene extends WorldScene {
     this.updateHazards(0);
   }
 
-  // A tipping shelf's aisle stretch: shaking warning, then books all over the floor (Phase D)
-  drawTip(tip) {
-    const T = FUP.raid.size(), g = tip.g;
-    g.clear();
-    if (tip.state === 'idle') return;
-    for (const q of tip.squares) {
-      const x = q.tx * T, y = q.ty * T;
-      if (tip.state === 'wobble') { g.fillStyle(FUP.look.num('r2'), 0.25 + 0.2 * Math.sin(this.hz * 30)); g.fillRect(x, y, T, T); }
-      else { g.fillStyle(FUP.raidData.colors.clutterEdge, 0.9); for (let k = 0; k < 4; k++) g.fillRect(x + 3 + k * 9, y + 8 + (k % 2) * 12, 8, 14); }
-    }
-  }
-
-  // Ledger pages on the walls (Phase D): walk next to one and the narrator reads it, once per visit to the room
+  // Signs in a room (data/raid.js `lore`; v1.38: the iron door): walk next to one and the narrator reads it, once per visit
   checkLore() {
     for (const [i, l] of (this.info.lore || []).entries()) {
       if (this.A.read[i]) continue;
       const c = FUP.raid.center(l.tx, l.ty);
       if (Math.hypot(c.x - this.player.x, c.y - this.player.y) > FUP.raid.size() * 1.3) continue;
       this.A.read[i] = true;
-      this.say('vaultLore', { item: l.text });
+      this.say('raidLore', { item: l.text });
       FUP.audio.sfx('questStep');
     }
   }
-  // Ink puddles slow you down (WorldScene.movePlayer asks)
-  speedMult() {
-    const T = FUP.raid.size();
-    return FUP.raid.tileAt(Math.floor(this.player.x / T), Math.floor(this.player.y / T)) === 'u' ? FUP.raidData.vault.ink.slow : 1;
-  }
-
   drawCrack(k) {
     const T = FUP.raid.size(), C = FUP.raidData.colors, g = k.g, x = k.tx * T, y = k.ty * T;
     g.clear();
@@ -454,21 +424,6 @@ class RaidScene extends WorldScene {
       }
     }
 
-    // The Stacks (Phase D): step into an aisle stretch and the shelf above it tips over after a moment
-    if (this.tips.length && !this.falling) {
-      const SH = D.vault.shelves, here = this.tipAt[Math.floor(px / T) + ',' + Math.floor(py / T)];
-      if (here && here.state === 'idle') { here.state = 'wobble'; here.t = SH.delay; FUP.audio.sfx('error'); }
-      for (const tip of this.tips) {
-        if (tip.state === 'idle') continue;
-        tip.t -= dt;
-        if (tip.state === 'wobble' && tip.t <= 0) {
-          tip.state = 'down'; tip.t = SH.down;
-          FUP.audio.sfx('splat'); FUP.fx.shake(this, 'trap');
-          if (here === tip && this.hz >= this.safeUntil) { this.safeUntil = this.hz + SH.safeSeconds; this.hazardHurt(SH.damage, 'vaultShelf'); }
-        } else if (tip.state === 'down' && tip.t <= 0) tip.state = 'idle';
-        this.drawTip(tip);
-      }
-    }
 
     // Swinging steam pipes
     for (const p of this.pipes) {

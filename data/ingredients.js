@@ -70,9 +70,11 @@ FUP.ingredients = {
   // v1.12: The Inspector (ash line quest 3)
   sealed_crate: { name: 'Sealed Crate', short: 'Crate', emoji: '📦', color: '#8a6a40', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Sealed. Heavy. Addressed to the Iron House. Not to you.' },
   frostroot: { name: 'Frostroot', short: 'Frostroot', emoji: '🥕', color: '#d8e4ee', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A pale root that only grows under the snow. Cold enough to sting.' },
-  old_bowl: { name: 'Licked-Clean Bowl', short: 'Bowl', emoji: '🥣', color: '#a87a4a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A wooden bowl with a little mark on the bottom. Found by the Guardian\'s feeding spot.' },
-  right_form: { name: 'The Right Form', short: 'Right Form', emoji: '📜', color: '#e8dcb0', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Form R-1: Passage East. Filled in, signed, dated. Correct in every way. Suspiciously correct.' },   // Phase D: the Archivist drops it
-  old_key:  { name: 'Old Key', short: 'Old Key', emoji: '🗝️', color: '#c8a84a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Heavy, plain, older than the village. It opens something down there.' },
+  // v1.38 (plans/OT.md OT-A): the Old-timer's keepsakes (Q1 Gran's Keepsake Box). He keeps them. Blurbs PLACEHOLDER.
+  keepsake_key:     { name: 'Gran\'s Old Key', short: 'Old Key', emoji: '🗝️', color: '#7a7470', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Iron, worn smooth. It opens nothing in his house.' },
+  keepsake_letters: { name: 'A Bundle of Letters', short: 'Letters', emoji: '✉️', color: '#e2d4b0', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Old letters tied with faded string.' },
+  keepsake_charm:   { name: 'A Little Wooden Charm', short: 'Charm', emoji: '🪵', color: '#8a6a42', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A small carved disc on a cord. From an old shrine, apparently.' },
+  keepsake_doll:    { name: 'A Singed Rag Doll', short: 'Rag Doll', emoji: '🧸', color: '#c8b08a', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A little rag doll. One arm is burned short.' },
   // v0.81 quest crops (data/garden.js): Bitterroot from Grandmother's Soup, Sea Kale from Never Seen the Sea
   bitterroot: { name: 'Bitterroot', short: 'Bitterroot', emoji: '🫚', color: '#8a6a3a', rarity: 'Uncommon', sell: 5, source: 'Farm' },
   sea_kale:   { name: 'Sea Kale', short: 'Sea Kale', emoji: '🥬', color: '#5a9a8a', rarity: 'Common', sell: 6, source: 'Farm' },

@@ -17,9 +17,7 @@ FUP.factData = {
     'repair:market': 'Repair the Market',
     'repair:windmill': 'Repair the Windmill',
     'repair:fountain': 'Repair the Fountain',
-    'got:rightForm': 'Find the Right Form (the Vault, under the Old Storehouse)',   // Phase D
-    'road:east': 'Get past the Bog Notary',
-    'vault:open': 'Open the iron door in the Guardian\'s Hall',
+    'road:east': 'The road east is blocked for now',   // v1.38: opens by beating the Causeway Serpent (OT-B, not built yet). PLACEHOLDER
     'title:witness': 'Help the Quest Board Keeper with His First Quest',   // (v1.34: showed as "title:witness")
   },
   // Fallback by prefix. {name} = the thing's own name (enemy, quest...) or its id.

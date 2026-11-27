@@ -3,7 +3,7 @@
 // Home of "R": the Resident Receiver, a polite collector who takes the "dues" from every village and
 // sends it up the mountain, and honestly thinks that's fair. Mr. Tally's old employer.
 // A safe region (no trip, no enemies, no fog). Reached through the Marsh's east edge, past the Bog
-// Notary, once you finish "The Right Form" (fact 'road:east'). Walk west through the gap (rows 13-14) back.
+// Notary, once the road east is open (fact 'road:east'; v1.38: the Causeway Serpent, OT-B). Walk west through the gap (rows 13-14) back.
 // First version: 3 townsfolk (the Receiver, the Town Clerk with a quest board, Mrs. Pennywise's
 // Repossessed Goods), a pond to fish, a campfire. The Receiver's story chapter comes later.
 // Town name, people, lines and prices are all PLACEHOLDERS.

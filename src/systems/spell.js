@@ -10,6 +10,9 @@ FUP.spell = {
   load() {
     if (this.state) return this.state;
     try { this.state = JSON.parse(localStorage.getItem(FUP.save.playerKey(FUP.spellData.storageKey)) || '{}') || {}; } catch (e) { this.state = {}; }
+    // v1.38: pieces from the old story quests are gone (the main quest gives all 7 now)
+    const old = (FUP.spellData.retired || []).filter(id => this.state[id]);
+    if (old.length) { for (const id of old) delete this.state[id]; this.write(); }
     return this.state;
   },
   write() { try { localStorage.setItem(FUP.save.playerKey(FUP.spellData.storageKey), JSON.stringify(this.state)); } catch (e) { /* private window: kept for this visit only */ } },

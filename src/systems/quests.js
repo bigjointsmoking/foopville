@@ -18,6 +18,15 @@ FUP.quests = {
   runKills: 0,  // enemies defeated on this trip to the Forest
   news: [],     // lines a quest wants shown after a fight (v0.82: the Guardian's last words, the bowl): takeNews()
   takeNews() { const n = this.news; this.news = []; return n; },
+  // v1.38: an old save loses quests and things that were cut (data/questlines.js FUP.questData.retired). Safe to run every load.
+  retireOld() {
+    const R = FUP.questData.retired;
+    if (!R) return;
+    for (const id of R.quests) { delete this.state.active[id]; this.state.board = this.state.board.filter(b => b !== id); FUP.facts.set('quest:' + id, 0); }
+    for (const k of R.facts) FUP.facts.set(k, 0);
+    const bags = [FUP.run.bag, FUP.house.state && FUP.house.state.pantry, FUP.grave.state && FUP.grave.state.bag];
+    for (const bag of bags) if (bag) for (const it of R.items) delete bag[it];
+  },
 
   reset() { this.state = { active: {}, board: [], rest: {}, day: 0, fresh: false }; this.runKills = 0; this.news = []; },
 

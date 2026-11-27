@@ -98,6 +98,7 @@ FUP.save = {
     r.newLife(d.parts.run.weapon, d.parts.run.hero);   // clean slate, then fill it in
     for (const [name, p] of Object.entries(this.parts)) if (d.parts[name] !== undefined && d.parts[name] !== null) p.set(d.parts[name], d);
     if (FUP.mats) FUP.mats.migrate();
+    FUP.quests.retireOld();   // v1.38: The Bowl, the Vault and The Right Form are gone from old saves
     if (FUP.log) FUP.log.backfill();   // E2: the collection log fills in what this save already had (no pop-ups)   // v0.70: planks left in the backpack / pantry move into the materials pouch
     // A trip saved mid-way (part 'trip', v0.73): pick it back up where you stood
     const trip = !!(d.onRun && d.parts.trip);

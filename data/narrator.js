@@ -623,12 +623,7 @@ FUP.narrator = {
   ],
   wishDone: ['You already wished today. The well needs time to ignore you properly.'],
   // ---------- Phase D (v1.00): the Vault, the Archivist, the Bog Notary, the eastern town. PLACEHOLDER lines ----------
-  vaultEnter: ['The iron door groans open. Behind it: the elders\' records. And something that has been eating them.', 'The Old Key fits. Of course it does. Nobody ever changes the locks.'],
-  raidHazard_shelves: ['The Stacks. Old shelves, leaning in. Keep moving down the aisles. Stopping is how you get filed.', 'Shelves tip when you linger. Walk like you have somewhere to be.'],
-  vaultShelf: ['A shelf of ledgers lands on you. Heavy reading.', 'Filed. Under "ouch".', 'The shelf tips. You were in the way. Noted.'],
-  vaultLore: ['{item}'],
-  archiveEnter: ['The Archive. Something huge and silver is curled around the last of the records. It wears reading glasses.'],
-  archiveFight: ['"Shh." The Archivist slides behind its filing shelves. It will be with you shortly. It will not.'],
+  raidLore: ['{item}'],   // v1.38: a sign in a raid room (the iron door)
   archivistStart: ['The Archivist peers at you over its glasses. You are overdue.', 'A giant silverfish with a filing system. You picked a fight with the library.'],
   archivistPhase1: ['Phase 2: Redact. It starts blacking out your options. Rude, but very tidy.'],
   archivistPhase2: ['Phase 3: Last Copy. It\'s eating the last pages. Throw something at it before it digests the evidence.'],
@@ -659,7 +654,7 @@ FUP.narrator = {
   ammoHarvest: ['{item}'],
   officeClosed: ['{item}'],
   officeWon: ['You walk out of the office. Nobody stops you. Nobody makes eye contact either.', 'Meeting adjourned. By force.'],
-  eastLocked: ['The road east goes past the Notary\'s office. Nobody gets past the Notary. Not without the right form.'],
+  eastLocked: ['The road east is blocked. Whatever lives under the old causeway disagrees with you going.'],   // v1.38 PLACEHOLDER
 };
 
 // ---------- Village surprise events (V3, data/events.js). PLACEHOLDER lines. ----------

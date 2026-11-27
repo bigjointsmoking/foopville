@@ -78,9 +78,9 @@ FUP.worldData = {
                  respawn: { enemies: 600 },   // 10 min
                  features: ['enemies', 'forage', 'fog', 'campfire', 'fishing', 'objects', 'npcs'],
                  links: { W: { to: 'village', edge: 'E' },
-                          // Phase D: the road east past the Bog Notary opens when "The Right Form" is done
+                          // v1.38: the road east opens by beating the Causeway Serpent (plans/OT.md OT-B, not built yet); saves that opened it keep it
                           E: { to: 'east', edge: 'W', req: { facts: { 'road:east': 1 } }, lockEmoji: '📜',
-                               lockText: 'The road east goes past the Notary\'s office. Nobody gets past the Notary without the right form.' } } },
+                               lockText: 'The old road east is blocked for now. Something big lives where it crosses the deep water.' } } },
     // v1.10: Three Scales, the market town north of the Deep Woods. Safe, like the Docks. Map in data/region_north.js
     north:     { name: 'Three Scales', kind: 'cozy', scene: 'World', box: { col: 2, row: 1 }, features: ['npcs', 'objects'],
                  links: { S: { to: 'deepwoods', edge: 'N' },

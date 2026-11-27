@@ -8,7 +8,7 @@ window.FUP = window.FUP || {};
 
 FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
   current: 'entry',
-  OPEN: '#kd<h', LOCKED: '#kd<>h',   // solid letters while the door ahead is open / locked (h = a Vault bookshelf)
+  OPEN: '#kd<h', LOCKED: '#kd<>h',   // solid letters while the door ahead is open / locked (h = a shelf)
 
   // Lock or unlock the ">" door (the screen calls this as enemies go down)
   setLocked(on) { this.BLOCKED = on ? this.LOCKED : this.OPEN; },
@@ -17,8 +17,7 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
   room(id = this.current) {
     const D = FUP.raidData;
     if (id === 'office') return D.office;
-    if (id === 'archive') return D.vault.archive;   // the Vault's boss room (Phase D)
-    return D.rooms[id] || D.vault.rooms[id];
+    return D.rooms[id];
   },
   use(id) { this.current = id; },
   size() { return FUP.raidData.tileSize; },
@@ -39,35 +38,6 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
     this.enter(f, 0, rng);
   },
 
-  // ---------- The Vault (Phase D, data/raid.js vault) ----------
-  // The iron door opens for the Old Key: on your key ring (The Bowl) or in your bag. Once opened it stays open.
-  canOpenVault() {
-    return FUP.facts.has('vault:open') || FUP.facts.has('key:storehouse') || ((FUP.run.bag || {}).old_key || 0) > 0;
-  },
-  // Through the door: the Vault's rooms join this trip's raid, right after the Guardian's Hall.
-  openVault(f) {
-    const R = f.raid, V = FUP.raidData.vault;
-    FUP.facts.set('vault:open', 1);
-    FUP.facts.set('region:vault', 1);
-    R.vault = true;
-    R.vaultStart = R.index + 1;
-    R.rooms = R.rooms.slice(0, R.index + 1).concat(V.order, 'archive');
-    this.enter(f, R.index + 1);
-  },
-  // Beat the Archivist: the Right Form (once per life) and a spell piece. Returns lines for the results screen.
-  vaultReward() {
-    const V = FUP.raidData.vault, out = [];
-    if (!FUP.facts.has(V.form.fact)) {
-      if (FUP.run.addToBag(V.form.item)) { FUP.facts.set(V.form.fact, 1); out.push(`📜 In what's left of its lunch: ${FUP.ingredients[V.form.item].name} (in your bag)`); }
-      else out.push(`📜 It coughs up a form, but your bag is full. Make room and beat it again.`);
-    }
-    if (FUP.spell) {
-      const r = FUP.spell.add(V.spell);
-      if (r.fresh) out.push(`✨ A piece of lost magic (${r.count}/${FUP.spell.size()}): see ✨ Spell in your 🎒 backpack`);
-    }
-    return out;
-  },
-
   // Walk into room i of the raid. Rooms are one-way, so each one starts fresh.
   enter(f, i, rng = Math.random) {
     const R = f.raid;
@@ -84,7 +54,7 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
     for (const [ch, type] of Object.entries(d.enemyLetters)) {
       for (const s of this.find(ch)) enemies.push(FUP.forest.makeEnemy(type, s, a, rng));
     }
-    // The boss at his desk (the Guardian, or the Archivist in the Vault): he waits for you
+    // The boss at his desk (the Guardian): he waits for you
     for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy(a.boss || 'guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
     const amb = this.find('A')[0];
     return {
@@ -92,7 +62,7 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
       enemies, items: [],
       ambush: amb ? { ...amb, done: false } : null,
       cracked: {},          // "tx,ty" → seconds until it breaks (or 'broken')
-      read: {},             // lore pages already read in this room (Phase D)
+      read: {},             // signs already read in this room (v1.38: the iron door)
       sporeResist: 0,       // from a Poison-resist dish eaten in this room
       player: this.besideEntrance(),
       fresh: true,

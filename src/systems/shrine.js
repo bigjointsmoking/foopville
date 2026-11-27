@@ -1,6 +1,6 @@
 // ============================================================
 // THE SHRINE (v0.82): feed the Guardian a cooked dish at the Forest Edge shrine and it comes up to fight.
-// Only after The Bowl, once every 20 minutes of play (v0.86; was once per in-game day), the full boss. More stars = better extra loot.
+// Only after you've beaten the Guardian once (v1.38), once every 20 minutes of play (v0.86; was once per in-game day), the full boss. More stars = better extra loot.
 // Data: FUP.raidData.shrine. The fight is the normal Battle with run.battle.shrine = true.
 //   FUP.shrine.open() → { ok, why }   dishes() → [{ dish, idx, stars }]   feed(i) → stars   reward(stars) → [lines]
 // ============================================================
@@ -8,7 +8,7 @@ window.FUP = window.FUP || {};
 
 FUP.shrine = {
   data() { return FUP.raidData.shrine; },
-  unlocked() { return FUP.quests.done(this.data().needQuest); },
+  unlocked() { return FUP.facts.has(this.data().needFact); },   // v1.38: after your first Guardian win
   // Seconds of play until it's hungry again (0 = ready). Fact 'shrine:fedAt' = play second it was last fed (+1, so 0 means never)
   waitLeft() { const at = FUP.facts.get('shrine:fedAt'); return at ? Math.max(0, this.data().cooldownSeconds - (FUP.clock.now() - (at - 1))) : 0; },
   fedToday() { return this.waitLeft() > 0; },   // (old name: 'today' is now the last 20 minutes of play)

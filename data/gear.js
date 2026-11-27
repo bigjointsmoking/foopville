@@ -106,7 +106,6 @@ FUP.gearData = {
   bossDrops: {
     godfather: [{ key: 'pigeon_pin', rate: 1 / 8 }, { hat: 'don_fedora', rate: 1 / 20 }, { place: 'golden_perch', rate: 1 / 30 }],
     seniorPartner: [{ key: 'retainer', rate: 1 / 8 }],   // v0.93 (PLACEHOLDER rate)
-    archivist: [{ key: 'dog_eared_bookmark', rate: 1 / 8 }],   // Phase D (PLACEHOLDER rate)
     bogNotary: [{ key: 'stamp_of_approval', rate: 1 / 8 }],    // Phase D (PLACEHOLDER rate)
     guardian:  [{ key: 'master_key', rate: 1 / 8 }, { key: 'mycelium_mantle', rate: 1 / 12 }, { hat: 'guardian_cap', rate: 1 / 20 }, { place: 'framed_warning', rate: 1 / 30 }],
   },

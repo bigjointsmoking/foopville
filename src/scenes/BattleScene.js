@@ -41,8 +41,7 @@ class BattleScene extends Phaser.Scene {
     this.banned = {};                     // Phase D: actions blacked out (the Archivist's Redact, the Notary's motions): { cat: your turns left }
     this.inked = 0;                       // Phase D: the Ink Slime's splash: your hits can miss for this many of your turns
     this.inkMiss = 0;
-    this.sliding = false;                 // the Exit Chute / iron door button was pressed (reset: this screen is reused)
-    this.vaultChoice = false;
+    this.sliding = false;                 // the Exit Chute button was pressed (reset: this screen is reused)
     this.approvalUsed = false;           // Stamp of Approval (the Notary's chase drop): the first hit on you each fight is blocked
     if ((this.player.effects || []).includes('bookmark')) this.player.focus = FUP.gearData.effects.bookmark.focus;   // the Archivist's chase drop
     // Phaser reuses this screen for every fight, so everything per-fight starts fresh here.
@@ -1470,7 +1469,6 @@ class BattleScene extends Phaser.Scene {
           // Nothing hidden: what this boss can drop and the odds of each (✓ = you've had it before)
           lines.push('Rare drops: ' + FUP.gear.chaseInfo(e.key).map(c => `${c.name} ${c.rateText}${c.found ? ' ✓' : ''}`).join(' · '));
         }
-        if (e.key === 'archivist') lines.push(...FUP.raid.vaultReward());   // the Right Form + a spell piece (Phase D)
       }
       lines.push(`HP left: ${p.hp}/${p.maxHp}`);
     } else if (result === 'fled' && run.battle && run.battle.lessonDone) {
@@ -1494,15 +1492,11 @@ class BattleScene extends Phaser.Scene {
     // v1.00 fix: the raid's Guardian used the same `office` flag as the Senior Partner (v0.93), so beating him in the
     // raid sent you back to the Deep Woods and never counted for The Bowl. Map offices now use `worldOffice`.
     const shrine = !!(run.battle && (run.battle.shrine || run.battle.worldOffice));   // fed at the Forest Edge shrine (v0.82) / a boss office in a region (v0.93): the trip goes on
-    const R = run.forest && run.forest.raid, inVault = !!(R && R.vault);
-    this.vaultChoice = false;
-    if (result === 'boss') for (const k of this.killed.filter(o => o.boss)) this.questNews.push(...FUP.quests.event('bossDown', { enemy: k.key }));   // any boss (Phase D: the Archivist, the Notary)
+    if (result === 'boss') for (const k of this.killed.filter(o => o.boss)) this.questNews.push(...FUP.quests.event('bossDown', { enemy: k.key }));   // any boss (the Notary, the shrine Guardian...)
     if (result === 'boss' && run.forest && run.battle && run.battle.worldOffice) { /* the Senior Partner / the Notary: nothing extra, back to the region */ }
-    else if (result === 'boss' && inVault) { /* the Archivist: the chute home (the trip ends in exitChute) */ }
     else if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
       if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));
-      else this.vaultChoice = !!R && FUP.raid.canOpenVault();   // the Guardian in the raid: the iron door behind his desk (Phase D)
     }
     if (!survived && run.isHardcore()) FUP.save.wipe();   // hardcore: this life is over, the save goes with it
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away
@@ -1528,32 +1522,15 @@ class BattleScene extends Phaser.Scene {
     else if (run.forest && !this.isBossFight) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }
     else if (run.forest) { label = '🔥 Back to camp'; go = () => this.scene.start('Cook', { mode: 'campfire' }); }
     else { label = '🏘️ Back to Foopville'; go = () => this.scene.start('Village', { from: 'run' }); }
-    // Phase D: beat the Guardian with the Old Key on your key ring = a second way out, through the iron door
-    const bx = this.vaultChoice ? W / 2 - 245 : W / 2 - 120;
-    const next = ui.button(this, bx, 420, 240, 46, label, go, { hot: true });
+    const next = ui.button(this, W / 2 - 120, 420, 240, 46, label, go, { hot: true });
     next.rect.setDepth(502); next.txt.setDepth(503);
-    if (this.vaultChoice) {
-      const door = ui.button(this, W / 2 + 5, 420, 240, 46, FUP.raidData.vault.doorButton, () => this.intoVault(), {});
-      door.rect.setDepth(502); door.txt.setDepth(503);
-    }
-  }
-
-  // Through the iron door behind the Guardian's desk: the Vault (Phase D, data/raid.js vault). The trip goes on.
-  intoVault() {
-    if (this.sliding) return;
-    this.sliding = true;
-    FUP.audio.sfx('doorOpen');
-    FUP.run.battle = null;   // arrive fresh (the door slams, the Vault's own line), not "back from a fight"
-    FUP.raid.openVault(FUP.run.forest);
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.time.delayedCall(420, () => this.scene.start('Raid', {}));
   }
 
   // The Guardian is down: a chute opens under his desk and you slide all the way home (blueprint 18.6).
   exitChute() {
     if (this.sliding) return;
     this.sliding = true;
-    if (FUP.run.forest) FUP.run.finishRun();   // the trip ends here (it used to end on the results screen; Phase D needs the trip for the Vault)
+    if (FUP.run.forest) FUP.run.finishRun();   // the trip ends here (it used to end on the results screen)
     const W = this.scale.width, H = this.scale.height, ui = FUP.ui;
     this.add.rectangle(0, 0, W, H, FUP.look.num('k0'), 1).setOrigin(0).setDepth(900);
     // A long tube going down and to the right, and you, sliding down it

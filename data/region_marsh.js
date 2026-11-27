@@ -3,7 +3,7 @@
 // Cross the repaired East Bridge (village east gap) into a foggy maze of reeds and
 // bog water: Mosquito Interns, Leech Lawyers and Filing Frogs. One campfire, 4 fishing
 // spots (F), and the Bog Notary's office at the east end. Past him (rows 13-14, east edge) the road
-// east to the Receiver's town (Phase D: open once you finish "The Right Form").
+// east to the Receiver's town (v1.38: opens by beating the Causeway Serpent, OT-B; was "The Right Form", cut).
 //
 // MAP KEY (like the Forest, data/forest.js):
 //   #  reeds / wall (can't walk)   .  mud   =  path   ~  bog water (can't walk)
@@ -63,16 +63,15 @@ FUP.worldData.areas.marsh = {
     redTapeEel:     [{ w: 1, foes: ['redTapeEel'] }, { w: 1, foes: ['redTapeEel', 'mosquitoIntern'] }],
   },
   fish: { F: 'marsh', '~': 'marsh' },   // v0.78: all marsh water
-  // The Bog Notary stands outside his office (v0.82; The Old Accounts). His boss fight comes later.
+  // The Bog Notary stands outside his office (v0.82; The Old Accounts). His fight: the office below.
   npcs: [{ id: 'notary', tx: 42, ty: 14 }],
   objects: [
     // The Frog and the strongbox (story Phase C): just a thing to find, no quest
     { kind: 'sign', tx: 5, ty: 25, emoji: '🧰', sprite: 'prop_strongbox', label: 'Look', text: 'An old strongbox, lid rusted open, empty. A Filing Frog lives in it now. It files nothing. It just sits there, looking owed.' },
-    // The Bog Notary's office (Phase D): shut until "The Right Form" brings you here; that fight is free.
-    // After the quest he'll see you again for 3 Stamped Forms a fight (rematch, no quest rewards).
+    // The Bog Notary's office (Phase D; v1.38, Jesus: The Right Form is cut, the office is open). Your first fight is free,
+    // each rematch after costs 3 Stamped Forms.
     { kind: 'office', tx: 44, ty: 12, boss: 'bogNotary', cost: { stamped_form: 3 }, emoji: '🚪', label: 'Office',
-      free: { quest: 'rightForm', step: 1 }, openAfter: 'rightForm',
-      closedText: 'OFFICE OF THE BOG NOTARY. Closed. Take a number. There are no numbers.',
+      freeFirst: true,
       freeText: 'The Notary is waiting inside, behind a very large desk. "Come in. Close the door. We\'ll settle this the old way."',
       text: 'OFFICE OF THE BOG NOTARY. Rematches by appointment. Appointments cost three Stamped Forms. Each.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },
