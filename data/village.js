@@ -208,6 +208,9 @@ FUP.villageData = {
     ts_assayer: { name: 'The Iron House Assayer', sprite: 'npc_banker_map', portrait: 'npc_banker', emoji: '⚖️', tint: 0xb8c0d0, noRizzSecrets: true,   // v1.12: The Inspector's contact
       greet: ['Metals, ores, odd materials. If it can be weighed, I\'ve weighed it.', 'The Iron House pays me to say what things are. Mostly they\'re what they look like.'],
       fight: { hp: 60, def: 4 } },   // standing with you in the wolf fight (PLACEHOLDER numbers)
+    // v1.30 (plans/AL4.md): Lord Ormsby of the Road House, vain, rich, owns the "heirloom back scratcher" (the tool). Lines PLACEHOLDER
+    ts_ormsby: { name: 'Lord Ormsby', sprite: 'npc_ormsby_map', portrait: 'npc_ormsby', emoji: '🎩', noRizzSecrets: true,
+      greet: ['Lord Ormsby. Of the Road House. You may bow. Most people do, eventually.', 'If you\'re selling something, the answer is no. If you\'re admiring something, carry on.'] },
     ts_crier: { name: 'Market Crier', sprite: 'npc_shop_map', portrait: 'npc_shop', emoji: '📣', tint: 0xd8b8e0, noRizzSecrets: true,
       greet: ['Fresh from the low country! Mostly fresh! Some of it!'] },
     smith: {

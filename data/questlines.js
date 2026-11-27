@@ -453,6 +453,41 @@ Object.assign(FUP.questData.quests, {
         say: 'The Assayer kneels, rubs the black dirt between two fingers. "Dragon residue. It won\'t fade. Not in your lifetime, not in his. Nobody in this village can clear it." Pip sits down on the dirt, then gets up fast. "A dragon. On my plot. ...Here\'s your money. I need to sit down somewhere else."' },
     ] },
 
+  // v1.30: the Ash line, quest 4 (plans/AL4.md, Jesus's picks 2026-11-26). The tool that draws the magic out of her ash is Lord Ormsby's
+  // (Road House) "heirloom back scratcher". He'll trade it for Old Whitepaw's pelt: a giant snow cat in the High Snows (data/region_highsnows.js,
+  // opens once this quest is taken). Q4 = the trade, then follow its trail to its lair. The fight and the tool at Pip's field are Q5.
+  // Lines are PLACEHOLDERS.
+  ash4: { kind: 'story', from: 'seeds', difficulty: 'hard', length: 'long', name: 'The Warm Thing',
+    req: { facts: { 'quest:inspector': 1 } },
+    text: 'The Assayer wrote back to Pip. Not "still dragon" this time. Something about a back scratcher. Pip has read the letter eleven times.',
+    reward: { coins: 500, xp: { melee: 400, gardening: 300 } },
+    afterGreet: ['A pelt off something nobody\'s ever touched. I\'ve grown worse things. I think.', 'He scratches his back with it. At dinner. In front of people.'],
+    steps: [
+      { talk: 'seeds', log: 'The Assayer has seen the same orange glow as Pip\'s ash before: on Lord Ormsby\'s back scratcher, at council dinners in Three Scales.',
+        say: '"Read this." The Assayer\'s letter: she\'s seen that glow before. Orange, faint, never fading. On a back scratcher. Lord Ormsby\'s. At council dinners. Pip folds it up. "Dead ground isn\'t empty. It\'s full. Full of her. If something can hold that glow, maybe it can pull it out. Go and find out what that thing is."' },
+      { talk: 'ts_assayer', log: 'The Assayer pointed you to Lord Ormsby, outside the Road House. She warned you he\'s unbearable.',
+        say: '"Ormsby. Road House. He calls it an heirloom. His grandfather bought it off some travelling hero, apparently, which means it was stolen twice. It\'s always warm. He scratches his back with it at dinner." She pauses. "He\'s unbearable. Good luck."' },
+      { talk: 'ts_ormsby', log: 'Lord Ormsby won\'t sell. He\'ll trade the back scratcher for Old Whitepaw\'s pelt: a giant snow cat no hunter has ever killed. The north gate is open to you.',
+        say: 'Ormsby laughs at your coins. "Sell? It\'s an heirloom. Priceless. Warm." Then he leans in. "But. Up in the High Snows there\'s a cat. Old Whitepaw. The other houses have sent hunters for years. Not one pelt. Bring me Old Whitepaw\'s pelt and the scratcher is yours. Imagine their faces at dinner." He waves at the guards. The north gate opens.' },
+      { search: { region: 'highsnows', tx: 18, ty: 31, name: 'the tracks', label: '🐾 Look at the tracks', icon: '🐾' },
+        goal: 'Go through the north gate into the High Snows and find Old Whitepaw\'s trail', log: 'In the High Snows: tracks bigger than your head, heading uphill.',
+        say: 'Paw prints in the snow, each one wider than a dinner plate. Four toes, no claw marks. It walks soft. Whatever it is, it went uphill.' },
+      { search: { region: 'highsnows', tx: 12, ty: 21, name: 'the kill', label: '🔍 Look at the kill', icon: '🔍' },
+        goal: 'Follow the tracks up to the basin', log: 'A half-buried kill in the basin. A ridge goat. Something that size eats goats.',
+        say: 'A ridge goat, half buried in the snow. Not torn up. Taken down clean, in one go, and dragged. You look around the basin. Nothing. That\'s the worrying part.' },
+      { search: { region: 'highsnows', tx: 8, ty: 11, name: 'the fur', label: '🔍 Look at the fur', icon: '🔍' },
+        goal: 'Follow the drag marks to the west snowfield', log: 'White fur on a rock in the west snowfield, the same colour as the snow.',
+        say: 'Fur, caught on a rock. White. Not snow white. Whiter. You can only see it because the rock is grey. In the snow it would be invisible. So would the cat.' },
+      { search: { region: 'highsnows', tx: 30, ty: 12, name: 'the hunters\' camp', label: '📓 Read the journal', icon: '📓' },
+        goal: 'Look for the old hunters\' camp in the east snowfield', log: 'A smashed hunters\' camp and a journal: years of following the cat, and never once seeing it.',
+        say: 'A flattened camp and a journal. Years of it. "Tracks again." "Tracks again." "It was behind us the whole time." Last page: "Going up to the cave. Back by dark." Nothing after.' },
+      { search: { region: 'highsnows', tx: 20, ty: 5, name: 'the cave', label: '👀 Look into the cave', icon: '👀' },
+        goal: 'Climb to the cave at the top of the High Snows', log: 'The cave at the top: Old Whitepaw\'s lair. Two gold eyes in the dark. You backed away.',
+        say: 'The cave is black. Then two gold eyes open in it, high up. Higher than a person. They don\'t blink. You back away down the slope, slowly, the whole way. Not today.' },
+      { talk: 'seeds', log: 'You told Pip about the lair. He\'s growing something for it. Probably.',
+        say: 'Pip listens to all of it without interrupting once, which has never happened. Then: "So we need a pelt off something nobody\'s ever touched. Fine. I\'ve grown worse things." He hasn\'t. Here\'s your money.' },
+    ] },
+
   // v1.13: the Glass line (the Carpenter), quests 1-2 (story/MAIN_QUEST_LINE.md Glass line arc, archive/plans-done/GL1.md).
   // A shard shows its moment only at the Blacksmith's forge: a cutscene (data/cutscenes.js) that plays once. Lines are PLACEHOLDERS.
   glass1: { kind: 'story', from: 'carpenter', difficulty: 'easy', length: 'short', name: 'Melted Stone',
