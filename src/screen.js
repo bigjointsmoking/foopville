@@ -1,30 +1,31 @@
 // ============================================================
-// SCREEN — makes the game fill phones and tablets.
+// SCREEN — makes the game fill the screen (phones, tablets and, since v1.36, computers).
 // The page styles (index.html) drop the margins on touch screens; this file adds:
 // - a "turn it sideways" card when a phone or tablet is held upright (tap it to play anyway)
-// - a full-screen button where the browser allows it (iPad, Android; iPhone Safari doesn't)
+// - a full-screen button where the browser allows it (computers, iPad, Android; iPhone Safari doesn't)
 // - no pinch / double-tap zoom, and a re-fit after the device turns.
 // ============================================================
 (function () {
   const doc = document, el = doc.documentElement;
   const touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-  if (!touch) return;   // computers keep the framed look
+  // (v1.36) Computers get the full-screen button too; the rest of this file is for touch screens.
 
   // Pinch-zoom on iOS (gesture events) would zoom the whole page, not the game.
-  ['gesturestart', 'gesturechange', 'gestureend'].forEach(n => doc.addEventListener(n, e => e.preventDefault(), { passive: false }));
+  if (touch) ['gesturestart', 'gesturechange', 'gestureend'].forEach(n => doc.addEventListener(n, e => e.preventDefault(), { passive: false }));
   // (Double-tap zoom is stopped by touch-action in the page styles.)
 
   function ready(fn) { if (doc.body) fn(); else doc.addEventListener('DOMContentLoaded', fn); }
 
   ready(() => {
-    doc.body.classList.add('touch');
-
-    // Upright warning: shown by CSS in portrait; one tap hides it for this visit.
-    const turn = doc.createElement('div');
-    turn.id = 'turn';
-    turn.innerHTML = '<div class="turn-icon">&#128241;&#8635;</div><div>Turn your screen sideways</div><small>Foopville is built for landscape. Tap to play like this anyway.</small>';
-    turn.addEventListener('click', () => doc.body.classList.add('upright-ok'));
-    doc.body.appendChild(turn);
+    if (touch) {
+      doc.body.classList.add('touch');
+      // Upright warning: shown by CSS in portrait; one tap hides it for this visit.
+      const turn = doc.createElement('div');
+      turn.id = 'turn';
+      turn.innerHTML = '<div class="turn-icon">&#128241;&#8635;</div><div>Turn your screen sideways</div><small>Foopville is built for landscape. Tap to play like this anyway.</small>';
+      turn.addEventListener('click', () => doc.body.classList.add('upright-ok'));
+      doc.body.appendChild(turn);
+    }
 
     // Full-screen button, only where the browser supports it.
     const canFull = doc.fullscreenEnabled || doc.webkitFullscreenEnabled;

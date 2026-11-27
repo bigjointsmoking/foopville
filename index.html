@@ -30,15 +30,21 @@
     color: var(--ink);
     font-family: var(--font);
     box-sizing: border-box;
-    padding-block: 12px;
+    padding-block: 6px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
   }
-  #game { width: 100%; max-width: 1100px; flex: 1; min-height: 0; }
+  /* (v1.36) Computers: the game fills the whole window (it keeps its shape, so wide screens get bars at the sides) */
+  #game { width: 100%; flex: 1; min-height: 0; }
+  .foot { font-size: 11px !important; }
+  /* Full screen (the ⛶ button on the title screen): nothing but the game */
+  body.is-full { padding: 0; gap: 0; }
+  body.is-full .foot { display: none; }
+  body.is-full #game canvas { border: 0; border-radius: 0; }
   #game canvas { touch-action: none; -webkit-user-select: none; user-select: none; border: 2px solid var(--edge); border-radius: 4px; }
   .foot { margin: 0; color: var(--dim); font-size: 13px; letter-spacing: 0.06em; text-align: center; }
 
@@ -85,7 +91,7 @@
 
 <div id="game"></div>
 <script src="src/loading.js"></script>
-<p class="foot">FOOPVILLE · prototype v1.35 · fix the well, farm, cook, rebuild the Market, wade into the Marsh, pay (or punch) the tax goblin, upset the pigeons, raid the old storehouse, face the Mushroom Guardian, open the Vault, out-paperwork the Notary, sling a pebble</p>
+<p class="foot">FOOPVILLE · prototype v1.36 · fix the well, farm, cook, rebuild the Market, wade into the Marsh, pay (or punch) the tax goblin, upset the pigeons, raid the old storehouse, face the Mushroom Guardian, open the Vault, out-paperwork the Notary, sling a pebble</p>
 
 <!-- The game engine (Phaser 3), loaded from the web -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
