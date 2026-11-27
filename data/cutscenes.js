@@ -114,10 +114,10 @@ FUP.cutsceneData = {
         { t: 5.4, caption: 'It came up slowly, like it didn\'t want to.' },
         { t: 7.6, add: { id: 'spark', key: 'cs_spark', emoji: '✨', x: 740, y: 474, h: 34, alpha: 0 } },   // in the cupped hand at the bottom of the rod
         { t: 7.7, fade: { id: 'spark', alpha: 1, dur: 1.4 } },
-        { t: 9.4, move: { id: 'spark', x: 740, y: 430, dur: 2.4 } },   // it lifts a little
         { t: 8.0, sfx: 'spell' },
         { t: 8.6, add: { id: 'patch', key: 'cs_patch', emoji: '🟫', x: 800, y: 496, h: 60, alpha: 0 } },
         { t: 8.7, fade: { id: 'patch', alpha: 1, dur: 2 } },
+        { t: 9.4, move: { id: 'spark', x: 740, y: 430, dur: 2.4 } },   // it lifts a little
         { t: 9.6, caption: 'One spark. Hers.' },
         { t: 12.6, caption: 'Under it, one patch of plain brown dirt. The rest stayed black.' },
         { t: 16.4, flash: { color: 'k4', ms: 900 } },
