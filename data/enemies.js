@@ -473,7 +473,7 @@ FUP.enemies = {
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.
-  // v1.40 (plans/OT.md OT-C): Old Cinderback, the Old-timer's Q3. An ordinary badger that crawled out of Dragonsafe's ashes;
+  // v1.40 (archive/plans-done/OT.md OT-C): Old Cinderback, the Old-timer's Q3. An ordinary badger that crawled out of Dragonsafe's ashes;
   // her fire soaked into it and it grew huge over generations. Quest-only, boss-strength (Melee ~12-16). It dies when beaten.
   // Glows hotter as it's hurt: each time it glows up (below 66% and 33% HP) its next move is the white-hot swipe (Defend it:
   // Perfect Block counter); at its brightest the swipe comes every 3rd move. Name Jesus's; numbers and lines PLACEHOLDERS.
@@ -489,7 +489,7 @@ FUP.enemies = {
     signature: { id: 'glow', stages: [0.66, 0.33], hotEvery: 3, tints: ['#ffb060', '#fff0c0'],
       move: { name: 'White-Hot Swipe', type: 'attack', power: 2.4, counterMult: 2, tell: '🔥', tellText: 'WHITE-HOT (Defend!)' } },
   },
-  // v1.41 (plans/OT.md OT-D): Old Mossback, the Old-timer's Q4. A giant old snapping turtle in the flooded stone shelter on the
+  // v1.41 (archive/plans-done/OT.md OT-D): Old Mossback, the Old-timer's Q4. A giant old snapping turtle in the flooded stone shelter on the
   // old road east through the Marsh. A plain animal, no dragon magic. Quest-only, Hard (~Melee 20). Beaten, it retreats into the water.
   // Every `every` moves it pulls into its shell (you do x`takenMult` damage), then comes out with a big snap: Defend it (counter x2).
   // Name Jesus's; numbers and lines PLACEHOLDERS.
@@ -505,6 +505,24 @@ FUP.enemies = {
     signature: { id: 'tuck', every: 4, takenMult: 0.1,
       tuckMove: { name: 'Into the Shell', type: 'tuck', tell: '🐢', tellText: 'Pulling into its shell' },
       snapMove: { name: 'The Big Snap', type: 'snap', power: 2.6, counterMult: 2, tell: '💥', tellText: 'BIG SNAP (Defend!)' } },
+  },
+  // v1.42 (archive/plans-done/OT.md OT-E): the Shrine Keeper, the Old-timer's Q5. An elder-built wood-and-iron guardian behind Gran's shrine
+  // that rises to test whoever holds the key. Quest-only, boss-strength (~Melee 25-30). Beaten, it kneels facing the Deep Woods and
+  // stays as a landmark (no rematch). Its test: every `every` moves it announces a big blow; next move it lands it. Defend it in time
+  // (Perfect Block) and it nods and gets weaker (takes +`weakTaken` damage per guarded blow, ATK x`weakAtk`); don't, and it hits very hard.
+  // Name Jesus's; numbers and lines PLACEHOLDERS (its three test lines are from the approved draft).
+  shrineKeeper: {
+    name: 'The Shrine Keeper', emoji: '🪵', size: 190, sprite: 'keeper', mapSprite: 'keeper_map',
+    maxHp: 520, atk: 18, def: 10, spd: 9, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 28,
+    xp: 700, coins: 0, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'keeperStart', win: 'keeperWin' },
+    moves: [
+      { name: 'Ironbound Fist', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Root Sweep', type: 'attack', power: 1.3, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'test', every: 3, weakTaken: 0.25, weakAtk: 0.85,
+      warnMove: { name: 'Raises Its Arm', type: 'warn', tell: '✋', tellText: 'Raising its arm (Defend next turn!)' },
+      blowMove: { name: 'The Test', type: 'testBlow', power: 3.0, tell: '💥', tellText: 'THE BLOW (Defend!)' } },
   },
   ashWolf: {
     name: 'Ash-Grey Wolf', emoji: '🐺', size: 120, sprite: 'wolf', mapSprite: 'wolf_map',
@@ -586,7 +604,7 @@ FUP.enemies = {
   // ============================================================
   // PHASE D (v1.00): the Bog Notary's fight. Melee ~22. (v1.38: the Vault's creatures and the Archivist are gone.) PLACEHOLDERS.
   // ============================================================
-  // ---------- The Causeway Serpent (v1.39, plans/OT.md OT-B; Jesus 2026-11-26/27) ----------
+  // ---------- The Causeway Serpent (v1.39, archive/plans-done/OT.md OT-B; Jesus 2026-11-26/27) ----------
   // A plain swamp monster (no paperwork jokes) in the deep channel where the old causeway crosses at the Marsh's east edge.
   // Beat it once and the road east opens for that life. About the Senior Partner's strength (Melee ~18).
   // Sinks and strikes: every few moves it sinks (can't be hit), then bursts up with a big strike: Defend it (Perfect Block,

@@ -94,6 +94,7 @@ class WorldScene extends Phaser.Scene {
       if (enemy.questFoe) {   // a quest enemy: the quest moves on (v0.79)
         this.dropFoeTag(enemy.questFoe);   // (v1.15) its ❗ and name go too
         const r = FUP.quests.foeBeaten(enemy.questFoe);
+        if (this.showNewSigns) this.showNewSigns();   // (v1.42) e.g. the Shrine Keeper, kneeling now
         this.time.delayedCall(400, () => FUP.questUi.result(this, enemy.questFoe, r, () => this.refreshQuestMarks(true)));
         return;
       }

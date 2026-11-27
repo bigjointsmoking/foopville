@@ -408,6 +408,12 @@ FUP.narrator = {
   cinderWin: ['It stops moving. The orange goes out of its stripes, one ember at a time.'],
   // v1.41 Old Mossback (OT-D). PLACEHOLDER lines (the tuck and snap ones are from the approved draft)
   bigCounter: ['You take the big one on your guard and hit straight back. It did not see that coming.', 'Blocked. Then returned, with interest.'],   // v1.41 PLACEHOLDER
+  // v1.42 the Shrine Keeper (OT-E). The warn / nod / no-nod lines are from the approved draft; the rest PLACEHOLDER
+  keeperStart: ['Wood and iron, older than the village. It looks at the key in your hand, then at you. It has questions.'],
+  keeperWarn: ['The Shrine Keeper raises its arm. Slowly. On purpose. (Defend next turn.)'],
+  keeperNod: ['It nods, very slightly.'],
+  keeperNoNod: ['It does not nod.'],
+  keeperWin: ['The Shrine Keeper lowers itself to one knee and goes still.'],
   mossbackStart: ['Old stones, half sunk. Something enormous is sitting in the doorway. It has moss on it. It IS the doorway.'],
   mossbackTuck: ['Old Mossback pulls into its shell. You are now hitting a rock.'],
   mossbackSnap: ['The shell opens. So does the mouth.'],

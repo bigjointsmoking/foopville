@@ -75,10 +75,10 @@ FUP.worldData.areas.marsh = {
       freeText: 'The Notary is waiting inside, behind a very large desk. "Come in. Close the door. We\'ll settle this the old way."',
       text: 'OFFICE OF THE BOG NOTARY. Rematches by appointment. Appointments cost three Stamped Forms. Each.' },
     { kind: 'sign', tx: 2, ty: 13, text: 'SOGGY MARSH. Mind the leeches. They bill by the hour.' },
-    // v1.41 (plans/OT.md OT-D): the old stone shelter on the old road east, half sunk, where Rowan wrote his last letter. Spot PLACEHOLDER.
+    // v1.41 (archive/plans-done/OT.md OT-D): the old stone shelter on the old road east, half sunk, where Rowan wrote his last letter. Spot PLACEHOLDER.
     { kind: 'sign', tx: 31, ty: 10, sprite: 'prop_shelter', emoji: '🛖', label: 'Look', solid: true,
       text: 'An old stone shelter, half sunk in the Marsh. Travellers used to sleep here, back when people travelled.' },
-    // v1.39 (plans/OT.md OT-B): the Causeway Serpent's channel by the old causeway east. Your first win opens the road east
+    // v1.39 (archive/plans-done/OT.md OT-B): the Causeway Serpent's channel by the old causeway east. Your first win opens the road east
     // (fact 'road:east'); rematches are free, 20 minutes of play after each win. Spot PLACEHOLDER.
     { kind: 'lair', tx: 45, ty: 14, boss: 'causewaySerpent', opens: 'road:east', restSeconds: 1200, label: 'Deep water',
       lines: { look: 'serpentLair', rest: 'serpentResting' } },   // data/narrator.js

@@ -8,6 +8,22 @@
 // ============================================================
 Object.assign(WorldScene.prototype, {
 
+  // A readable thing on the map (v0.82: emoji + label for other readable things, like the frog's strongbox)
+  // (E4 lore: hidden = nothing drawn, the thing is already on the map; scale = a smaller big picture; solid = walk around it)
+  drawSign(o) {
+    const ui = FUP.ui, c0 = this.tiles.center(o.tx, o.ty);
+    if (o.hidden) { /* no picture */ }
+    else if (o.sprite) { const p = ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10); if (o.scale && this.textures.exists(o.sprite)) p.setScale(p.scaleX * o.scale); }   // (v0.84: its own picture)
+    else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
+    if (o.solid) this.solid.push({ tx: o.tx, ty: o.ty });
+    this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
+  },
+  // (v1.42) Signs whose fact just came true while you're here (the Shrine Keeper kneels after its fight): draw them now
+  showNewSigns() {
+    if (!this.feature('objects')) return;
+    for (const o of this.info.objects || []) if (o.kind === 'sign' && o.needFact && FUP.facts.has(o.needFact) && !this._shownObjects.has(o)) { this._shownObjects.add(o); this.drawSign(o); }
+  },
+
   // ---------- Drawing (every visit: this screen is reused) ----------
   drawPeople() {
     const ui = FUP.ui, c = ui.colors, F = this.tiles, info = this.info;
@@ -22,16 +38,12 @@ Object.assign(WorldScene.prototype, {
       this.spots.push({ kind: 'npc', id: p.id, x: c0.x, y: c0.y, sprite: s, tag, label: 'Talk' });
       this.solid.push({ tx: p.tx, ty: p.ty });
     }
+    this._shownObjects = new Set();
     if (this.feature('objects')) for (const o of info.objects || []) {
+      if (o.needFact && !FUP.facts.has(o.needFact)) continue;   // (v1.42) things that appear later (the kneeling Shrine Keeper)
+      this._shownObjects.add(o);
       const c0 = at(o.tx, o.ty);
-      if (o.kind === 'sign') {   // (v0.82: emoji + label for other readable things, like the frog's strongbox)
-        // (E4 lore: hidden = nothing drawn, the thing is already on the map; scale = a smaller big picture; solid = walk around it)
-        if (o.hidden) { /* no picture */ }
-        else if (o.sprite) { const p = ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10); if (o.scale && this.textures.exists(o.sprite)) p.setScale(p.scaleX * o.scale); }   // (v0.84: its own picture)
-        else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
-        if (o.solid) this.solid.push({ tx: o.tx, ty: o.ty });
-        this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
-      }
+      if (o.kind === 'sign') this.drawSign(o);
       if (o.kind === 'office') {   // a boss's office (v0.93: the Senior Partner): book a fight for a fee
         this.add.text(c0.x, c0.y, o.emoji || '🚪', { fontSize: '26px' }).setOrigin(0.5).setDepth(c0.y + 10);
         ui.text(this, c0.x, c0.y - 22, 'OFFICE', 10, c.ink, { stroke: c.stroke, strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000);

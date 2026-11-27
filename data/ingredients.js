@@ -70,7 +70,7 @@ FUP.ingredients = {
   // v1.12: The Inspector (ash line quest 3)
   sealed_crate: { name: 'Sealed Crate', short: 'Crate', emoji: '📦', color: '#8a6a40', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Sealed. Heavy. Addressed to the Iron House. Not to you.' },
   frostroot: { name: 'Frostroot', short: 'Frostroot', emoji: '🥕', color: '#d8e4ee', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A pale root that only grows under the snow. Cold enough to sting.' },
-  // v1.38 (plans/OT.md OT-A): the Old-timer's keepsakes (Q1 Gran's Keepsake Box). He keeps them. Blurbs PLACEHOLDER.
+  // v1.38 (archive/plans-done/OT.md OT-A): the Old-timer's keepsakes (Q1 Gran's Keepsake Box). He keeps them. Blurbs PLACEHOLDER.
   keepsake_key:     { name: 'Gran\'s Old Key', short: 'Old Key', emoji: '🗝️', color: '#7a7470', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Iron, worn smooth. It opens nothing in his house.' },
   keepsake_letters: { name: 'A Bundle of Letters', short: 'Letters', emoji: '✉️', color: '#e2d4b0', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'Old letters tied with faded string.' },
   keepsake_charm:   { name: 'A Little Wooden Charm', short: 'Charm', emoji: '🪵', color: '#8a6a42', rarity: 'Rare', sell: 0, source: 'Quest', throw: 1, blurb: 'A small carved disc on a cord. From an old shrine, apparently.' },

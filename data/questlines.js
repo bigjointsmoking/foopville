@@ -25,7 +25,7 @@ window.FUP = window.FUP || {};
 
 FUP.questData.lengths = { short: '⏱ Short', medium: '⏱ Medium', long: '⏱ Long' };
 
-// v1.38 (plans/OT.md OT-A, Jesus 2026-11-26): quests and things that are gone. An old save loses them on load
+// v1.38 (archive/plans-done/OT.md OT-A, Jesus 2026-11-26): quests and things that are gone. An old save loses them on load
 // (FUP.quests.retireOld): The Bowl's key + bowl, the Vault's open door, The Right Form and its paper. Coins and XP earned stay.
 // The road east stays open for saves that already opened it.
 FUP.questData.retired = {
@@ -206,7 +206,7 @@ Object.assign(FUP.questData.quests, {
   // ================= v0.81: the last four (pitched one at a time with Jesus, 2026-11-18) =================
 
   // ---------------- The Old-timer ----------------
-  // v1.38 (plans/OT.md OT-A, plans/OT1_keepsakes_draft.md approved): the Old-timer's Q1. Pigeons took the shiny bits
+  // v1.38 (archive/plans-done/OT.md OT-A, plans/OT1_keepsakes_draft.md approved): the Old-timer's Q1. Pigeons took the shiny bits
   // out of his keepsake box; find 4 round the village, each goes back with its family story. He keeps them (the key is yours in Q5).
   oldtimer1: { kind: 'story', from: 'oldtimer', difficulty: 'easy', length: 'short', name: "Gran's Keepsake Box",
     text: 'The Old-timer nodded off on his bench with his family keepsake box open. The pigeons did the rest.',
@@ -239,7 +239,7 @@ Object.assign(FUP.questData.quests, {
 
   // A cooking puzzle: three clues → three ingredients. The twist: the "warm" was never pepper, it was a root from Pip's stall.
   grandmaSoup: { kind: 'story', from: 'oldtimer', difficulty: 'easy', length: 'medium', name: "Grandmother's Soup",
-    req: { facts: { 'quest:oldtimer1': 1 } },   // v1.38 (plans/OT.md OT-A): the Old-timer's Q2, after his keepsake box; Cooking 10 dropped (Jesus)
+    req: { facts: { 'quest:oldtimer1': 1 } },   // v1.38 (archive/plans-done/OT.md OT-A): the Old-timer's Q2, after his keepsake box; Cooking 10 dropped (Jesus)
     text: 'The Old-timer misses his grandmother\'s soup. Nobody wrote it down. He only remembers how it tasted.',
     reward: { coins: 220, xp: { cooking: 180, gardening: 80 }, recipe: "Grandmother's Soup",
       bonus: [{ flag: 'guessed', renameRecipe: { from: "Grandmother's Soup", to: "{hero}'s Soup" }, line: 'He wrote your name on the recipe. Then crossed it out. Then wrote it again, bigger.' }] },
@@ -286,7 +286,7 @@ Object.assign(FUP.questData.quests, {
         sayIf: { guessed: 'Your soup. Not hers. She\'d have liked that. Put your name on it. ...That taste, though. She used to sit me down with a bowl and tell me about the dragon. "She wasn\'t roaring," she\'d say. "She was sobbing." Like she\'d seen it.' } },
     ] },
 
-  // v1.40 (plans/OT.md OT-C, plans/OT3-5_lines_draft.md approved): the Old-timer's Q3. Night raids on the village stores:
+  // v1.40 (archive/plans-done/OT.md OT-C, plans/OT3-5_lines_draft.md approved): the Old-timer's Q3. Night raids on the village stores:
   // three damage spots, then The Bowl's old tracking route (Forest Edge, Toll Road) to the scorched dead tree in the Deep Woods.
   // Old Cinderback fights at its den and dies. Spots PLACEHOLDERS.
   oldtimer3: { kind: 'story', from: 'oldtimer', difficulty: 'medium', length: 'long', name: 'The Thing From the Fire',
@@ -316,7 +316,7 @@ Object.assign(FUP.questData.quests, {
         say: '"So Gran was right. All those years they laughed." A long pause. "I thought I\'d feel better." You were right to do it. It doesn\'t feel like it.' },
     ] },
 
-  // v1.41 (plans/OT.md OT-D, plans/OT3-5_lines_draft.md approved): the Old-timer's Q4. Rowan's letters (read when he hands
+  // v1.41 (archive/plans-done/OT.md OT-D, plans/OT3-5_lines_draft.md approved): the Old-timer's Q4. Rowan's letters (read when he hands
   // them over, Jesus) stop mid-sentence at an old stone shelter on the Marsh road east; Old Mossback sits in its doorway.
   // The scratched name, then Rowan's family in Ledgerwick (Foop hint 2; they're the eldest's grandchildren). Spots PLACEHOLDERS.
   oldtimer4: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'Letters From the East',
@@ -340,6 +340,30 @@ Object.assign(FUP.questData.quests, {
         say: '"Gwendy? We have her name in our letters too." They bring out a box of their own. "Our side always said we were the eldest\'s grandchildren. The village forgot. We didn\'t." A pause. "And our side always said the hero walked out of the fire without a mark on him."' },
       { bring: { keepsake_letters: 1 }, to: 'oldtimer', goal: 'Bring the letters home to the Old-timer', log: 'He knows now who his family were.',
         say: '"The eldest\'s. Gran never said. Maybe she didn\'t know how to." He looks at the statue for a long time. "Without a mark on him." He\'s sat by that statue every day of his life. He\'s looking at it differently now.' },
+    ] },
+
+  // v1.42 (archive/plans-done/OT.md OT-E, plans/OT3-5_lines_draft.md approved): the Old-timer's Q5. Take Gran's key to the shrine where she
+  // held it first; the Shrine Keeper rises to test you, then kneels toward the Deep Woods. On the bench: Foop hint 3 and the key,
+  // on your key ring. (Main Quest 1 "The Quiet Room" is posted here once it's built.) Spots PLACEHOLDERS.
+  oldtimer5: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'Where We Kept Things',
+    req: { skills: { melee: 25 }, facts: { 'quest:oldtimer4': 1 } },
+    text: 'The letters repeat the eldest\'s words: someone has to know where we kept things. The Old-timer has stopped calling it a house key.',
+    reward: { coins: 1000, xp: { melee: 600 }, keyRing: { granKey: 'Gran\'s Old Key' } },
+    afterGreet: ['She didn\'t fall. She flew. Gran watched her go.', 'The key\'s yours now. Don\'t ask me what it opens. I still don\'t know.'],
+    spare: [{ item: 'keepsake_key', npc: 'oldtimer', fromStep: 1, untilStep: 3, say: 'He holds out the key again. "You dropped it. I picked it up. Don\'t make me walk that far again."' }],
+    steps: [
+      { talk: 'oldtimer', log: 'Gran\'s key isn\'t a house key. Take it to the shrine in the Forest Edge, where she held it first.',
+        say: '"The letters say the eldest told Gran: someone has to know where we kept things. This isn\'t a house key. Take it to Gran\'s shrine. That\'s where she held it first." He puts it in your hand. An old man trusts you with the only thing his family kept. No pressure.',
+        give: { items: { keepsake_key: 1 } } },
+      { search: { region: 'edge', tx: 3, ty: 14, name: 'Gran\'s shrine' }, need: { keepsake_key: 1 }, notYet: 'You need Gran\'s key.',
+        goal: 'Take Gran\'s key to the old shrine in the Forest Edge', log: 'At the shrine, one of the trees stood up.',
+        say: 'The key gets heavier the closer you get. Behind the shrine, the trees creak. One of them stands up.' },
+      { fight: { region: 'edge', tx: 5, ty: 14, enemy: 'shrineKeeper', name: 'The Shrine Keeper' },
+        goal: 'Pass the Shrine Keeper\'s test (when it raises its arm, Defend next turn)', log: 'The Shrine Keeper knelt, facing the Deep Woods.',
+        say: 'The Shrine Keeper lowers itself to one knee and goes still. Its head is turned toward the Deep Woods.',
+        give: { fact: 'keeper:knelt' } },
+      { bring: { keepsake_key: 1 }, to: 'oldtimer', goal: 'Bring the key back to the Old-timer on his bench', log: 'He gave you Gran\'s key. It\'s on your key ring.',
+        say: '"Gran always said: she didn\'t fall. She flew. Gran watched her go." He turns the key over once more, then presses it into your hand. "That\'s yours. Don\'t ask me what it opens." He\'s not smiling. He\'s not sad either. He\'s done what Gran asked.' },
     ] },
 
   // ---------------- Pip the Seed Seller ----------------

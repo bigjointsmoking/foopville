@@ -183,7 +183,7 @@ FUP.villageData = {
       tooMany: ['That\'s the limit. Even here we have a limit. It\'s three.'],
       empty: ['Nothing on the board. A quiet day. We don\'t like quiet days.'],
     },
-    // v1.41 (plans/OT.md OT-D, Jesus): a plain stand-in for Rowan's family (Gwendy's brother's descendants) until the
+    // v1.41 (archive/plans-done/OT.md OT-D, Jesus): a plain stand-in for Rowan's family (Gwendy's brother's descendants) until the
     // Ledgerwick session designs them. Name, look and greetings PLACEHOLDERS; their quest lines are approved (plans/OT3-5_lines_draft.md).
     rowanfamily: {
       name: 'Rowan\'s family', sprite: 'npc_farmhand_map', portrait: 'npc_farmhand', emoji: '🏡', tint: 0xd8c8ff,

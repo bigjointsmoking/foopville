@@ -183,6 +183,7 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'scrapShield' && e.shieldUp) m *= sig.takenMult;   // (v1.19) the Scrap Goblin hides behind scrap
     if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
     if (sig && sig.id === 'tuck' && e.tucked) m *= sig.takenMult;            // (v1.41) Old Mossback, pulled into its shell
+    if (sig && sig.id === 'test' && e.passed) m *= 1 + sig.weakTaken * e.passed;   // (v1.42) the Shrine Keeper, weaker for every blow you guarded
     if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
     if (sig && sig.id === 'hum' && e.staggered) m *= sig.staggerMult;        // (v1.24) Dunn off balance after you Defended his swing
     if (sig && sig.id === 'plates' && !this.platesOpen(e)) m *= sig.takenMult; // (v1.27) Jarvin behind his stone plates
@@ -309,6 +310,10 @@ Object.assign(BattleScene.prototype, {
     if (sig.id === 'hum') {   // (v1.24) Dunn: the staff hums every `every` moves, then he swings
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
+    }
+    if (sig.id === 'test') {   // (v1.42) the Shrine Keeper: it announces a big blow a turn ahead, then lands it
+      if (e.blowNext) return sig.blowMove;
+      if ((e.movesDone + 1) % sig.every === 0) return sig.warnMove;
     }
     if (sig.id === 'tuck') {   // (v1.41) Old Mossback: into its shell every `every` moves, then out with the big snap
       if (e.tucked) return sig.snapMove;
@@ -451,6 +456,24 @@ Object.assign(BattleScene.prototype, {
           this.bigMoment('OFF BALANCE!', FUP.ui.colors.good);
           this.say('dunnStagger', { enemy: e.name });
         }
+        return true;
+      }
+      case 'warn':   // (v1.42) the Shrine Keeper raises its arm: the blow comes next turn
+        e.blowNext = true;
+        this.popup(e.view, '✋ WARNING', 'info');
+        this.say('keeperWarn', { enemy: e.name });
+        return true;
+      case 'testBlow': {   // ...and lands it. Guarded: it nods and gets weaker. Not guarded: a very hard hit
+        const guarded = p.defending, S = e.signature;
+        e.blowNext = false;
+        this.strike(e, m.power, true);
+        if (this.over || e.gone) return true;
+        if (guarded) {
+          e.passed = (e.passed || 0) + 1;   // (not e.weak: that's its element weakness)
+          e.atk = Math.max(1, Math.round(e.atk * S.weakAtk));
+          this.bigMoment('IT NODS', FUP.ui.colors.good);
+          this.say('keeperNod', { enemy: e.name });
+        } else this.say('keeperNoNod', { enemy: e.name });
         return true;
       }
       case 'tuck':   // (v1.41) Old Mossback pulls into its shell: you hit a rock until it snaps
@@ -762,7 +785,7 @@ Object.assign(BattleScene.prototype, {
     if (e.chewing) f.push('📄 eating pages');
     if (e.dodge) f.push('🦋 dodgy');
     if (e.landed) f.push('🪶 on the ground');
-    if (e.hidden) f.push('❄️ hidden'); if (e.tucked) f.push('🐢 in its shell'); if (e.stunnedOpen) f.push('💫 stunned');   // (v1.31) Old Whitepaw   // (v1.29) the Highland Eagle
+    if (e.hidden) f.push('❄️ hidden'); if (e.tucked) f.push('🐢 in its shell'); if (e.passed) f.push(`🙇 weakened ×${e.passed}`); if (e.stunnedOpen) f.push('💫 stunned');   // (v1.31) Old Whitepaw   // (v1.29) the Highland Eagle
     if (this.latched && this.latched.by === e) f.push('🦡 latched on');
     if (e.signature && e.signature.id === 'plates') f.push(this.platesOpen(e) ? '💔 plates cracked' : '🪨 stone plates');   // (v1.27) Jarvin
     const SH = e.bossRules && e.bossRules.shelves;

@@ -54,6 +54,9 @@ FUP.forestData = {
       // kind 'sign' like the Marsh's: sprite (or emoji), label, text; hidden = no picture; solid = you walk around it
       objects: [
         { kind: 'sign', tx: 2, ty: 18, sprite: 'deco_signpost', text: 'FOOPVILLE → (probably). The arrow\'s paint is much newer than the board it\'s nailed to.' },
+        // v1.42 (OT-E): the Shrine Keeper, kneeling, once you've passed its test (fact keeper:knelt). Spot PLACEHOLDER.
+        { kind: 'sign', tx: 5, ty: 14, needFact: 'keeper:knelt', sprite: 'keeper_kneel', emoji: '🪵', label: 'Look', solid: true,
+          text: 'The Shrine Keeper kneels by the shrine, wood and iron, perfectly still. Its head is turned toward the Deep Woods.' },
         { kind: 'sign', tx: 30, ty: 18, hidden: true, label: 'Look', text: 'Five stumps in a neat ring, all cut level at once. Someone sat here to talk about something. Nobody sits here now.' },
       ],
       ground: { ...FUP.look.mood('forestEdge'), treeShade: 0.78 },   // colours: data/look.js
