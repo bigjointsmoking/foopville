@@ -64,6 +64,7 @@ class BattleScene extends Phaser.Scene {
     this.saidShell = false; // (v1.19) the Rubble Crab's 'shell too tough' hint (once a fight)
     this.marked = 0;        // (v1.22) Old Carrow's mark on you (0 = none; counts his hits since)
     this.latched = null;    // (v1.29) a Frost Wolverine hanging on to you
+    this.saidHidden = false; // (v1.31) Old Whitepaw's 'not there' hint (once a fight)
     this.saidGate = false; this.saidStone = false;   // (v1.22) Gurrow's gate / Brannock's stone hints (once a fight)
     this.sweetGifts = [];   // what Sweet Talk got you this fight (for the results screen)
     this.startLevels = { melee: FUP.skills.level('melee'), rizz: FUP.skills.level('rizz'), ranged: FUP.skills.level('ranged') };

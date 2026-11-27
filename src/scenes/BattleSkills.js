@@ -120,6 +120,12 @@ Object.assign(BattleScene.prototype, {
         return { blocked: true };
       }
     }
+    // (v1.31) Old Whitepaw in the snow: nothing to hit
+    if (e.hidden) {
+      this.popup(e.view, '❄️ NOT THERE', 'info');
+      if (!this.saidHidden) { this.saidHidden = true; this.say('whitepawGone', { enemy: e.name }); }
+      return { blocked: true };
+    }
     // (v1.22) Gurrow's gate, shut: nothing gets through until his next move
     if (e.gateShut) {
       this.popup(e.view, '🚪 BLOCKED', 'info');
@@ -178,7 +184,8 @@ Object.assign(BattleScene.prototype, {
     if (sig && sig.id === 'boulder' && e.lifted) m *= sig.liftedMult;        // (v1.22) Brannock with his stone overhead
     if (sig && sig.id === 'hum' && e.staggered) m *= sig.staggerMult;        // (v1.24) Dunn off balance after you Defended his swing
     if (sig && sig.id === 'plates' && !this.platesOpen(e)) m *= sig.takenMult; // (v1.27) Jarvin behind his stone plates
-    if (sig && sig.id === 'swoop' && e.landed) m *= sig.landedMult;           // (v1.29) the Highland Eagle on the ground after its dive
+    if (sig && sig.id === 'swoop' && e.landed) m *= sig.landedMult;
+    if (sig && sig.id === 'vanish' && e.stunnedOpen) m *= sig.openMult;      // (v1.31) Old Whitepaw, stunned after you Defended its pounce           // (v1.29) the Highland Eagle on the ground after its dive
     for (const b of e.buffs) if (b.stat === 'taken') m *= b.mult;
     const SH = e.bossRules && e.bossRules.shelves;   // the Archivist hides behind his Filing Shelves (Phase D)
     if (SH && this.liveReal().some(o => o.key === SH.foe)) m *= SH.takenMult;
@@ -301,6 +308,11 @@ Object.assign(BattleScene.prototype, {
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
     }
+    if (sig.id === 'vanish') {   // (v1.31) Old Whitepaw: vanish every `every` moves (more often when hurt), then pounce
+      if (e.pounceNext) return sig.pounceMove;
+      const every = e.hp / e.maxHp < sig.lowBelow ? sig.everyLow : sig.every;
+      if ((e.movesDone + 1) % every === 0) return sig.vanishMove;
+    }
     if (['headbutt', 'latch', 'swoop'].includes(sig.id) && (e.movesDone + 1) % sig.every === 0 && !(sig.id === 'latch' && this.latched)) return sig.move;   // (v1.29) the High Snows' animals
     if (sig.id === 'plates') {   // (v1.27) Jarvin: plates back on once his open moves are used up; the Quarry Slam every `slamEvery`
       if (e.platesUntil != null && !e.resetNext && e.movesDone >= e.platesUntil) { e.resetNext = true; return sig.resetMove; }
@@ -322,7 +334,7 @@ Object.assign(BattleScene.prototype, {
 
   // Start of an enemy's turn: burning hurts, and last move's guard / audit ends. Returns false if it died.
   enemyTurnStart(e) {
-    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false; e.staggered = false; e.landed = false;   // (v1.24) Dunn finds his feet   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
+    e.stance = false; e.ledger = false; e.audit = null; e.shieldUp = false; e.gateShut = false; e.staggered = false; e.landed = false; e.stunnedOpen = false;   // (v1.24) Dunn finds his feet   // (v1.22) Gurrow's gate swings open   // (v1.19) the Scrap Goblin's shield lasts until its next move
     // The Mosquito Intern's Overtime: the last one standing hits harder (Marsh, W2)
     const sig = e.signature;
     if (sig && sig.id === 'overtime' && !e.overtime && this.startCount > 1 && this.liveReal().length === 1) {
@@ -418,6 +430,24 @@ Object.assign(BattleScene.prototype, {
           e.staggered = true;
           this.bigMoment('OFF BALANCE!', FUP.ui.colors.good);
           this.say('dunnStagger', { enemy: e.name });
+        }
+        return true;
+      }
+      case 'vanish':   // (v1.31) Old Whitepaw melts into the snow: can't be hit until it pounces
+        e.hidden = true; e.pounceNext = true;
+        if (e.view) this.tweens.add({ targets: e.view, alpha: 0.15, duration: 400 });
+        this.popup(e.view, '❄️ GONE', 'info');
+        this.say('whitepawVanish', { enemy: e.name });
+        return true;
+      case 'pounce': {   // (v1.31) the huge hit out of the snow. Defend it: stunned and wide open until its next move
+        const guarded = p.defending;
+        e.hidden = false; e.pounceNext = false;
+        if (e.view) this.tweens.add({ targets: e.view, alpha: 1, duration: 150 });
+        this.strike(e, m.power, true);
+        if (guarded && !this.over && !e.gone) {
+          e.stunnedOpen = true; e.gauge = 0;
+          this.bigMoment('STUNNED!', FUP.ui.colors.good);
+          this.say('whitepawStunned', { enemy: e.name });
         }
         return true;
       }
@@ -698,7 +728,8 @@ Object.assign(BattleScene.prototype, {
     if (e.settled) f.push('📑 settled');
     if (e.chewing) f.push('📄 eating pages');
     if (e.dodge) f.push('🦋 dodgy');
-    if (e.landed) f.push('🪶 on the ground');   // (v1.29) the Highland Eagle
+    if (e.landed) f.push('🪶 on the ground');
+    if (e.hidden) f.push('❄️ hidden'); if (e.stunnedOpen) f.push('💫 stunned');   // (v1.31) Old Whitepaw   // (v1.29) the Highland Eagle
     if (this.latched && this.latched.by === e) f.push('🦡 latched on');
     if (e.signature && e.signature.id === 'plates') f.push(this.platesOpen(e) ? '💔 plates cracked' : '🪨 stone plates');   // (v1.27) Jarvin
     const SH = e.bossRules && e.bossRules.shelves;

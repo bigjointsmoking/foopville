@@ -509,6 +509,11 @@ FUP.narrator = {
   markSet: ['The {enemy} marks you. You can feel his eyes on the spot between your shoulders.'],
   markCleared: ['You get your guard up and step out of his sight line. The mark is gone.'],
   shellTough: ['That barely scratched the {enemy}\'s bricks. A Skill, or a lucky crit, might crack them.'],
+  // (v1.31) Old Whitepaw (Ash Q5). Serious: the narrator doesn't joke about the cat. PLACEHOLDER lines
+  whitepawStart: ['The snow by the cave stands up. It is a cat, and it is the size of a cart, and it has been watching you since the gate.'],
+  whitepawVanish: ['It steps back into the snow and is gone. Somewhere close, something is circling.', 'White on white. You can\'t see it. It can see you.'],
+  whitepawGone: ['There\'s nothing there to hit. Defend, and wait for it.'],
+  whitepawStunned: ['You take the pounce on your guard. It lands wrong and staggers. Now.', 'It hits your guard and stops dead, stunned. Hit it while you can.'],
   // (v1.29) the High Snows' animals. PLACEHOLDER lines
   goatDaze: ['The {enemy} headbutts you square. You see three goats. All of them are smug.', 'Horns to the chest. You\'ll get your breath back. Eventually.'],
   latchOn: ['The {enemy} bites down and does not let go. Hit it, or keep bleeding.', 'Teeth in your arm, and it\'s settling in. Hit it.'],

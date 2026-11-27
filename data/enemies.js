@@ -414,6 +414,23 @@ FUP.enemies = {
       resetMove: { name: 'Re-set the Stone', type: 'platesReset', tell: '🪨', tellText: 'Packing his plates back on (hit him now!)' },
       slamMove: { name: 'Quarry Slam', type: 'attack', power: 2.6, counterMult: 2, tell: '💥', tellText: 'QUARRY SLAM (Defend!)' } },
   },
+  // v1.31 (plans/AL5.md, Ash Q5): Old Whitepaw, the giant snow cat of the High Snows. Rival houses' hunters have failed for years.
+  // Vanish: every `every` moves (everyLow below lowBelow HP) it melts into the snow: nothing can hit it. Its next move is the Pounce
+  // (a huge hit). Defend the Pounce and it's stunned and wide open: it takes openMult damage until its next move.
+  // Quest-only, one time (Jesus: gone for good). Serious, no jokes about the cat. Numbers PLACEHOLDER, a step past Jarvin (Lv 30: 520 / 19 / 11).
+  whitepaw: {
+    name: 'Old Whitepaw', emoji: '🐆', size: 220, sprite: 'whitepaw', mapSprite: 'whitepaw_map',
+    maxHp: 600, atk: 21, def: 10, spd: 14, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 32,
+    xp: 700, coins: 0, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'whitepawStart' },
+    moves: [
+      { name: 'Claw Swipe', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Heavy Bite', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'vanish', every: 3, everyLow: 2, lowBelow: 0.4, openMult: 1.6,
+      vanishMove: { name: 'Melts into the Snow', type: 'vanish', tell: '❄️', tellText: 'Something is circling... (Defend!)' },
+      pounceMove: { name: 'Pounce', type: 'pounce', power: 2.8, tell: '💥', tellText: 'POUNCE (Defend!)' } },
+  },
   // ---------- The High Snows (v1.29, plans/AL4.md, Lv ~21; the area multiplies these). Mountain animals (Jesus picked the set). Numbers PLACEHOLDER ----------
   // Ridge Goat: every `every` moves it lowers its horns and headbutts. Not Defended: you're dazed (your turn bar drops back).
   ridgeGoat: {
