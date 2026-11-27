@@ -86,9 +86,18 @@ class CreateScene extends Phaser.Scene {
 
     btn(X + 340, 206, 170, 34, '🎲 Random look', () => {
       const pick = a => Phaser.Utils.Array.GetRandom(a);
-      this.look = { hairstyle: pick(L.hairstyles).id, skin: pick(L.skin), hair: pick(L.hair), outfit: pick(L.outfit), scarf: pick(L.scarf) };
+      this.look = { ...this.look, hairstyle: pick(L.hairstyles).id, skin: pick(L.skin), hair: pick(L.hair), outfit: pick(L.outfit), scarf: pick(L.scarf) };   // (HL1: keeps your body + bucket picks)
       this.drawLooks();
     }, { size: 15 });
+
+    // (HL1) Body (male / female) and the bucket helmet (on / off)
+    const RX = X + 340;
+    const pair = (label, y, opts, cur, set) => {
+      add(ui.text(this, RX, y, label, 13, c.dim, { fontStyle: '700' }));
+      opts.forEach(([val, name], i) => btn(RX + i * 86, y + 20, 80, 34, name, () => { set(val); this.drawLooks(); }, { size: 15, hot: cur === val }));
+    };
+    pair('BODY', 258, L.bodies.map(b => [b.id, b.name]), this.look.body, v => { this.look.body = v; });
+    pair('BUCKET HELMET', 316, [[true, 'On'], [false, 'Off']], this.look.bucket !== false, v => { this.look.bucket = v; });
 
     btn(W - 300, 520, 260, 50, 'Next: choose your weapon ▶', () => this.next(), { hot: true, size: 19 });
     btn(40, 520, 140, 50, '◀ Back', () => this.scene.start('Start'), { size: 17 });

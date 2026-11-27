@@ -2,10 +2,11 @@
 // THE HERO PICTURE (Visual Phase 5 / A2, v1.07), built from Jesus's sketches in art/fupville_art.py.
 // The hero is drawn in LAYERS that stay stacked on top of each other:
 //   body    skin / shirt / scarf in key colours, recoloured to your creator picks (src/looks.js)
+//           (HL1, v1.33) 'body' = him, 'body_f' = her (look.body = 'female'); every other layer fits both
 //   hair    your hairstyle (key colour, recoloured)
 //   armour  a_<gear key> for each worn armour piece (v1.08, A2 part 2): legs, then body, under the hair
 //   head    ONE thing on his head: worn head armour (a_<key>), else a Wardrobe hat (an emoji, cosmetics.attachHat),
-//           else the bucket. Some head armour hides the hair (data/look.js heroArmour.hideHair).
+//           else the bucket if it's switched on (look.bucket, HL1), else just hair. Some head armour hides the hair (data/look.js heroArmour.hideHair).
 //   weapon  in his hand in fights (your base weapon; upgrades tint it, data/weapons.js handTint)
 // Change your gear and the picture changes by itself on the next frame.
 // Every layer has the same frames, so they always line up:
@@ -22,7 +23,7 @@
 window.FUP = window.FUP || {};
 
 FUP.heroArt = {
-  HAIRS: ['fringe', 'spiky', 'ponytail', 'bald'],
+  HAIRS: ['fringe', 'spiky', 'ponytail', 'bald', 'long', 'braid', 'bob'],
   DIRS: ['side', 'front', 'back'],
   BATTLE_CLIPS: { idle: 4, attack: 4, hurt: 2, defend: 2 },
   MAP_CLIPS: { walk: 4 },
@@ -35,6 +36,8 @@ FUP.heroArt = {
   },
   base(mode, dir, layer, frame) { return mode === 'battle' ? `hb_${layer}_${frame}` : `hm_${dir}_${layer}_${frame}`; },
   ready(scene) { return scene.textures.exists('hb_body_rest') && scene.textures.exists('hm_side_body_rest'); },
+  // (HL1) Which body picture: hers if you picked female and her art is loaded, else his
+  bodyLayer(look) { return (look || {}).body === 'female' && FUP.game && FUP.game.textures.exists('hb_body_f_rest') ? 'body_f' : 'body'; },
   hairStyle(look) { const h = (look || {}).hairstyle; return this.HAIRS.includes(h) ? h : 'fringe'; },
   look() { return { ...FUP.looksData.default, ...((FUP.run && FUP.run.hero && FUP.run.hero.look) || {}) }; },
 
@@ -46,14 +49,15 @@ FUP.heroArt = {
     if (this._sig === sig && scene.textures.exists('hb_body_rest_me')) return;
     this._sig = sig;
     for (const mode of ['battle', 'map']) for (const dir of mode === 'battle' ? ['_'] : this.DIRS) for (const f of this.frames(mode)) {
-      for (const layer of ['body', 'hair_' + style]) { const k = this.base(mode, dir, layer, f); FUP.looks.paint(scene, k, k + '_me', look); }
+      for (const layer of [this.bodyLayer(look), 'hair_' + style]) { const k = this.base(mode, dir, layer, f); FUP.looks.paint(scene, k, k + '_me', look); }
     }
   },
   // A painted key if there is one
   key(scene, k) { return scene.textures.exists(k + '_me') ? k + '_me' : k; },
 
-  // What's on his head: head armour, else a Wardrobe hat, else the bucket (Jesus: one head item at a time)
-  showBucket() { return !(FUP.cosmetics && FUP.cosmetics.state && FUP.cosmetics.state.hat) && !this.armour().head; },
+  // What's on his head: head armour, else a Wardrobe hat, else the bucket if it's on (Jesus: one head item at a time;
+  // HL1: the bucket is optional, creator + Wardrobe)
+  showBucket(look) { return (look || this.look()).bucket !== false && !(FUP.cosmetics && FUP.cosmetics.state && FUP.cosmetics.state.hat) && !this.armour().head; },
   // Worn armour that has a picture: { head, body, legs } = gear keys (random drops use their base key)
   armour() {
     const eq = (FUP.run && FUP.run.equipped) || {}, out = {};
@@ -75,7 +79,7 @@ FUP.heroArt = {
     const hide = ((FUP.look.heroArmour || {}).hideHair || []).includes(arm.head);
     if (!hide) out.push('hair_' + this.hairStyle(look));
     if (arm.head) out.push('a_' + arm.head);
-    else if (opts.bucket !== false && this.showBucket()) out.push('bucket');
+    else if (opts.bucket !== false && this.showBucket(look)) out.push('bucket');
     return out;
   },
 
@@ -85,12 +89,13 @@ FUP.heroArt = {
     const look = opts.look || this.look();
     this.paint(scene, look);
     const dir0 = mode === 'battle' ? '_' : 'side';
-    const body = scene.add.image(x, y, this.key(scene, this.base(mode, dir0, 'body', 'rest'))).setScale(scale);
+    const bodyL = this.bodyLayer(look);
+    const body = scene.add.image(x, y, this.key(scene, this.base(mode, dir0, bodyL, 'rest'))).setScale(scale);
     const H = body.hero = { mode, dir: dir0, clip: null, frame: 'rest', t: 0, last: null, still: 0, layers: [], sig: null };
     const weapon = mode === 'battle' && opts.weapon !== false ? this.weapon() : null;
     // (Re)build the layers when what he wears changes
     const build = () => {
-      const ids = this.layerList(mode, look, opts);
+      const ids = this.layerList(mode, opts.look || this.look(), opts);   // (HL1: the live look, so the Wardrobe's bucket switch shows straight away)
       if (weapon) ids.push('w_' + weapon.id);
       const sig = ids.join('|');
       if (sig === H.sig) return;
@@ -107,7 +112,7 @@ FUP.heroArt = {
 
     const setFrame = (f) => {
       H.frame = f;
-      body.setTexture(this.key(scene, this.base(mode, H.dir, 'body', f)));
+      body.setTexture(this.key(scene, this.base(mode, H.dir, bodyL, f)));
       for (const L of layersNow()) L.img.setTexture(this.key(scene, this.base(mode, H.dir, L.id, f)));
     };
     // Fights: play a move once, then breathe again

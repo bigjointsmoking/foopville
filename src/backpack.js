@@ -162,10 +162,18 @@ FUP.backpack = {
     // Hats
     const X = PX + 24, Y = PY + 70, colW = (PW - 72) / 2;
     add(ui.text(s, X, Y, 'HATS', 13, c.dim, { fontStyle: '700' }), 2);
+    // (HL1, v1.33) The bucket helmet: on or off. It only shows when no hat or head armour is on.
+    const run = FUP.run, look = run.hero.look = { ...FUP.looksData.default, ...(run.hero.look || {}) }, bOn = look.bucket !== false;
+    const covered = !!C.state.hat || !!(run.equipped && run.equipped.head);
+    add(ui.text(s, X, Y + 28, '🪣', 24, c.ink), 2);
+    add(ui.text(s, X + 40, Y + 26, 'Bucket helmet' + (bOn ? '  (on)' : '  (off)'), 14, bOn ? c.good : c.ink, { fontStyle: '700' }), 2);
+    add(ui.text(s, X + 40, Y + 45, covered ? 'Hidden under what\'s on your head.' : 'Off = your hairstyle shows.', 11, c.dim), 2);
+    btn(X + colW - 110, Y + 24, 100, 32, bOn ? 'Take off' : 'Put on', () => { look.bucket = !bOn; FUP.save.write(); }, { hot: !bOn });
     const hats = Object.keys(D.hats).filter(id => C.has(id));
-    if (!hats.length) add(ui.text(s, X, Y + 24, 'No hats yet. The Shopkeeper sells some (Hats tab). Bosses drop rarer ones.', 13, c.dim, { wordWrap: { width: colW - 10 } }), 2);
+    const HY = Y + 50;
+    if (!hats.length) add(ui.text(s, X, HY + 24, 'No hats yet. The Shopkeeper sells some (Hats tab). Bosses drop rarer ones.', 13, c.dim, { wordWrap: { width: colW - 10 } }), 2);
     hats.forEach((id, i) => {
-      const h = D.hats[id], on = C.state.hat === id, y = Y + 24 + i * 46;
+      const h = D.hats[id], on = C.state.hat === id, y = HY + 24 + i * 46;
       add(ui.text(s, X, y + 4, h.emoji, 24, c.ink), 2);
       add(ui.text(s, X + 40, y + 8, h.name + (on ? '  (wearing)' : ''), 14, on ? c.good : c.ink, { fontStyle: '700' }), 2);
       btn(X + colW - 110, y, 100, 32, on ? 'Take off' : 'Wear', () => { if (C.wear('hat', on ? null : id) === 'noRoom') { FUP.audio.sfx('error'); if (s.say) s.say('hatNoRoom'); } redrawHat(); }, { hot: !on });
