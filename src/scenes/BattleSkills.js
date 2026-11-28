@@ -180,6 +180,7 @@ Object.assign(BattleScene.prototype, {
     let m = 1;
     const sig = e.signature;
     if (sig && sig.id === 'bodyguard' && this.liveReal().some(o => o.bodyguard)) m *= sig.takenMult;
+    if (sig && sig.id === 'escorted' && this.liveReal().some(o => o.key === sig.guards)) m *= sig.takenMult;   // (v1.45) Brask, while a House Bruiser stands
     if (sig && sig.id === 'scrapShield' && e.shieldUp) m *= sig.takenMult;   // (v1.19) the Scrap Goblin hides behind scrap
     if (sig && sig.id === 'shell' && !e.cracked) m *= sig.takenMult;         // (v1.19) the Rubble Crab's shell, until it cracks
     if (sig && sig.id === 'tuck' && e.tucked) m *= sig.takenMult;            // (v1.41) Old Mossback, pulled into its shell
@@ -244,6 +245,9 @@ Object.assign(BattleScene.prototype, {
       this.questNews.push(...FUP.quests.event('formation'));
       this.say('formationBroken');
     }
+    // (v1.45) the last House Bruiser is down: Brask is open
+    const boss = this.liveReal().find(o => o.signature && o.signature.id === 'escorted' && o.signature.guards === e.key);
+    if (boss && !this.liveReal().some(o => o !== e && o.key === e.key)) { this.bigMoment('BRASK IS OPEN!', FUP.ui.colors.good); this.say('braskOpen'); }
     if (e.bodyguard) {
       const g = this.liveReal().find(o => o.signature && o.signature.id === 'bodyguard');
       if (g) {

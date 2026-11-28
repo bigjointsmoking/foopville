@@ -651,6 +651,31 @@ FUP.enemies = {
       scareMove: { name: 'The Repelling Spell', type: 'scare', power: 0.8, stunGauge: -100, tell: '😨', tellText: 'Something terrible is coming (Defend!)' } },
   },
 
+  // ---------- v1.45 (plans/MQ2.md, Main Quest 2): Iron-Jaw Brask and his two House Bruisers, in the High Snows ----------
+  // Hired by a rival house (left unnamed) to carry off the Iron House's old box. Quest-only, one time.
+  // Escorted: while any House Bruiser stands, Brask takes x`takenMult` damage. Beat them first, then he's open.
+  // Names Jesus's; numbers (for Melee ~33, a step past the store's guardian) and lines PLACEHOLDERS.
+  brask: {
+    name: 'Iron-Jaw Brask', emoji: '🦾', size: 150, sprite: 'brask', mapSprite: 'brask_map',
+    maxHp: 520, atk: 19, def: 10, spd: 10, resolve: 0.5, noCharm: true, questOnly: true, ownLevel: true, level: 33,
+    xp: 750, coins: 220, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'braskStart' },
+    moves: [
+      { name: 'Iron Jaw', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Headbutt', type: 'attack', power: 1.6, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'escorted', guards: 'houseBruiser', takenMult: 0.3 },
+  },
+  houseBruiser: {
+    name: 'House Bruiser', emoji: '👊', size: 120, sprite: 'bruiser', mapSprite: 'bruiser_map',
+    maxHp: 170, atk: 16, def: 8, spd: 11, resolve: 0.5, noCharm: true, questOnly: true, ownLevel: true, level: 31,
+    xp: 140, coins: 40, boss: false, weak: 'fire', resists: [],
+    moves: [
+      { name: 'Knuckles', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Shoulder Charge', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+  },
+
   // ---------- The Causeway Serpent (v1.39, archive/plans-done/OT.md OT-B; Jesus 2026-11-26/27) ----------
   // A plain swamp monster (no paperwork jokes) in the deep channel where the old causeway crosses at the Marsh's east edge.
   // Beat it once and the road east opens for that life. About the Senior Partner's strength (Melee ~18).

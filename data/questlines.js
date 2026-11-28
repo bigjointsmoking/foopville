@@ -386,6 +386,50 @@ Object.assign(FUP.questData.quests, {
         say: 'You tell him all of it: the guards, the papers, the notice nobody ever posted, the sealed page. He listens without a word. "They meant to tell everyone," he says at last. "And then they didn\'t get the chance." He looks over at the statue for a long time.' },
     ] },
 
+  // v1.45 (plans/MQ2.md, story/MAIN_QUEST_LINE.md 2c Quest 2): Main Quest 2 "Never Sell It", posted by the Old-timer.
+  // The Sealed Page carries the Iron House's mark; their registry has a second entry for the same blotted-out buyer; their old
+  // box was carried off by a rival house's men (left unnamed). Iron-Jaw Brask + 2 House Bruisers in the High Snows. Gran's key
+  // opens the box: the elders' note, spell piece 2, primer page 2 (wording approved: plans/MQ2_wording_draft.md).
+  // Every other line is a STAND-IN (GAME_DESIGN 21 'v1.45').
+  //   spare: lost the box (the grave)? The Old-timer has it back, like the other quests' items
+  mainQuest2: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'Never Sell It',
+    req: { skills: { melee: 33 }, facts: { 'quest:mainQuest1': 1 } },
+    text: 'The elders split their spell up and hid the pieces. The Old-timer wants the rest of what his family was told to keep found.',
+    reward: { coins: 1800, xp: { melee: 1200 } },
+    spare: { item: 'iron_box', npc: 'oldtimer', fromStep: 8, untilStep: 9, say: '"Some lad from Three Scales left this on my bench. Said a big man with a bad jaw sent it back. Didn\'t want the trouble." He pushes the box at you. "Neither do I. Go on."' },
+    steps: [
+      { talk: 'oldtimer', log: 'The Old-timer wants the rest of the elders\' pieces found. Start with the Sealed Page: someone might know the mark on it.',
+        say: '"One piece down. The list said there\'s more, kept by other folk, all over. My family kept ours without knowing what it was. Somebody else is doing the same, right now, and they don\'t know either." He taps the Sealed Page. "That wax has a mark in it. Show the Blacksmith. He knows marks. He won\'t shut up about marks."' },
+      { talk: 'smith', goal: 'Show the Blacksmith the mark on the Sealed Page', log: 'The Blacksmith: the Sealed Page\'s wax carries the Iron House\'s mark, the same as the staff\'s fittings.',
+        say: 'He holds the Sealed Page up to the forge light and goes very still. "Little hammer over three lines. Same as the staff." He hands it back like it\'s hot. "The Iron House made this mark. Same people, same buyer. Go and read that registry again."' },
+      { search: { region: 'north', tx: 8, ty: 18, name: 'the old registry', label: '📖 Read the registry', icon: '📖' },
+        goal: 'In Three Scales: look in the Iron House registry for the same blotted-out buyer', log: 'A second entry for the same blotted-out buyer: something left with the House, to be kept until someone brings the key.',
+        say: 'Two lines under the staff order, the same black smear where the name should be. No price this time. Just: "Left with the House, to keep. Not to be opened. Not to be sold. Until one comes with the key." You have a key. You\'re suddenly very popular.' },
+      { talk: 'ts_iron', goal: 'Ask the Iron House Steward about the second entry', log: 'The Iron House kept an old iron box for generations. It\'s gone: men from a rival house carried it off, north into the High Snows.',
+        say: 'The Steward reads the entry and takes you down to the House vault without a word. An empty shelf, with a clean square in the dust. "Grandfather said never sell it. We never did. We never opened it either." He breathes out. "Men from another house took it, two nights ago. Hired muscle. They went out the north gate. Bring it back and you can watch it opened."' },
+      { search: { region: 'highsnows', tx: 20, ty: 33, name: 'the boot prints', label: '🐾 Look at the tracks', icon: '🐾' },
+        goal: 'Follow the tracks through the north gate into the High Snows', log: 'Three sets of boot prints and a sled track, heading up into the High Snows.',
+        say: 'Boot prints. Two big sets and one bigger. Between them, the long scrape of a sled with something heavy on it. They went up. Of course they went up.' },
+      { search: { region: 'highsnows', tx: 28, ty: 26, name: 'the tipped sled marks', label: '🔍 Look at the snow', icon: '🔍' },
+        goal: 'Keep following the tracks', log: 'The sled tipped over here. They set it right and went on, east.',
+        say: 'The sled tipped here. The snow is flattened where three men argued about whose fault it was. The tracks go on east, a bit more carefully.' },
+      { search: { region: 'highsnows', tx: 30, ty: 15, name: 'a cold campfire', label: '🔍 Look at the camp', icon: '🔍' },
+        goal: 'Keep following the tracks', log: 'A cold camp. Voices ahead, in the snowfield to the east.',
+        say: 'A cold fire and three dents in the snow where they slept. Ahead, voices. One of them is complaining about his jaw. The other two are telling him to stop.' },
+      { fight: { region: 'highsnows', tx: 32, ty: 11, enemy: 'brask', group: ['brask', 'houseBruiser', 'houseBruiser'], name: 'Iron-Jaw Brask' },
+        goal: 'Take the box back from Iron-Jaw Brask (while his Bruisers stand, he barely feels a hit: beat them first)',
+        log: 'Iron-Jaw Brask gave up the Iron House\'s box.',
+        say: 'Brask sits down in the snow and works his jaw from side to side. "Paid to carry it. Not paid for this." He shoves the box over with his boot. "Never got it open anyway. Nobody can."',
+        give: { items: { iron_box: 1 } } },
+      { bring: { iron_box: 1 }, to: 'ts_iron', goal: 'Take the box back to the Iron House: Gran\'s key should open it',
+        log: 'Gran\'s key opened the box in front of the family. Inside: the elders\' note, the second piece, the second primer page. The family kept the empty box.',
+        paper: 'To the house of iron in the north.\n\nKeep this for us, closed, until someone comes with the key. Do not open it. Do not sell it.\nWe cannot tell you what it is. We can tell you it matters more than anything we have ever asked of you.\nIf no one comes, keep it anyway.\n\n(No signature. The same maker\'s mark as the staff\'s fittings is pressed into the wax.)',
+        say: 'The whole family gathers. Gran\'s key turns like the lock was waiting for it. A note on top; under it, a sealed page and a folded one. Generations of a family guarding a box they couldn\'t open, for people they\'d never met. That\'s either loyalty or stubbornness. Probably both.',
+        give: { fragment: true, primer: 'primer:2' } },
+      { talk: 'oldtimer', goal: 'Go home and tell the Old-timer what was in the Iron House box', log: 'You told the Old-timer about the Iron House and its box.',
+        say: 'You tell him about the box, the family, the note. "Keep it anyway," he says. "If no one comes, keep it anyway." He nods for a long time. "That\'s what Gran did. That\'s what all of us did." He looks pleased, and then tired, and then pleased again.' },
+    ] },
+
   // ---------------- Pip the Seed Seller ----------------
   // Pip believes nothing he hasn't seen. Not dragons, not the sea.
   neverSeenSea: { kind: 'quest', from: 'seeds', difficulty: 'easy', length: 'medium', name: 'Never Seen the Sea',

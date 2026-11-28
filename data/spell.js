@@ -22,11 +22,13 @@ FUP.spellData = {
   // Which quest gives which piece (in page order). Unknown ones show as "?".
   // v1.38 (Jesus 2026-11-26, story/MAIN_QUEST_LINE.md 2c): the 7 pieces come only from the main quest (Quests 1-7, not built yet).
   pieces: [
-    { quest: 'mainQuest1', word: 'SEALED' },   // v1.44: the Sealed Page, from the quiet room (Main Quest 1). It can't be read yet. Word PLACEHOLDER
+    { quest: 'mainQuest1', word: 'SEALED' },
+    { quest: 'mainQuest2', word: 'SEALED' },   // v1.45: the second piece, from the Iron House box (Main Quest 2). Sealed like piece 1 (approved)   // v1.44: the Sealed Page, from the quiet room (Main Quest 1). It can't be read yet. Word PLACEHOLDER
   ],
   // v1.44: the elders' primer, one page per hiding place (Jesus: on the ✨ Spell page, kept like spell pieces). Approved wording.
   primer: [
     { id: 'primer:1', name: 'The First Lesson', text: 'Before anything is made, it must be felt. Put your hand near something warm with it and wait. Do not reach for it. Let it come to you. (The rest of the lesson is on pages you don\'t have.)' },
+    { id: 'primer:2', name: 'The Second Lesson', text: 'What you feel, you can hold. Close your hand around it slowly, the way you would hold something small and alive. If it pulls away, let it go. It will come back. (The rest of the lesson is on pages you don\'t have.)' },   // v1.45, approved
   ],
   // Pieces the old story quests used to give (cut or changed in v1.38): cleared from old saves on load.
   retired: ['tollRecords', 'theBowl', 'oldAccounts', 'archivist', 'rightForm'],

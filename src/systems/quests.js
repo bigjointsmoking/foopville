@@ -189,6 +189,7 @@ FUP.quests = {
       got.push(put ? `${FUP.ingredients[k].emoji} ${FUP.ingredients[k].name}${put > 1 ? ' ×' + put : ''} (in your bag)` : `${FUP.ingredients[k].emoji} ${FUP.ingredients[k].name}: no room in your bag! (it turns up again: see the quest)`);
     }
     if (b.fragment && FUP.spell) { const r = FUP.spell.add(id || b.fragment); got.push(`✨ A piece of lost magic (${r.count}/${FUP.spell.size()}): see ✨ Spell in your 🎒 backpack`); this.spellLine = r.line; }
+    if (b.primer && FUP.spell) { FUP.spell.add(b.primer); const P = (FUP.spellData.primer || []).find(p => p.id === b.primer); got.push(`📜 ${P ? P.name : 'A primer page'}: see ✨ Spell in your 🎒 backpack`); }   // (v1.45) an elders' primer page, kept like spell pieces
     if (b.gearDrop && FUP.gear) {   // a random piece of gear (The Bowl: early gear)
       const it = FUP.gear.rollDrop(true, Math.random, b.gearDrop.rarity || null, 1 / FUP.gearData.dropChance.boss, b.gearDrop.tier || 1);
       if (it) { if (FUP.run.addGear(it)) got.push(`${it.emoji} ${it.name} (in your backpack)`); else { FUP.house.state.gear = FUP.house.state.gear || []; FUP.house.state.gear.push(it); got.push(`${it.emoji} ${it.name} (sent home: backpack full)`); } }
@@ -437,15 +438,15 @@ FUP.quests = {
   },
   // Next step (or the end of the story: paid by the villager)
   advance(id, line) {
-    const q = this.def(id), s = this.state.active[id], st = this.step(id);
+    const q = this.def(id), s = this.state.active[id], st = this.step(id), paper = st && st.paper;   // (v1.45) paper: a long text shown on its own reading card
     if (st && st.log) (s.log = s.log || []).push(st.log);
     if (st && st.give) { const got = this.grant(st.give, [], id); if (got.length) this.news.push(...got); }   // a step can hand you something (Pip's root seeds, the bowl)
     s.step = (s.step || 0) + 1; s.n = 0; s.talked = {}; s.tasted = false; delete s.dig;
     if (!(this.step(id) || {}).escort) delete s.with;   // (v1.12) the walk is over
     this.prepStep(id);
-    if (s.step < q.steps.length) return { ok: true, line };
+    if (s.step < q.steps.length) return { ok: true, line, paper };
     const coins = this.finish(id);
-    return { ok: true, line, coins, done: q.name, reward: this.isQuest(id) ? this.lastReward : null };
+    return { ok: true, line, paper, coins, done: q.name, reward: this.isQuest(id) ? this.lastReward : null };
   },
 
   // Something happened. Returns the names of quests it just finished (so the screen can cheer).

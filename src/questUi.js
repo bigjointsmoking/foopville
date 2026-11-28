@@ -15,6 +15,7 @@ FUP.questUi = {
     if (!r) return;
     if (scene.player && scene._escort) this.escortStart(scene);   // v1.12: someone just joined you, or went home
     if (r.line && scene.sayLine) scene.sayLine(r.line);
+    if (r.paper) FUP.ui.paper(scene, r.paper);   // (v1.45) a note to read (Main Quest 2's elders' note)
     if (r.choices) { this.choices(scene, id, r.line, onDone); return; }
     if (r.reward) { this.complete(scene, r.reward, r.done); onDone(); return; }
     if (r.coins && scene.sayLine) scene.sayLine(`${r.line ? r.line + '  ' : ''}(Done: ${r.done}. +${r.coins} coins.)`);

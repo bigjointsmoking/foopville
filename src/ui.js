@@ -81,6 +81,18 @@ window.FUP = window.FUP || {};
       return img;
     },
 
+    // (v1.45) A paper to read: a card with the whole text (too long for the narrator bar). Tap or press a key to put it down.
+    paper(scene, text, onClose = null) {
+      const W = scene.scale.width, H = scene.scale.height, Z = 26000, g = [], c = FUP.ui.colors;
+      const add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+      add(FUP.ui.shade(scene, 0.55));
+      add(FUP.ui.panel(scene, W / 2 - 290, H / 2 - 190, 580, 380, 'panel'), 1);
+      add(FUP.ui.text(scene, W / 2, H / 2 - 160, text, 16, c.ink, { fontStyle: 'italic', align: 'center', lineSpacing: 6, wordWrap: { width: 520 } }).setOrigin(0.5, 0), 2);
+      add(FUP.ui.text(scene, W / 2, H / 2 + 165, 'Tap to put it down', 12, c.dim).setOrigin(0.5), 2);
+      let open = true;
+      const close = () => { if (!open) return; open = false; g.forEach(x => x.destroy()); scene.input.off('pointerdown', close); if (scene.input.keyboard) scene.input.keyboard.off('keydown', close); if (onClose) onClose(); };
+      scene.time.delayedCall(250, () => { if (!open) return; scene.input.once('pointerdown', close); if (scene.input.keyboard) scene.input.keyboard.once('keydown', close); });
+    },
     // A dark see-through layer over the whole screen that blocks clicks underneath.
     // The window opened right after it rises and fades in (FUP.fx.popOpen).
     shade(scene, alpha = S.shadeAlpha) {
