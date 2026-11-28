@@ -20,6 +20,7 @@ class RaidScene extends WorldScene {
     this.tiles = R;
     this.A = this.raid.room;            // this room's state (enemies, cracks, where you stand)
     this.info = R.room();               // this room's data (name, map, kind)
+    FUP.raidData.colors = R.isStore() ? FUP.raidData.store.colors : FUP.raidData.baseColors;   // (v1.43) the elders' store has its own look
     this.leaving = false;
     this.falling = false;
     this.campfire = null;
@@ -59,10 +60,11 @@ class RaidScene extends WorldScene {
   hudLabel() {
     const n = this.raid.index + 1, total = this.raid.rooms.length;
     if (this.info.kind === 'office') return this.info.name;
+    if (this.raid.store && n > this.raid.storeStart) return `${this.info.name} (Store ${n - this.raid.storeStart}/${total - this.raid.storeStart})`;   // (v1.43)
     return `${this.info.name} (${n}/${total - 1})`;
   }
-  // The raid's numbers (v1.38: the Vault and its own numbers are gone)
-  zone() { return FUP.raidData; }
+  // The raid's numbers, or the elders' store's (v1.43)
+  zone() { return FUP.raid.isStore(this.A.id) ? FUP.raidData.store : FUP.raidData; }
   fogData() { return FUP.gear.withSight(FUP.raidData.fog); }
 
   // ---------- Arriving, or coming back from a fight ----------
@@ -93,7 +95,7 @@ class RaidScene extends WorldScene {
   // First steps into a room: the door behind you slams shut.
   arriveFresh() {
     const kind = this.info.kind;
-    this.say(this.raid.index === 0 ? 'raidEnter'
+    this.say(this.raid.index === 0 ? 'raidEnter' : this.info.enterLine ? this.info.enterLine : FUP.raid.isStore(this.A.id) && kind === 'fight' ? 'storeFightRoom' : this.info.hazardLine ? this.info.hazardLine
       : kind === 'office' ? 'officeEnter' : kind === 'fight' ? 'raidFightRoom' : 'raidHazard_' + this.info.hazard);
     if (this.backDoor) {
       const d = this.backDoor;
@@ -212,7 +214,7 @@ class RaidScene extends WorldScene {
     this.exitDoor = this.add.rectangle(c.x, c.y, T * 0.9, T, C.door).setStrokeStyle(3, C.clutterEdge).setDepth(c.y);
     this.exitLamp = this.add.circle(c.x, c.y - 4, 6, C.doorLocked).setDepth(c.y + 1);
     const next = this.raid.rooms[this.raid.index + 1];
-    const label = next === 'office' ? "The Guardian's Hall ↑" : 'Next room ↑';
+    const label = next === 'office' ? "The Guardian's Hall ↑" : !next && FUP.raid.isStore(this.A.id) ? 'The far door ↑' : 'Next room ↑';
     this.exitText = FUP.ui.text(this, c.x, c.y + 30, '', 13, FUP.ui.colors.ink, { fontStyle: '700', stroke: FUP.ui.colors.stroke, strokeThickness: 4 }).setOrigin(0.5).setDepth(5000);
     this.exitLabel = label;
     this.showDoor(R.locked(this.A));
@@ -255,8 +257,18 @@ class RaidScene extends WorldScene {
     }
     this.leaving = true;
     FUP.audio.sfx('step');
+    if (this.raid.index + 1 >= this.raid.rooms.length) { this.storeEndForNow(); return; }   // (v1.43) the end of the store, for now
     this.cameras.main.fadeOut(350, 0, 0, 0);
     this.time.delayedCall(370, () => { FUP.raid.enter(this.f, this.raid.index + 1); this.scene.start('Raid', {}); });
+  }
+
+  // (v1.43, MQ1-A only) The last store room's far door is shut until MQ1-B builds what's behind it: a chute home.
+  storeEndForNow() {
+    this.say(FUP.raidData.store.endLine);
+    this.time.delayedCall(1800, () => {
+      this.cameras.main.fadeOut(600, 0, 0, 0);
+      this.time.delayedCall(620, () => { if (FUP.run.forest) FUP.run.finishRun(); FUP.save.write(); this.scene.start('Village', { from: 'run' }); });
+    });
   }
 
   enemySprite(e) {
@@ -342,7 +354,8 @@ class RaidScene extends WorldScene {
       const rail = this.add.graphics().setDepth(1);
       const row = R.rows()[p.row], y = p.row * T;
       rail.fillStyle(C.pipeDark); rail.fillRect(row.indexOf('.') * T, y - T * 0.55, (row.lastIndexOf('.') - row.indexOf('.') + 1) * T, 6);
-      return { ...p, rod: this.add.graphics(), bob: this.add.circle(0, 0, 15, C.pipe).setStrokeStyle(4, C.pipeDark), steam: this.add.circle(0, 0, 8, C.steam, 0.5) };
+      const beam = this.info.beams;   // (v1.43) the store's swinging beams: bigger, wood with an iron band, no steam
+      return { ...p, rod: this.add.graphics(), bob: this.add.circle(0, 0, beam ? 22 : 15, C.pipe).setStrokeStyle(beam ? 6 : 4, C.pipeDark), steam: this.add.circle(0, 0, 8, C.steam, beam ? 0 : 0.5) };
     });
     this.updateHazards(0);
   }
@@ -429,11 +442,11 @@ class RaidScene extends WorldScene {
     for (const p of this.pipes) {
       const b = FUP.raid.pipeAt(p, t), railY = p.row * T - T * 0.5;   // it hangs from a rail and swings along it
       p.bob.setPosition(b.x, b.y).setDepth(b.y + 16);
-      p.steam.setPosition(b.x + Math.sin(t * 9 + p.row) * 6, b.y - 18).setDepth(b.y + 17).setAlpha(0.3 + 0.2 * Math.sin(t * 7 + p.row));
+      p.steam.setPosition(b.x + Math.sin(t * 9 + p.row) * 6, b.y - 18).setDepth(b.y + 17).setAlpha(this.info.beams ? 0 : 0.3 + 0.2 * Math.sin(t * 7 + p.row));
       p.rod.clear().setDepth(b.y + 15);
       p.rod.lineStyle(8, FUP.raidData.colors.pipeDark); p.rod.lineBetween(b.x, railY, b.x, b.y);
       p.rod.lineStyle(4, FUP.raidData.colors.pipe); p.rod.lineBetween(b.x, railY, b.x, b.y);
-      if (this.hz >= this.safeUntil && Math.hypot(px - b.x, py - b.y) < D.pipes.hit) this.pipeHit();
+      if (this.hz >= this.safeUntil && Math.hypot(px - b.x, py - b.y) < (this.info.hit || D.pipes.hit)) this.pipeHit();
     }
   }
 
@@ -466,7 +479,7 @@ class RaidScene extends WorldScene {
   pipeHit() {
     const P = FUP.raidData.pipes, T = FUP.raid.size(), p = this.player;
     this.safeUntil = this.hz + P.safeSeconds;
-    this.hazardHurt(P.damage, 'raidPipe');
+    this.hazardHurt(P.damage, this.info.hitLine || 'raidPipe');
     let ty = Math.floor(p.y / T);
     const tx = Math.floor(p.x / T);
     for (let k = 0; k < P.knockback && !FUP.raid.blockedTile(tx, ty + 1); k++) ty++;

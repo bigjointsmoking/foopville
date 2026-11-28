@@ -366,6 +366,24 @@ Object.assign(FUP.questData.quests, {
         say: '"Gran always said: she didn\'t fall. She flew. Gran watched her go." He turns the key over once more, then presses it into your hand. "That\'s yours. Don\'t ask me what it opens." He\'s not smiling. He\'s not sad either. He\'s done what Gran asked.' },
     ] },
 
+  // ============================================================
+  // THE MAIN QUEST (story/MAIN_QUEST_LINE.md 2c). v1.43 (plans/MQ1.md MQ1-A): Quest 1 "The Quiet Room", posted by the Old-timer
+  // once all 4 beginner threads are done and Gran's key is on your key ring. His line: Jesus approved the draft (2026-11-27).
+  // MQ1-A builds the way in (the iron door) and the store's 3 rooms; MQ1-B adds the boss, the quiet room and the turn-in.
+  // ============================================================
+  mainQuest1: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'The Quiet Room',
+    req: { skills: { melee: 30 }, facts: { 'quest:ash5': 1, 'quest:glass5': 1, 'quest:staff5': 1, 'quest:oldtimer5': 1, 'key:granKey': 1 } },
+    text: 'The Old-timer has worked out where Gran\'s key goes. He is too old to take it there himself.',
+    reward: { coins: 1500, xp: { melee: 1000 } },
+    steps: [
+      { talk: 'oldtimer', log: 'The key was the eldest\'s. It opens the iron door under the old storehouse, in the Deep Woods.',
+        say: '"That key was in my family five generations. Passed hand to hand, nobody knowing why. Now I know whose hand it started in. The eldest\'s. Mine now, I suppose. That thing at the shrine knelt toward the Deep Woods, and the only locked door down there anyone talks about is the iron one under the old storehouse. I\'m too old for the Deep Woods. Go and open what my family was told to keep safe." An old man, a locked door and you. What could go wrong. Several things.' },
+      { event: 'ironDoor', goal: 'Beat the Mushroom Guardian in the Old Storehouse, then open the iron door with Gran\'s key',
+        log: 'Gran\'s key opened the iron door. Behind it: the elders\' store, and its guards.' },
+      { event: 'quietRoom', goal: 'Get through the elders\' store to the end (the far door doesn\'t open yet)',
+        log: 'At the end of the store.' },
+    ] },
+
   // ---------------- Pip the Seed Seller ----------------
   // Pip believes nothing he hasn't seen. Not dragons, not the sea.
   neverSeenSea: { kind: 'quest', from: 'seeds', difficulty: 'easy', length: 'medium', name: 'Never Seen the Sea',

@@ -42,6 +42,7 @@ class BattleScene extends Phaser.Scene {
     this.inked = 0;                       // Phase D: the Ink Slime's splash: your hits can miss for this many of your turns
     this.inkMiss = 0;
     this.sliding = false;                 // the Exit Chute button was pressed (reset: this screen is reused)
+    this.storeChoice = false;             // (v1.43) the iron door is offered (Main Quest 1)
     this.approvalUsed = false;           // Stamp of Approval (the Notary's chase drop): the first hit on you each fight is blocked
     if ((this.player.effects || []).includes('bookmark')) this.player.focus = FUP.gearData.effects.bookmark.focus;   // the Archivist's chase drop
     // Phaser reuses this screen for every fight, so everything per-fight starts fresh here.
@@ -1512,6 +1513,7 @@ class BattleScene extends Phaser.Scene {
     else if (result === 'boss' && run.forest) {
       this.questNews.push(...FUP.quests.event('boss', { time: run.forest.time }));
       if (shrine) lines.push(...FUP.shrine.reward(run.battle.stars || 1));
+      else this.storeChoice = !!(run.forest.raid && FUP.raid.canOpenStore());   // (v1.43) the Guardian in the raid: the iron door behind his desk (Main Quest 1)
     }
     if (!survived && run.isHardcore()) FUP.save.wipe();   // hardcore: this life is over, the save goes with it
     else if (!survived) FUP.save.write(false);             // normal: save the grave right away
@@ -1537,8 +1539,24 @@ class BattleScene extends Phaser.Scene {
     else if (run.forest && !this.isBossFight) { label = '🌲 Back to the Forest'; go = () => this.scene.start('World', {}); }
     else if (run.forest) { label = '🔥 Back to camp'; go = () => this.scene.start('Cook', { mode: 'campfire' }); }
     else { label = '🏘️ Back to Foopville'; go = () => this.scene.start('Village', { from: 'run' }); }
-    const next = ui.button(this, W / 2 - 120, 420, 240, 46, label, go, { hot: true });
+    const next = ui.button(this, this.storeChoice ? W / 2 - 245 : W / 2 - 120, 420, 240, 46, label, go, { hot: true });
     next.rect.setDepth(502); next.txt.setDepth(503);
+    if (this.storeChoice) {   // (v1.43) a second way out: through the iron door, into the elders' store
+      const door = ui.button(this, W / 2 + 5, 420, 240, 46, FUP.raidData.store.doorButton, () => this.intoStore(), {});
+      door.rect.setDepth(502); door.txt.setDepth(503);
+    }
+  }
+
+  // (v1.43) Through the iron door behind the Guardian's desk: the elders' store (data/raid.js store). The trip goes on.
+  intoStore() {
+    if (this.sliding) return;
+    this.sliding = true;
+    FUP.audio.sfx('doorOpen');
+    this.say('ironDoorOpen');
+    FUP.run.battle = null;   // arrive fresh, not "back from a fight"
+    FUP.raid.openStore(FUP.run.forest);
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.time.delayedCall(520, () => this.scene.start('Raid', {}));
   }
 
   // The Guardian is down: a chute opens under his desk and you slide all the way home (blueprint 18.6).

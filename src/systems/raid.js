@@ -17,8 +17,9 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
   room(id = this.current) {
     const D = FUP.raidData;
     if (id === 'office') return D.office;
-    return D.rooms[id];
+    return D.rooms[id] || D.store.rooms[id];   // (v1.43) or one of the elders' store rooms
   },
+  isStore(id = this.current) { return !!FUP.raidData.store.rooms[id]; },
   use(id) { this.current = id; },
   size() { return FUP.raidData.tileSize; },
   // Every room id of one kind ('fight' or 'hazard')
@@ -36,6 +37,20 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
   start(f, rng = Math.random) {
     f.raid = this.makeRaid(rng);
     this.enter(f, 0, rng);
+  },
+
+  // ---------- The elders' store (v1.43, data/raid.js store; Main Quest 1) ----------
+  // The iron door opens while Main Quest 1 is on, and stays open for that life once it's done (Jesus 2026-11-27).
+  canOpenStore() { const Q = FUP.quests; return !!(Q.state.active.mainQuest1 || Q.done('mainQuest1')); },
+  // Through the door: the store's rooms join this trip's raid, right after the Guardian's Hall.
+  openStore(f) {
+    const R = f.raid, S = FUP.raidData.store;
+    FUP.facts.set('region:store', 1);
+    R.store = true;
+    R.storeStart = R.index + 1;
+    R.rooms = R.rooms.slice(0, R.index + 1).concat(S.order);
+    FUP.quests.event('ironDoor');
+    this.enter(f, R.index + 1);
   },
 
   // Walk into room i of the raid. Rooms are one-way, so each one starts fresh.
@@ -113,7 +128,7 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
         seen.add(k); queue.push({ tx: nx, ty: ny });
       }
     }
-    for (const ch of '>tsmbpiwuA123xL') for (const s of this.find(ch)) if (!seen.has(s.tx + ',' + s.ty)) problems.push(`${a.name}: "${ch}" at ${s.tx},${s.ty} can't be reached`);
+    for (const ch of '>tsmbpiwuA123xLqj') for (const s of this.find(ch)) if (!seen.has(s.tx + ',' + s.ty)) problems.push(`${a.name}: "${ch}" at ${s.tx},${s.ty} can't be reached`);
     if (a.kind !== 'office' && this.find('>').length !== 1) problems.push(`${a.name}: needs exactly one ">" exit`);
     if (a.kind === 'office' && this.find('L').length !== 1) problems.push(`${a.name}: needs the Guardian "L"`);
     if (a.hazard === 'shelves' && !this.find('w').length) problems.push(`${a.name}: no shelf aisle ("w")`);

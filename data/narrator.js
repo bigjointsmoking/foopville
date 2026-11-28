@@ -409,6 +409,14 @@ FUP.narrator = {
   // v1.41 Old Mossback (OT-D). PLACEHOLDER lines (the tuck and snap ones are from the approved draft)
   bigCounter: ['You take the big one on your guard and hit straight back. It did not see that coming.', 'Blocked. Then returned, with interest.'],   // v1.41 PLACEHOLDER
   // v1.42 the Shrine Keeper (OT-E). The warn / nod / no-nod lines are from the approved draft; the rest PLACEHOLDER
+  // v1.43 the elders' store (MQ1-A). PLACEHOLDER lines
+  ironDoorOpen: ['The key turns. Of course it does. It was made for this.', 'Gran\'s key fits. The iron door swings in without a sound. Somebody oiled it. A long time ago.'],
+  storeEnter: ['Behind the iron door: clean floors, tended wood, and guards that have been standing still for a very long time. They aren\'t any more.'],
+  storeFightRoom: ['Wood and iron, standing in a line. They were waiting for someone. You\'ll do.'],
+  sentryShield: ['{enemy} raises its iron shield. The others tuck in behind it. Break that one first.', 'Shield up. The rest of them just got a lot harder to hurt.'],
+  raidHazard_beams: ['Iron-banded beams swing across the corridor, slow and heavy. Whoever built this didn\'t want visitors. Or wanted fit ones.'],
+  raidBeam: ['A beam swings into you. It was very well made.', 'Thunk. Wood and iron, and then you, on the floor.'],
+  storeEndForNow: ['The far door won\'t open. Not yet. A worn chute in the floor takes you all the way home.'],
   keeperStart: ['Wood and iron, older than the village. It looks at the key in your hand, then at you. It has questions.'],
   keeperWarn: ['The Shrine Keeper raises its arm. Slowly. On purpose. (Defend next turn.)'],
   keeperNod: ['It nods, very slightly.'],

@@ -604,6 +604,35 @@ FUP.enemies = {
   // ============================================================
   // PHASE D (v1.00): the Bog Notary's fight. Melee ~22. (v1.38: the Vault's creatures and the Archivist are gone.) PLACEHOLDERS.
   // ============================================================
+  // ---------- v1.43 (plans/MQ1.md MQ1-A): the elders' store behind the iron door. Guards the elders built of wood and iron ----------
+  // Melee ~30. Stand-in names (Jesus: placeholders for now); numbers and lines PLACEHOLDERS.
+  // Store Sentry (shieldwall): while one sentry has its iron shield up, the OTHER sentries take x`takenMult` damage.
+  // When no sentry is shielding, the next one to move raises its shield (and keeps it up until it's beaten): break the shield-holder first.
+  storeSentry: {
+    name: 'Store Sentry', emoji: '🛡️', size: 110, sprite: 'sentry', mapSprite: 'sentry_map',
+    maxHp: 120, atk: 15, def: 9, spd: 10, resolve: 0.5, noCharm: true,
+    xp: 110, coins: 30, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Ironbound Jab', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Shield Bash', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'shieldwall', takenMult: 0.35,
+      move: { name: 'Raises Its Shield', type: 'raiseShield', tell: '🛡️', tellText: 'Raising its iron shield' } },
+  },
+  // Store Spearguard (the line-hitter): every 3rd move a sweeping hit; Defend it for a Perfect Block counter (like the Moss Bear)
+  storeSpear: {
+    name: 'Store Spearguard', emoji: '🔱', size: 125, sprite: 'spearguard', mapSprite: 'spearguard_map',
+    maxHp: 160, atk: 17, def: 8, spd: 9, resolve: 0.5, noCharm: true,
+    xp: 150, coins: 40, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Iron-Tipped Thrust', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Haft Swing', type: 'attack', power: 1.4, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    say: { counter: 'bigCounter' },
+    signature: { id: 'windup', every: 3,
+      move: { name: 'The Long Sweep', type: 'attack', power: 2.4, counterMult: 2, tell: '🔱', tellText: 'SWEEPING THE LINE (Defend!)' } },
+  },
+
   // ---------- The Causeway Serpent (v1.39, archive/plans-done/OT.md OT-B; Jesus 2026-11-26/27) ----------
   // A plain swamp monster (no paperwork jokes) in the deep channel where the old causeway crosses at the Marsh's east edge.
   // Beat it once and the road east opens for that life. About the Senior Partner's strength (Melee ~18).

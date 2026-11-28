@@ -52,7 +52,7 @@ FUP.raidData = {
   arriveGraceSeconds: 1.5, // enemies leave you alone this long after you walk in
 
   // Which letter is which enemy
-  enemyLetters: { t: 'strayShroom', s: 'sporeBouncer', m: 'moldAccountant' },
+  enemyLetters: { t: 'strayShroom', s: 'sporeBouncer', m: 'moldAccountant', q: 'storeSentry', j: 'storeSpear' },   // q j: the elders' store (v1.43)
   // Stray Shroom you meet in the raid are worth something (the Guardian's summoned ones aren't)
   raidEnemy: { strayShroom: { xp: 10, coins: 2 } },
 
@@ -94,6 +94,7 @@ FUP.raidData = {
 
   // Colours for the basement (drawn in code). They come from the raid mood in data/look.js.
   colors: Object.fromEntries(Object.entries(FUP.look.moods.raid).map(([k, v]) => [k, FUP.look.num(v)])),
+  get baseColors() { return Object.fromEntries(Object.entries(FUP.look.moods.raid).map(([k, v]) => [k, FUP.look.num(v)])); },   // (v1.43) the raid's own, when you leave the store
 
   // ---------- The 6 rooms (3 fight, 3 hazard) ----------
   rooms: {
@@ -219,6 +220,96 @@ FUP.raidData = {
         '#########<##########',
       ],
     },
+  },
+
+  // ============================================================
+  // THE ELDERS' STORE (v1.43, plans/MQ1.md MQ1-A; story/MAIN_QUEST_LINE.md 2c): behind the iron door in the Guardian's Hall.
+  // Main Quest 1 "The Quiet Room": beat the Guardian while the quest is on (or after it's done: the door stays open for that life)
+  // and the results screen offers the iron door beside the Exit Chute. Three rooms in this order (fight, hazard, fight),
+  // one-way, tuned for Melee ~30, own colours (data/look.js store). MQ1-B adds the boss and the quiet room after them;
+  // until then the far door is shut and a chute takes you home. Maps, numbers and lines PLACEHOLDERS.
+  // Map letters as in the raid; q = Store Sentry group, j = Store Spearguard group.
+  // ============================================================
+  store: {
+    mult: 1.0, level: 30, dropTier: 4,      // the guards are built for Melee ~30 already (data/enemies.js)
+    doorButton: '🗝️ The iron door',
+    order: ['storeGuards', 'storeBeams', 'storeLine'],
+    rooms: {
+      storeGuards: {
+        name: 'The Guard Room', kind: 'fight', enterLine: 'storeEnter',
+        groups: {
+          storeSentry: [{ w: 1, foes: ['storeSentry', 'storeSentry'] }, { w: 1, foes: ['storeSentry', 'storeSentry', 'storeSentry'] }],
+        },
+        map: [
+          '#########>##########',
+          '#..................#',
+          '#..k...........k...#',
+          '#........q.........#',
+          '#..................#',
+          '#..................#',
+          '#....kk......kk....#',
+          '#....kk......kk....#',
+          '#..................#',
+          '#...q..........q...#',
+          '#..................#',
+          '#..k...........k...#',
+          '#..................#',
+          '#########<##########',
+        ],
+      },
+      storeBeams: {
+        name: 'The Beam Corridor', kind: 'hazard', hazard: 'pipes', beams: true, hit: 34, hazardLine: 'raidHazard_beams', hitLine: 'raidBeam',
+        // Each beam swings across one row: slower and wider than the Steam Hall's pipes.
+        pipes: [
+          { row: 2, seconds: 3.4, offset: 0.0 },
+          { row: 5, seconds: 3.8, offset: 1.3 },
+          { row: 8, seconds: 3.2, offset: 0.6 },
+          { row: 11, seconds: 4.0, offset: 2.0 },
+        ],
+        map: [
+          '#########>##########',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '####............####',
+          '#########<##########',
+        ],
+      },
+      storeLine: {
+        name: 'The Spear Room', kind: 'fight',
+        groups: {
+          storeSentry: [{ w: 1, foes: ['storeSpear', 'storeSentry', 'storeSentry'] }],
+          storeSpear: [{ w: 1, foes: ['storeSpear', 'storeSentry'] }],
+        },
+        map: [
+          '#########>##########',
+          '#..................#',
+          '#..kk..........kk..#',
+          '#..kk....j.....kk..#',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#.....q......q.....#',
+          '#..................#',
+          '#..................#',
+          '#..k............k..#',
+          '#..................#',
+          '#..................#',
+          '#########<##########',
+        ],
+      },
+    },
+    // MQ1-A only: the far door of the last room is shut until MQ1-B; this line, then the chute home.
+    endLine: 'storeEndForNow',
+    colors: Object.fromEntries(Object.entries(FUP.look.moods.store).map(([k, v]) => [k, FUP.look.num(v)])),
   },
 
   // ---------- The boss room ----------
