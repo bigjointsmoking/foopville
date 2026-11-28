@@ -137,6 +137,7 @@ FUP.look = {
     tollroad:  { sky: ['w4', 'w5', 'w5', 'k4'], far: 'w3', farTop: 'x',  trees: ['tree_autumn', 'tree_autumn_red', 'tree_dead'], ground: ['g3', 'g2', 'w3'], front: 'g1', light: null, clouds: true },
     deepwoods: { sky: ['k0', 'b1', 'b1', 'b2'], far: 'g1', farTop: 't',  trees: ['tree_dark', 'tree_spruce_dark', 'tree_dead'], ground: ['g2', 'g1', 'g1'], front: 'k0', light: { color: 'b3', alpha: 0.25 } },
     highsnows: { sky: ['b2', 'b3', 'b4', 'k4'], far: 's2', farTop: 'k4', trees: ['tree_pine_snow'], ground: ['k4', 'k4', 's3'], front: 's3', light: null, clouds: true },   // (v1.29) the High Snows
+    ridge:     { sky: ['b3', 'b4', 'b4', 'k4'], far: 's2', farTop: 's3', trees: ['tree_pine'], ground: ['g3', 's2', 's1'], front: 's1', light: null, clouds: true },   // (v1.46) Windy Ridge. PLACEHOLDER
     boss:      { sky: ['k0', 'p1', 'p1', 'p2'], far: 'k1', farTop: 'p1', trees: ['tree_dead', 'tree_dark'], ground: ['k2', 'k1', 'k1'], front: 'k0', light: null },
     treeAlpha: 1, cloudCount: 3, cloudColor: 'k4', cloudAlpha: 0.35, cloudDriftMs: 40000,
   },
@@ -228,6 +229,14 @@ FUP.look = {
       pathStyle: 'cobble', floor: 's1', foam: 'b4', bank: 'k0',
       detail: { tuft: 0.5, flower: 0.04, pebble: 0.12, leaf: 0 },
       light: { color: 'x', alpha: 0.12, blend: 'MULTIPLY' },
+    },
+    ridge: {   // Windy Ridge (v1.46, MQ3-A): grey rock with tough green-brown grass, a cold bright sky. PLACEHOLDER
+      grass: ['g2', 's2', 'g3', 's1'], grassTuft: 'g4', flowers: ['k4', 'y2'],
+      dirt: ['s1', 's2', 'w3'], dirtEdge: 'k1', pebble: 's3',
+      water: ['b1', 'b2', 'b3'], shore: 's2', sparkle: 'b4',
+      pathStyle: 'dirt', floor: 's1', foam: 'b4', bank: 'k0',
+      detail: { tuft: 0.6, flower: 0.05, pebble: 0.2, leaf: 0 },
+      light: { color: 'b3', alpha: 0.06, blend: 'ADD' },
     },
     quarry: {   // the Old Quarry (v1.27, Glass Q5): bare grey stone, grit, a few dry tufts, cold grey light. PLACEHOLDER
       grass: ['s2', 's1', 's2', 's1'], grassTuft: 's3', flowers: ['s3'],

@@ -128,7 +128,7 @@ Object.assign(VillageScene.prototype, {
 
   // ---------- The Restoration Board ----------
   openRepairBoard() {
-    const ui = FUP.ui, c = ui.colors, R = FUP.repairs, list = R.list(), rowH = 56;
+    const ui = FUP.ui, c = ui.colors, R = FUP.repairs, list = R.list(), rowH = list.length > 8 ? 50 : 56;   // (v1.46) 9 repairs: rows a bit shorter to fit
     this.say('repairBoard');
     this.repairWindow('repairBoard', 640, 104 + list.length * rowH, ({ x, y, w, fix }) => {
       fix(ui.text(this, x + 16, y + 12, 'RESTORATION BOARD', 18, c.accent, { fontStyle: '700' }));
@@ -140,7 +140,7 @@ Object.assign(VillageScene.prototype, {
         fix(ui.text(this, x + 24, ry + 8, r.emoji, 22, c.ink));
         fix(ui.text(this, x + 60, ry + 5, `${r.name}  ·  ${FUP.req.costText(R.price(r.id))}`, 14, done ? c.dim : c.ink, { fontStyle: '700' }));
         fix(ui.text(this, x + 60, ry + 26, 'Unlocks: ' + r.unlocks, 11, c.info, { wordWrap: { width: 380 } }));
-        const chip = done ? 'Done ✓' : !why.length ? 'Ready. Go to the site.' : why.slice(0, 2).join('\n');
+        const chip = done ? 'Done ✓' : !why.length ? (r.where ? `Ready. ${r.where}.` : 'Ready. Go to the site.') : why.slice(0, 2).join('\n');
         fix(ui.text(this, x + w - 24, ry + 25, chip, 11, done ? c.good : !why.length ? c.accent : c.dim, { align: 'right', fontStyle: done || !why.length ? '700' : 'normal' }).setOrigin(1, 0.5));
       });
     });

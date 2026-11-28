@@ -59,6 +59,7 @@ Object.assign(WorldScene.prototype, {
         this.solid.push({ tx: o.tx, ty: o.ty });
       }
     }
+    this.drawWorldRepairs();
     // The old shrine (v0.82): after your first Guardian win (v1.38), feed the Guardian a dish here (src/systems/shrine.js)
     const SH = FUP.raidData.shrine;
     if (SH && SH.region === this.f.area) {
@@ -165,6 +166,62 @@ Object.assign(WorldScene.prototype, {
     btn(W / 2 + 15, 'Leave', close, false);
   },
 
+  // (v1.46) Repairs paid out in the world, at the ruin itself (data/repairs.js `world`; the Rope Bridge at the Quarry).
+  // The picture (`pic`) shows broken or fixed; the spot to pay goes away once it's done.
+  drawWorldRepairs() {
+    const ui = FUP.ui, R = FUP.repairs, F = this.tiles;
+    (this.worldRepairBits || []).forEach(o => { if (o.active) o.destroy(); });
+    this.worldRepairBits = [];
+    this.spots = this.spots.filter(s => s.kind !== 'worldRepair');
+    for (const r of R.list()) {
+      const w = r.world;
+      if (!w || w.region !== this.f.area) continue;
+      const done = R.done(r.id);
+      if (w.pic) { const p = F.center(w.pic.tx, w.pic.ty); this.worldRepairBits.push(ui.sprite(this, p.x, p.y, done ? w.pic.fixed : w.pic.broken, done ? '🌉' : r.emoji, 30).setDepth(p.y - 10)); }
+      if (done) continue;
+      const c0 = F.center(w.tx, w.ty);
+      this.spots.push({ kind: 'worldRepair', id: r.id, x: c0.x, y: c0.y, label: w.label || r.name });
+    }
+  },
+  openWorldRepair(id) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.repairs, r = R.get(id);
+    const why = R.why(id), ok = !why.length;
+    const g = [], add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+    const close = () => { g.forEach(x => x.destroy()); this.panel = null; };
+    this.panel = { destroy: close };   // walking stops while it's open
+    add(ui.shade(this, 0.6));
+    add(ui.panel(this, W / 2 - 240, H / 2 - 110, 480, 220, 'panel'), 1);
+    add(ui.text(this, W / 2 - 220, H / 2 - 96, `${r.emoji} ${r.name.toUpperCase()} (RUINED)`, 18, c.accent, { fontStyle: '700' }), 2);
+    add(ui.text(this, W / 2 - 220, H / 2 - 66, 'Costs: ' + FUP.req.costText(R.price(id)), 14, c.ink, { fontStyle: '700' }), 2);
+    add(ui.text(this, W / 2 - 220, H / 2 - 42, 'Unlocks: ' + r.unlocks, 12, c.info, { wordWrap: { width: 440 } }), 2);
+    add(ui.text(this, W / 2 - 220, H / 2 - 4, ok ? (R.xpFor(id) ? `+${R.xpFor(id)} Building XP` : 'Ready.') : why.join('\n'), 12, ok ? c.good : c.bad, { wordWrap: { width: 440 } }), 2);
+    const btn = (x, label, fn, hot) => { const b = ui.button(this, x, H / 2 + 50, 200, 40, label, fn, { size: 14, hot }); [b.rect, b.txt].forEach(q => add(q, 3)); b.txt.setDepth(Z + 4); return b; };
+    btn(W / 2 - 215, '🔨 Repair', () => {
+      if (!R.can(id)) { FUP.audio.sfx('error'); this.say(FUP.req.missing(r.req).length ? 'repairLocked' : 'repairBroke'); return; }
+      close();
+      if (R.start(id)) this.worldHammer(r);
+    }, ok);
+    btn(W / 2 + 15, 'Leave', close, false);
+  },
+  // Stand still and swing: 3 hits, dust, then it's fixed (like the village's hammering)
+  worldHammer(r) {
+    const secs = FUP.repairData.workSeconds, swings = 3, c0 = this.tiles.center(r.world.tx, r.world.ty);
+    this.panel = { destroy: () => {} };   // no walking off mid-swing
+    for (let i = 0; i < swings; i++) this.time.delayedCall((secs * 1000 / swings) * (i + 0.5), () => { FUP.audio.sfx('chop'); FUP.fx.burst(this, c0.x, c0.y, 'poof', c0.y + 40); });
+    this.time.delayedCall(secs * 1000 + 30, () => {
+      this.panel = null;
+      FUP.repairs.finish(r.id);
+      FUP.fx.burst(this, c0.x, c0.y, 'crit', c0.y + 40);
+      FUP.fx.shake(this, 'big');
+      FUP.audio.sfx('catch');
+      this.drawWorldRepairs();
+      const done = (FUP.narrator.repairDone || {})[r.id];
+      if (done && done.length) this.sayLine(Phaser.Utils.Array.GetRandom(done));
+      if (this.refreshHud) this.refreshHud();
+      this.saveHere();
+    });
+  },
+
   // A boss's office (v0.93, the Senior Partner): the receptionist books you in for o.cost, every visit
   openOffice(o) {
     const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, R = FUP.req, Q = FUP.quests;
@@ -261,6 +318,7 @@ Object.assign(WorldScene.prototype, {
     if (s.kind === 'shrine') { this.openShrine(); return; }
     if (s.kind === 'office') { this.openOffice(s.o); return; }
     if (s.kind === 'lair') { this.openLair(s.o); return; }
+    if (s.kind === 'worldRepair') { this.openWorldRepair(s.id); return; }   // (v1.46) the Rope Bridge
     if (s.kind === 'stash') { this.digStash(s.room); return; }   // side rooms (E3, WorldSideRooms.js)
     if (s.kind === 'hank') { this.openHank(s.room); return; }
     if (s.kind === 'qsearch') { FUP.questUi.search(this, s, () => this.refreshQuestMarks(true)); return; }

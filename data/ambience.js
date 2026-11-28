@@ -144,6 +144,10 @@ FUP.ambienceData = {
       critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 0, fireflies: false, clouds: true, dayNight: 1, vignette: 0.45,
       dress: null,
     },
+    ridge: {   // Windy Ridge (v1.46): wind, birds high up, a few motes blowing past. PLACEHOLDER
+      critters: [], butterflies: 0, dragonflies: 0, birds: true, motes: 6, moteColor: 'k4', fireflies: false, clouds: true, dayNight: 1, vignette: 0.45,
+      dress: null,
+    },
     quarry: {   // the Old Quarry (v1.27): dead and quiet, bare stone. Nothing lives here but Jarvin
       critters: [], butterflies: 0, dragonflies: 0, birds: false, motes: 8, moteColor: 's3', fireflies: false, clouds: true, dayNight: 0.9, vignette: 0.55,
       dress: null,

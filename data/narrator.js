@@ -435,6 +435,8 @@ FUP.narrator = {
   keeperNoNod: ['It does not nod.'],
   keeperWin: ['The Shrine Keeper lowers itself to one knee and goes still.'],
   mossbackStart: ['Old stones, half sunk. Something enormous is sitting in the doorway. It has moss on it. It IS the doorway.'],
+  lizardCling: ['{enemy} flattens itself against the rock. You are now hitting a mountain.', '{enemy} clings to the rock and waits. It has all day. You don\'t.'],   // v1.46 PLACEHOLDER
+  lizardLunge: ['{enemy} lets go of the rock all at once. Mostly at your face.'],   // v1.46 PLACEHOLDER
   mossbackTuck: ['Old Mossback pulls into its shell. You are now hitting a rock.'],
   mossbackSnap: ['The shell opens. So does the mouth.'],
   mossbackWin: ['Old Mossback slides off into the deep water, unhurried, as if this was its idea.'],
@@ -748,6 +750,10 @@ FUP.narrator.repairDone.cart_stop = [
   'The Cart Stop is back. The horse looks at you like you owe it money. You will.',
   'Fixed. A cart, a horse, and a driver who has seen things. Mostly roads.',
   'You can ride places now. Walking was getting embarrassing anyway.',
+];
+// v1.46 (plans/MQ3.md MQ3-A) PLACEHOLDER
+FUP.narrator.repairDone.rope_bridge = [
+  'The Rope Bridge holds. Mostly. It sways like it has opinions. Windy Ridge is that way. Don\'t look down. Too late.',
 ];
 FUP.narrator.repairDone.fountain = [
   'The Fountain runs again. It does nothing useful. It\'s beautiful. Like you, minus the beautiful.',

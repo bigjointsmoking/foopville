@@ -66,7 +66,14 @@ FUP.worldData = {
     // v1.27: the Old Quarry, above the clearing (Glass Q5). Only Jarvin the Stone Warden lives there. Map in data/region_quarry.js
     quarry:    { name: 'The Old Quarry', kind: 'danger', scene: 'World', box: { col: -1, row: 1 }, band: [25, 30], dropTier: 3,
                  respawn: { enemies: 540 },   // PLACEHOLDER
-                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'hill', edge: 'N' } } },
+                 features: ['enemies', 'fog', 'objects'], links: { S: { to: 'hill', edge: 'N' },
+                          // v1.46 (plans/MQ3.md): the Rope Bridge west to Windy Ridge, once it's repaired (data/repairs.js; Jesus: any time with Building 25)
+                          W: { to: 'ridge', edge: 'E', req: { facts: { 'repair:rope_bridge': 1 } }, lockEmoji: '🪢',
+                               lockText: 'A rope bridge, or what\'s left of one: two frayed ropes and a lot of wind. Somebody could fix it. Somebody with Building 25 and 20 planks.' } } },
+    // v1.46 (plans/MQ3.md MQ3-A): Windy Ridge, across the Rope Bridge off the Old Quarry. Map in data/region_ridge.js
+    ridge:     { name: 'Windy Ridge', kind: 'danger', scene: 'World', box: { col: -2, row: 1 }, band: [30, 38], dropTier: 3,
+                 respawn: { enemies: 540 },   // PLACEHOLDER
+                 features: ['enemies', 'fog', 'campfire', 'objects'], links: { E: { to: 'quarry', edge: 'W' } } },
     // Safe: no trip, no enemies, no fog. Map in data/region_docks.js (v0.54)
     docks:     { name: 'Foopville Docks', kind: 'cozy', scene: 'World', box: { col: 0, row: 4 }, features: ['npcs', 'objects', 'fishing'],
                  links: { N: { to: 'village', edge: 'S' } } },

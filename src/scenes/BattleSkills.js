@@ -508,12 +508,12 @@ Object.assign(BattleScene.prototype, {
       }
       case 'tuck':   // (v1.41) Old Mossback pulls into its shell: you hit a rock until it snaps
         e.tucked = true;
-        this.popup(e.view, '🐢 SHELL', 'info');
-        this.say('mossbackTuck', { enemy: e.name });
+        this.popup(e.view, e.signature.popup || '🐢 SHELL', 'info');
+        this.say((e.signature.lines || {}).tuck || 'mossbackTuck', { enemy: e.name });   // (v1.46) the Crag Lizard has its own
         return true;
       case 'snap': {   // ...and comes out with the big bite. Defend it: Perfect Block + counter
         e.tucked = false;
-        this.say('mossbackSnap', { enemy: e.name });
+        this.say((e.signature.lines || {}).snap || 'mossbackSnap', { enemy: e.name });
         this.strike(e, m.power, true, false, m.counterMult || 1);
         return true;
       }
@@ -815,7 +815,7 @@ Object.assign(BattleScene.prototype, {
     if (e.chewing) f.push('📄 eating pages');
     if (e.dodge) f.push('🦋 dodgy');
     if (e.landed) f.push('🪶 on the ground');
-    if (e.hidden) f.push('❄️ hidden'); if (e.tucked) f.push('🐢 in its shell'); if (e.passed) f.push(`🙇 weakened ×${e.passed}`); if (e.shielding) f.push('🛡️ shielding the others'); if (e.stunnedOpen) f.push('💫 stunned');   // (v1.31) Old Whitepaw   // (v1.29) the Highland Eagle
+    if (e.hidden) f.push('❄️ hidden'); if (e.tucked) f.push((e.signature && e.signature.flag) || '🐢 in its shell'); if (e.passed) f.push(`🙇 weakened ×${e.passed}`); if (e.shielding) f.push('🛡️ shielding the others'); if (e.stunnedOpen) f.push('💫 stunned');   // (v1.31) Old Whitepaw   // (v1.29) the Highland Eagle
     if (this.latched && this.latched.by === e) f.push('🦡 latched on');
     if (e.signature && e.signature.id === 'plates') f.push(this.platesOpen(e) ? '💔 plates cracked' : '🪨 stone plates');   // (v1.27) Jarvin
     const SH = e.bossRules && e.bossRules.shelves;

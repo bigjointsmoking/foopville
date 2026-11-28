@@ -470,6 +470,44 @@ FUP.enemies = {
     signature: { id: 'swoop', every: 3, landedMult: 1.5,
       move: { name: 'Dive', type: 'swoop', power: 2.0, tell: '🦅', tellText: 'DIVING (Defend!)' } },
   },
+  // ---------- v1.46 (plans/MQ3.md MQ3-A): Windy Ridge (Lv 30-38). Names Jesus's (2026-11-28); numbers PLACEHOLDER ----------
+  // Cliff Shrike: back row. Every `every` moves it dives (a big hit: Defend it); then it's on the ground, open, until its next move.
+  cliffShrike: {
+    name: 'Cliff Shrike', emoji: '🐦', size: 95, row: 'back', sprite: 'cliffshrike', mapSprite: 'cliffshrike_map',
+    maxHp: 50, atk: 10, def: 3, spd: 15, resolve: 0.2,
+    xp: 115, coins: 20, boss: false, weak: 'frost', resists: [],
+    moves: [
+      { name: 'Hooked Beak', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Wing Clip', type: 'attack', power: 1.2, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'swoop', every: 3, landedMult: 1.5,
+      move: { name: 'Stoop', type: 'swoop', power: 2.0, tell: '🐦', tellText: 'DIVING (Defend!)' } },
+  },
+  // Crag Lizard: every `every` moves it clings flat to the rock (hits do x`takenMult`), then lets go with a lunge (Defend it: counter).
+  cragLizard: {
+    name: 'Crag Lizard', emoji: '🦎', size: 100, sprite: 'craglizard', mapSprite: 'craglizard_map',
+    maxHp: 75, atk: 10, def: 6, spd: 11, resolve: 0.3,
+    xp: 120, coins: 22, boss: false, weak: 'frost', resists: ['fire'],
+    moves: [
+      { name: 'Bite', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Tail Whip', type: 'attack', power: 1.3, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'tuck', every: 4, takenMult: 0.15, popup: '🦎 CLINGING', flag: '🦎 clinging to the rock', lines: { tuck: 'lizardCling', snap: 'lizardLunge' },
+      tuckMove: { name: 'Clings to the Rock', type: 'tuck', tell: '🦎', tellText: 'Clinging flat to the rock' },
+      snapMove: { name: 'Lunge', type: 'snap', power: 2.2, counterMult: 2, tell: '💥', tellText: 'LUNGING (Defend!)' } },
+  },
+  // Tumbleburr: every `every` moves the wind rolls it at you (a huge hit: Defend it for a Perfect Block counter).
+  tumbleburr: {
+    name: 'Tumbleburr', emoji: '🌰', size: 105, sprite: 'tumbleburr', mapSprite: 'tumbleburr_map',
+    maxHp: 85, atk: 10, def: 5, spd: 9, resolve: 0.25,
+    xp: 125, coins: 22, boss: false, weak: 'fire', resists: ['frost'],
+    moves: [
+      { name: 'Prickle', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Bounce', type: 'attack', power: 1.3, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'windup', every: 3,
+      move: { name: 'Rolled by the Wind', type: 'attack', power: 2.4, counterMult: 2, tell: '🌬️', tellText: 'ROLLING IN (Defend!)' } },
+  },
   // Deep Woods (Lv 9-13). Every 3rd move is a huge swipe; Defend it (Perfect Block) for a counter x counterMult.
   // v1.12: quest-only (The Inspector). A lone Deep Woods wolf changed by leftover dragon magic, drawn to the ash.
   // Tuned for Melee ~15 (PLACEHOLDER numbers). 'lungeAlly' goes for the Iron House Assayer; Defend that turn and you take it.

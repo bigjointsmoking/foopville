@@ -49,6 +49,11 @@ FUP.repairData = {
       unlocks: 'The Western Ruins: the part of the old village nobody reclaimed.',
       site: { tx: 1, ty: 23, w: 1, h: 2, talk: { tx: 2, ty: 23 } }, ruinEmoji: '🪨', blockWhenRuined: true,
       clutter: [{ tx: 2, ty: 22, emoji: '🪨' }, { tx: 2, ty: 25, emoji: '🌿' }, { tx: 3, ty: 24, emoji: '🪨' }] },
+    // v1.46 (plans/MQ3.md MQ3-A): the Rope Bridge off the west side of the Old Quarry, to Windy Ridge. Paid at the bridge itself
+    // (`world`: a spot out in a region, src/scenes/WorldPeople.js), not in the village. Jesus: any time with Building 25. Cost from the old plan.
+    { id: 'rope_bridge', name: 'The Rope Bridge', emoji: '🪢', req: { skills: { building: 25 } }, cost: { coins: 0, items: { plank: 20 } },
+      unlocks: 'Windy Ridge, west across the Old Quarry.', where: 'At the Old Quarry (west side)',
+      world: { region: 'quarry', tx: 2, ty: 4, label: '🪢 The Rope Bridge', pic: { tx: 0.5, ty: 4.5, broken: 'rope_bridge_broken', fixed: 'rope_bridge' } } },
     { id: 'fountain', name: 'The Fountain', emoji: '⛲', req: { facts: { 'repair:well': 1, 'repair:south_road': 1, 'repair:east_bridge': 1, 'repair:cart_stop': 1, 'repair:market': 1, 'repair:windmill': 1 }, skills: { building: 20 } },
       cost: { coins: 9000, items: { plank: 30 } }, unlocks: 'A title, a bigger quest board, and respect. Possibly.',
       site: { tx: 29, ty: 19, w: 2, h: 2, talk: { tx: 30, ty: 21 } }, ruinEmoji: '🕳️', doneEmoji: '⛲', doneSprite: 'build_fountain', block: true,   // (R3: spot is a PLACEHOLDER)
