@@ -430,6 +430,46 @@ Object.assign(FUP.questData.quests, {
         say: 'You tell him about the box, the family, the note. "Keep it anyway," he says. "If no one comes, keep it anyway." He nods for a long time. "That\'s what Gran did. That\'s what all of us did." He looks pleased, and then tired, and then pleased again.' },
     ] },
 
+  // v1.47 (plans/MQ3.md MQ3-B, story/MAIN_QUEST_LINE.md 2c Quest 3): Main Quest 3, posted by the Old-timer.
+  // Laid side by side at his bench, the two Sealed Pages hum and pull west, uphill. Across the Rope Bridge (the repair at the
+  // Old Quarry, data/repairs.js) to Windy Ridge: 3 spots where they grow warmer, the Ridge Keeper in front of the lookout hut,
+  // then the hut: 3 papers, piece 3, primer page 3 (wording approved: plans/MQ3_wording_draft.md, with the narrator's line).
+  // The quest name and every other line are STAND-INS (GAME_DESIGN 21 'v1.47').
+  mainQuest3: { kind: 'story', from: 'oldtimer', difficulty: 'hard', length: 'long', name: 'The Lookout Hut',
+    req: { skills: { melee: 36 }, facts: { 'quest:mainQuest2': 1 } },
+    text: 'Two Sealed Pages now. The Old-timer has noticed they hum louder when they\'re close together.',
+    reward: { coins: 2200, xp: { melee: 1500 } },
+    steps: [
+      { talk: 'oldtimer', log: 'The Old-timer wants the two Sealed Pages laid side by side on his bench.',
+        say: '"Two of them now. Hold them near each other and they hum. I heard it from here." He pats the bench. "Put them down. Side by side. Let\'s see what they do."' },
+      { search: { region: 'village', tx: 14, ty: 27, name: 'the Old-timer\'s bench', label: '📜 Lay the pages side by side', icon: '📜' },
+        goal: 'Lay the two Sealed Pages side by side on the Old-timer\'s bench', log: 'Side by side, the Sealed Pages hum and warm toward the west, uphill.',
+        say: 'You lay them side by side. They hum, together, and the edges facing west get warm. West, and up. "Up," says the Old-timer. "It\'s always up."' },
+      { search: { region: 'ridge', tx: 43, ty: 22, name: 'a warm spot', label: '📜 Hold up the pages', icon: '📜' },
+        goal: 'Follow the pull west and uphill: cross the Rope Bridge from the Old Quarry to Windy Ridge', log: 'On Windy Ridge, the pages are warmer.',
+        say: 'Across the bridge, the pages are warmer. Not much. Enough. They pull on up the ridge.' },
+      { search: { region: 'ridge', tx: 30, ty: 11, name: 'a warmer spot', label: '📜 Hold up the pages', icon: '📜' },
+        goal: 'Follow the pull up the ridge', log: 'Higher up, the pages are warmer still.',
+        say: 'Warmer. The hum is louder too, which you didn\'t think a page could manage. Still up.' },
+      { search: { region: 'ridge', tx: 13, ty: 5, name: 'the warmest spot', label: '📜 Hold up the pages', icon: '📜' },
+        goal: 'Follow the pull to the top of the ridge', log: 'At the top, the pages pull toward the sealed lookout hut. Something is standing in front of it.',
+        say: 'At the top the pages are hot and pulling hard, straight at the sealed hut. In front of the hut, a heap of wood and iron stands up.' },
+      { fight: { region: 'ridge', tx: 10, ty: 5, enemy: 'ridgeKeeper', name: 'The Ridge Keeper' },
+        goal: 'Get past the Ridge Keeper (it rebuilds itself: hit it with fire first)', log: 'The Ridge Keeper fell apart and stayed that way.',
+        say: 'The Ridge Keeper comes apart, wood one way, iron the other. It doesn\'t try to rebuild. Behind it, the hut\'s seal gives a soft click.' },
+      { search: { region: 'ridge', tx: 9, ty: 4, name: 'the lookout hut', label: '🚪 Open the hut', icon: '🚪' },
+        goal: 'Open the lookout hut', log: 'The lookout hut: years of notes about her, the third piece, the third primer page.',
+        paper: [
+          'Pinned by the window: the watch log.\n\nSeen at first light, going north over the far hills. Back before dark, slow.\nSeen at first light again. Same way, same time.\nNot seen. Wind from the east all day. She doesn\'t like the east wind.\nSeen. Circled the valley twice. Looked at the village. Did nothing. Went home.\n\n(Pages and pages of it, in several hands, the ink changing colour over the years.)',
+          'On the table: a note between two of them.\n\nYou were right. She sleeps on the high ground past the snow, not in the valley. She hunts in spring and is gone most of the summer.\nShe is not cruel. She is careful. So are we. That\'s the trouble.',
+          'Under the piece: to whoever comes.\n\nWe watched her from here longer than some of us have been alive. We never once wished her harm.\nIf you have climbed up here with the key and the other pages, you already know more than the village does.\nKeep going.',
+        ],
+        say: 'A shed full of notes about one dragon, kept for years by people with nothing better to do. You\'d have fit right in.',
+        give: { fragment: true, primer: 'primer:3', fact: 'ridge:hutOpen' } },
+      { talk: 'oldtimer', goal: 'Go home and tell the Old-timer what was in the lookout hut', log: 'You told the Old-timer about the lookout hut.',
+        say: 'You tell him about the hut, the log, the note. "They watched her," he says. "Years of it. And never wished her harm." He looks over at the statue for a long time. "Keep going, it said. Then keep going."' },
+    ] },
+
   // ---------------- Pip the Seed Seller ----------------
   // Pip believes nothing he hasn't seen. Not dragons, not the sea.
   neverSeenSea: { kind: 'quest', from: 'seeds', difficulty: 'easy', length: 'medium', name: 'Never Seen the Sea',

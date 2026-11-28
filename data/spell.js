@@ -24,11 +24,13 @@ FUP.spellData = {
   pieces: [
     { quest: 'mainQuest1', word: 'SEALED' },
     { quest: 'mainQuest2', word: 'SEALED' },   // v1.45: the second piece, from the Iron House box (Main Quest 2). Sealed like piece 1 (approved)   // v1.44: the Sealed Page, from the quiet room (Main Quest 1). It can't be read yet. Word PLACEHOLDER
+    { quest: 'mainQuest3', word: 'SEALED' },   // v1.47: the third piece, from the lookout hut on Windy Ridge (Main Quest 3). Sealed like 1 and 2
   ],
   // v1.44: the elders' primer, one page per hiding place (Jesus: on the ✨ Spell page, kept like spell pieces). Approved wording.
   primer: [
     { id: 'primer:1', name: 'The First Lesson', text: 'Before anything is made, it must be felt. Put your hand near something warm with it and wait. Do not reach for it. Let it come to you. (The rest of the lesson is on pages you don\'t have.)' },
     { id: 'primer:2', name: 'The Second Lesson', text: 'What you feel, you can hold. Close your hand around it slowly, the way you would hold something small and alive. If it pulls away, let it go. It will come back. (The rest of the lesson is on pages you don\'t have.)' },   // v1.45, approved
+    { id: 'primer:3', name: 'The Third Lesson', text: 'What you hold, you can move. Not far. Not fast. Ask it, don\'t push it. If you push, it will push back, and it is stronger than you. (The rest of the lesson is on pages you don\'t have.)' },   // v1.47, approved
   ],
   // Pieces the old story quests used to give (cut or changed in v1.38): cleared from old saves on load.
   retired: ['tollRecords', 'theBowl', 'oldAccounts', 'archivist', 'rightForm'],

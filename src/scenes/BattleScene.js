@@ -860,6 +860,7 @@ class BattleScene extends Phaser.Scene {
       const em = this.elementMult(e, dish.element);
       const amount = Math.max(1, Math.round(dish.throwDamage * em.mult * this.takenMult(e) * this.deductMult));
       this.applyDamage(e, amount);
+      this.noteFire(e, dish.element);   // (v1.47) a fire dish stops the Ridge Keeper's next rebuild
       this.time.delayedCall(320, () => {
         this.popup(e.view, String(amount), em.tag === 'weak' ? 'crit' : em.tag === 'resist' ? 'info' : 'ink');   // no "WEAK!" label: the narrator hints
         this.blink(e.view);
@@ -1013,6 +1014,7 @@ class BattleScene extends Phaser.Scene {
       return false;
     }
     this.applyDamage(e, r.amount, o.ranged ? 'ranged' : 'melee');
+    this.noteFire(e, o.element);   // (v1.47) the Ridge Keeper: fire stops its next rebuild
     this.afterHitLanded(e, r.amount, kind);   // Hedgehog spikes, The Retainer (BattleSkills.js, v0.93)
     if (o.burn && e.hp > 0) e.burn = { dmg: Math.max(1, Math.round(e.maxHp * o.burn.pct)), turns: o.burn.turns };
     const big = r.crit || power >= 2 || em.tag === 'weak';

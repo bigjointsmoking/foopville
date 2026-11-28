@@ -272,6 +272,12 @@ Object.assign(BattleScene.prototype, {
     if (!sig || sig.id !== 'mark' || !this.marked) return 1;
     return 1 + sig.perStep * (this.marked - 1);
   },
+  // (v1.47) Something with fire hit this enemy (a fire Skill, fire ammo, a fire dish): the Ridge Keeper can't rebuild next time
+  noteFire(e, element) {
+    if (!e || (element || '').toLowerCase() !== 'fire' || !e.signature || e.signature.id !== 'rebuild') return;
+    if (!e.scorched && !this.over) { this.time.delayedCall(450, () => { if (!this.over && !e.gone) this.say('ridgeKeeperScorched', { enemy: e.name }); }); }
+    e.scorched = true;
+  },
   // (v1.27) Jarvin's plates are open from the crack until he has packed them back on
   platesOpen(e) { return e.platesUntil != null && (e.movesDone < e.platesUntil || !!e.resetNext); },
   // (v1.19) The Rubble Crab's shell cracks on a Skill or a critical hit (then it takes normal damage)
@@ -354,6 +360,7 @@ Object.assign(BattleScene.prototype, {
       if (e.platesUntil != null && !e.resetNext && e.movesDone >= e.platesUntil) { e.resetNext = true; return sig.resetMove; }
       if ((e.movesDone + 1) % sig.slamEvery === 0) return sig.slamMove;
     }
+    if (sig.id === 'rebuild' && (e.movesDone + 1) % sig.every === 0) return sig.rebuildMove;   // (v1.47) the Ridge Keeper pulls its wood back on
     if (sig.id === 'mark' && !this.marked && e.movesDone % sig.every === 0) return sig.markMove;   // (v1.22) Old Carrow
     if (sig.id === 'runner' && e.grabbed) return sig.move;                          // the Debt Runner legs it (v0.93)
     if (sig.id === 'windup' && (e.movesDone + 1) % sig.every === 0) return sig.move;   // the Moss Bear's big swipe (v0.93)
@@ -557,6 +564,17 @@ Object.assign(BattleScene.prototype, {
         this.say('platesReset', { enemy: e.name });
         FUP.audio.sfx('guard');
         return true;
+      case 'rebuild': {   // (v1.47) the Ridge Keeper heals, unless fire hit it since its last rebuild (then the charred wood won't take)
+        const S = e.signature, burnt = !!e.scorched;
+        e.scorched = false;
+        if (burnt) { this.popup(e.view, '🔥 CHARRED: IT WON\'T TAKE', 'good'); this.say('ridgeKeeperCharred', { enemy: e.name }); return true; }
+        const heal = Math.min(e.maxHp - e.hp, Math.round(e.maxHp * S.healPct));
+        e.hp += heal;
+        this.popup(e.view, `🪵 REBUILT +${heal}`, 'info');
+        this.say('ridgeKeeperRebuild', { enemy: e.name });
+        FUP.audio.sfx('guard');
+        return true;
+      }
       case 'mark':   // (v1.22) Old Carrow: his hits climb while you're marked; Defend clears it
         this.marked = 1;
         this.popup(this.playerSprite, '🎯 MARKED', 'bad', -40);

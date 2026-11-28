@@ -58,7 +58,8 @@ FUP.worldData.areas.ridge = {
   },
   buildings: [{ sprite: 'ridge_hut', tx: 9.5, ty: 3, size: 190 }],   // the elders' lookout hut at the top (sealed)
   objects: [
-    { kind: 'sign', tx: 9, ty: 5, text: 'A small hut of dark wood and iron bands, built into the rock. The door is sealed shut. Not locked: sealed. There\'s no keyhole at all.' },   // PLACEHOLDER (MQ3-B opens it)
+    { kind: 'sign', tx: 9, ty: 5, text: 'A small hut of dark wood and iron bands, built into the rock. The door is sealed shut. Not locked: sealed. There\'s no keyhole at all.',   // PLACEHOLDER
+      openFact: 'ridge:hutOpen', openText: 'The elders\' lookout hut. The seal is gone; the door swings in the wind. Inside, years of notes about one dragon.' },   // v1.47: open once Main Quest 3 opens it (STAND-IN)
   ],
   trees: { quarry_wall: 3, quarry_wall_tall: 2, tree_pine: 1 },   // what stands on the # squares
   decorations: { deco_rubble: 0.02 },

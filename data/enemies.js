@@ -714,6 +714,24 @@ FUP.enemies = {
     ],
   },
 
+  // ---------- v1.47 (plans/MQ3.md MQ3-B, Main Quest 3): The Ridge Keeper, in front of the lookout hut on Windy Ridge ----------
+  // Elder-built, wood and iron (like the Shrine Keeper and the store's guardian). Quest-only, one time: gone for that life once beaten.
+  // Rebuilds itself: every `every` of its moves it pulls loose wood back on and heals `healPct` of its max HP, unless something
+  // with fire hit it since its last rebuild (a fire Skill, fire ammo or a fire dish): then the charred wood won't take. Weak to fire.
+  // Name and trick Jesus's (2026-11-28); numbers (for Melee ~36, a step past Brask) and lines PLACEHOLDERS.
+  ridgeKeeper: {
+    name: 'The Ridge Keeper', emoji: '🪵', size: 200, sprite: 'ridgekeeper', mapSprite: 'ridgekeeper_map',
+    maxHp: 560, atk: 20, def: 11, spd: 9, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, questOnly: true, ownLevel: true, level: 35,
+    xp: 800, coins: 240, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'ridgeKeeperStart', win: 'ridgeKeeperWin' },
+    moves: [
+      { name: 'Ironbound Fist', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Beam Swing', type: 'attack', power: 1.5, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'rebuild', every: 4, healPct: 0.18,
+      rebuildMove: { name: 'Pulls Its Wood Back On', type: 'rebuild', tell: '🪵', tellText: 'About to rebuild itself (hit it with fire first!)' } },
+  },
+
   // ---------- The Causeway Serpent (v1.39, archive/plans-done/OT.md OT-B; Jesus 2026-11-26/27) ----------
   // A plain swamp monster (no paperwork jokes) in the deep channel where the old causeway crosses at the Marsh's east edge.
   // Beat it once and the road east opens for that life. About the Senior Partner's strength (Melee ~18).

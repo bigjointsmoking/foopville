@@ -82,7 +82,9 @@ window.FUP = window.FUP || {};
     },
 
     // (v1.45) A paper to read: a card with the whole text (too long for the narrator bar). Tap or press a key to put it down.
+    // (v1.47) text can be a list: one card after another (the lookout hut's three papers)
     paper(scene, text, onClose = null) {
+      if (Array.isArray(text)) { const rest = text.slice(1); return FUP.ui.paper(scene, text[0], rest.length ? () => FUP.ui.paper(scene, rest, onClose) : onClose); }
       const W = scene.scale.width, H = scene.scale.height, Z = 26000, g = [], c = FUP.ui.colors;
       const add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
       add(FUP.ui.shade(scene, 0.55));
@@ -90,7 +92,10 @@ window.FUP = window.FUP || {};
       add(FUP.ui.text(scene, W / 2, H / 2 - 160, text, 16, c.ink, { fontStyle: 'italic', align: 'center', lineSpacing: 6, wordWrap: { width: 520 } }).setOrigin(0.5, 0), 2);
       add(FUP.ui.text(scene, W / 2, H / 2 + 165, 'Tap to put it down', 12, c.dim).setOrigin(0.5), 2);
       let open = true;
-      const close = () => { if (!open) return; open = false; g.forEach(x => x.destroy()); scene.input.off('pointerdown', close); if (scene.input.keyboard) scene.input.keyboard.off('keydown', close); if (onClose) onClose(); };
+      const before = scene.panel;   // (v1.47) the map underneath waits while you read (no enemy walks into you on Windy Ridge)
+      const close = () => { if (!open) return; open = false; g.forEach(x => x.destroy()); scene.input.off('pointerdown', close); if (scene.input.keyboard) scene.input.keyboard.off('keydown', close); if (scene.panel === pause) scene.panel = before; if (onClose) onClose(); };
+      const pause = { destroy: close, paper: true };
+      scene.panel = pause;
       scene.time.delayedCall(250, () => { if (!open) return; scene.input.once('pointerdown', close); if (scene.input.keyboard) scene.input.keyboard.once('keydown', close); });
     },
     // A dark see-through layer over the whole screen that blocks clicks underneath.

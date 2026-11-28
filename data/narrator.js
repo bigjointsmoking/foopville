@@ -556,6 +556,12 @@ FUP.narrator = {
   stoneChase: ['The {enemy} is still walking after his stone.'],
   // v1.24: Staff Q5, Gravel-Hand Dunn (PLACEHOLDER lines)
   braskStart: ['A big man with a jaw like a horseshoe, and two bigger friends. "The box goes where it\'s paid to go. You don\'t." The friends crack their knuckles. Brask stays behind them. Of course he does.'],   // v1.45 PLACEHOLDER
+  // v1.47 (Main Quest 3): the Ridge Keeper. All STAND-INS (GAME_DESIGN 21 'v1.47')
+  ridgeKeeperStart: ['Wood and iron, bolted together by the elders and left on a mountain to wait. It has been waiting a long time. It does not want to wait any more.'],
+  ridgeKeeperRebuild: ['It picks up the bits you knocked off and puts them back on. Annoyingly tidy.', 'Loose wood, back in place. All that work, undone. Something hotter might stop that.'],
+  ridgeKeeperCharred: ['It reaches for its loose wood. The charred bits crumble in its hands. No rebuilding this time.'],
+  ridgeKeeperWin: ['It falls apart, and this time nothing gets put back.'],
+  ridgeKeeperScorched: ['The wood is smoking. It won\'t be putting that bit back on.'],
   braskOpen: ['No more friends. Brask looks around for someone to stand behind. There isn\'t anyone. Hit him.'],   // v1.45 PLACEHOLDER
   dunnStart: ['A broad man climbs out of a hole with a shovel. "Orders. Nobody gets the piece. Nothing personal. I\'ve been digging for weeks and I\'m in a mood."'],
   staffHumWarn: ['The staff on your back hums, low and urgent. Dunn is winding up something big.', 'The staff hums against your spine. Whatever Dunn does next, Defend it.'],

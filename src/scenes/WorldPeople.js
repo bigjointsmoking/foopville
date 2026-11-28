@@ -16,7 +16,7 @@ Object.assign(WorldScene.prototype, {
     else if (o.sprite) { const p = ui.sprite(this, c0.x, c0.y, o.sprite, o.emoji || '🪧', 24).setDepth(c0.y + 10); if (o.scale && this.textures.exists(o.sprite)) p.setScale(p.scaleX * o.scale); }   // (v0.84: its own picture)
     else this.add.text(c0.x, c0.y, o.emoji || '🪧', { fontSize: '24px' }).setOrigin(0.5).setDepth(c0.y + 10);
     if (o.solid) this.solid.push({ tx: o.tx, ty: o.ty });
-    this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text });
+    this.spots.push({ kind: 'sign', x: c0.x, y: c0.y, label: o.label || 'Read', text: o.text, o });
   },
   // (v1.42) Signs whose fact just came true while you're here (the Shrine Keeper kneels after its fight): draw them now
   showNewSigns() {
@@ -314,7 +314,7 @@ Object.assign(WorldScene.prototype, {
     this.actBtn.setVisible(false); this.actText.setVisible(false); this.prompt.setVisible(false);
     if (s.tut) { this.tutorUse(s); return; }   // tutors, the farm patch, sawhorse, dummy (WorldTutorial.js)
     if (s.kind === 'npc') { this.openPanel(s.id); return; }
-    if (s.kind === 'sign') { this.sayLine(s.text); FUP.audio.sfx('click'); return; }
+    if (s.kind === 'sign') { this.sayLine(s.o && s.o.openFact && FUP.facts.has(s.o.openFact) ? s.o.openText : s.text); FUP.audio.sfx('click'); return; }   // (v1.47) the lookout hut reads differently once it's open
     if (s.kind === 'shrine') { this.openShrine(); return; }
     if (s.kind === 'office') { this.openOffice(s.o); return; }
     if (s.kind === 'lair') { this.openLair(s.o); return; }
