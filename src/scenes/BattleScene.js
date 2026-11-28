@@ -994,6 +994,7 @@ class BattleScene extends Phaser.Scene {
     const kind = o.kind || 'attack';
     const guard = this.checkGuards(e, { ...o, kind });     // the Goblin's ledger, the Bouncer's Arms Crossed
     if (guard.blocked) return false;
+    if (this.player.pushedBack && kind !== 'counter') { power *= FUP.enemies.storeWarden.signature.pushMult; this.player.pushedBack = false; }   // (v1.44) pushed back by the store's guardian
     const exec = e.hp / e.maxHp < FUP.unlocks.perkBest('executeBelow', 0) ? FUP.unlocks.perkBest('executeMult', 1) : 1;   // Executioner perk
     // v1.01: shots use Ranged ATK (+ shot crit, Piercing); melee on the back row is weaker while the front row stands
     const R = FUP.rangedData, U = FUP.unlocks, pierce = o.ranged ? U.perkBest('shotPierce', 0) : 0;

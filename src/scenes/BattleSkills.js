@@ -312,6 +312,11 @@ Object.assign(BattleScene.prototype, {
       if (e.swingNext) { e.swingNext = false; return sig.swingMove; }
       if ((e.movesDone + 1) % sig.every === 0) return sig.humMove;
     }
+    if (sig.id === 'buildup') {   // (v1.44) the store's guardian: each stage below `stages` adds a trick, used every `every` moves
+      const stage = sig.stages.filter(t => e.hp / e.maxHp < t).length;
+      if (stage > (e.buildStage || 0)) { e.buildStage = stage; this.bigMoment(stage === 1 ? 'IT PUSHES BACK' : 'THE SPELL STIRS', FUP.ui.colors.bad); this.say('wardenStage' + stage, { enemy: e.name }); }
+      if ((e.movesDone + 1) % sig.every === 0 && stage >= 1) return stage >= 2 && (e.tricksDone || 0) % 2 === 1 ? sig.scareMove : sig.pushMove;   // last stage: push, scare, push, scare...
+    }
     if (sig.id === 'shieldwall' && !e.shielding && !this.liveReal().some(o => o.shielding)) return sig.move;   // (v1.43) nobody's shielding: this one raises its shield
     if (sig.id === 'test') {   // (v1.42) the Shrine Keeper: it announces a big blow a turn ahead, then lands it
       if (e.blowNext) return sig.blowMove;
@@ -458,6 +463,19 @@ Object.assign(BattleScene.prototype, {
           this.bigMoment('OFF BALANCE!', FUP.ui.colors.good);
           this.say('dunnStagger', { enemy: e.name });
         }
+        return true;
+      }
+      case 'pushBack': {   // (v1.44) the store's guardian pushes you back: your next hit does half
+        e.tricksDone = (e.tricksDone || 0) + 1;
+        const landed = this.strike(e, m.power, false);
+        if (landed !== false && !this.over) { p.pushedBack = true; this.popup(this.playerSprite, '🌀 PUSHED BACK', 'bad', -70); this.say('wardenPush', { enemy: e.name }); }
+        return true;
+      }
+      case 'scare': {   // (v1.44) ...and in its last stage, the repelling spell: you lose a turn unless you Defend
+        e.tricksDone = (e.tricksDone || 0) + 1;
+        if (p.defending) { this.popup(this.playerSprite, 'HELD FIRM', 'good', -70); this.say('wardenScareHeld', { enemy: e.name }); return true; }
+        this.strike(e, m.power, false);
+        if (!this.over) { p.gauge = Math.min(p.gauge, m.stunGauge); this.popup(this.playerSprite, '😨 SCARED', 'bad', -70); this.say('wardenScare', { enemy: e.name }); }
         return true;
       }
       case 'raiseShield':   // (v1.43) a Store Sentry raises its iron shield: the other sentries take less until it's beaten

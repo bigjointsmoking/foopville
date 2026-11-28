@@ -70,7 +70,8 @@ FUP.raid = Object.assign(FUP.tilemap(() => FUP.raid.room(), '#kd<h'), {
       for (const s of this.find(ch)) enemies.push(FUP.forest.makeEnemy(type, s, a, rng));
     }
     // The boss at his desk (the Guardian): he waits for you
-    for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy(a.boss || 'guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
+    const bossGone = a.bossOnce && FUP.facts.has('boss:' + a.boss);   // (v1.44) the store's guardian stays beaten for that life
+    if (!bossGone) for (const s of this.find('L')) enemies.push({ ...FUP.forest.makeEnemy(a.boss || 'guardian', s, a, rng), still: true, guardian: true, touch: d.guardianTouch });
     const amb = this.find('A')[0];
     return {
       id: this.current, kind: a.kind,

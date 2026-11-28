@@ -367,7 +367,7 @@ Object.assign(FUP.questData.quests, {
     ] },
 
   // ============================================================
-  // THE MAIN QUEST (story/MAIN_QUEST_LINE.md 2c). v1.43 (plans/MQ1.md MQ1-A): Quest 1 "The Quiet Room", posted by the Old-timer
+  // THE MAIN QUEST (story/MAIN_QUEST_LINE.md 2c). v1.43 (archive/plans-done/MQ1.md MQ1-A): Quest 1 "The Quiet Room", posted by the Old-timer
   // once all 4 beginner threads are done and Gran's key is on your key ring. His line: Jesus approved the draft (2026-11-27).
   // MQ1-A builds the way in (the iron door) and the store's 3 rooms; MQ1-B adds the boss, the quiet room and the turn-in.
   // ============================================================
@@ -380,8 +380,10 @@ Object.assign(FUP.questData.quests, {
         say: '"That key was in my family five generations. Passed hand to hand, nobody knowing why. Now I know whose hand it started in. The eldest\'s. Mine now, I suppose. That thing at the shrine knelt toward the Deep Woods, and the only locked door down there anyone talks about is the iron one under the old storehouse. I\'m too old for the Deep Woods. Go and open what my family was told to keep safe." An old man, a locked door and you. What could go wrong. Several things.' },
       { event: 'ironDoor', goal: 'Beat the Mushroom Guardian in the Old Storehouse, then open the iron door with Gran\'s key',
         log: 'Gran\'s key opened the iron door. Behind it: the elders\' store, and its guards.' },
-      { event: 'quietRoom', goal: 'Get through the elders\' store to the end (the far door doesn\'t open yet)',
-        log: 'At the end of the store.' },
+      { event: 'quietRoom', goal: 'Get through the elders\' store: past its guardian, to whatever they kept at the end',
+        log: 'The quiet room: the elders\' papers, the first page of their lesson, and a sealed page of the spell itself.' },
+      { talk: 'oldtimer', goal: 'Ride the chute home and tell the Old-timer what was behind his family\'s door', log: 'You told the Old-timer what his family kept safe.',
+        say: 'You tell him all of it: the guards, the papers, the notice nobody ever posted, the sealed page. He listens without a word. "They meant to tell everyone," he says at last. "And then they didn\'t get the chance." He looks over at the statue for a long time.' },
     ] },
 
   // ---------------- Pip the Seed Seller ----------------

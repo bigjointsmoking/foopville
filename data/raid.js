@@ -223,7 +223,7 @@ FUP.raidData = {
   },
 
   // ============================================================
-  // THE ELDERS' STORE (v1.43, plans/MQ1.md MQ1-A; story/MAIN_QUEST_LINE.md 2c): behind the iron door in the Guardian's Hall.
+  // THE ELDERS' STORE (v1.43, archive/plans-done/MQ1.md MQ1-A; story/MAIN_QUEST_LINE.md 2c): behind the iron door in the Guardian's Hall.
   // Main Quest 1 "The Quiet Room": beat the Guardian while the quest is on (or after it's done: the door stays open for that life)
   // and the results screen offers the iron door beside the Exit Chute. Three rooms in this order (fight, hazard, fight),
   // one-way, tuned for Melee ~30, own colours (data/look.js store). MQ1-B adds the boss and the quiet room after them;
@@ -233,7 +233,7 @@ FUP.raidData = {
   store: {
     mult: 1.0, level: 30, dropTier: 4,      // the guards are built for Melee ~30 already (data/enemies.js)
     doorButton: '🗝️ The iron door',
-    order: ['storeGuards', 'storeBeams', 'storeLine'],
+    order: ['storeGuards', 'storeBeams', 'storeLine', 'storeHall', 'storeQuiet'],   // v1.44 (MQ1-B): + the guardian's hall and the quiet room
     rooms: {
       storeGuards: {
         name: 'The Guard Room', kind: 'fight', enterLine: 'storeEnter',
@@ -306,9 +306,60 @@ FUP.raidData = {
           '#########<##########',
         ],
       },
+      // v1.44 (MQ1-B): the boss hall. The store's guardian ("L") stays beaten for that life once you've won (bossOnce).
+      storeHall: {
+        name: 'The Guardian\'s Gallery', kind: 'office', boss: 'storeWarden', bossOnce: true, enterLine: 'wardenStart',
+        map: [
+          '#########>##########',
+          '#..................#',
+          '#.kk............kk.#',
+          '#..................#',
+          '#........L.........#',
+          '#..................#',
+          '#.kk............kk.#',
+          '#..................#',
+          '#..................#',
+          '#.kk............kk.#',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#########<##########',
+        ],
+      },
+      // v1.44 (MQ1-B): the quiet room. No fights. Walk up to each paper and the narrator reads it (wording approved:
+      // plans/MQ1_documents_draft.md). The box under the reading stand holds the Sealed Page (spell piece 1) and the
+      // first primer page (both kept like spell pieces). Its far side: a chute home. Spots PLACEHOLDERS.
+      storeQuiet: {
+        name: 'The Quiet Room', kind: 'quiet', enterLine: 'quietEnter',
+        lore: [
+          { tx: 3, ty: 2, text: 'To the people of the village. For a long time now you have slept safe, and you have not known why. We have spoken with her. She is not what you fear. There is an agreement, and it has held. We will tell you everything when the work is done. Not before. Forgive us the wait. (Unsigned. The bottom corner has been folded and unfolded until it tore.)', after: 'quietNotice' },
+          { tx: 9, ty: 5, text: 'Again we agree to wait. Again I say they should hear it from us, and not guess it. If they learn of her by fire, they will never learn anything else. Nobody listens.' },
+          { tx: 15, ty: 5, text: 'It is not finished, and it is not safe while it is unfinished. Kept together, one mistake undoes all of it. Kept apart, a mistake costs only a piece. We part it, then. Each piece to its own keeping. Some to people we trust, some behind things we build. The first stays here, with these papers, where the door can be locked.' },
+          { tx: 16, ty: 10, text: 'The second piece: (the page is torn right there. Something chewed it, a long time ago.)' },
+          { tx: 9, ty: 9, text: 'The first lesson. Before anything is made, it must be felt. Put your hand near something warm with it and wait. Do not reach for it. Let it come to you. (The rest of the lesson is on pages you don\'t have.)' },
+          { tx: 10, ty: 10, box: true, text: 'A small box under the reading stand. Inside: a page of tight, careful writing under a wax seal that will not lift. It hums, very faintly, like the staff.', emptyText: 'The box under the reading stand. Empty: the Sealed Page is with you.' },
+        ],
+        props: [{ tx: 3, ty: 1, sprite: 'prop_notice' }, { tx: 8, ty: 4, sprite: 'prop_desk' }, { tx: 15, ty: 4, sprite: 'prop_desk_small' }, { tx: 16, ty: 11, sprite: 'prop_torn_list' }, { tx: 9, ty: 8, sprite: 'prop_reading_stand' }],
+        map: [
+          '#########>##########',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#.......kk.....k...#',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#........k.........#',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#..................#',
+          '#########<##########',
+        ],
+      },
     },
-    // MQ1-A only: the far door of the last room is shut until MQ1-B; this line, then the chute home.
-    endLine: 'storeEndForNow',
+    endLine: 'storeEnd',
+    piece: 'mainQuest1', primer: 'primer:1',   // (v1.44) what the quiet room's box gives (data/spell.js)
     colors: Object.fromEntries(Object.entries(FUP.look.moods.store).map(([k, v]) => [k, FUP.look.num(v)])),
   },
 
@@ -316,7 +367,7 @@ FUP.raidData = {
   office: {
     name: "The Guardian's Hall", kind: 'office',
     // v1.38 (Jesus 2026-11-26): the Vault is gone; the iron door stays shut until Main Quest 1 ("The Quiet Room"). Line PLACEHOLDER.
-    lore: [{ tx: 3, ty: 4, text: 'An iron door behind the Guardian\'s desk. It doesn\'t open. Not yet.' }],
+    lore: [{ tx: 3, ty: 4, text: 'An iron door behind the Guardian\'s desk. It doesn\'t open. Not yet.', openText: 'The iron door behind the Guardian\'s desk. Gran\'s key fits it. Beat the Guardian and it\'s yours.' }],   // (v1.44) openText while Main Quest 1 is on / done. PLACEHOLDER
     map: [
       '####################',
       '#..................#',

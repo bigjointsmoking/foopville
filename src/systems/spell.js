@@ -17,7 +17,7 @@ FUP.spell = {
   },
   write() { try { localStorage.setItem(FUP.save.playerKey(FUP.spellData.storageKey), JSON.stringify(this.state)); } catch (e) { /* private window: kept for this visit only */ } },
   has(id) { return !!this.load()[id]; },
-  count() { return Object.keys(this.load()).length; },
+  count() { return Object.keys(this.load()).filter(k => !k.startsWith('primer:')).length; },   // (v1.44) primer pages aren't spell pieces
   size() { return FUP.spellData.size; },
   // Found a piece (a story quest finished). Already had it (a new life): nothing new.
   add(id) {

@@ -22,6 +22,7 @@ class RaidScene extends WorldScene {
     this.info = R.room();               // this room's data (name, map, kind)
     FUP.raidData.colors = R.isStore() ? FUP.raidData.store.colors : FUP.raidData.baseColors;   // (v1.43) the elders' store has its own look
     this.leaving = false;
+    this.paper = false;                 // (v1.44) no paper open (this screen is reused)
     this.falling = false;
     this.campfire = null;
     this.weather = [];
@@ -35,6 +36,7 @@ class RaidScene extends WorldScene {
 
     this.drawRoom();
     this.drawDoors();
+    for (const p of this.info.props || []) { const c = R.center(p.tx, p.ty); FUP.ui.sprite(this, c.x, c.y, p.sprite, '📜', 28).setDepth(c.y + 5); }   // (v1.44) the quiet room's desks, papers, stand
     this.drawThings();
     this.drawHazards();
     if (this.hasFog) this.drawFog();
@@ -83,7 +85,7 @@ class RaidScene extends WorldScene {
       if (e && (b.result === 'win' || b.result === 'charmed')) {
         e.alive = false;
         if (this.enemySprites[b.index]) this.enemySprites[b.index].destroy();
-        this.say(b.result === 'win' ? 'forestAfterWin' : 'forestAfterCharm');
+        this.say(b.result === 'win' ? (FUP.raid.isStore(this.A.id) ? 'storeAfterWin' : 'forestAfterWin') : 'forestAfterCharm');   // (v1.44) the store has its own line
       } else if (b.result === 'fled') {
         this.f.graceUntil = this.f.time + FUP.forestData.fleeGraceSeconds;
         this.say('forestAfterFlee');
@@ -257,13 +259,13 @@ class RaidScene extends WorldScene {
     }
     this.leaving = true;
     FUP.audio.sfx('step');
-    if (this.raid.index + 1 >= this.raid.rooms.length) { this.storeEndForNow(); return; }   // (v1.43) the end of the store, for now
+    if (this.raid.index + 1 >= this.raid.rooms.length) { this.storeEnd(); return; }   // (v1.43) the end of the store: a chute home
     this.cameras.main.fadeOut(350, 0, 0, 0);
     this.time.delayedCall(370, () => { FUP.raid.enter(this.f, this.raid.index + 1); this.scene.start('Raid', {}); });
   }
 
-  // (v1.43, MQ1-A only) The last store room's far door is shut until MQ1-B builds what's behind it: a chute home.
-  storeEndForNow() {
+  // (v1.43) The end of the elders' store (v1.44: the quiet room's chute): all the way home.
+  storeEnd() {
     this.say(FUP.raidData.store.endLine);
     this.time.delayedCall(1800, () => {
       this.cameras.main.fadeOut(600, 0, 0, 0);
@@ -294,7 +296,7 @@ class RaidScene extends WorldScene {
       // The Section 12 fight, unchanged (no raid multiplier).
       // (v1.00: no `office` flag here any more; that one is for boss offices out in the regions, `worldOffice`)
       FUP.run.battle = { index, type: e.type, result: null, raidBoss: true, dropTier: D.dropTier };
-      this.say('officeFight');
+      if (e.type === 'guardian') this.say('officeFight');   // (v1.44) the store's guardian has its own start line
       FUP.audio.sfx('encounter');
       this.cameras.main.fadeOut(650, 30, 0, 40);
       const foes = this.info.foes || [e.type];
@@ -360,6 +362,33 @@ class RaidScene extends WorldScene {
     this.updateHazards(0);
   }
 
+  // (v1.44) The box under the quiet room's reading stand: the Sealed Page (spell piece 1) and the first primer page,
+  // both kept like spell pieces (they survive a new life); Main Quest 1 moves on. Already have it: the box is empty.
+  openBox(l) {
+    const S = FUP.spell, piece = FUP.raidData.store.piece, primer = FUP.raidData.store.primer;
+    const had = S.has(piece), waiting = FUP.quests.waitingFor('quietRoom');
+    if (had && !waiting) { this.readPaper(l.emptyText); return; }
+    S.add(piece); S.add(primer);   // (a new Hardcore life keeps its pieces, but the quest still counts the box)
+    if (waiting) FUP.quests.event('quietRoom');
+    FUP.save.write();
+    FUP.audio.sfx('fanfare');
+    this.readPaper(l.text + '\n\n✨ The Sealed Page and 📜 the first primer page: see ✨ Spell in your 🎒 backpack.', 'quietTake');
+  }
+
+  // (v1.44) A paper in the quiet room: a card with the whole text (too long for the narrator). Tap anywhere to put it down;
+  // `after` = a narrator line once you do.
+  readPaper(text, after = null) {
+    const ui = FUP.ui, c = ui.colors, W = this.scale.width, H = this.scale.height, Z = 26000, g = [];
+    const add = (x, d = 0) => { x.setScrollFactor(0).setDepth(Z + d); g.push(x); return x; };
+    add(ui.shade(this, 0.55));
+    add(ui.panel(this, W / 2 - 280, H / 2 - 170, 560, 340, 'panel'), 1);
+    add(ui.text(this, W / 2, H / 2 - 140, text, 16, c.ink, { fontStyle: 'italic', align: 'center', lineSpacing: 6, wordWrap: { width: 500 } }).setOrigin(0.5, 0), 2);
+    add(ui.text(this, W / 2, H / 2 + 140, 'Tap to put it down', 12, c.dim).setOrigin(0.5), 2);
+    this.paper = true;
+    const close = () => { if (!this.paper) return; g.forEach(x => x.destroy()); this.paper = false; this.input.off('pointerdown', close); this.input.keyboard && this.input.keyboard.off('keydown', close); if (after) this.say(after); };
+    this.time.delayedCall(250, () => { this.input.once('pointerdown', close); if (this.input.keyboard) this.input.keyboard.once('keydown', close); });
+  }
+
   // Signs in a room (data/raid.js `lore`; v1.38: the iron door): walk next to one and the narrator reads it, once per visit
   checkLore() {
     for (const [i, l] of (this.info.lore || []).entries()) {
@@ -367,8 +396,12 @@ class RaidScene extends WorldScene {
       const c = FUP.raid.center(l.tx, l.ty);
       if (Math.hypot(c.x - this.player.x, c.y - this.player.y) > FUP.raid.size() * 1.3) continue;
       this.A.read[i] = true;
-      this.say('raidLore', { item: l.text });
+      if (l.box) { this.openBox(l); continue; }   // (v1.44) the quiet room's box
+      const open = l.openText && FUP.raid.canOpenStore();
+      if (this.info.kind === 'quiet') { this.readPaper(l.text, l.after); FUP.audio.sfx('questStep'); continue; }   // (v1.44) a paper: its own reading card
+      this.say('raidLore', { item: open ? l.openText : l.text });
       FUP.audio.sfx('questStep');
+      if (l.after) this.time.delayedCall(3200, () => { if (!this.leaving) this.say(l.after); });   // (v1.44) the narrator's own line after a paper
     }
   }
   drawCrack(k) {
@@ -519,6 +552,7 @@ class RaidScene extends WorldScene {
     const dt = Math.min(delta, 100) / 1000;
     FUP.ambience.update(this, dt);
     if (this.leaving) return;
+    if (this.paper) return;   // (v1.44) reading a paper in the quiet room: everything waits
     this.f.time += dt;
     this.hz += dt;
     if (!this.falling) this.movePlayer(dt);

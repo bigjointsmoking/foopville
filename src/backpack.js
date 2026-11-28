@@ -149,6 +149,13 @@ FUP.backpack = {
       add(ui.text(s, PX + PW / 2, y0 + size + 136, 'KEEPSAKES', 13, c.dim, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
       keeps.forEach((k, i) => add(ui.text(s, PX + PW / 2, y0 + size + 160 + i * 24, `${k.emoji} ${k.name}: ${k.text}`, 13, c.accent, { align: 'center', wordWrap: { width: PW - 120 } }).setOrigin(0.5, 0), 2));
     }
+    // (v1.44) The elders' primer pages you've found (data/spell.js primer): kept like spell pieces
+    const pages = (D.primer || []).filter(p => FUP.spell.has(p.id));
+    if (pages.length) {
+      const yP = y0 + size + 136 + (keeps.length ? 40 + keeps.length * 24 : 0);
+      add(ui.text(s, PX + PW / 2, yP, 'THE ELDERS\' PRIMER', 13, c.dim, { fontStyle: '700' }).setOrigin(0.5, 0), 2);
+      pages.forEach((p, i) => add(ui.text(s, PX + PW / 2, yP + 24 + i * 44, `📜 ${p.name}: ${p.text}`, 13, c.accent, { align: 'center', wordWrap: { width: PW - 120 } }).setOrigin(0.5, 0), 2));
+    }
   },
 
   drawWardrobe(bp, add, btn, PX, PY, PW) {

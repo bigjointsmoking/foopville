@@ -254,7 +254,7 @@ FUP.look = {
       spore: 'g5', pipe: 's2', pipeDark: 's1', steam: 'k4',
       carpet: 'r1', carpetEdge: 'y1', office: 'p1',
     },
-    // v1.43 (plans/MQ1.md): the elders' store behind the iron door: tended wood floors, stone walls, iron. PLACEHOLDER
+    // v1.43 (archive/plans-done/MQ1.md): the elders' store behind the iron door: tended wood floors, stone walls, iron. PLACEHOLDER
     store: {
       floor: 'w3', floorAlt: 'w2', floorLine: 'w1',
       wall: 's1', wallTop: 's2', wallLine: 'k1',

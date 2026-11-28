@@ -604,7 +604,7 @@ FUP.enemies = {
   // ============================================================
   // PHASE D (v1.00): the Bog Notary's fight. Melee ~22. (v1.38: the Vault's creatures and the Archivist are gone.) PLACEHOLDERS.
   // ============================================================
-  // ---------- v1.43 (plans/MQ1.md MQ1-A): the elders' store behind the iron door. Guards the elders built of wood and iron ----------
+  // ---------- v1.43 (archive/plans-done/MQ1.md MQ1-A): the elders' store behind the iron door. Guards the elders built of wood and iron ----------
   // Melee ~30. Stand-in names (Jesus: placeholders for now); numbers and lines PLACEHOLDERS.
   // Store Sentry (shieldwall): while one sentry has its iron shield up, the OTHER sentries take x`takenMult` damage.
   // When no sentry is shielding, the next one to move raises its shield (and keeps it up until it's beaten): break the shield-holder first.
@@ -631,6 +631,24 @@ FUP.enemies = {
     say: { counter: 'bigCounter' },
     signature: { id: 'windup', every: 3,
       move: { name: 'The Long Sweep', type: 'attack', power: 2.4, counterMult: 2, tell: '🔱', tellText: 'SWEEPING THE LINE (Defend!)' } },
+  },
+
+  // ---------- v1.44 (archive/plans-done/MQ1.md MQ1-B): the store's guardian, the boss before the quiet room (stand-in name) ----------
+  // A large guardian of wood and iron carrying the elders' repelling spell. One-time fight (it stays beaten for that life),
+  // no rare drop. Builds up over 3 stages: plain heavy hits; below 66% it adds the PUSH-BACK every 3rd move (your next hit
+  // does half); below 33% it adds the SCARE (you lose a turn unless you Defend). Numbers and lines PLACEHOLDERS.
+  storeWarden: {
+    name: 'The Store\'s Guardian', emoji: '🗿', size: 200, sprite: 'warden', mapSprite: 'warden_map',
+    maxHp: 650, atk: 19, def: 11, spd: 9, resolve: 0.5, noCharm: true, noFlee: true, miniBoss: true, ownLevel: true, level: 32,
+    xp: 900, coins: 250, boss: false, weak: 'fire', resists: ['frost'],
+    say: { start: 'wardenStart', win: 'wardenWin', counter: 'bigCounter' },
+    moves: [
+      { name: 'Iron Fist', type: 'attack', power: 1.0, tell: '⚔️', tellText: 'Attack', weight: 5 },
+      { name: 'Hammering Blow', type: 'attack', power: 1.6, tell: '💥', tellText: 'Heavy hit', weight: 2 },
+    ],
+    signature: { id: 'buildup', stages: [0.66, 0.33], every: 3, pushMult: 0.5,
+      pushMove: { name: 'Push Back', type: 'pushBack', power: 1.1, tell: '🌀', tellText: 'Pushing you back (your next hit is weaker)' },
+      scareMove: { name: 'The Repelling Spell', type: 'scare', power: 0.8, stunGauge: -100, tell: '😨', tellText: 'Something terrible is coming (Defend!)' } },
   },
 
   // ---------- The Causeway Serpent (v1.39, archive/plans-done/OT.md OT-B; Jesus 2026-11-26/27) ----------
